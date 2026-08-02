@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main        # Production deploy
-      - staging     # Staging deploy (optional)
-  pull_request:
-    branches:
-      - main        # CI only — no deploy
   workflow_dispatch:
     inputs:
       force_deploy:
@@ -105,7 +101,7 @@ jobs:
     name: 🚀 Deploy to EC2
     runs-on: [self-hosted, Linux, X64]
     needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/main'
     environment: production
 
     steps:
