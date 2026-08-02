@@ -82,11 +82,16 @@ export const aiClient = {
   generateJson: async <T>(prompt: string, systemPrompt?: string): Promise<T> => {
     const { apiKey, baseURL, model } = getAiConfig()
 
+    let finalPrompt = prompt
+    if (!/json/i.test(prompt) && (!systemPrompt || !/json/i.test(systemPrompt))) {
+      finalPrompt += "\nReturn valid JSON format."
+    }
+
     const messages: AiMessage[] = []
     if (systemPrompt) {
       messages.push({ role: "system", content: systemPrompt })
     }
-    messages.push({ role: "user", content: prompt })
+    messages.push({ role: "user", content: finalPrompt })
 
     let responseText = ""
 
