@@ -24,8 +24,6 @@
     "db:seed": "cd backend && nr seed",
     "db:seed:fresh": "cd backend && nr seed:fresh",
     "db:seed:incremental": "cd backend && nr seed:incremental",
-    "db:seed:capacity-demo": "cd backend && nr seed:capacity-demo",
-    "db:seed:attendance-demo": "cd backend && nr seed:attendance-demo",
     "db:seed:admin": "cd backend && nr seed:admin",
     "db:clear": "cd backend && nr clear",
     "hash-password": "cd backend && nr hash-password",
