@@ -228,7 +228,10 @@ export default function TaskDetail() {
     }
 
     if (role) {
-      return projectAllowed.filter(tr => role.allowedTaskTrackers.includes(tr))
+      if (role.allowedTaskTrackers && role.allowedTaskTrackers.length > 0) {
+        return role.allowedTaskTrackers.filter(tr => activeTrackers.length === 0 || activeTrackers.includes(tr))
+      }
+      return projectAllowed
     }
 
     return projectAllowed
