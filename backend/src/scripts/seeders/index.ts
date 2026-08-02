@@ -31,3 +31,4 @@ export { createEmptyContext } from "./seed-context.ts"
 
 import "./22-capacity-demo.seeder.ts"
 import "./23-attendance-demo-week.seeder.ts"
+import "./24-data-warehouse-project-demo.seeder.ts"

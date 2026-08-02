@@ -1,8 +1,9 @@
 /**
  * Database seeder entry point — invoked via `bun run seed`.
  *
- * Default (fresh): wipes DB then runs all registered seeders in dependency order.
+ * Default script: `bun run seed` passes --incremental, so existing DB data is not wiped.
  * Incremental: `bun run seed -- --incremental` — no wipe; skips seeders that already have data.
+ * Fresh: `bun run seed:fresh` passes --force-clear, wipes DB, then runs all seeders.
  * Prerequisite for incremental: `bun run seed:admin` must have been run first.
  */
 import { prisma } from "../libs/database.ts"

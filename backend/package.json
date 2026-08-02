@@ -10,7 +10,7 @@
     "postinstall": "prisma generate",
     "typecheck": "tsc --noEmit",
     "test": "jest --config jest.config.cjs --passWithNoTests",
-    "seed": "tsx src/scripts/seed-all.ts",
+    "seed": "tsx src/scripts/seed-all.ts --incremental",
     "seed:fresh": "tsx src/scripts/seed-all.ts --force-clear",
     "seed:incremental": "tsx src/scripts/seed-all.ts --incremental",
     "seed:capacity-demo": "tsx src/scripts/seeders/22-capacity-demo.seeder.ts",

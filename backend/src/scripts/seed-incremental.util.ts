@@ -6,6 +6,13 @@ import { prisma } from "@/libs/database.ts"
 import { createEmptyContext, registry } from "./seeders/index.ts"
 import type { SeedContext } from "./seeders/seed-context.ts"
 
+type OptionalPrismaCounters = typeof prisma & {
+  employeeContract?: { count: () => Promise<number> }
+  recruitmentApplication?: { count: () => Promise<number> }
+}
+
+const prismaCounters = prisma as OptionalPrismaCounters
+
 /** Load FK ids and lookup maps from DB so downstream seeders can reference existing rows. */
 export async function hydrateSeedContext(context: SeedContext): Promise<SeedContext> {
   const admin = await prisma.employee.findFirst({ where: { username: "admin" } })
@@ -44,12 +51,44 @@ async function shouldSkipSeederInternal(name: string): Promise<boolean> {
   let count = 0
 
   switch (name) {
+    case "Positions":
+      count = await prisma.position.count()
+      return count > 0
+
+    case "Employees":
+      count = await prisma.employee.count()
+      return count > 0
+
+    case "RBAC":
+      count = await prisma.employeeRole.count()
+      return count > 0
+
     case "WorkingShifts":
       count = await prisma.workingShift.count()
       return count > 0
 
+    case "SalaryComponents":
+      count = await prisma.salaryComponent.count()
+      return count > 0
+
+    case "SalaryVariables":
+      count = await prisma.salaryVariable.count()
+      return count > 0
+
+    case "PayslipTemplates":
+      count = await prisma.payslipTemplate.count()
+      return count > 0
+
+    case "PayrollSettings":
+      count = await prisma.payrollSettings.count()
+      return count > 0
+
     case "HolidayCalendars":
       count = await prisma.holidayCalendar.count()
+      return count > 0
+
+    case "ProjectTaskStatuses":
+      count = await prisma.projectTaskStatus.count()
       return count > 0
 
     case "ShiftSchedules": {
@@ -70,6 +109,19 @@ async function shouldSkipSeederInternal(name: string): Promise<boolean> {
       count = await prisma.project.count()
       return count > 0
 
+    case "ProjectMembers":
+      count = await prisma.projectMember.count()
+      return count > 0
+
+    case "SalaryConfigs":
+      count = await prisma.employeeSalaryConfig.count()
+      return count > 0
+
+    case "EmployeeContracts":
+      if (!prismaCounters.employeeContract) return true
+      count = await prismaCounters.employeeContract.count()
+      return count > 0
+
     case "Applications":
       count = await prisma.application.count()
       return count > 0
@@ -78,12 +130,25 @@ async function shouldSkipSeederInternal(name: string): Promise<boolean> {
       count = await prisma.task.count()
       return count > 0
 
+    case "Payrolls":
+      count = await prisma.payroll.count()
+      return count > 0
+
+    case "Payslips":
+      count = await prisma.payslip.count()
+      return count > 0
+
+    case "ActivityLogs":
+      count = await prisma.activityLog.count()
+      return count > 0
+
     case "SpentTimes":
       count = await prisma.spentTime.count()
       return count > 0
 
     case "Recruitment":
-      count = await prisma.recruitmentApplication.count()
+      if (!prismaCounters.recruitmentApplication) return true
+      count = await prismaCounters.recruitmentApplication.count()
       return count > 0
 
     default:
@@ -97,7 +162,15 @@ async function shouldSkipSeeder(name: string): Promise<boolean> {
     return await shouldSkipSeederInternal(name)
   } catch (error: unknown) {
     console.error(`Failed to evaluate skip state for ${name}:`, error)
-    return false
+    return true
+  }
+}
+
+async function safeCount(label: string, counter: () => Promise<number>): Promise<number | string> {
+  try {
+    return await counter()
+  } catch {
+    return `${label}: unavailable`
   }
 }
 
@@ -125,14 +198,18 @@ export async function runIncrementalSeed(): Promise<void> {
   }
 
   const summary = {
-    employees: await prisma.employee.count(),
-    employeeShifts: await prisma.employeeShift.count(),
-    attendanceRecords: await prisma.attendanceRecord.count(),
-    applications: await prisma.application.count(),
-    projects: await prisma.project.count(),
-    tasks: await prisma.task.count(),
-    spentTimes: await prisma.spentTime.count(),
-    recruitmentApplications: await prisma.recruitmentApplication.count(),
+    employees: await safeCount("employees", () => prisma.employee.count()),
+    employeeShifts: await safeCount("employeeShifts", () => prisma.employeeShift.count()),
+    attendanceRecords: await safeCount("attendanceRecords", () => prisma.attendanceRecord.count()),
+    applications: await safeCount("applications", () => prisma.application.count()),
+    projects: await safeCount("projects", () => prisma.project.count()),
+    tasks: await safeCount("tasks", () => prisma.task.count()),
+    spentTimes: await safeCount("spentTimes", () => prisma.spentTime.count()),
+    recruitmentApplications: await safeCount("recruitmentApplications", () =>
+      prismaCounters.recruitmentApplication
+        ? prismaCounters.recruitmentApplication.count()
+        : Promise.reject(new Error("recruitmentApplication counter unavailable")),
+    ),
   }
 
   console.log("\nIncremental seed complete:", summary)

@@ -12,6 +12,9 @@ import {
   TASK_TRACKER,
 } from "@/configs/entities/project.config.ts"
 import { prisma } from "@/libs/database.ts"
+import { SeedContext } from "@/scripts/seeders/seed-context.ts"
+import { ISeeder } from "@/scripts/seeders/seeder.interface.ts"
+import { registry } from "@/scripts/seeders/seeder.registry.ts"
 
 const PROJECT_NAME = process.env.SEED_PROJECT_NAME ?? "Data Warehouse Integration"
 const DEMO_TASK_PREFIX = "[DWH-DEMO]"
@@ -437,7 +440,17 @@ async function seedTasks(
   })
 }
 
-async function main() {
+export class DataWarehouseProjectDemoSeeder implements ISeeder {
+  readonly name = "DataWarehouseProjectDemo"
+  readonly order = 18.3
+
+  async run(_context: SeedContext): Promise<Partial<SeedContext>> {
+    await seedDataWarehouseProjectDemo()
+    return {}
+  }
+}
+
+async function seedDataWarehouseProjectDemo() {
   console.log(`Seeding demo data for project: ${PROJECT_NAME}`)
 
   const people = await pickPeople()
@@ -459,9 +472,11 @@ async function main() {
   )
 }
 
+registry.register(new DataWarehouseProjectDemoSeeder())
+
 if (import.meta.main) {
   try {
-    await main()
+    await seedDataWarehouseProjectDemo()
   } finally {
     await prisma.$disconnect()
   }
