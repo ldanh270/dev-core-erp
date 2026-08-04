@@ -448,7 +448,7 @@ The codebase alone cannot establish legal or organizational compliance. The oper
 - Data classification for employee, candidate, compensation and AI conversation data.
 - Retention/deletion schedules for recruitment records, logs, token records and Redis history.
 - Access-review cadence for privileged roles and break-glass administrator access.
-- Vulnerability disclosure and incident response process. `SECURITY.md` is currently template content and should be replaced.
+- Vulnerability disclosure and incident response process. No standalone security policy is currently maintained in the repository.
 - Backup, recovery, RPO/RTO objectives and periodic restoration verification for PostgreSQL.
 - Privacy notices, consent basis and vendor agreements for AI, email, messaging and recruitment connector processing.
 
@@ -458,7 +458,7 @@ The codebase alone cannot establish legal or organizational compliance. The oper
 |---|---|---|
 | High | Existing `docs/system-architecture.md` and `docs/codebase-summary.md` describe obsolete stub architecture | Archive, rewrite or clearly mark them historical; direct readers to this document and current source |
 | High | In-process cron jobs can duplicate work when backend replicas scale | Add distributed locking/leader election or move jobs to a dedicated scheduler/queue |
-| High | `SECURITY.md` is placeholder text | Publish support scope, reporting channel, response targets and disclosure process |
+| High | No standalone vulnerability-disclosure policy is maintained | Publish support scope, reporting channel, response targets and disclosure process |
 | High | Browser E2E config exists but no frontend E2E specs were found | Add Playwright scenarios to the required CI pipeline |
 | Medium | CI PR workflow demonstrates image builds, but does not visibly run the full quality suite | Add required test, lint, typecheck, SAST/dependency and migration jobs |
 | Medium | Sensitive HR data crosses email, Google, Telegram, AI-provider and Redis boundaries | Define data minimization, redaction, retention and vendor controls |

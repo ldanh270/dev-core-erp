@@ -114,4 +114,4 @@ Start here:
 
 ## Security
 
-Never commit database URLs, JWT secrets, OAuth credentials, Telegram tokens, AI API keys or private keys. Use deployment secret storage and separate credentials per environment. See [SECURITY.md](SECURITY.md) and the security section of the enterprise document; the disclosure policy still requires project-owner completion.
+Never commit database URLs, JWT secrets, OAuth credentials, Telegram tokens, AI API keys or private keys. Use deployment secret storage and separate credentials per environment. The security controls and outstanding operating requirements are documented in the [enterprise project documentation](docs/enterprise-project-documentation.md).
