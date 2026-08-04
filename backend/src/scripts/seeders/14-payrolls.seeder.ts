@@ -1,5 +1,9 @@
-import { generateDefaultPayrollName } from "@/configs/entities/payroll.config.ts"
+import {
+  PAYROLL_STATUS,
+  generateDefaultPayrollName,
+} from "@/configs/entities/payroll.config.ts"
 import { prisma } from "@/libs/database.ts"
+import { PAYROLL_DEMO } from "@/scripts/seeders/payroll-demo.config.ts"
 import { SeedContext, createEmptyContext } from "@/scripts/seeders/seed-context.ts"
 import { ISeeder } from "@/scripts/seeders/seeder.interface.ts"
 import { registry } from "@/scripts/seeders/seeder.registry.ts"
@@ -17,31 +21,15 @@ export class PayrollsSeeder implements ISeeder {
       throw new Error("Missing required context (admin).")
     }
 
-    const today = new Date()
-    const currentYear = today.getFullYear()
-    const currentMonth = today.getMonth() + 1 // 1-12
-
-    const payrollsToCreate = []
-
-    // Create payrolls for the current month and last 2 months
-    for (let i = 0; i <= 2; i++) {
-      let month = currentMonth - i
-      let year = currentYear
-      if (month <= 0) {
-        month += 12
-        year -= 1
-      }
-
-      payrollsToCreate.push({
-        name: generateDefaultPayrollName(month, year),
-        periodMonth: month,
-        periodYear: year,
-        status: "approved" as any,
-        totalAmount: 0, // Will be updated by Payslips seeder
-        approvedById: adminId,
-        approvedAt: new Date(),
-      })
-    }
+    const payrollsToCreate = PAYROLL_DEMO.PAYROLL_MONTHS.map((month) => ({
+      name: generateDefaultPayrollName(month, PAYROLL_DEMO.YEAR),
+      periodMonth: month,
+      periodYear: PAYROLL_DEMO.YEAR,
+      status: PAYROLL_STATUS.APPROVED,
+      totalAmount: 0, // Will be updated by Payslips seeder
+      approvedById: adminId,
+      approvedAt: new Date(),
+    }))
 
     const createdPayrolls = await prisma.$transaction(
       payrollsToCreate.map((data) =>
