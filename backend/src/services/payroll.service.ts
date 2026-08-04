@@ -148,7 +148,7 @@ export class PayrollService implements IPayrollService {
         startDate: periodStart.toISOString(),
         endDate: periodEnd.toISOString(),
       })
-
+      attendanceByEmployeeId.set(employee.id, records ?? [])
     }
 
     // Phase 2: All writes inside transaction
