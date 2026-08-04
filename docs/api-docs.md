@@ -1,215 +1,85 @@
-# API Documentation
+# API Guide
 
-This document provides the OpenAPI 3.0 specification (Swagger) for the backend routes implemented in the HR Management System.
+**Status:** Current route-family guide, not generated OpenAPI
+**Base URL:** `${VITE_API_BASE_URL}/api` or `/api` on same-origin deployments
+**Authoritative route definitions:** `backend/src/routes/`
 
-## OpenAPI Specification (YAML)
+## Contract
 
-```yaml
-openapi: 3.0.0
-info:
-  title: HR Management System API
-  description: API for managing employees and authentication in the HR Management System.
-  version: 1.0.0
-servers:
-  - url: http://localhost:5000
-    description: Local development server
+Backend endpoints return a response envelope shaped as:
 
-paths:
-  /:
-    get:
-      summary: Health check
-      description: Check if the server is running.
-      responses:
-        '200':
-          description: Server is running
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Connect to server successfully
-
-  /api/auth/login:
-    post:
-      tags:
-        - Authentication
-      summary: Login
-      description: Authenticate a user and return a JWT token.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginDto'
-      responses:
-        '200':
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    $ref: '#/components/schemas/AuthResponseDto'
-        '400':
-          description: Invalid input (validation error)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized (invalid credentials)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /api/auth/logout:
-    post:
-      tags:
-        - Authentication
-      summary: Logout
-      description: Log out the current user and record the activity.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Logout successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Logout successful
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /api/employees:
-    get:
-      tags:
-        - Employees
-      summary: List Employees
-      description: Retrieve a list of all employees.
-      responses:
-        '200':
-          description: List of employees
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Employee'
-                  error:
-                    type: string
-                    nullable: true
-                    example: null
-
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-  schemas:
-    LoginDto:
-      type: object
-      required:
-        - email
-        - password
-      properties:
-        email:
-          type: string
-          format: email
-          example: user@example.com
-        password:
-          type: string
-          example: password123
-
-    AuthResponseDto:
-      type: object
-      properties:
-        token:
-          type: string
-        employee:
-          type: object
-          properties:
-            id:
-              type: string
-            email:
-              type: string
-            fullName:
-              type: string
-            role:
-              $ref: '#/components/schemas/EmployeeRole'
-
-    Employee:
-      type: object
-      properties:
-        id:
-          type: string
-        fullName:
-          type: string
-        email:
-          type: string
-        role:
-          $ref: '#/components/schemas/EmployeeRole'
-        phone:
-          type: string
-          nullable: true
-        position:
-          type: string
-          nullable: true
-        employeeType:
-          $ref: '#/components/schemas/EmployeeType'
-        status:
-          $ref: '#/components/schemas/EmployeeStatus'
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-
-    EmployeeRole:
-      type: string
-      enum: [admin, manager, employee]
-
-    EmployeeType:
-      type: string
-      enum: [full_time, part_time, contractor, intern]
-
-    EmployeeStatus:
-      type: string
-      enum: [active, inactive, on_leave, terminated]
-
-    ErrorResponse:
-      type: object
-      properties:
-        status:
-          type: string
-          example: error
-        message:
-          type: string
-        errors:
-          type: array
-          items:
-            type: object
+```ts
+type ApiResponse<T> = {
+  data: T | null
+  error: {
+    message: string
+    code: string
+    meta?: unknown
+  } | null
+  meta?: unknown
+}
 ```
+
+Validation failures use HTTP 400; authentication failures use 401; permission failures use 403. Consumers must branch on error code/status, not human-readable messages.
+
+## Authentication
+
+The backend accepts an `access_token` httpOnly cookie and supports an `Authorization: Bearer <token>` fallback. Login/refresh responses establish tokens; the frontend stores the short-lived access token in its Zustand state and uses cookies for credentialed transport.
+
+| Method | Path | Auth | Purpose |
+|---|---|---|---|
+| POST | `/auth/login` | Public | Authenticate employee and establish token/session context |
+| POST | `/auth/refresh` | Refresh cookie | Rotate/refresh access token |
+| POST | `/auth/logout` | Required | Revoke current refresh session |
+| GET | `/auth/me` | Required | Resolve current active employee, roles and permissions |
+| POST | `/auth/change-password` | Required | Change current password |
+| POST | `/auth/forgot-password` | Public | Start password-reset flow |
+| POST | `/auth/validate-reset-token` | Public | Validate reset token |
+| POST | `/auth/reset-password` | Public | Complete reset |
+
+## API module catalog
+
+| Base path | Module |
+|---|---|
+| `/auth`, `/security` | Authentication, activity/security monitoring and locked-account management |
+| `/employees`, `/employee-contracts`, `/profile`, `/positions` | Workforce, contracts, self profile and positions |
+| `/permissions`, `/roles` | Dynamic RBAC policy and assignments |
+| `/shifts`, `/schedules`, `/attendance`, `/holidays`, `/weekly-schedule-templates`, `/part-time-availabilities` | Time planning, clocking, attendance and leave calendar setup |
+| `/applications`, `/approvals`, `/shift-change-requests`, `/regime-categories` | Employee applications and approvals |
+| `/salary-components`, `/salary-variables`, `/payslip-templates`, `/payrolls` | Payroll configuration, calculation, payslips and feedback |
+| `/recruitment` | Requisitions, postings, intake, candidates, pipeline, interviews, offers, checks and OAuth accounts |
+| `/projects`, `/tasks`, `/spent-times`, `/task-estimate-ai`, `/capacity-copilot` | Delivery management, time tracking and advisory forecasting |
+| `/custom-queries`, `/activity-logs`, `/debug` | Reporting/auditing/diagnostics; access must remain restricted |
+
+## Selected workflow endpoints
+
+| Method | Path | Permission/control | Behavior |
+|---|---|---|---|
+| POST | `/attendance/check-in` | Authenticated employee | Record a check-in against scheduled/fallback shift context |
+| POST | `/attendance/check-out` | Authenticated employee | Record a check-out and attendance metrics |
+| POST | `/applications` | Authenticated employee | Submit a typed employee application |
+| PATCH | `/applications/:id/approve` | `application.approve` | Approve application through workflow service |
+| PATCH | `/applications/:id/reject` | `application.approve` | Reject with required reason where applicable |
+| POST | `/payrolls/generate` | `payroll.create` | Generate a payroll period |
+| POST | `/payrolls/:id/approve` | `payroll.approve` | Approve payroll after status validation |
+| POST | `/payrolls/:id/reject` | `payroll.approve` | Reject payroll after status validation |
+| GET | `/payrolls/my/payslips` | Authenticated employee | Retrieve own payslips |
+| POST | `/recruitment/requisitions/:id/submit` | `recruitment.update` | Submit requisition for approval |
+| POST | `/recruitment/requisitions/:id/approve` | `recruitment.requisition.approve` | Approve/reject requisition via dedicated transition |
+| POST | `/recruitment/offers/:id/send` | `recruitment.approve` | Send an offer |
+| POST | `/projects` | Authenticated employee | Create project subject to service rules |
+| GET | `/projects/:id/gantt` | Authenticated employee | Retrieve project Gantt data |
+
+## Client rules
+
+1. Use `frontend/src/lib/api-client.ts` rather than creating unconfigured Axios calls.
+2. Use domain API clients in `frontend/src/lib/api/` for frontend operations.
+3. Use `routerNavigate` for in-app navigation after API outcomes; never hard reload to an internal route.
+4. Send only values validated by the relevant Zod schema; enums must use centralized values/configuration.
+5. Treat a 401/403 as an authorization event. The standard client handles serialized refresh and clears identity only after confirmed session expiration.
+
+## Versioning and OpenAPI
+
+The repository has Swagger dependencies, but this document does not claim a current generated OpenAPI endpoint or complete machine-readable specification. Route modules and Zod schemas are the current contract source. **Recommendation:** generate OpenAPI from route/schema metadata and publish it as a release artifact before external API consumption grows.
+
+For architecture and security details, see [enterprise-project-documentation.md](enterprise-project-documentation.md). For cross-layer DTO conventions, see [interface-contracts.md](interface-contracts.md).

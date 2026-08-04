@@ -1,105 +1,69 @@
 # HRP Agent Gateway
 
-Telegram AI Bot tích hợp HRP MCP Server. Đóng vai trò cầu nối giữa người dùng Telegram và hệ thống quản trị nhân sự nội bộ.
+Telegram-facing AI assistant for HRP. The gateway connects Telegram users to the MCP server without exposing backend credentials or MCP session IDs to the language model/user.
 
-## Architecture
+## Runtime flow
 
-```
-Telegram User
-     │
-     ▼
-Telegraf Bot (agent-gateway)
-     │
-     ├── Rate Limit Middleware (Redis)
-     ├── Auth Middleware → MCP login_start / login_status
-     │
-     ▼
-Agent Handler
-     ├── Load history (Redis)
-     ├── generateText (Vercel AI SDK → 9Router)
-     │       └── Tool calling loop (maxSteps=5)
-     │              └── mcpService.callTool() ──► MCP Server (SSE)
-     └── Save history (Redis)
+```mermaid
+flowchart TB
+  Telegram --> Bot["Telegraf bot"]
+  Bot --> Guard["Rate limit + session middleware"]
+  Guard --> Redis[("Redis")]
+  Guard --> Handler["AI agent handler"]
+  Handler --> LLM["OpenAI-compatible provider"]
+  Handler --> MCP["MCP Server"]
+  MCP --> API["HRP Backend"]
 ```
 
-## Auth Flow
+For each message, the gateway loads bounded history, retrieves MCP tools, converts their JSON schemas to AI SDK Zod tools, invokes the model, injects a server-held session ID into protected MCP calls, then stores the new history and returns the answer.
 
-1. User nhắn tin → check Redis session
-2. Không có session → gọi `login_start` MCP tool → nhận `loginUrl`
-3. Bot gửi `loginUrl` cho user
-4. Background poll `login_status` mỗi 5s (max 5 phút)
-5. Login thành công → lưu `sessionId` vào Redis (TTL 8h)
-6. Từ đây mọi tool call tự động inject `sessionId`
+## Safeguards
 
-## Setup
+| Control | Current behavior |
+|---|---|
+| Telegram ingress | Redis-backed limit of one message per user per second |
+| Login handoff | Browser-mediated MCP login; no password collection in Telegram chat |
+| Session retention | Redis session TTL of eight hours |
+| Conversation retention | Last 20 messages, 24-hour TTL |
+| Tool execution | Session ID injected server-side; login tools are session-exempt |
+| Agent loop | Maximum five tool-use steps and configurable abort timeout |
+| Startup | Fails fast when Redis or MCP connectivity is unavailable |
 
-### 1. Copy env
+## Local setup
 
-```bash
-cp .env.example .env
-# Điền các giá trị: TELEGRAM_BOT_TOKEN, NINE_ROUTER_*, MCP_*, REDIS_URL
-```
-
-### 2. Install dependencies
-
-```bash
+```powershell
+Copy-Item .env.example .env
 pnpm install
-```
-
-### 3. Dev mode
-
-```bash
-# Chạy riêng
 pnpm dev
-
-# Hoặc từ root (cùng với MCP Server)
-cd .. && nr dev:full
 ```
 
-### 4. Docker (production)
+Required configuration categories:
 
-```bash
-# Từ root project
-docker compose up -d redis mcp agent-gateway
+- `TELEGRAM_BOT_TOKEN`
+- `NINE_ROUTER_BASE_URL`, `NINE_ROUTER_API_KEY`, `NINE_ROUTER_MODEL`
+- `MCP_SSE_URL`, `MCP_MESSAGE_URL`
+- `REDIS_URL`
+- `PORT`, `AGENT_TIMEOUT_MS`, and `NODE_ENV`
+
+The health endpoint is `GET /health` on the configured port.
+
+## Commands
+
+```powershell
+pnpm dev
+pnpm build
+pnpm typecheck
+pnpm lint
+pnpm start
 ```
 
-## Environment Variables
+From the repository root, use `nr dev:gateway` to run this package. Docker Compose runs the gateway with Redis and MCP in the same internal network.
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `TELEGRAM_BOT_TOKEN` | Bot token từ BotFather | `123456:ABC...` |
-| `NINE_ROUTER_BASE_URL` | 9Router / OpenRouter API endpoint | `https://openrouter.ai/api/v1` |
-| `NINE_ROUTER_API_KEY` | API key | `sk-or-...` |
-| `NINE_ROUTER_MODEL` | Model routing string | `openai/gpt-4o-mini` |
-| `MCP_SSE_URL` | MCP Server SSE endpoint | `http://mcp:3001/mcp/sse` |
-| `MCP_MESSAGE_URL` | MCP Server message endpoint | `http://mcp:3001/mcp/message` |
-| `REDIS_URL` | Redis connection URL | `redis://redis:6379` |
-| `PORT` | Health check port | `3002` |
+## Operational rules
 
-## Bot Commands
+- Do not log credentials, tokens, raw HR payloads or unredacted model prompts in production.
+- Treat MCP tool schemas and authorization responses as mandatory controls; do not add direct backend calls from the bot handler.
+- Preserve the separation between authentication flow, model orchestration, Redis state and MCP transport.
+- Add regression tests when changing session expiry, rate limits, tool injection or error classification.
 
-| Command | Description |
-|---------|-------------|
-| `/start` | Welcome message |
-| `/logout` | Xóa session + lịch sử |
-| `/clear` | Xóa lịch sử trò chuyện |
-| `/help` | Hướng dẫn sử dụng |
-
-## File Structure
-
-```
-src/
-├── config/
-│   └── env.ts                     # Typed env (Zod validation)
-├── services/
-│   ├── redis.service.ts           # Session, history, rate-limit
-│   ├── mcp.service.ts             # MCP SSE client + tool injection
-│   └── llm.service.ts             # Vercel AI SDK + 9Router
-├── middlewares/
-│   ├── auth.middleware.ts         # Browser login flow
-│   └── rate-limit.middleware.ts  # 1 msg/s per user
-├── bot/
-│   ├── index.ts                   # Telegraf setup + commands
-│   └── handler.ts                 # Agent loop
-└── app.ts                         # Entry point
-```
+See [the root enterprise documentation](../docs/enterprise-project-documentation.md) for deployment, security and data-handling context.

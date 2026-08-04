@@ -1,146 +1,92 @@
 # System Architecture
 
+**Status:** Current implementation baseline
+**Last reviewed:** 2026-08-04
+**Deep reference:** [Enterprise project documentation](enterprise-project-documentation.md)
+
 ## Overview
 
-Monorepo with two independent apps sharing no runtime code. Frontend calls backend over HTTP.
+HRP is a four-package TypeScript monorepo. The backend is the system of record; browser and AI clients access it through controlled HTTP or MCP adapters.
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                        CLIENT                           │
-│   React 19 + Vite 8  (port: 5173 dev)                   │
-│   └── App.tsx (placeholder, not yet built out)          │
-└────────────────────┬────────────────────────────────────┘
-                     │ HTTP (REST)
-                     ▼
-┌─────────────────────────────────────────────────────────┐
-│                      BACKEND                            │
-│   Bun + Express 5  (port: 5000)                         │
-│                                                         │
-│  ┌───────────┐  ┌───────────────┐  ┌─────────────────┐  │
-│  │  Routes   │→ │ Controllers   │→ │    Services     │  │
-│  │auth.route │  │auth.controller│  │  auth.service   │  │
-│  └───────────┘  └───────────────┘  └───────┬─────────┘  │
-│                                            │            │
-│                                   ┌────────▼────────┐   │
-│                                   │  Repositories   │   │
-│                                   │ auth.repository │   │
-│                                   └────────┬────────┘   │
-│                                            │            │
-│  ┌──────────────────┐             ┌────────▼────────┐   │
-│  │   Middleware     │             │    Database     │   │
-│  │ error.middleware │             │  (TODO: driver) │   │
-│  └──────────────────┘             └─────────────────┘   │
-│                                                         │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │  Config / Constants                              │   │
-│  │  auth.config · http.config · database.config     │   │
-│  └──────────────────────────────────────────────────┘   │
-│                                                         │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │  Utils & Lib                                     │   │
-│  │  AppError (error.util) · connectDB (database)    │   │
-│  └──────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+  Browser["React 19 SPA"] -->|"REST /api"| Backend["Express 5 Backend"]
+  Backend --> Prisma["Prisma 7"] --> Postgres[("PostgreSQL")]
+  Telegram["Telegram user"] --> Gateway["Agent Gateway"]
+  Gateway --> Redis[("Redis")]
+  Gateway -->|"SSE MCP client"| MCP["MCP Server"]
+  MCP -->|"Authenticated HRP REST"| Backend
+  Caddy["Caddy / TLS reverse proxy"] --> Backend
+  Caddy --> MCP
+  Caddy --> Gateway
 ```
 
----
+| Component | Responsibility |
+|---|---|
+| Frontend | React Router UI, query/cache state, browser session refresh and permission-aware navigation |
+| Backend | REST routes, workflow services, dynamic authorization, audit data, Prisma persistence and cron jobs |
+| MCP server | Browser login, MCP SSE/stdio transports and authenticated tool facade |
+| Agent gateway | Telegram bot, Redis state, OpenAI-compatible AI loop and session-injected MCP calls |
 
-## Request Lifecycle
+## Backend request lifecycle
 
-```
-HTTP Request
-    │
-    ▼
-Express Router (/api/auth/*)
-    │
-    ├─ express.json()        ← parse body
-    ├─ cookieParser()        ← parse cookies
-    │
-    ▼
-Route Handler (auth.route.ts)
-    │
-    ▼
-Controller (auth.controller.ts)
-    ├─ [MISSING] Zod validation of req.body
-    ├─ calls service method
-    │
-    ▼
-Service (auth.service.ts)
-    ├─ [MISSING] business logic (hash password, create JWT)
-    ├─ calls repository
-    │
-    ▼
-Repository (auth.repository.ts)
-    ├─ [MISSING] DB query
-    │
-    ▼
-Database (lib/database.ts)
-    └─ [TODO] real driver (pg / mysql2)
+```mermaid
+sequenceDiagram
+  participant Client
+  participant Route
+  participant Guard as Auth / Permission Guard
+  participant Controller
+  participant Service
+  participant Repository
+  participant DB as PostgreSQL
 
-    │ (on error anywhere)
-    ▼
-throw AppError(message, statusCode, layer)
-    │
-    ▼
-globalErrorHandler middleware
-    └─ JSON response { message }
+  Client->>Route: Request
+  Route->>Guard: Authenticate and authorize if required
+  Guard->>DB: Confirm active employee / dynamic permissions
+  Route->>Controller: Request handler
+  Controller->>Service: Use case
+  Service->>Repository: Query or command
+  Repository->>DB: Prisma operation/transaction
+  DB-->>Client: ApiResponse envelope
 ```
 
----
+Source ownership:
 
-## Auth Flow (Planned — Not Implemented)
+- Route modules: `backend/src/routes/`
+- Controllers: `backend/src/controllers/`
+- Business services: `backend/src/services/`
+- Repositories: `backend/src/repositories/`
+- Validation schemas: `backend/src/schemas/`
+- Middleware: `backend/src/middlewares/`
+- Data model: `backend/prisma/schema.prisma`
 
-```
-POST /api/auth/signup
-  → validate body (email, password, name)
-  → check email not taken (repository)
-  → hash password (bcrypt)
-  → insert user (repository)
-  → sign access token (JWT, 15m)
-  → set refresh token in httpOnly cookie (7d)
-  → return 201 { data: user }
+## Identity and access control
 
-POST /api/auth/login
-  → validate body
-  → find user by email (repository)
-  → compare password (bcrypt)
-  → sign tokens
-  → set cookie
-  → return 200 { data: user }
+Authentication accepts an `access_token` cookie or Bearer token. The backend verifies JWT validity/version and confirms the employee remains active. It then resolves current role and permission assignments from the database; denial is the default outcome.
 
-POST /api/auth/logout
-  → clear cookie
-  → 204
+The frontend persists a client identity cache for usability but refreshes `/api/auth/me` before it trusts access on protected routes. It fails closed if authorization cannot be retrieved.
 
-POST /api/auth/refresh
-  → read refresh token from cookie
-  → verify JWT
-  → sign new access token
-  → return 200 { accessToken }
-```
+## Runtime jobs
 
----
+After successful database startup, the backend enables three in-process jobs:
 
-## Current API Endpoints
+| Job | Function |
+|---|---|
+| Payroll cron | Generates and approves payroll according to persisted settings with duplicate and rejected-status guards |
+| Weekly schedule cron | Generates employee shifts from applicable templates once per configured week |
+| Capacity Copilot cron | Refreshes advisory project-capacity forecasts; it does not auto-staff teams |
 
-| Method | Path               | Status                  | Auth |
-| ------ | ------------------ | ----------------------- | ---- |
-| GET    | `/`                | ✅ Working              | None |
-| POST   | `/api/auth/signup` | ⚠️ Wired, service empty | None |
-| `*`    | `/*`               | ✅ 404 handler          | —    |
+The jobs use minute polling plus application-level guards. Production horizontal scaling requires distributed job coordination or a dedicated scheduler to prevent duplicate execution.
 
----
+## Deployment
 
-## Missing Architecture Components
+Production Compose uses Caddy as the public edge, Redis for gateway state, and separately built backend/MCP/gateway containers. Caddy routes `/api/*`, `/mcp/*` and gateway health traffic to internal services. GitHub Actions builds GHCR images, runs Prisma migrations on EC2, performs a Compose update, and checks health endpoints.
 
-| Component                            | Priority    | Notes                          |
-| ------------------------------------ | ----------- | ------------------------------ |
-| DB driver (pg/mysql2)                | 🔴 Critical | Nothing persists               |
-| `middleware/auth.middleware.ts`      | 🔴 Critical | JWT guard for protected routes |
-| `middleware/validate.middleware.ts`  | 🔴 High     | Zod schema validation          |
-| `middleware/cors.middleware.ts`      | 🔴 High     | Frontend can't call API        |
-| `types/` directory                   | 🟡 Medium   | Shared TS interfaces           |
-| `config/env.ts`                      | 🟡 Medium   | Typed env wrapper, fail-fast   |
-| `tests/` directory                   | 🟡 Medium   | Zero test coverage             |
-| Rate limiting (`express-rate-limit`) | 🟡 Medium   | Auth endpoint protection       |
-| API versioning (`/api/v1/`)          | 🟢 Low      | Future-proofing                |
+## Architecture decisions
+
+- PostgreSQL + Prisma is the source of truth for HR, payroll, recruitment and delivery data.
+- Business workflows use explicit services and dedicated state-transition operations instead of unconstrained generic CRUD.
+- Dynamic RBAC is used instead of static role literals in authorization decisions.
+- AI tool calls operate through MCP and a server-held session boundary rather than exposing backend credentials to the language model.
+
+See [enterprise-project-documentation.md](enterprise-project-documentation.md) for data-domain diagrams, workflows, operational runbooks, integration inventory, security posture and backlog.

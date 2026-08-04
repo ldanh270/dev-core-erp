@@ -1,104 +1,86 @@
 # Codebase Summary
 
-## Repository Structure
+**Status:** Current implementation baseline
+**Last reviewed:** 2026-08-04
 
-```
+## Repository map
+
+```text
 integrated-hr-and-product-system/
-├── backend/                    # Express API (Bun runtime)
-│   ├── src/
-│   │   ├── index.ts            # Entry point — server bootstrap
-│   │   ├── config/             # All static config & constants
-│   │   │   ├── database.config.ts          # DB connection config (stub)
-│   │   │   └── constant/
-│   │   │       ├── auth.config.ts          # JWT secrets + TTLs
-│   │   │       ├── http.config.ts          # HttpStatusCode enum + type
-│   │   │       └── regex.config.ts         # Auth regex (duplicates auth.config?)
-│   │   ├── controller/
-│   │   │   └── auth.controller.ts          # AuthController — signup handler
-│   │   ├── lib/
-│   │   │   └── database.ts                 # connectDB() — TODO: real driver
-│   │   ├── middleware/
-│   │   │   └── error.middleware.ts         # globalErrorHandler — AppError aware
-│   │   ├── repository/
-│   │   │   └── auth.repository.ts          # AuthRepository — empty stub
-│   │   ├── route/
-│   │   │   └── auth.route.ts               # POST /signup wired up
-│   │   ├── service/
-│   │   │   └── auth.service.ts             # AuthService.signup() — TODO impl
-│   │   └── util/
-│   │       └── error.util.ts               # AppError class
-│   ├── package.json
-│   └── tsconfig.json
-├── frontend/                   # React 19 app (Vite 8)
-│   ├── src/
-│   │   ├── App.tsx             # Root component
-│   │   ├── App.css
-│   │   ├── main.tsx            # React DOM mount
-│   │   └── index.css
-│   ├── package.json
-│   └── vite.config (implied)
-├── CLAUDE.md                   # AI engineering constitution
-├── AGENTS.md                   # Sub-agent instructions (mirrors CLAUDE.md)
-├── GEMINI.md                   # Gemini-specific instructions
-├── README.md                   # Root readme
-├── package.json                # Root workspace config
-└── bun.lock
+├── backend/                 Express API, Prisma schema, migrations, jobs and tests
+├── frontend/                React SPA, pages, API clients, state and UI primitives
+├── mcp-server/              MCP transport, browser login, sessions and HRP tools
+├── agent-gateway/           Telegram/AI orchestration, Redis state and MCP client
+├── caddy/                   Production reverse-proxy/TLS configuration
+├── nginx/                   Alternate proxy configuration (not production Compose default)
+├── docs/                    Architecture, API, UI and engineering documentation
+├── .github/workflows/       PR build, deploy and rollback automation
+├── docker-compose.yml       Local MCP/gateway/Redis stack
+└── docker-compose.prod.yml  Production service topology
 ```
 
----
+## Backend
 
-## Module Breakdown
+```text
+backend/src/
+├── configs/        Canonical entity, auth, system and business-rule configuration
+├── connectors/     External connectors, including recruitment integrations
+├── controllers/    HTTP adapters
+├── libs/           Prisma runtime and scheduled job bootstrapping
+├── middlewares/    CORS, error, authentication, validation and permissions
+├── repositories/   Prisma data-access implementations
+├── routes/         REST route composition
+├── schemas/        Zod input schemas
+├── scripts/        Seed, repair, clear and developer utilities
+├── services/       Workflow, calculation and domain services
+├── types/          Service/repository DTO contracts
+├── utils/          Shared error, token, time and domain helpers
+└── __tests__/      Jest tests for services, schemas, middleware and utilities
+```
 
-### `backend/src/index.ts`
+Major backend modules:
 
-Entry point. Loads dotenv, creates Express app, registers middleware (`json`, `cookieParser`), mounts `authRoutes` at `/api/auth`, adds 404 catch-all and a raw global error handler (duplicates `globalErrorHandler` — see issues below).
+| Domain | Examples |
+|---|---|
+| Identity and security | Auth, refresh tokens, password reset, roles, permissions, security dashboard, activity logs |
+| Workforce | Employees, profiles, contracts, positions, salary configurations |
+| Attendance | Shifts, schedules/templates, attendance, real shifts, holidays, part-time availability |
+| Requests | Applications, approvals, shift change, regimes and attachments |
+| Payroll | Components, variables, templates, payroll runs, payslips and scheduled automation |
+| Recruitment | Requisitions, job postings, intake/connectors, candidates, interviews, scorecards, offers and background checks |
+| Delivery | Projects, members, roles, task statuses, tasks, trackers, spent time and capacity copilot |
 
-### `backend/src/config/`
+## Frontend
 
-- **`auth.config.ts`** — `ACCESS_TOKEN_SECRET`, `ACCESS_TOKEN_TTL = "15m"`, `REFRESH_TOKEN_TTL = 7d ms`
-- **`http.config.ts`** — `HttpStatusCode` const object + `HttpStatusCodeType`
-- **`regex.config.ts`** — duplicates auth.config exports (copy-paste bug)
-- **`database.config.ts`** — empty/stub for DB connection params
+```text
+frontend/src/
+├── components/     Shared shells, providers, common components and shadcn-style primitives
+├── config/         API, routes, subsystem, entity and UI configuration
+├── lib/api/        Typed domain API clients
+├── pages/          Route pages grouped by business area
+├── routes/         Public/private route definitions and permission metadata
+├── schemas/        Frontend Zod form schemas
+├── store/          Zustand client state
+└── utils/          Navigation, export, date and feature utilities
+```
 
-### `backend/src/lib/database.ts`
+Page modules cover application, attendance, authentication, employees, payroll, personal self-service, projects, recruitment and security. React Query handles remote state; Zustand handles persisted client state; Axios centralizes cookie/token transport and refresh handling.
 
-`connectDB()` async fn — logs success, process.exit(1) on failure. No real driver call yet.
+## MCP server and agent gateway
 
-### `backend/src/controller/auth.controller.ts`
+`mcp-server` exposes MCP through SSE or stdio, holds browser-login sessions and registers tool families for HRP operations. `agent-gateway` runs a Telegram bot, validates Redis/MCP availability at startup, manages bounded user history, calls the AI provider, and invokes MCP tools with server-injected sessions.
 
-`AuthController` class. DI: takes `AuthService` in constructor. `signup` handler: calls `service.signup(req.body)`, returns 201 or 400. Uses raw `any` types — no validation middleware.
+## Source-of-truth pointers
 
-### `backend/src/service/auth.service.ts`
+| Need | Read |
+|---|---|
+| Mounted APIs and startup | `backend/src/index.ts` |
+| Domain models | `backend/prisma/schema.prisma` |
+| Route contract | `backend/src/routes/` plus `backend/src/schemas/` |
+| Workflow rules | `backend/src/services/` |
+| Browser access/routing | `frontend/src/App.tsx`, `frontend/src/routes/` |
+| UI standard | `docs/frontend-design-spec.md` |
+| MCP tool catalogue | `mcp-server/src/mcp.ts`, `mcp-server/src/tools/` |
+| Production deployment | `docker-compose.prod.yml`, `caddy/Caddyfile`, `.github/workflows/` |
 
-`AuthService` class. `signup(data: any)` — empty, TODO comment only.
-
-### `backend/src/repository/auth.repository.ts`
-
-`AuthRepository` class — completely empty.
-
-### `backend/src/route/auth.route.ts`
-
-Instantiates `AuthService` → `AuthController`, mounts `POST /signup`.
-
-### `backend/src/middleware/error.middleware.ts`
-
-`globalErrorHandler(err, req, res, next)` — checks `instanceof AppError`, returns typed JSON error. Falls through to 500 for unhandled.
-
-### `backend/src/util/error.util.ts`
-
-`AppError extends Error` — adds `statusCode: number`, `layer: string` (e.g. "Database", "Auth"). Captures stack trace.
-
----
-
-## Known Issues / Bugs
-
-| #   | Location             | Issue                                                                                                         |
-| --- | -------------------- | ------------------------------------------------------------------------------------------------------------- |
-| 1   | `regex.config.ts`    | Duplicates `auth.config.ts` exports — file serves no unique purpose                                           |
-| 2   | `index.ts`           | Raw global error handler (lines 30-34) duplicates `globalErrorHandler` from middleware — double handling risk |
-| 3   | `index.ts`           | `globalErrorHandler` from middleware is never actually registered — dead code                                 |
-| 4   | `auth.service.ts`    | `signup()` is empty — endpoint returns undefined                                                              |
-| 5   | `auth.repository.ts` | Completely empty — no DB interaction                                                                          |
-| 6   | `auth.controller.ts` | Uses `any` for req/res — no input validation                                                                  |
-| 7   | `auth.config.ts`     | `ACCESS_TOKEN_SECRET` falls back to `""` — silent failure in prod                                             |
-| 8   | No `cors` middleware | Frontend can't call API in dev without it                                                                     |
+For the architectural reasoning, data relationships and operations model, see [enterprise-project-documentation.md](enterprise-project-documentation.md).

@@ -1,127 +1,117 @@
-# Integrated HR & Product System (HRP)
+# Integrated HR and Product System (HRP)
 
-A comprehensive and modern Integrated Human Resource and Product Management System.
+HRP is a TypeScript monorepo for workforce operations and product delivery. It combines employee administration, scheduling and attendance, employee requests and approvals, payroll, recruitment, projects/tasks, and an authenticated AI assistant.
 
----
+## System at a glance
 
-## 🛠️ Tech Stack
+| Package | Purpose | Development endpoint |
+|---|---|---|
+| `frontend` | React operational web application | `http://localhost:5173` |
+| `backend` | Express REST API and scheduled workflow engine | `http://localhost:5000` |
+| `mcp-server` | MCP tool server for governed HRP automation | `http://localhost:3001` |
+| `agent-gateway` | Telegram AI assistant gateway | `http://localhost:3002/health` |
 
-| Layer    | Technology                                      |
-| -------- | ----------------------------------------------- |
-| Runtime  | **Bun** (Primary runtime & package manager)     |
-| Backend  | Express 5 + TypeScript + Prisma ORM             |
-| Frontend | React 19 + Vite 8 + TypeScript + Tailwind CSS   |
-| Database | PostgreSQL                                      |
-| Auth     | JWT (access 15m) + httpOnly cookie (refresh 7d) |
+Core platform services are PostgreSQL (through Prisma) and Redis (for AI gateway sessions/history). Production ingress is handled by Caddy.
 
----
+## Capabilities
 
-## 📁 Project Structure
+- Workforce, contracts, employee profiles, dynamic RBAC and audit logs.
+- Shifts, schedules, attendance, holidays, part-time availability and employee requests.
+- Configurable salary components, payroll runs, payslips and payroll automation.
+- Requisitions, job postings, candidate intake, interviews, scorecards, offers and background checks.
+- Projects, tasks, time records, Gantt/Kanban views and advisory capacity forecasting.
+- MCP tools and Telegram AI assistant access bound to authenticated HRP sessions.
 
-```text
-.
-├── backend/            # Express REST API (TypeScript + Bun)
-│   ├── src/
-│   │   ├── configs/    # Centralized configurations (entities, auth, system, rules)
-│   │   ├── controllers/# Request handlers (HTTP adapters)
-│   │   ├── libs/       # Shared libraries (DB connection, Prisma client)
-│   │   ├── middlewares/# Express Middlewares (CORS, Validation, Auth guards)
-│   │   ├── repositories/# Data access layer (Prisma queries)
-│   │   ├── routes/     # API route definitions
-│   │   ├── services/   # Core Business Logic Layer
-│   │   ├── utils/      # Helpers & Custom Errors (AppError)
-│   │   └── scripts/    # Standalone scripts (Seed, Clear DB, Hash password)
-│   └── prisma/         # Prisma Schema & Migrations
-├── frontend/           # React SPA (Vite + TypeScript)
-│   └── src/
-│       ├── components/ # Shared UI Components / Primitives
-│       ├── features/   # Feature-sliced modules
-│       ├── pages/      # Route pages
-│       └── App.tsx
-└── docs/               # System Architecture & Coding Standards Documentation
+## Architecture
+
+```mermaid
+flowchart LR
+  Web["React SPA"] --> API["Express Backend"] --> DB[("PostgreSQL")]
+  Telegram["Telegram"] --> Gateway["Agent Gateway"]
+  Gateway --> Redis[("Redis")]
+  Gateway --> MCP["MCP Server"] --> API
+  Caddy["Caddy / TLS"] --> API
+  Caddy --> MCP
+  Caddy --> Gateway
 ```
 
----
+The backend follows `Route → Controller → Service → Repository → Prisma/PostgreSQL`. Authentication establishes identity with JWT/cookies; dynamic roles and permissions govern access.
 
-## 🚀 Getting Started
+## Prerequisites
 
-### 1. System Requirements
+- Node.js/Bun runtime compatible with package-level scripts.
+- `ni` and `nr` from `@antfu/ni` are recommended; they select the local package manager from the nearest lockfile.
+- PostgreSQL database. Supabase PostgreSQL is supported by the supplied environment template.
+- Redis, Telegram bot credentials, and an OpenAI-compatible provider only when running the AI assistant.
 
-- **[Bun](https://bun.sh)** (`>= 1.0`) is required.
+## Local setup
 
-### 2. Install Dependencies
+1. Copy environment templates and supply local secrets:
 
-Run the following command at the **ROOT** directory to install dependencies for both Frontend and Backend concurrently:
+   ```powershell
+   Copy-Item backend/.env.example backend/.env
+   Copy-Item frontend/.env.example frontend/.env
+   Copy-Item mcp-server/.env.example mcp-server/.env
+   Copy-Item agent-gateway/.env.example agent-gateway/.env
+   ```
 
-```bash
-bun run install:all
-```
+2. Install each package using `ni` (or the package manager indicated by its lockfile):
 
-### 3. Environment Variables
+   ```powershell
+   nr i:backend
+   nr i:frontend
+   nr i:mcp
+   nr i:gateway
+   ```
 
-Create the `backend/.env` file by copying the provided example:
+3. Generate Prisma client and apply database migrations:
 
-```bash
-cp backend/.env.example backend/.env
-```
+   ```powershell
+   nr db:generate
+   nr db:deploy
+   ```
 
-Configure your PostgreSQL database connection string in `backend/.env`:
+4. Start the development stack:
 
-```env
-PORT=5000
-DATABASE_URL="postgresql://user:password@localhost:5432/hrm_db?schema=public"
-ACCESS_TOKEN_SECRET=your_jwt_secret_here
-REFRESH_TOKEN_SECRET=your_jwt_refresh_secret_here
-```
+   ```powershell
+   nr dev
+   ```
 
----
+`nr dev` starts backend, frontend, MCP server and agent gateway concurrently. Use `nr dev:stage` when the gateway is not required.
 
-## 💻 CLI Commands (Root Level)
+## Common commands
 
-You can run development and database management commands directly from the **ROOT** directory without navigating into subfolders.
+| Command | Purpose |
+|---|---|
+| `nr dev` | Start backend, frontend, MCP and gateway |
+| `nr dev:stage` | Start backend, frontend and MCP |
+| `nr dev:backend` / `dev:frontend` / `dev:mcp` / `dev:gateway` | Start one package |
+| `nr db:generate` | Generate Prisma client |
+| `nr db:deploy` | Apply committed migrations |
+| `nr db:migrate` | Create/apply a development migration |
+| `nr db:studio` | Open Prisma Studio |
+| `nr db:seed` | Seed incrementally |
+| `nr db:seed:fresh` | Clear and seed database data |
+| `nr build:frontend` | Type check and build frontend |
 
-### 1. Development Environment
+> `nr db:reset`, `nr db:reset:force`, `nr db:clear`, and `nr db:seed:fresh` are destructive. Do not use them with production data.
 
-| Command                | Description                                                                                    |
-| :--------------------- | :--------------------------------------------------------------------------------------------- |
-| `bun run dev`          | Starts both **Backend** (`:5000`) and **Frontend** (`:5173`) concurrently.                     |
-| `bun run dev:all`      | **(Recommended)** Starts **Frontend** + **Backend** + **Prisma Studio** (Visual Database GUI). |
-| `bun run dev:backend`  | Starts only the Backend (with hot-reload).                                                     |
-| `bun run dev:frontend` | Starts only the Frontend (Vite Dev Server).                                                    |
+## Documentation
 
-> [!TIP]
-> Use **`bun run dev:all`** to develop while having direct access to your database via Prisma Studio (default at `http://localhost:5555`).
+Start here:
 
----
+- [Enterprise project documentation](docs/enterprise-project-documentation.md) — complete architecture, data, workflows, security, operations and risk baseline.
+- [System architecture](docs/system-architecture.md) — concise implementation architecture and request flows.
+- [Codebase summary](docs/codebase-summary.md) — package and source ownership map.
+- [API guide](docs/api-docs.md) — API conventions and route-family catalog.
+- [Interface contracts](docs/interface-contracts.md) — response, validation and DTO conventions.
+- [Frontend design specification](docs/frontend-design-spec.md) — UI tokens and component rules.
+- [Code standards](docs/code-standards.md), [SOLID](docs/solid-principles.md), and [design patterns](docs/design-patterns.md) — engineering conventions.
 
-### 2. Database Management (Prisma)
+## Deployment
 
-| Command                 | Description                                                             |
-| :---------------------- | :---------------------------------------------------------------------- |
-| `bun run db:migrate`    | Generates and runs new database migrations based on `schema.prisma`.    |
-| `bun run db:generate`   | Regenerates the Prisma Client (required after schema changes).          |
-| `bun run db:studio`     | Starts standalone Prisma Studio to visually inspect and edit data.      |
-| `bun run db:seed`       | Automatically clears the DB and seeds a complete set of mock data.      |
-| `bun run db:seed:admin` | Seeds/Updates only the 5 core role accounts (Admin, HR, Leader, etc.).  |
-| `bun run db:clear`      | Safely truncates and clears all data across all tables in the database. |
+`docker-compose.prod.yml` deploys Caddy, Redis, backend, MCP server and agent gateway. GitHub Actions builds images to GHCR, runs Prisma migrations on the EC2 target, starts the Compose stack, and checks health endpoints. See the enterprise document for the operational model and rollback procedure.
 
----
+## Security
 
-### 3. Utilities & Helpers
-
-| Command                 | Description                                            |
-| :---------------------- | :----------------------------------------------------- |
-| `bun run hash-password` | Quickly hashes a password string for testing purposes. |
-| `bun run build`         | Builds the Frontend application for Production.        |
-
----
-
-## 📑 Documentation Index
-
-Before writing new code or making structural changes, carefully review the design guidelines in the `docs/` directory:
-
-- 📜 **[Code Standards](file:///docs/code-standards.md)**: Naming conventions, file structure, and standard abstractions.
-- 📜 **[SOLID Principles](file:///docs/solid-principles.md)**: Class design, loose coupling, and reusability.
-- 📜 **[Design Patterns](file:///docs/design-patterns.md)**: Implementation guides for Repository, Service, Strategy, and Factory patterns.
-- 📜 **[System Architecture](file:///docs/system-architecture.md)**: Request/Response lifecycles and comprehensive Auth flow diagrams.
-- 📜 **[Interface Contracts](file:///docs/interface-contracts.md)**: Standardized API contracts, DTOs, and response envelopes.
+Never commit database URLs, JWT secrets, OAuth credentials, Telegram tokens, AI API keys or private keys. Use deployment secret storage and separate credentials per environment. See [SECURITY.md](SECURITY.md) and the security section of the enterprise document; the disclosure policy still requires project-owner completion.
