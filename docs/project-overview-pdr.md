@@ -2,18 +2,20 @@
 
 ## Project Identity
 
-| Field       | Value                          |
-| ----------- | ------------------------------ |
-| Name        | SWP391 RBL Project — Team 7    |
-| Course      | SWP391 (Software Project)      |
-| Semester    | Summer 2026                    |
-| Backend pkg | `hrm-backend`                  |
-| Runtime     | Bun + Express 5 + TypeScript   |
-| Frontend    | React 19 + Vite 8 + TypeScript |
+| Field       | Value                                                                                      |
+| ----------- | ------------------------------------------------------------------------------------------ |
+| Name        | **DevCore ERP** — Web-Based Enterprise Resource Planning System for IT Outsourcing Companies |
+| Course      | SWP391 (Software Project)                                                                  |
+| Semester    | Summer 2026                                                                                |
+| Backend pkg | `devcore-erp-backend`                                                                      |
+| Runtime     | Bun + Express 5 + TypeScript                                                               |
+| Frontend    | React 19 + Vite 8 + TypeScript                                                             |
 
 ## Purpose
 
-University project implementing an HRM (Human Resource Management) system with role-based access control. Structured as a fullstack monorepo with separate `backend/` and `frontend/` workspaces.
+**DevCore ERP** là hệ thống hoạch định nguồn lực doanh nghiệp (ERP) dựa trên nền tảng web, được thiết kế chuyên biệt cho các công ty IT Outsourcing. Hệ thống tích hợp quản lý nhân sự (HR), theo dõi dự án & công việc, tính lương, chấm công và phân quyền theo vai trò — giúp doanh nghiệp vận hành hiệu quả toàn bộ vòng đời nhân sự và dự án trên một nền tảng thống nhất.
+
+Cấu trúc: fullstack monorepo với workspace `backend/` (REST API) và `frontend/` (SPA) tách biệt, giao tiếp qua HTTP.
 
 ---
 
@@ -36,21 +38,25 @@ University project implementing an HRM (Human Resource Management) system with r
 - [ ] Input validation middleware (Zod) — missing
 - [ ] Real DB driver (PostgreSQL/MySQL) — not connected
 
-### Phase 2 — Core Features (Planned)
+### Phase 2 — Core ERP Modules (Planned)
 
-- [ ] User management CRUD
-- [ ] Role & permission system
-- [ ] Employee profiles
-- [ ] Attendance / leave tracking
-- [ ] Frontend pages: login, dashboard, employee list
+- [ ] Employee management CRUD (profiles, contracts, departments)
+- [ ] Role-based access control (admin, general_manager, team_leader, employee)
+- [ ] Project & Task management (Kanban, time logging, categories)
+- [ ] Attendance & leave tracking (check-in/out, leave requests, approval workflow)
+- [ ] Payroll management (salary calculation, approval, export)
+- [ ] Recruitment module (job postings, applicant tracking, onboarding)
+- [ ] Frontend pages: dashboard, employee list, project board, payroll
 
-### Phase 3 — Polish (Future)
+### Phase 3 — Polish & Scale (Future)
 
 - [ ] Pagination on all list endpoints
 - [ ] Rate limiting on auth endpoints
 - [ ] CI/CD pipeline
 - [ ] E2E tests (Playwright)
 - [ ] API versioning (`/api/v1/`)
+- [ ] Reporting & analytics dashboard
+- [ ] Notification system (email / in-app)
 
 ---
 

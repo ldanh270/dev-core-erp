@@ -1,14 +1,14 @@
 # API Documentation
 
-This document provides the OpenAPI 3.0 specification (Swagger) for the backend routes implemented in the HR Management System.
+This document provides the OpenAPI 3.0 specification (Swagger) for the backend routes implemented in the **DevCore ERP** system — a Web-Based Enterprise Resource Planning System for IT Outsourcing Companies.
 
 ## OpenAPI Specification (YAML)
 
 ```yaml
 openapi: 3.0.0
 info:
-  title: HR Management System API
-  description: API for managing employees and authentication in the HR Management System.
+  title: DevCore ERP API
+  description: REST API for the DevCore ERP system — managing employees, projects, payroll, attendance, and authentication for IT Outsourcing companies.
   version: 1.0.0
 servers:
   - url: http://localhost:5000
