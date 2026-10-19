@@ -26,24 +26,11 @@ const GeometricBackground = () => (
 )
 
 const BrandLogo = () => (
-  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-primary shadow-lg transition-transform hover:scale-105">
-    <svg
-      viewBox="0 0 24 24"
-      className="h-6 w-6"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path
-        d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
-        fill="currentColor"
-        className="text-primary/10"
-      />
-      <path d="M8 10h.01M12 10h.01M16 10h.01" stroke="currentColor" />
-    </svg>
-  </div>
+  <img
+    src="/logo.jpg"
+    alt="DevCore ERP"
+    className="size-14 rounded-lg object-cover shadow-lg transition-transform hover:scale-105"
+  />
 )
 
 /**
@@ -79,7 +66,7 @@ export default function Login() {
         {/* Brand Header */}
         <div className="relative z-10 flex items-center gap-3">
           <BrandLogo />
-          <span className="text-xl font-bold tracking-wide">HRP</span>
+          <span className="text-xl font-bold tracking-wide">DevCore ERP</span>
         </div>
 
         {/* Feature Teaser */}
