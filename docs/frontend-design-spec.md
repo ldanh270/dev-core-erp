@@ -1,4 +1,4 @@
-# Frontend Design Spec - HRM & Task Management
+# Frontend Design Spec — DevCore ERP
 
 **Status:** Finalized  
 **Default Theme:** Light  

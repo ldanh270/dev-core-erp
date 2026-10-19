@@ -1,10 +1,10 @@
-# GEMINI.md - HR Management System (SWP391 Project)
+# GEMINI.md — DevCore ERP (SWP391 Project)
 
-This document provides technical context, architecture overview, and development guidelines for the HRM project.
+This document provides technical context, architecture overview, and development guidelines for the **DevCore ERP** project.
 
 ## Project Overview
 
-A Human Resource Management (HRM) system built with a modern full-stack TypeScript architecture. The project is split into a monolithic backend and a React-based frontend.
+**DevCore ERP** (Web-Based Enterprise Resource Planning System for IT Outsourcing Companies) — Hệ thống hoạch định nguồn lực doanh nghiệp dựa trên nền tảng web, thiết kế chuyên biệt cho các công ty IT Outsourcing. Tích hợp quản lý nhân sự, dự án & công việc, chấm công, tính lương và tuyển dụng trên một nền tảng fullstack TypeScript thống nhất.
 
 ### Tech Stack
 
