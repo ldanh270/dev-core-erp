@@ -67,17 +67,17 @@ export default function SubsystemDropdown() {
         >
           <div className={`flex min-w-0 items-center overflow-hidden ${isCollapsed ? "justify-center" : "flex-1 gap-2"}`}>
             <img
-              src="/logo.png"
-              alt="Integrated HR & Product System"
+              src="/logo.jpg"
+              alt="DevCore ERP"
               className="size-10 shrink-0 rounded-xl object-cover object-center shadow-sm"
             />
             {!isCollapsed && (
               <div className="flex min-w-0 flex-1 flex-col items-start overflow-hidden text-left leading-tight">
                 <span className="max-w-full truncate font-semibold text-foreground">
-                  HRP Platform
+                  DevCore ERP
                 </span>
                 <span className="truncate text-xs text-muted-foreground">
-                  Integrated HR and Product
+                  Enterprise Resource Planning
                 </span>
               </div>
             )}
