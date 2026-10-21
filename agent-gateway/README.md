@@ -1,6 +1,6 @@
-# HRP Agent Gateway
+# DevCore ERP Agent Gateway
 
-Telegram-facing AI assistant for HRP. The gateway connects Telegram users to the MCP server without exposing backend credentials or MCP session IDs to the language model/user.
+Telegram-facing AI assistant for DevCore ERP. The gateway connects Telegram users to the MCP server without exposing backend credentials or MCP session IDs to the language model/user.
 
 ## Runtime flow
 
@@ -12,7 +12,7 @@ flowchart TB
   Guard --> Handler["AI agent handler"]
   Handler --> LLM["OpenAI-compatible provider"]
   Handler --> MCP["MCP Server"]
-  MCP --> API["HRP Backend"]
+  MCP --> API["DevCore ERP Backend"]
 ```
 
 For each message, the gateway loads bounded history, retrieves MCP tools, converts their JSON schemas to AI SDK Zod tools, invokes the model, injects a server-held session ID into protected MCP calls, then stores the new history and returns the answer.

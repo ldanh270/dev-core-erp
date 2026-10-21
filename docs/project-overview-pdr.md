@@ -4,7 +4,7 @@
 
 | Field       | Value                                                                                      |
 | ----------- | ------------------------------------------------------------------------------------------ |
-| Name        | **DevCore ERP** — Web-Based Enterprise Resource Planning System for IT Outsourcing Companies |
+| Name        | **DevCore ERP** — Web-Based Enterprise Resource Planning System for IT & Marketing Companies |
 | Course      | SWP391 (Software Project)                                                                  |
 | Semester    | Summer 2026                                                                                |
 | Backend pkg | `devcore-erp-backend`                                                                      |
@@ -13,7 +13,7 @@
 
 ## Purpose
 
-**DevCore ERP** là hệ thống hoạch định nguồn lực doanh nghiệp (ERP) dựa trên nền tảng web, được thiết kế chuyên biệt cho các công ty IT Outsourcing. Hệ thống tích hợp quản lý nhân sự (HR), theo dõi dự án & công việc, tính lương, chấm công và phân quyền theo vai trò — giúp doanh nghiệp vận hành hiệu quả toàn bộ vòng đời nhân sự và dự án trên một nền tảng thống nhất.
+**DevCore ERP** là hệ thống hoạch định nguồn lực doanh nghiệp (ERP) dựa trên nền tảng web, được thiết kế chuyên biệt cho các công ty IT Outsourcing, Software House và Marketing Agency. Hệ thống tích hợp toàn diện quản lý nhân sự (HR), theo dõi dự án & công việc, tính lương, chấm công, tuyển dụng, phân quyền động và trợ lý AI nội bộ — giúp doanh nghiệp vận hành hiệu quả toàn bộ vòng đời nhân sự và bàn giao dự án trên một nền tảng thống nhất.
 
 Cấu trúc: fullstack monorepo với workspace `backend/` (REST API) và `frontend/` (SPA) tách biệt, giao tiếp qua HTTP.
 

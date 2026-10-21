@@ -2,7 +2,7 @@
 
 ## Tổng quan
 
-Xây dựng service `agent-gateway/` là một Telegram Bot thông minh đóng vai trò AI Agent trung gian giữa người dùng Telegram và hệ thống HRP nội bộ (qua MCP Server). Agent dùng Vercel AI SDK để orchestrate LLM + MCP tool calling, Redis để persist session/chat history, và Docker Compose để deploy cùng với MCP Server.
+Xây dựng service `agent-gateway/` là một Telegram Bot thông minh đóng vai trò AI Agent trung gian giữa người dùng Telegram và hệ thống DevCore ERP nội bộ (qua MCP Server). Agent dùng Vercel AI SDK để orchestrate LLM + MCP tool calling, Redis để persist session/chat history, và Docker Compose để deploy cùng với MCP Server.
 
 ---
 
@@ -140,7 +140,7 @@ const nineRouter = createOpenAI({
   apiKey: env.NINE_ROUTER_API_KEY,
 })
 
-const SYSTEM_PROMPT = `Bạn là trợ lý nhân sự nội bộ HRP thông minh và chủ động.
+const SYSTEM_PROMPT = `Bạn là trợ lý nhân sự và vận hành nội bộ DevCore ERP thông minh và chủ động.
 Khi người dùng yêu cầu nghiệp vụ (xin nghỉ phép, xem lịch, tra phiếu lương, v.v.):
 1. Kiểm tra danh sách Tools có sẵn
 2. BẮT BUỘC hỏi lại người dùng để thu thập ĐỦ các tham số tool yêu cầu
