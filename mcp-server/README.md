@@ -1,14 +1,14 @@
-# HRP MCP Server
+# DevCore ERP MCP Server
 
-The HRP MCP Server exposes authenticated HRP operations as Model Context Protocol tools. It is an adapter between an MCP client/AI agent and the HRP backend; it does not own HR business data.
+The DevCore ERP MCP Server exposes authenticated DevCore ERP operations as Model Context Protocol tools. It is an adapter between an MCP client/AI agent and the DevCore ERP backend; it does not own business data directly.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-  Client["MCP client / AI agent"] -->|"SSE or stdio"| MCP["HRP MCP Server"]
+  Client["MCP client / AI agent"] -->|"SSE or stdio"| MCP["DevCore ERP MCP Server"]
   User["Browser user"] -->|"Browser login"| MCP
-  MCP -->|"JWT + cookie session"| API["HRP Backend"]
+  MCP -->|"JWT + cookie session"| API["DevCore ERP Backend"]
 ```
 
 The server registers tool families for auth, employees/workforce, attendance, schedules, shifts, applications, approvals, payroll, projects, profile, holidays, shift changes and regimes. Tool handlers validate input with Zod and call backend domain services through the HTTP client layer.
@@ -35,7 +35,7 @@ The current SSE implementation keeps one active transport. A new connection clos
 1. An MCP client invokes the login-start tool.
 2. The server creates a short-lived browser-login request and returns a public URL.
 3. The user enters credentials only in the browser form.
-4. The server authenticates with the HRP backend and stores backend token/cookie material in an internal MCP session.
+4. The server authenticates with the DevCore ERP backend and stores backend token/cookie material in an internal MCP session.
 5. Subsequent protected tools require that internal session; clients should never ask users to provide a session ID manually.
 
 ## Local setup

@@ -1,6 +1,6 @@
-# HRP Backend API
+# DevCore ERP Backend API
 
-This is the Backend system for the Integrated HR & Product Management (HRP) project. It is built strictly following **Clean Architecture** principles using TypeScript, Express 5, Prisma ORM, and runs on the high-performance **Bun** runtime.
+This is the backend system for **DevCore ERP** (`dev-core-erp`) — an Enterprise Resource Planning platform tailored for IT outsourcing, software development, and marketing agencies. It is built strictly following **Clean Architecture** principles using TypeScript, Express 5, Prisma ORM, and runs on the high-performance **Bun** runtime.
 
 ## 🏗️ System Architecture (Clean Architecture)
 
