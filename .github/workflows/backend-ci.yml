@@ -1,0 +1,35 @@
+name: 🛡️ Backend CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-ci:
+    name: 🛡️ Backend CI Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'backend/package.json'
+
+      - name: 📦 Install & Build Backend
+        working-directory: ./backend
+        run: |
+          npm install --legacy-peer-deps
+          npx prisma generate
+          echo "✅ Backend dependencies installed & Prisma Client generated successfully!"
