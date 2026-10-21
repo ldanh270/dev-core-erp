@@ -1,44 +1,18 @@
-name: 🚀 Backend CI & Render Deploy
+name: 🚀 Render Deploy
 
 on:
-  pull_request:
-    branches:
-      - main
-      - dev
   push:
     branches:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  # 1. Chạy trên mọi PR để hiển thị dòng check xanh trong mục "All checks have passed"
-  backend-ci:
-    name: 🛡️ Backend CI Check
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: ⬇️ Checkout code
-        uses: actions/checkout@v4
-
-      - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: 'backend/package.json'
-
-      - name: 📦 Install & Build Backend
-        working-directory: ./backend
-        run: |
-          npm install --legacy-peer-deps
-          npx prisma generate
-          echo "✅ Backend dependencies installed & Prisma Client generated successfully!"
-
-  # 2. Tự động gọi Deploy Hook của Render khi code được merge vào main
   deploy:
     name: 📡 Trigger Render Deploy
-    needs: backend-ci
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
