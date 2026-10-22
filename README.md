@@ -1,6 +1,8 @@
-# Integrated HR and Product System (HRP)
+# DevCore ERP (`dev-core-erp`)
 
-HRP is a TypeScript monorepo for workforce operations and product delivery. It combines employee administration, scheduling and attendance, employee requests and approvals, payroll, recruitment, projects/tasks, and an authenticated AI assistant.
+> 📖 **Mới vào dự án?** Xem ngay [QUICKSTART.md](QUICKSTART.md) để thiết lập và chạy nhanh trong 5 phút.
+
+DevCore ERP is an integrated Enterprise Resource Planning (ERP) platform designed specifically for IT outsourcing companies, software development houses, and digital marketing agencies. Built as a TypeScript monorepo, it seamlessly unifies workforce administration, attendance and scheduling, employee requests and approvals, payroll processing, recruitment pipelines, project and task delivery, and an authenticated AI operations assistant.
 
 ## System at a glance
 
@@ -8,7 +10,7 @@ HRP is a TypeScript monorepo for workforce operations and product delivery. It c
 |---|---|---|
 | `frontend` | React operational web application | `http://localhost:5173` |
 | `backend` | Express REST API and scheduled workflow engine | `http://localhost:5000` |
-| `mcp-server` | MCP tool server for governed HRP automation | `http://localhost:3001` |
+| `mcp-server` | MCP tool server for governed DevCore ERP automation | `http://localhost:3001` |
 | `agent-gateway` | Telegram AI assistant gateway | `http://localhost:3002/health` |
 
 Core platform services are PostgreSQL (through Prisma) and Redis (for AI gateway sessions/history). Production ingress is handled by Caddy.
@@ -20,7 +22,7 @@ Core platform services are PostgreSQL (through Prisma) and Redis (for AI gateway
 - Configurable salary components, payroll runs, payslips and payroll automation.
 - Requisitions, job postings, candidate intake, interviews, scorecards, offers and background checks.
 - Projects, tasks, time records, Gantt/Kanban views and advisory capacity forecasting.
-- MCP tools and Telegram AI assistant access bound to authenticated HRP sessions.
+- MCP tools and Telegram AI assistant access bound to authenticated DevCore ERP sessions.
 
 ## Architecture
 

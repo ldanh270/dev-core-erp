@@ -6,7 +6,7 @@
 
 ## Overview
 
-HRP is a four-package TypeScript monorepo. The backend is the system of record; browser and AI clients access it through controlled HTTP or MCP adapters.
+**DevCore ERP** (`dev-core-erp`) is a four-package TypeScript monorepo designed for IT outsourcing, software development, and marketing agencies. The backend is the system of record; browser and AI clients access it through controlled HTTP or MCP adapters.
 
 ```mermaid
 flowchart TB
@@ -15,7 +15,7 @@ flowchart TB
   Telegram["Telegram user"] --> Gateway["Agent Gateway"]
   Gateway --> Redis[("Redis")]
   Gateway -->|"SSE MCP client"| MCP["MCP Server"]
-  MCP -->|"Authenticated HRP REST"| Backend
+  MCP -->|"Authenticated DevCore ERP REST"| Backend
   Caddy["Caddy / TLS reverse proxy"] --> Backend
   Caddy --> MCP
   Caddy --> Gateway

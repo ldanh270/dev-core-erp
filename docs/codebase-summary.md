@@ -6,10 +6,10 @@
 ## Repository map
 
 ```text
-integrated-hr-and-product-system/
+dev-core-erp/
 ├── backend/                 Express API, Prisma schema, migrations, jobs and tests
 ├── frontend/                React SPA, pages, API clients, state and UI primitives
-├── mcp-server/              MCP transport, browser login, sessions and HRP tools
+├── mcp-server/              MCP transport, browser login, sessions and DevCore ERP tools
 ├── agent-gateway/           Telegram/AI orchestration, Redis state and MCP client
 ├── caddy/                   Production reverse-proxy/TLS configuration
 ├── nginx/                   Alternate proxy configuration (not production Compose default)
@@ -68,7 +68,7 @@ Page modules cover application, attendance, authentication, employees, payroll, 
 
 ## MCP server and agent gateway
 
-`mcp-server` exposes MCP through SSE or stdio, holds browser-login sessions and registers tool families for HRP operations. `agent-gateway` runs a Telegram bot, validates Redis/MCP availability at startup, manages bounded user history, calls the AI provider, and invokes MCP tools with server-injected sessions.
+`mcp-server` exposes MCP through SSE or stdio, holds browser-login sessions and registers tool families for DevCore ERP operations. `agent-gateway` runs a Telegram bot, validates Redis/MCP availability at startup, manages bounded user history, calls the AI provider, and invokes MCP tools with server-injected sessions.
 
 ## Source-of-truth pointers
 
