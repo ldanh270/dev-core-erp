@@ -1,4 +1,7 @@
 {
+  "name": "devcore-erp",
+  "version": "1.0.0",
+  "description": "DevCore ERP: Web-Based Enterprise Resource Planning System for IT Outsourcing Companies",
   "scripts": {
     "dev": "concurrently \"nr dev:backend\" \"nr dev:frontend\" \"nr dev:mcp\" \"nr dev:gateway\"",
     "dev:stage": "concurrently \"nr dev:backend\" \"nr dev:frontend\" \"nr dev:mcp\"",

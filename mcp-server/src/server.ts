@@ -96,7 +96,7 @@ const startSSEServer = () => {
   const PORT = process.env.PORT || 3001
 
   app.get("/health", (_req, res) => {
-    res.json({ status: "ok", service: "hrp-mcp" })
+    res.json({ status: "ok", service: "devcore-mcp" })
   })
 
   // Build a sub-router that exposes all HTTP routes under the /mcp prefix.
@@ -176,7 +176,7 @@ const startStdioServer = async () => {
   const PORT = process.env.PORT || 3001
 
   app.get("/health", (_req, res) => {
-    res.json({ status: "ok", service: "hrp-mcp" })
+    res.json({ status: "ok", service: "devcore-mcp" })
   })
 
   const apiRouter = express.Router()

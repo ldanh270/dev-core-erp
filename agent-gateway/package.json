@@ -1,7 +1,7 @@
 {
-  "name": "@ldanh270/hrp-agent-gateway",
+  "name": "@ldanh270/devcore-agent-gateway",
   "version": "1.0.0",
-  "description": "Telegram AI Agent Gateway tích hợp HRP MCP Server",
+  "description": "Telegram AI Agent Gateway tích hợp DevCore ERP MCP Server",
   "main": "dist/app.js",
   "type": "module",
   "scripts": {

@@ -4,7 +4,7 @@ This document provides technical context, architecture overview, and development
 
 ## Project Overview
 
-**DevCore ERP** (Web-Based Enterprise Resource Planning System for IT & Marketing Companies) — Hệ thống hoạch định nguồn lực doanh nghiệp dựa trên nền tảng web, thiết kế chuyên biệt cho các công ty IT Outsourcing, Software House và Marketing Agency. Tích hợp quản lý nhân sự, dự án & công việc, chấm công, tính lương, tuyển dụng và trợ lý AI trên một nền tảng fullstack TypeScript thống nhất.
+**DevCore ERP** (Web-Based Enterprise Resource Planning System for IT Outsourcing Companies) — Hệ thống hoạch định nguồn lực doanh nghiệp dựa trên nền tảng web, thiết kế chuyên biệt cho các công ty IT Outsourcing. Tích hợp quản lý nhân sự, dự án & công việc, chấm công, tính lương, tuyển dụng và trợ lý AI trên một nền tảng fullstack TypeScript thống nhất.
 
 ### Tech Stack
 

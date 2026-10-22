@@ -75,7 +75,7 @@ app.get("/", async (req, res) =>
 )
 
 app.get("/health", (_req, res) =>
-  res.status(HttpStatusCode.OK).json({ status: "ok", service: "hrp-backend" }),
+  res.status(HttpStatusCode.OK).json({ status: "ok", service: "devcore-backend" }),
 )
 
 app.use("/api/auth", authRoutes)

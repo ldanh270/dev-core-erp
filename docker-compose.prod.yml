@@ -1,5 +1,5 @@
 # ============================================================
-# HRP Production Stack — EC2 Deployment
+# DevCore ERP Production Stack — EC2 Deployment
 # Services: backend, mcp-server, agent-gateway, redis, caddy
 #
 # Images are pulled from GHCR (GitHub Container Registry).
@@ -12,7 +12,7 @@ services:
   # ----------------------------------------------------------
   caddy:
     image: caddy:2-alpine
-    container_name: hrp-caddy
+    container_name: devcore-caddy
     restart: unless-stopped
     ports:
       - "80:80"
@@ -40,7 +40,7 @@ services:
   # ----------------------------------------------------------
   redis:
     image: redis:7-alpine
-    container_name: hrp-redis
+    container_name: devcore-redis
     restart: unless-stopped
     command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}"
     volumes:
@@ -54,11 +54,11 @@ services:
       retries: 5
 
   # ----------------------------------------------------------
-  # Backend — HRP REST API (Bun + Express + Prisma)
+  # Backend — DevCore REST API (Bun + Express + Prisma)
   # ----------------------------------------------------------
   backend:
-    image: ghcr.io/${GITHUB_REPO}/hrp-backend:${IMAGE_TAG:-latest}
-    container_name: hrp-backend
+    image: ghcr.io/${GITHUB_REPO}/devcore-backend:${IMAGE_TAG:-latest}
+    container_name: devcore-backend
     restart: unless-stopped
     env_file:
       - ./backend.env
@@ -78,8 +78,8 @@ services:
   # MCP Server — HR tool registry (SSE)
   # ----------------------------------------------------------
   mcp:
-    image: ghcr.io/${GITHUB_REPO}/hrp-mcp:${IMAGE_TAG:-latest}
-    container_name: hrp-mcp
+    image: ghcr.io/${GITHUB_REPO}/devcore-mcp:${IMAGE_TAG:-latest}
+    container_name: devcore-mcp
     restart: unless-stopped
     env_file:
       - ./mcp.env
@@ -99,8 +99,8 @@ services:
   # Agent Gateway — Telegram AI Bot
   # ----------------------------------------------------------
   agent-gateway:
-    image: ghcr.io/${GITHUB_REPO}/hrp-agent-gateway:${IMAGE_TAG:-latest}
-    container_name: hrp-agent-gateway
+    image: ghcr.io/${GITHUB_REPO}/devcore-agent-gateway:${IMAGE_TAG:-latest}
+    container_name: devcore-agent-gateway
     restart: unless-stopped
     env_file:
       - ./gateway.env

@@ -143,7 +143,7 @@ export class TasksSeeder implements ISeeder {
             progress: 95,
             tracker: TASK_TRACKER.TEST,
             parentTaskId: parentTask.id,
-            resultUrl: "https://github.com/ldanh270/integrated-hr-and-product-system/pull/42",
+            resultUrl: "https://github.com/ldanh270/dev-core-erp/pull/42",
             resultNotes: "Đã pass toàn bộ test case ở local. Nhờ Team Leader review hộ.",
           },
         })

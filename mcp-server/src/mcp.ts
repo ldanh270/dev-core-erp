@@ -18,7 +18,7 @@ import { registerWorkforceTools } from "./tools/workforce.tools.js"
 
 // Initialize MCP Server
 export const mcpServer = new McpServer({
-  name: "HRP-MCP-Server",
+  name: "DevCore-MCP-Server",
   version: "1.0.0",
 })
 

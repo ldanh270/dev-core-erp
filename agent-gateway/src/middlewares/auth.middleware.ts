@@ -114,7 +114,7 @@ export const authMiddleware: MiddlewareFn<Context> = async (ctx, next) => {
 
   await redisService.setPendingLogin(userId, loginId)
   await ctx.reply(
-    `🌐 Vui lòng mở liên kết sau để đăng nhập vào hệ thống HRP:\n\n${loginUrl}\n\n⏳ Liên kết hết hạn sau 5 phút.`,
+    `🌐 Vui lòng mở liên kết sau để đăng nhập vào hệ thống DevCore ERP:\n\n${loginUrl}\n\n⏳ Liên kết hết hạn sau 5 phút.`,
     { parse_mode: "HTML" },
   )
 

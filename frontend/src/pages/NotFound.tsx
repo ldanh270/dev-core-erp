@@ -167,7 +167,7 @@ export default function NotFound() {
           </CardContent>
 
           <CardFooter className="flex justify-center border-t border-border/40 bg-muted/20 py-3 px-6 text-center text-xs text-muted-foreground">
-            Hệ thống HRP • Integrated HR & Product Management
+            Hệ thống DevCore ERP • Enterprise Resource Planning
           </CardFooter>
         </Card>
       </div>
