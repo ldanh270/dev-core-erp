@@ -1,7 +1,8 @@
 {
-  "name": "frontend",
+  "name": "devcore-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "React operational web application for DevCore ERP",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -86,7 +86,7 @@ export const registerAuthTools = () => {
   // Tool: logout
   mcpServer.tool(
     "logout",
-    "Logout from HRP system and invalidate the sessionId.",
+    "Logout from DevCore ERP system and invalidate the sessionId.",
     {
       sessionId: z.string().describe("The active session ID"),
     },

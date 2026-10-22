@@ -75,7 +75,7 @@ async function withMcpClient<T>(
 ): Promise<T> {
   const transport = new SSEClientTransport(new URL(env.MCP_SSE_URL))
   const client = new Client(
-    { name: "hrp-agent-gateway", version: "1.0.0" },
+    { name: "devcore-agent-gateway", version: "1.0.0" },
     { capabilities: {} },
   )
 

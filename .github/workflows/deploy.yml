@@ -43,15 +43,15 @@ jobs:
           - service: backend
             context: ./backend
             dockerfile: ./backend/Dockerfile
-            image: hrp-backend
+            image: devcore-backend
           - service: mcp
             context: ./mcp-server
             dockerfile: ./mcp-server/Dockerfile
-            image: hrp-mcp
+            image: devcore-mcp
           - service: gateway
             context: ./agent-gateway
             dockerfile: ./agent-gateway/Dockerfile
-            image: hrp-agent-gateway
+            image: devcore-agent-gateway
 
     outputs:
       image_tag: ${{ steps.meta.outputs.version }}
