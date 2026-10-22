@@ -1,10 +1,10 @@
 {
-  "name": "@ldanh270/hrp-mcp-server",
+  "name": "@ldanh270/devcore-mcp-server",
   "version": "1.0.0",
-  "description": "MCP Server for HRP System",
+  "description": "MCP Server for DevCore ERP System",
   "main": "dist/server.js",
   "bin": {
-    "hrp-mcp-server": "dist/server.js"
+    "devcore-mcp-server": "dist/server.js"
   },
   "files": [
     "dist",

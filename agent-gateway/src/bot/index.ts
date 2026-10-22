@@ -20,7 +20,7 @@ export function createBot(): Telegraf {
   bot.command("start", async (ctx) => {
     const name = ctx.from.first_name ?? "bạn"
     await ctx.reply(
-      `👋 Xin chào ${name}! Tôi là trợ lý nhân sự HRP.\n\n` +
+      `👋 Xin chào ${name}! Tôi là trợ lý AI DevCore ERP.\n\n` +
         `Tôi có thể giúp bạn:\n` +
         `• 📅 Xem lịch làm việc\n` +
         `• 🏖 Nộp đơn xin nghỉ phép\n` +
