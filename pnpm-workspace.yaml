@@ -1,0 +1,13 @@
+packages:
+  - 'backend'
+  - 'frontend'
+  - 'mcp-server'
+  - 'agent-gateway'
+
+allowBuilds:
+  '@parcel/watcher': true
+  '@prisma/engines': true
+  '@scarf/scarf': false
+  esbuild: true
+  prisma: true
+  unrs-resolver: true

@@ -145,7 +145,6 @@ vite.config.ts.timestamp-*
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
-pnpm-workspace.yaml
 bun.lock
 
 # AI generated files
