@@ -1,6 +1,6 @@
-# HRP Frontend
+# DevCore ERP Frontend
 
-React 19 single-page application for operating the Integrated HR and Product System.
+React 19 single-page application for operating **DevCore ERP** (`dev-core-erp`) — Enterprise Resource Planning for IT Outsourcing and Marketing Companies.
 
 ## Responsibilities
 

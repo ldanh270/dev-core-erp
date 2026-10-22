@@ -3,7 +3,7 @@
     "dev": "concurrently \"nr dev:backend\" \"nr dev:frontend\" \"nr dev:mcp\" \"nr dev:gateway\"",
     "dev:stage": "concurrently \"nr dev:backend\" \"nr dev:frontend\" \"nr dev:mcp\"",
     "dev:all": "concurrently \"nr dev:backend\" \"nr dev:frontend\" \"nr dev:mcp\" \"nr db:studio\"",
-    "i:all": "pnpm install",
+    "i:all": "ni && nr i:backend && nr i:frontend && nr i:mcp && nr i:gateway",
     "i:backend": "cd backend && ni",
     "i:frontend": "cd frontend && ni",
     "i:mcp": "cd mcp-server && ni",
@@ -28,8 +28,8 @@
     "db:clear": "cd backend && nr clear",
     "hash-password": "cd backend && nr hash-password",
     "test": "jest",
-    "lint:codacy": "bun run --cwd frontend lint && bun run --cwd frontend lint:styles",
-    "quality:codacy": "bun run lint:codacy"
+    "lint:codacy": "cd frontend && nr lint && nr lint:styles",
+    "quality:codacy": "nr lint:codacy"
   },
   "dependencies": {
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",

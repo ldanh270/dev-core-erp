@@ -1,4 +1,4 @@
-# Integrated HR and Product System
+# DevCore ERP (`dev-core-erp`)
 
 ## Enterprise System Documentation
 
@@ -11,13 +11,13 @@
 
 ## 1. Executive Summary
 
-Integrated HR and Product System (HRP) is a modular web platform that combines workforce administration, attendance and scheduling, employee requests and approvals, payroll, recruitment, project delivery, and AI-assisted operations. It is implemented as a TypeScript monorepo with four deployable applications:
+**DevCore ERP** (`dev-core-erp`) is a modular Enterprise Resource Planning (ERP) platform built for IT outsourcing companies, software houses, and marketing agencies. It unifies workforce administration, attendance and scheduling, employee requests and approvals, payroll, recruitment pipelines, project delivery, and AI-assisted operations. It is implemented as a TypeScript monorepo with four deployable applications:
 
 | Component | Responsibility | Primary technology |
 |---|---|---|
 | `frontend` | Browser-based operational UI | React 19, Vite, React Router, React Query, Zustand, Tailwind/shadcn primitives |
-| `backend` | Authoritative HRP REST API and workflow engine | Express 5, Prisma, PostgreSQL, Zod, JWT |
-| `mcp-server` | Model Context Protocol facade for governed HRP tool use | MCP SDK, Express, SSE/stdio |
+| `backend` | Authoritative DevCore ERP REST API and workflow engine | Express 5, Prisma, PostgreSQL, Zod, JWT |
+| `mcp-server` | Model Context Protocol facade for governed DevCore ERP tool use | MCP SDK, Express, SSE/stdio |
 | `agent-gateway` | Telegram-facing AI assistant gateway | Telegraf, Vercel AI SDK, Redis, OpenAI-compatible provider |
 
 The application is designed around business capabilities rather than a single generic CRUD surface. Key workflows use explicit status models, dynamic role/permission authorization, auditable decisions, server-side validation, and scheduled background automation.
@@ -32,7 +32,7 @@ The application is designed around business capabilities rather than a single ge
 | Payroll | Salary components/variables/templates, employee salary configuration, payroll periods, payslips/details, feedback and scheduled generation/approval |
 | Recruitment | Requisitions, job postings, candidate intake, OAuth-backed connectors, candidates, pipeline stages, interviews, scorecards, offers/versioning and background checks |
 | Project delivery | Projects, members, roles, task statuses, tasks, trackers, Gantt data, time records and capacity forecasting |
-| AI-assisted operations | MCP tool access to HRP workflows and a Telegram assistant with authenticated, session-bound tool execution |
+| AI-assisted operations | MCP tool access to DevCore ERP workflows and a Telegram assistant with authenticated, session-bound tool execution |
 
 ## 3. Architectural Principles
 
@@ -49,7 +49,7 @@ The application is designed around business capabilities rather than a single ge
 flowchart LR
     User["HR staff / Managers / Employees"] --> Web["React SPA"]
     User --> Telegram["Telegram"]
-    Web -->|"HTTPS REST + cookies/JWT"| API["HRP Backend API"]
+    Web -->|"HTTPS REST + cookies/JWT"| API["DevCore ERP Backend API"]
     API --> DB[("PostgreSQL / Prisma")]
     API --> Mail["Resend email"]
     API --> Google["Google OAuth / Forms connector"]
@@ -72,7 +72,7 @@ The production Compose configuration deploys Caddy, Redis, backend, MCP server, 
 
 | Ingress route | Target | Purpose |
 |---|---|---|
-| `/api/*` | Backend port 5000 | HRP REST API |
+| `/api/*` | Backend port 5000 | DevCore ERP REST API |
 | `/mcp/*` | MCP port 3001 | SSE transport, JSON-RPC messages and browser login |
 | `/gateway/health` | Gateway port 3002 | Gateway health probe |
 | `/health` | Caddy | Edge health probe |
@@ -326,14 +326,14 @@ The authoritative UI rules are in `docs/frontend-design-spec.md`.
 
 ### 10.1 MCP server
 
-The MCP server is a governed tool adapter over HRP backend APIs. It supports two transports:
+The MCP server is a governed tool adapter over DevCore ERP backend APIs. It supports two transports:
 
 | Transport | Use case |
 |---|---|
 | SSE | Remote clients and reverse-proxy deployment through `/mcp/sse` and `/mcp/message` |
 | stdio | Local-compatible MCP host integration |
 
-Before starting, the server registers tools grouped by authentication, employee/workforce, attendance/scheduling, applications/approvals, payroll, projects, profiles, holidays, shifts and regimes. Browser-mediated login endpoints create a temporary login request, authenticate with HRP, create an MCP session, and permit tools to apply that session to backend calls.
+Before starting, the server registers tools grouped by authentication, employee/workforce, attendance/scheduling, applications/approvals, payroll, projects, profiles, holidays, shifts and regimes. Browser-mediated login endpoints create a temporary login request, authenticate with DevCore ERP, create an MCP session, and permit tools to apply that session to backend calls.
 
 ### 10.2 Telegram agent gateway
 
@@ -379,7 +379,7 @@ Minimum environment preparation:
 1. Create `.env` files from each package's `.env.example`.
 2. Configure PostgreSQL connection URLs and JWT secrets for the backend.
 3. Configure the frontend API base URL.
-4. Configure MCP's HRP API and public base URL.
+4. Configure MCP's DevCore ERP backend API and public base URL.
 5. Configure gateway Telegram, AI-provider, MCP and Redis settings when testing the assistant.
 6. Generate Prisma client and apply migrations before using backend business workflows.
 
@@ -489,7 +489,7 @@ The codebase alone cannot establish legal or organizational compliance. The oper
 |---|---|
 | Backend | Server/client URLs, database URLs, JWT/credential encryption secrets, CORS, email, Google OAuth and general AI provider |
 | Frontend | Backend API base URL |
-| MCP server | Port, HRP backend URL, public base URL and optional debug setting |
+| MCP server | Port, DevCore ERP backend URL, public base URL and optional debug setting |
 | Agent gateway | Telegram token, AI-provider base/key/model, MCP URLs, Redis URL, port and timeout |
 
 Never commit real credentials, database connection strings, OAuth client secrets, bot tokens or production private keys. Use deployment-secret storage and environment-specific least-privilege credentials.

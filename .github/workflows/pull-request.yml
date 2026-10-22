@@ -1,9 +1,11 @@
 name: 🔍 Pull Request Checks
 
 on:
-  pull_request:
-    branches:
-      - main
+  # Tạm thời tắt PR check trên self-hosted runner do không còn dùng EC2
+  # pull_request:
+  #   branches:
+  #     - main
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

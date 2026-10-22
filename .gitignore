@@ -159,5 +159,14 @@ task_plan.md
 playwright-report/
 test-results/
 
+# Python / Virtual environments
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Chore
 *.drawio.bkp
