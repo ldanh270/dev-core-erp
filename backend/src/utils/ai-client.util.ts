@@ -107,7 +107,7 @@ export const aiClient = {
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`,
           "HTTP-Referer": process.env.SERVER_URL || "http://localhost:5000",
-          "X-Title": "Integrated HR and Product System",
+          "X-Title": "DevCore ERP",
         },
         body: JSON.stringify({
           model,
@@ -194,7 +194,7 @@ export const aiClient = {
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`,
           "HTTP-Referer": process.env.SERVER_URL || "http://localhost:5000",
-          "X-Title": "Integrated HR and Product System",
+          "X-Title": "DevCore ERP",
         },
         body: JSON.stringify({
           model,

@@ -100,7 +100,7 @@ PORT=3002
 EOF
 
 cat > ~/hrp/.env.example << 'EOF'
-GITHUB_REPO=your-github-org/integrated-hr-and-product-system
+GITHUB_REPO=your-github-org/dev-core-erp
 IMAGE_TAG=latest
 REDIS_PASSWORD=your_strong_redis_password_here
 EOF

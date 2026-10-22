@@ -1,7 +1,7 @@
 version: "3.9"
 
 # ============================================================
-# HRP Full Stack — Docker Compose
+# DevCore ERP Full Stack — Docker Compose
 # Services: redis, mcp-server, agent-gateway
 # ============================================================
 
@@ -11,7 +11,7 @@ services:
   # ----------------------------------------------------------
   redis:
     image: redis:7-alpine
-    container_name: hrp-redis
+    container_name: devcore-redis
     restart: unless-stopped
     volumes:
       - redis_data:/data
@@ -24,13 +24,13 @@ services:
       retries: 3
 
   # ----------------------------------------------------------
-  # MCP Server — HRP business logic & tool registry
+  # MCP Server — DevCore business logic & tool registry
   # ----------------------------------------------------------
   mcp:
     build:
       context: ./mcp-server
       dockerfile: Dockerfile
-    container_name: hrp-mcp
+    container_name: devcore-mcp
     restart: unless-stopped
     env_file:
       - ./mcp-server/.env
@@ -53,7 +53,7 @@ services:
     build:
       context: ./agent-gateway
       dockerfile: Dockerfile
-    container_name: hrp-agent-gateway
+    container_name: devcore-agent-gateway
     restart: unless-stopped
     env_file:
       - ./agent-gateway/.env

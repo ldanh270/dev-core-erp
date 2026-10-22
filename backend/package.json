@@ -1,8 +1,8 @@
 {
-  "name": "hrm-backend",
+  "name": "devcore-backend",
   "private": true,
-  "version": "0.0.0",
-  "description": "",
+  "version": "1.0.0",
+  "description": "Express REST API and scheduled workflow engine for DevCore ERP",
   "main": "src/index.ts",
   "scripts": {
     "dev": "tsx watch src/index.ts",

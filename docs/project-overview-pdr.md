@@ -4,7 +4,7 @@
 
 | Field       | Value                                                                                      |
 | ----------- | ------------------------------------------------------------------------------------------ |
-| Name        | **DevCore ERP** — Web-Based Enterprise Resource Planning System for IT & Marketing Companies |
+| Name        | **DevCore ERP** — Web-Based Enterprise Resource Planning System for IT Outsourcing Companies |
 | Course      | SWP391 (Software Project)                                                                  |
 | Semester    | Summer 2026                                                                                |
 | Backend pkg | `devcore-erp-backend`                                                                      |

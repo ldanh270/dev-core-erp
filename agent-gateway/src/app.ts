@@ -29,7 +29,7 @@ const waitForMcpServer = async (): Promise<void> => {
 // Startup
 // ---------------------------------------------------------------------------
 async function main(): Promise<void> {
-  console.log(`[App] Starting HRP Agent Gateway (${env.NODE_ENV})...`)
+  console.log(`[App] Starting DevCore ERP Agent Gateway (${env.NODE_ENV})...`)
 
   // 1. Verify Redis connection
   try {
@@ -55,7 +55,7 @@ async function main(): Promise<void> {
   // 4. Small Express server for health checks
   const app = express()
   app.get("/health", (_req, res) => {
-    res.json({ status: "ok", service: "hrp-agent-gateway", timestamp: new Date().toISOString() })
+    res.json({ status: "ok", service: "devcore-agent-gateway", timestamp: new Date().toISOString() })
   })
   app.listen(env.PORT, () => {
     console.log(`[App] ✅ Health check server running on port ${env.PORT}`)

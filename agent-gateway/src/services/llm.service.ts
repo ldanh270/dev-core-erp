@@ -9,7 +9,7 @@ import type { McpToolDefinition } from "./mcp.service.js"
 // ---------------------------------------------------------------------------
 // System Prompt
 // ---------------------------------------------------------------------------
-const SYSTEM_PROMPT = `Bạn là trợ lý nhân sự nội bộ HRP thông minh và chủ động.
+const SYSTEM_PROMPT = `Bạn là trợ lý AI nội bộ DevCore ERP thông minh và chủ động.
 
 Quy tắc BẮTBUỘC:
 1. Khi người dùng yêu cầu nghiệp vụ (xin nghỉ phép, xem lịch, tra phiếu lương...): kiểm tra Tools và gọi tool phù hợp.

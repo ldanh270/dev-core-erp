@@ -14,6 +14,9 @@ jobs:
   deploy:
     name: 📡 Trigger Render Deploy
     runs-on: ubuntu-latest
+    environment:
+      name: Render - Production
+      url: https://hrp-backend-md54.onrender.com
 
     steps:
       - name: 🚀 Call Render Deploy Hook
