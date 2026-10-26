@@ -1,9 +1,8 @@
 /** Controls employee filtering and week selection for the company work-schedule table. */
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { DatePicker } from "@/components/common"
 import { formatDateParam } from "@/utils/attendance/format-date-param"
-
-import type { MouseEvent } from "react"
 
 import { CalendarDays, ChevronLeft, ChevronRight, Search } from "lucide-react"
 
@@ -29,29 +28,21 @@ export function WorkScheduleToolbar({
   onMoveWeek,
   onSelectedDateChange,
 }: WorkScheduleToolbarProps) {
-  const openDatePicker = (event: MouseEvent<HTMLInputElement>) => {
-    try {
-      event.currentTarget.showPicker()
-    } catch {
-      event.currentTarget.focus()
-    }
-  }
-
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div className="flex flex-wrap items-center gap-3">
         <CalendarDays className="h-4 w-4 text-muted-foreground" />
         <span className="font-semibold">{weekRangeLabel}</span>
-        <Input
-          aria-label="Chọn ngày trong tuần làm việc"
-          className="w-40 cursor-pointer"
-          type="date"
-          value={formatDateParam(selectedDate)}
-          onClick={openDatePicker}
-          onChange={(event) => {
-            onSelectedDateChange(event.target.value)
-          }}
-        />
+        <div className="w-44">
+          <DatePicker
+            value={formatDateParam(selectedDate)}
+            size="sm"
+            clearable={false}
+            onChange={(val) => {
+              if (val) onSelectedDateChange(val)
+            }}
+          />
+        </div>
         <div className="relative w-72 max-w-full">
           <Search className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input

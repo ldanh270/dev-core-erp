@@ -5,6 +5,7 @@ import { employeeApi, type IApprover } from "@/lib/api/employee.api"
 import { ArrowLeft, ChevronDown, Send, UserCheck, X } from "lucide-react"
 import React, { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { DatePicker } from "@/components/common"
 import { APP_TYPE_META, LEAVE_TYPE_OPTIONS } from "./attendance-ui.meta"
 
 export interface SubmitModalProps {
@@ -227,22 +228,21 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-muted-foreground">Ngày bắt đầu *</label>
-                  <input
-                    type="date"
-                    required
-                    value={form.startDate}
-                    onChange={(e) => { set("startDate", e.target.value); }}
-                    className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  <DatePicker
+                    value={form.startDate || null}
+                    onChange={(val) => { set("startDate", val || ""); }}
+                    placeholder="Chọn ngày bắt đầu..."
+                    size="sm"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-muted-foreground">Ngày kết thúc</label>
-                  <input
-                    type="date"
-                    value={form.endDate}
-                    min={form.startDate}
-                    onChange={(e) => { set("endDate", e.target.value); }}
-                    className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  <DatePicker
+                    value={form.endDate || null}
+                    minDate={form.startDate}
+                    onChange={(val) => { set("endDate", val || ""); }}
+                    placeholder="Chọn ngày kết thúc..."
+                    size="sm"
                   />
                 </div>
               </div>

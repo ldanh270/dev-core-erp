@@ -89,6 +89,8 @@ export function useEmployeeCreateModal(onClose: () => void) {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
     reset,
   } = useForm<CreateFormValues>({
@@ -145,6 +147,8 @@ export function useEmployeeCreateModal(onClose: () => void) {
 
   return {
     register,
+    setValue,
+    watch,
     handleSubmit: handleSubmit(onSubmit),
     errors,
     isPending: createMutation.isPending,

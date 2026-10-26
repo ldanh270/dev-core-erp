@@ -1,4 +1,4 @@
-import { PageCard, PageHeader } from "@/components/common"
+import { DateRangePicker, PageCard, PageHeader } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { AttendanceMatrix } from "@/components/features/attendance/attendance-matrix"
 import {
@@ -6,7 +6,6 @@ import {
   type SelectedEmployeeSummary,
 } from "@/components/features/attendance/employee-attendance-summary-sheet"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -357,25 +356,16 @@ function AdminAttendanceDashboard() {
       <div className="space-y-4">
         {/* Filtering Toolbar — Allowing user to scope history by date and status */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2">
-            <Input
-              type="date"
-              value={startDate}
-              onChange={(e) => {
-                setStartDate(e.target.value)
-              }}
-              className="w-40 h-9 text-sm"
-            />
-            <span className="text-muted-foreground text-sm">–</span>
-            <Input
-              type="date"
-              value={endDate}
-              onChange={(e) => {
-                setEndDate(e.target.value)
-              }}
-              className="w-40 h-9 text-sm"
-            />
-          </div>
+          <DateRangePicker
+            startDate={startDate}
+            endDate={endDate}
+            size="sm"
+            onChange={({ startDate: s, endDate: e }) => {
+              if (s) setStartDate(s)
+              if (e) setEndDate(e)
+            }}
+            className="w-64"
+          />
 
           <Select
             value={statusFilter}

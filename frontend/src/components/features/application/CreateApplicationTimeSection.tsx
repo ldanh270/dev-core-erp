@@ -1,3 +1,4 @@
+import { DatePicker } from "@/components/common"
 "use client"
 
 import { LEAVE_TYPE_OPTIONS } from "@/components/attendance/attendance-ui.meta"
@@ -210,22 +211,25 @@ export function CreateApplicationTimeSection({
                   </div>
                   <div className="p-3 border-r border-border flex flex-col gap-1 justify-center">
                     <div className="flex gap-2 items-center">
-                      <input
-                        type="date"
-                        value={form.startDate}
-                        onChange={(e) => {
-                          set("startDate", e.target.value)
+                      <DatePicker
+                        value={form.startDate || null}
+                        onChange={(val) => {
+                          set("startDate", val || "");
                         }}
-                        className={`w-[140px] h-9 px-2 text-[13px] border bg-background rounded-md focus:outline-none focus:ring-1 focus:ring-primary ${isStartDatePast ? "border-destructive" : "border-input"}`}
+                        placeholder="Từ ngày"
+                        size="sm"
+                        triggerClassName="w-[140px]"
                       />
                       <span className="text-muted-foreground/70">-</span>
-                      <input
-                        type="date"
-                        value={form.endDate}
-                        onChange={(e) => {
-                          set("endDate", e.target.value)
+                      <DatePicker
+                        value={form.endDate || null}
+                        minDate={form.startDate}
+                        onChange={(val) => {
+                          set("endDate", val || "");
                         }}
-                        className={`w-[140px] h-9 px-2 text-[13px] border bg-background rounded-md focus:outline-none focus:ring-1 focus:ring-primary ${isEndDateBeforeStart ? "border-destructive" : "border-input"}`}
+                        placeholder="Đến ngày"
+                        size="sm"
+                        triggerClassName="w-[140px]"
                       />
                     </div>
                     {isStartDatePast && (
@@ -301,13 +305,13 @@ export function CreateApplicationTimeSection({
                             ? "Ngày bắt đầu áp dụng"
                             : "Ngày bắt đầu"}
               </label>
-              <input
-                type="date"
-                value={form.startDate}
-                onChange={(e) => {
-                  set("startDate", e.target.value)
+              <DatePicker
+                value={form.startDate || null}
+                onChange={(val) => {
+                  set("startDate", val || "");
                 }}
-                className={`w-full h-9 px-3 text-sm border rounded-md bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary ${showDatePastError || showDateFutureError ? "border-destructive" : "border-input"}`}
+                placeholder="Chọn ngày..."
+                size="sm"
               />
               {showDatePastError && (
                 <span className="text-xs text-destructive">Thời gian không được ở quá khứ</span>
@@ -332,13 +336,14 @@ export function CreateApplicationTimeSection({
                     ? "Ngày kết thúc chế độ"
                     : "Ngày kết thúc"}
                 </label>
-                <input
-                  type="date"
-                  value={form.endDate}
-                  onChange={(e) => {
-                    set("endDate", e.target.value)
+                <DatePicker
+                  value={form.endDate || null}
+                  minDate={form.startDate}
+                  onChange={(val) => {
+                    set("endDate", val || "");
                   }}
-                  className={`w-full h-9 px-3 text-sm border rounded-md bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary ${isEndDateBeforeStart ? "border-destructive" : "border-input"}`}
+                  placeholder="Chọn ngày kết thúc..."
+                  size="sm"
                 />
                 {isEndDateBeforeStart && (
                   <span className="text-xs text-destructive">
@@ -567,13 +572,13 @@ export function CreateApplicationTimeSection({
                   <label className="text-xs font-medium text-foreground">
                     Ngày ca của đồng nghiệp
                   </label>
-                  <input
-                    type="date"
-                    value={form.swapWithDate}
-                    onChange={(e) => {
-                      set("swapWithDate", e.target.value)
+                  <DatePicker
+                    value={form.swapWithDate || null}
+                    onChange={(val) => {
+                      set("swapWithDate", val || "");
                     }}
-                    className="w-full h-9 px-3 text-sm border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                    placeholder="Chọn ngày ca đổi..."
+                    size="sm"
                   />
                 </div>
                 <div className="space-y-1.5">

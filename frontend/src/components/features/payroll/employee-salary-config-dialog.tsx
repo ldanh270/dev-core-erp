@@ -1,3 +1,4 @@
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -250,7 +251,11 @@ export default function EmployeeSalaryConfigDialog({ open, onOpenChange, employe
                           <FormItem className="col-span-2 md:col-span-1">
                             <FormLabel className="font-semibold">Ngày áp dụng</FormLabel>
                             <FormControl>
-                              <Input type="date" className="rounded-md h-9" {...field} />
+                              <DatePicker
+                                value={field.value || null}
+                                onChange={(val) => field.onChange(val || "")}
+                                placeholder="Chọn ngày áp dụng..."
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

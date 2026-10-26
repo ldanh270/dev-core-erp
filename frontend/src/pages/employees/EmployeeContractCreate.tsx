@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { EntityFormPage } from "@/components/common"
+import { DatePicker, EntityFormPage } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -372,22 +372,20 @@ export default function EmployeeContractCreate() {
                 <Label className="text-xs font-medium">
                   Hiệu lực từ <span className="text-destructive">*</span>
                 </Label>
-                <Input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => { setStartDate(e.target.value); }}
-                  className="rounded-full"
-                  required
+                <DatePicker
+                  value={startDate || null}
+                  onChange={(val) => { setStartDate(val || ""); }}
+                  placeholder="Chọn ngày bắt đầu..."
                 />
               </div>
 
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">Hiệu lực đến</Label>
-                <Input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => { setEndDate(e.target.value); }}
-                  className="rounded-full"
+                <DatePicker
+                  value={endDate || null}
+                  minDate={startDate}
+                  onChange={(val) => { setEndDate(val || ""); }}
+                  placeholder="Chọn ngày kết thúc..."
                 />
               </div>
 
@@ -413,12 +411,10 @@ export default function EmployeeContractCreate() {
                 <Label className="text-xs font-medium">
                   Ngày ký <span className="text-destructive">*</span>
                 </Label>
-                <Input
-                  type="date"
-                  value={signedDate}
-                  onChange={(e) => { setSignedDate(e.target.value); }}
-                  className="rounded-full"
-                  required
+                <DatePicker
+                  value={signedDate || null}
+                  onChange={(val) => { setSignedDate(val || ""); }}
+                  placeholder="Chọn ngày ký..."
                 />
               </div>
 

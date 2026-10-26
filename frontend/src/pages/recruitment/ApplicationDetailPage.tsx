@@ -30,6 +30,7 @@ import { toast } from "sonner"
 import { PageCard, StatusPill } from "@/components/common"
 import { CreateOfferDialog } from "@/components/features/recruitment/create-offer-dialog"
 import { Badge } from "@/components/ui/badge"
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -998,15 +999,14 @@ export default function ApplicationDetailPage() {
                   <PopoverContent align="end" className="w-64 p-3 rounded-2xl space-y-3 bg-popover border border-border shadow-xl">
                     <div className="space-y-1">
                       <Label className="text-[11px] font-bold text-muted-foreground">Chọn ngày</Label>
-                      <Input
-                        type="date"
-                        value={roundScheduledAt ? roundScheduledAt.split("T")[0] : ""}
-                        onChange={(e) => {
-                          const dateVal = e.target.value
-                          const timeVal = roundScheduledAt.split("T")[1] || "09:00"
-                          setRoundScheduledAt(dateVal ? `${dateVal}T${timeVal}` : "")
+                      <DatePicker
+                        value={roundScheduledAt ? roundScheduledAt.split("T")[0] : null}
+                        onChange={(val) => {
+                          const timeVal = roundScheduledAt.split("T")[1] || "09:00";
+                          setRoundScheduledAt(val ? `${val}T${timeVal}` : "");
                         }}
-                        className="h-9 rounded-xl border-border/70 text-xs font-semibold"
+                        size="sm"
+                        placeholder="Chọn ngày..."
                       />
                     </div>
                     <div className="space-y-1">
@@ -1211,15 +1211,14 @@ export default function ApplicationDetailPage() {
                   <PopoverContent align="end" className="w-64 p-3 rounded-2xl space-y-3 bg-popover border border-border shadow-xl">
                     <div className="space-y-1">
                       <Label className="text-[11px] font-bold text-muted-foreground">Chọn ngày</Label>
-                      <Input
-                        type="date"
-                        value={editScheduledAt ? editScheduledAt.split("T")[0] : ""}
-                        onChange={(e) => {
-                          const dateVal = e.target.value
-                          const timeVal = editScheduledAt.split("T")[1] || "09:00"
-                          setEditScheduledAt(dateVal ? `${dateVal}T${timeVal}` : "")
+                      <DatePicker
+                        value={editScheduledAt ? editScheduledAt.split("T")[0] : null}
+                        onChange={(val) => {
+                          const timeVal = editScheduledAt.split("T")[1] || "09:00";
+                          setEditScheduledAt(val ? `${val}T${timeVal}` : "");
                         }}
-                        className="h-9 rounded-xl border-border/70 text-xs font-semibold"
+                        size="sm"
+                        placeholder="Chọn ngày..."
                       />
                     </div>
                     <div className="space-y-1">

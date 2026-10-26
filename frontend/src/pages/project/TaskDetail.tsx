@@ -2,6 +2,7 @@ import { PageCard, SafeHtml, StatusPill } from "@/components/common"
 import LogTimeModal from "@/components/features/project/LogTimeModal"
 import { TaskAssigneeAiModal } from "./components/task-assignee-ai-modal"
 import { Badge } from "@/components/ui/badge"
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -1063,14 +1064,11 @@ export default function TaskDetail() {
                 <Label htmlFor="editStart" className="text-xs font-semibold text-muted-foreground">
                   Ngày bắt đầu
                 </Label>
-                <Input
+                <DatePicker
                   id="editStart"
-                  type="date"
-                  value={taskStart}
-                  onChange={(e) => {
-                    setTaskStart(e.target.value)
-                  }}
-                  className="h-10 text-sm border-border rounded-full px-4"
+                  value={taskStart || null}
+                  onChange={(val) => setTaskStart(val || "")}
+                  placeholder="Chọn ngày bắt đầu..."
                 />
               </div>
 
@@ -1078,14 +1076,11 @@ export default function TaskDetail() {
                 <Label htmlFor="editDue" className="text-xs font-semibold text-muted-foreground">
                   Hạn hoàn thành
                 </Label>
-                <Input
+                <DatePicker
                   id="editDue"
-                  type="date"
-                  value={taskDue}
-                  onChange={(e) => {
-                    setTaskDue(e.target.value)
-                  }}
-                  className="h-10 text-sm border-border rounded-full px-4"
+                  value={taskDue || null}
+                  onChange={(val) => setTaskDue(val || "")}
+                  placeholder="Chọn hạn hoàn thành..."
                 />
               </div>
 

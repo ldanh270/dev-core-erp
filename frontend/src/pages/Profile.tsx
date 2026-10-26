@@ -1,4 +1,4 @@
-import { IconBox, PageCard, SectionHeader, StatusPill } from "@/components/common/index.ts"
+import { DatePicker, IconBox, PageCard, SectionHeader, StatusPill } from "@/components/common/index.ts"
 import { PersonalEmployeeLinkSection } from "@/components/features/profile/personal-employee-link-section"
 import { Button } from "@/components/ui/button.tsx"
 import { Input } from "@/components/ui/input.tsx"
@@ -206,15 +206,11 @@ export default function Profile() {
 
                     <div className="space-y-1.5">
                       <Label htmlFor="dateOfBirth">Ngày sinh</Label>
-                      <Input
-                        id="dateOfBirth"
-                        type="date"
-                        {...registerProfile("dateOfBirth")}
-                        className={
-                          profileErrors.dateOfBirth
-                            ? "border-destructive rounded-full"
-                            : "rounded-full"
-                        }
+                      <DatePicker
+                        value={profileForm.watch("dateOfBirth") || null}
+                        onChange={(val) => {
+                          profileForm.setValue("dateOfBirth", val || "", { shouldValidate: true, shouldDirty: true });
+                        }}
                       />
                       {profileErrors.dateOfBirth && (
                         <p className="text-xs text-destructive mt-1">

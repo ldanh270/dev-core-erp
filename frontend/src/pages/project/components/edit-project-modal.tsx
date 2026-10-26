@@ -1,3 +1,4 @@
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -578,14 +579,11 @@ export function EditProjectModal({
               >
                 Ngày bắt đầu
               </Label>
-              <Input
+              <DatePicker
                 id="editProjStart"
-                type="date"
-                value={editProjectStart}
-                onChange={(e) => {
-                  setEditProjectStart(e.target.value)
-                }}
-                className="h-10 text-sm border-border rounded-full px-4"
+                value={editProjectStart || null}
+                onChange={(val) => setEditProjectStart(val || "")}
+                placeholder="Chọn ngày bắt đầu..."
               />
             </div>
 
@@ -593,14 +591,12 @@ export function EditProjectModal({
               <Label htmlFor="editProjEnd" className="text-xs font-semibold text-muted-foreground">
                 Ngày kết thúc dự kiến
               </Label>
-              <Input
+              <DatePicker
                 id="editProjEnd"
-                type="date"
-                value={editProjectEnd}
-                onChange={(e) => {
-                  setEditProjectEnd(e.target.value)
-                }}
-                className="h-10 text-sm border-border rounded-full px-4"
+                value={editProjectEnd || null}
+                minDate={editProjectStart}
+                onChange={(val) => setEditProjectEnd(val || "")}
+                placeholder="Chọn ngày kết thúc..."
               />
             </div>
           </div>
