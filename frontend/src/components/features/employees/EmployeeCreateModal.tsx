@@ -1,4 +1,4 @@
-import { AppModal } from "@/components/common"
+import { AppModal, DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -34,7 +34,7 @@ interface Props {
  */
 export function EmployeeCreateModal({ isOpen, onClose }: Props) {
   // Extract react hook form fields, submission states, and error mappings
-  const { register, handleSubmit, errors, isPending, handleClose, roles } = useEmployeeCreateModal(onClose)
+  const { register, handleSubmit, setValue, watch, errors, isPending, handleClose, roles } = useEmployeeCreateModal(onClose)
   const { data: positions = [] } = usePositions()
 
   return (
@@ -207,11 +207,13 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   >
                     Ngày sinh
                   </Label>
-                  <Input
+                  <DatePicker
                     id="dateOfBirth"
-                    type="date"
-                    {...register("dateOfBirth")}
-                    className={`bg-background h-10 ${errors.dateOfBirth ? "border-destructive" : ""}`}
+                    value={watch("dateOfBirth") || null}
+                    onChange={(val) => {
+                      setValue("dateOfBirth", val || "", { shouldValidate: true, shouldDirty: true });
+                    }}
+                    placeholder="Chọn ngày sinh..."
                   />
                   {errors.dateOfBirth && (
                     <p className="text-xs text-destructive">{errors.dateOfBirth.message}</p>
@@ -344,11 +346,13 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   >
                     Ngày bắt đầu làm việc
                   </Label>
-                  <Input
+                  <DatePicker
                     id="startDate"
-                    type="date"
-                    {...register("startDate")}
-                    className={`bg-background h-10 ${errors.startDate ? "border-destructive" : ""}`}
+                    value={watch("startDate") || null}
+                    onChange={(val) => {
+                      setValue("startDate", val || "", { shouldValidate: true, shouldDirty: true });
+                    }}
+                    placeholder="Chọn ngày bắt đầu..."
                   />
                   {errors.startDate && (
                     <p className="text-xs text-destructive">{errors.startDate.message}</p>

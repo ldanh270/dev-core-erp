@@ -1,3 +1,4 @@
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -114,26 +115,25 @@ export function ApplyWeeklyScheduleTemplateDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="template-valid-from">Ngày bắt đầu</Label>
-              <Input
+              <DatePicker
                 id="template-valid-from"
-                type="date"
-                value={validFrom}
-                onChange={(event) => {
-                  setValidFrom(event.target.value)
+                value={validFrom || null}
+                onChange={(val) => {
+                  setValidFrom(val || "");
                 }}
-                className="rounded-full"
+                placeholder="Chọn ngày bắt đầu..."
               />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="template-valid-to">Ngày kết thúc</Label>
-              <Input
+              <DatePicker
                 id="template-valid-to"
-                type="date"
-                value={validTo}
-                onChange={(event) => {
-                  setValidTo(event.target.value)
+                value={validTo || null}
+                minDate={validFrom}
+                onChange={(val) => {
+                  setValidTo(val || "");
                 }}
-                className="rounded-full"
+                placeholder="Chọn ngày kết thúc..."
               />
             </div>
           </div>

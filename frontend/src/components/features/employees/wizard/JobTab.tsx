@@ -1,3 +1,4 @@
+import { DatePicker } from "@/components/common"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -167,16 +168,13 @@ export function JobTab({ formData, updateField, hasAttemptedSubmit }: JobTabProp
               <Label className="text-xs font-medium">
                 Ngày vào làm <span className="text-destructive">*</span>
               </Label>
-              <Input
-                type="date"
-                value={formData.startDate}
-                onChange={(e) => { updateField("startDate", e.target.value); }}
-                onBlur={() => { handleBlur("startDate"); }}
-                className={cn(
-                  "rounded-full",
-                  (touchedFields.startDate || hasAttemptedSubmit) && startDateError && "border-destructive ring-1 ring-destructive"
-                )}
-                required
+              <DatePicker
+                value={formData.startDate || null}
+                onChange={(val: string | null) => {
+                  updateField("startDate", val || "");
+                  handleBlur("startDate");
+                }}
+                placeholder="Chọn ngày vào làm..."
               />
               {(touchedFields.startDate || hasAttemptedSubmit) && startDateError && (
                 <p className="text-xs text-destructive font-medium mt-1">{startDateError}</p>

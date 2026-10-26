@@ -1,3 +1,4 @@
+import { DatePicker } from "@/components/common"
 "use client"
 
 import {
@@ -78,13 +79,13 @@ export function CreateApplicationInfoSection({
           <>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-foreground">Ngày thôi việc</label>
-              <input
-                type="date"
-                value={form.startDate}
-                onChange={(e) => {
-                  set("startDate", e.target.value)
+              <DatePicker
+                value={form.startDate || null}
+                onChange={(val) => {
+                  set("startDate", val || "");
                 }}
-                className="w-full h-9 px-3 text-sm border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                placeholder="Chọn ngày thôi việc..."
+                size="sm"
               />
             </div>
             <div className="space-y-1.5">

@@ -1,3 +1,4 @@
+import { DatePicker } from "@/components/common"
 "use client"
 
 import { APP_TYPE_META, LEAVE_TYPE_OPTIONS } from "@/components/attendance/attendance-ui.meta"
@@ -237,14 +238,13 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                         ? "Ngày thôi việc *"
                         : "Ngày bắt đầu *"}
                   </label>
-                  <input
-                    type="date"
-                    required
-                    value={form.startDate}
-                    onChange={(e) => {
-                      set("startDate", e.target.value)
+                  <DatePicker
+                    value={form.startDate || null}
+                    onChange={(val) => {
+                      set("startDate", val || "");
                     }}
-                    className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    placeholder="Chọn ngày..."
+                    size="sm"
                   />
                 </div>
                 {!(
@@ -257,14 +257,14 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                 ).includes(selectedType) && (
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-slate-600">Ngày kết thúc</label>
-                    <input
-                      type="date"
-                      value={form.endDate}
-                      min={form.startDate}
-                      onChange={(e) => {
-                        set("endDate", e.target.value)
+                    <DatePicker
+                      value={form.endDate || null}
+                      minDate={form.startDate}
+                      onChange={(val) => {
+                        set("endDate", val || "");
                       }}
-                      className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      placeholder="Chọn ngày kết thúc..."
+                      size="sm"
                     />
                   </div>
                 )}

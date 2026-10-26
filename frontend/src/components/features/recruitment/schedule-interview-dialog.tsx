@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { Calendar, CalendarClock, Clock, Layers, MapPin, Phone, UserCheck, Video } from "lucide-react"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -211,15 +211,14 @@ export function ScheduleInterviewDialog({ applications, open, onOpenChange, onCr
                 <PopoverContent align="end" className="w-64 p-3 rounded-2xl space-y-3 bg-popover border border-border shadow-xl">
                   <div className="space-y-1">
                     <Label className="text-[11px] font-bold text-muted-foreground">Chọn ngày</Label>
-                    <Input
-                      type="date"
-                      value={scheduledAt ? scheduledAt.split("T")[0] : ""}
-                      onChange={(e) => {
-                        const dateVal = e.target.value
-                        const timeVal = scheduledAt.split("T")[1] || "09:00"
-                        setScheduledAt(dateVal ? `${dateVal}T${timeVal}` : "")
+                    <DatePicker
+                      value={scheduledAt ? scheduledAt.split("T")[0] : null}
+                      onChange={(val) => {
+                        const timeVal = scheduledAt.split("T")[1] || "09:00";
+                        setScheduledAt(val ? `${val}T${timeVal}` : "");
                       }}
-                      className="h-9 rounded-xl border-border/70 text-xs font-semibold"
+                      size="sm"
+                      placeholder="Chọn ngày phỏng vấn..."
                     />
                   </div>
                   <div className="space-y-1">
