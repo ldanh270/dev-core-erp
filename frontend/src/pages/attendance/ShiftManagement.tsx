@@ -1,4 +1,4 @@
-import { PageCard, PageHeader } from "@/components/common"
+import { PageCard, PageHeader, useConfirm } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { ShiftDialog } from "@/components/features/attendance/shift-sheet"
 import { Button } from "@/components/ui/button"
@@ -33,6 +33,7 @@ const { TABLE_COLUMN_COUNT } = WORKING_SHIFT_FORM_RULES
  * Accessible to HR/Admins.
  */
 export default function ShiftManagement() {
+  const confirm = useConfirm()
   /**
    * useShifts — Custom hook to fetch the list of all defined working shifts.
    * Calls API: shiftsApi.getAll
@@ -69,11 +70,17 @@ export default function ShiftManagement() {
 
   /**
    * handleDelete — Triggers deletion of a shift after user confirmation.
-   * Uses browser window.confirm (standard for quick actions in this project).
+   * Uses useConfirm modal provider.
    * @param {string} id — The unique ID of the shift to delete.
    */
-  const handleDelete = (id: string) => {
-    if (!window.confirm("Xác nhận xoá ca làm việc này?")) return
+  const handleDelete = async (id: string) => {
+    const isConfirmed = await confirm({
+      title: "Xác nhận xóa ca làm việc",
+      description: "Bạn có chắc chắn muốn xoá ca làm việc này không?",
+      confirmText: "Xóa ca",
+      variant: "destructive",
+    })
+    if (!isConfirmed) return
     deleteMutation.mutate(id)
   }
 

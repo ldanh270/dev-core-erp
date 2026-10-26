@@ -1,3 +1,4 @@
+import { useConfirm } from "@/components/common"
 import { useState } from "react"
 import { usePositions, useCreatePosition, useUpdatePosition, useDeletePosition } from "@/hooks/use-position-query"
 import { Button } from "@/components/ui/button"
@@ -35,6 +36,7 @@ const TRACKER_LABELS: Record<string, string> = {
  * and delete positions, including configuring the globally allowed task trackers per position.
  */
 export default function PositionsManagement() {
+  const confirm = useConfirm()
   const { data: positions = [], isLoading, refetch } = usePositions()
   const createMutation = useCreatePosition()
   const updateMutation = useUpdatePosition()
@@ -105,7 +107,13 @@ export default function PositionsManagement() {
   }
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa chức vụ này?")) {
+    const isConfirmed = await confirm({
+      title: "Xác nhận xóa chức vụ",
+      description: "Bạn có chắc chắn muốn xóa chức vụ này không? Hành động này không thể hoàn tác.",
+      confirmText: "Xóa chức vụ",
+      variant: "destructive",
+    })
+    if (isConfirmed) {
       try {
         await deleteMutation.mutateAsync(id)
         toast.success("Xóa chức vụ thành công")

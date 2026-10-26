@@ -1,4 +1,4 @@
-import { PageCard, SafeHtml, StatusPill } from "@/components/common"
+import { PageCard, SafeHtml, StatusPill, useConfirm } from "@/components/common"
 import LogTimeModal from "@/components/features/project/LogTimeModal"
 import { TaskAssigneeAiModal } from "./components/task-assignee-ai-modal"
 import { Badge } from "@/components/ui/badge"
@@ -90,6 +90,7 @@ const cleanHtml = (html: string) => {
  * log/review spent time records, and post/cancel review status checks.
  */
 export default function TaskDetail() {
+  const confirm = useConfirm()
   // Initialize query client, route navigation, and auth store
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -367,8 +368,14 @@ export default function TaskDetail() {
     },
   })
 
-  const handleDeleteTask = () => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa công việc này không?")) {
+  const handleDeleteTask = async () => {
+    const isConfirmed = await confirm({
+      title: "Xác nhận xóa công việc",
+      description: "Bạn có chắc chắn muốn xóa công việc này không? Dữ liệu không thể khôi phục.",
+      confirmText: "Xóa công việc",
+      variant: "destructive",
+    })
+    if (isConfirmed) {
       deleteTaskMutation.mutate()
     }
   }
@@ -398,7 +405,7 @@ export default function TaskDetail() {
         <h3 className="text-lg font-bold text-foreground">Không tìm thấy công việc</h3>
         <p className="text-sm text-muted-foreground">Công việc không tồn tại hoặc đã bị xóa.</p>
         <Button
-          onClick={() => {
+          onClick={async () => {
             navigate(-1)
           }}
           className="rounded-full"
@@ -800,8 +807,14 @@ export default function TaskDetail() {
                               variant="ghost"
                               size="icon-xs"
                               className="text-destructive hover:bg-destructive/10 rounded-full cursor-pointer size-6 p-0"
-                              onClick={() => {
-                                if (window.confirm(SPENT_TIME_UI.TASK_DELETE_CONFIRM)) {
+                              onClick={async () => {
+                                const isConfirmed = await confirm({
+                                  title: "Xác nhận xóa thời gian ghi nhận",
+                                  description: SPENT_TIME_UI.TASK_DELETE_CONFIRM,
+                                  confirmText: "Xóa",
+                                  variant: "destructive",
+                                })
+                                if (isConfirmed) {
                                   deleteSpentTimeMutation.mutate(st.id)
                                 }
                               }}

@@ -25,6 +25,7 @@ import {
 import { usePermission } from "@/hooks/use-permission"
 import type { IWeeklyScheduleTemplate } from "@/types/attendance.types"
 
+import { useConfirm } from "@/components/common"
 import { useState } from "react"
 
 import { Loader2, MoreHorizontal, Plus } from "lucide-react"
@@ -38,6 +39,7 @@ function countAssignedDays(template: IWeeklyScheduleTemplate): number {
 }
 
 export default function WeeklySchedules() {
+  const confirm = useConfirm()
   const { hasPermission } = usePermission()
   const canReadSchedules = hasPermission("attendance.weekly_schedule.read")
 
@@ -58,8 +60,14 @@ export default function WeeklySchedules() {
     setDialogOpen(true)
   }
 
-  const handleDelete = (id: string) => {
-    if (!window.confirm("Xác nhận xoá template này?")) return
+  const handleDelete = async (id: string) => {
+    const isConfirmed = await confirm({
+      title: "Xác nhận xóa template",
+      description: "Bạn có chắc chắn muốn xoá template lịch tuần này không?",
+      confirmText: "Xóa template",
+      variant: "destructive",
+    })
+    if (!isConfirmed) return
     deleteMutation.mutate(id, {
       onSuccess: () => toast.success("Đã xoá template"),
     })

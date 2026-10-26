@@ -19,6 +19,7 @@ import {
   useUpdateRole,
   useDeleteRole,
 } from "@/hooks/security/queries/use-security-query"
+import { useConfirm } from "@/components/common"
 import { useState } from "react"
 import type { Role } from "@/types/security.types"
 import {
@@ -43,6 +44,7 @@ import { toast } from "sonner"
  * Displays employee assignments inside a drawer and updates role properties lazily.
  */
 export default function RolesManagement() {
+  const confirm = useConfirm()
   const [selectedRole, setSelectedRole] = useState<Role | null>(null)
   const [drawerPage, setDrawerPage] = useState(1)
   
@@ -154,7 +156,13 @@ export default function RolesManagement() {
 
   // Delete Role handler
   const handleDeleteRole = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa vai trò này? Hành động này không thể hoàn tác.")) {
+    const isConfirmed = await confirm({
+      title: "Xác nhận xóa vai trò",
+      description: "Bạn có chắc chắn muốn xóa vai trò này? Hành động này không thể hoàn tác.",
+      confirmText: "Xóa vai trò",
+      variant: "destructive",
+    })
+    if (!isConfirmed) {
       return
     }
     try {

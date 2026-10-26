@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { useConfirm } from "@/components/common"
 import { 
   Clock, 
   User, 
@@ -71,6 +72,7 @@ interface ProjectGanttTabProps {
  * track, plan, and manage task schedules dynamically across a grid-based timeline.
  */
 export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
+  const confirm = useConfirm()
   const {
     timelineStart,
     selectedTaskForReview,
@@ -1283,9 +1285,15 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                       {q.name}
                     </button>
                     <button
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.stopPropagation()
-                        if (confirm(`Bạn chắc chắn muốn xóa truy vấn "${q.name}"?`)) {
+                        const isConfirmed = await confirm({
+                          title: "Xác nhận xóa truy vấn",
+                          description: `Bạn chắc chắn muốn xóa truy vấn "${q.name}"?`,
+                          confirmText: "Xóa truy vấn",
+                          variant: "destructive",
+                        })
+                        if (isConfirmed) {
                           deleteQueryMutation.mutate(q.id)
                         }
                       }}

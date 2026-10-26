@@ -1,3 +1,4 @@
+import { useConfirm } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -66,6 +67,7 @@ export function EditProjectModal({
   project,
   allEmployees,
 }: EditProjectModalProps) {
+  const confirm = useConfirm()
   const queryClient = useQueryClient()
 
   const [editProjectName, setEditProjectName] = useState("")
@@ -129,15 +131,20 @@ export function EditProjectModal({
     )
   }
 
-  const handleDeleteTracker = (id: string, code: string) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa loại yêu cầu này?")) {
-      deleteTrackerMutation.mutate(id, {
-        onSuccess: () => {
-          setEditProjectTrackers((prev) => prev.filter((k) => k !== code))
-          setTempTrackers((prev) => prev.filter((k) => k !== code))
-        },
-      })
-    }
+  const handleDeleteTracker = async (id: string, code: string) => {
+    const isConfirmed = await confirm({
+      title: "Xác nhận xóa loại yêu cầu",
+      description: "Bạn có chắc chắn muốn xóa loại yêu cầu này khỏi dự án?",
+      confirmText: "Xóa",
+      variant: "destructive",
+    })
+    if (!isConfirmed) return
+    deleteTrackerMutation.mutate(id, {
+      onSuccess: () => {
+        setEditProjectTrackers((prev) => prev.filter((k) => k !== code))
+        setTempTrackers((prev) => prev.filter((k) => k !== code))
+      },
+    })
   }
 
   useEffect(() => {
