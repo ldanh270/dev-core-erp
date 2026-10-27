@@ -1,6 +1,6 @@
 import { EntityFormPage } from "@/components/common/entity-form-page"
 import { Badge } from "@/components/ui/badge"
-import { DatePicker } from "@/components/common"
+import { DatePicker, TimePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -10,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
   Table,
@@ -365,28 +364,22 @@ export function PayslipDetailPage({ payslip, onClose }: PayslipDetailPageProps) 
                 <Label htmlFor="payroll-feedback-check-in" className="text-xs font-medium text-muted-foreground">
                   Giờ vào đúng
                 </Label>
-                <Input
+                <TimePicker
                   id="payroll-feedback-check-in"
-                  type="time"
                   value={checkInAt}
-                  onChange={(event) => {
-                    setCheckInAt(event.target.value)
-                  }}
-                  className="h-10 rounded-full"
+                  onChange={setCheckInAt}
+                  className="h-10"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="payroll-feedback-check-out" className="text-xs font-medium text-muted-foreground">
                   Giờ ra đúng
                 </Label>
-                <Input
+                <TimePicker
                   id="payroll-feedback-check-out"
-                  type="time"
                   value={checkOutAt}
-                  onChange={(event) => {
-                    setCheckOutAt(event.target.value)
-                  }}
-                  className="h-10 rounded-full"
+                  onChange={setCheckOutAt}
+                  className="h-10"
                 />
               </div>
             </div>
