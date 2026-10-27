@@ -12,6 +12,7 @@ import {
 import {
   EMPLOYEE_STATUSES,
   EMPLOYMENT_CATEGORY_TYPES,
+  type IEmploymentCategoryType,
   getEmployeeStatusLabel,
   getEmployeeTypeLabel,
   getRoleLabel,
@@ -19,6 +20,7 @@ import {
   WORK_SCHEDULE_TYPE_LABELS,
   WORK_SCHEDULE_TYPES,
 } from "@/config/entities/employee.config"
+import type { EmployeeStatus, WorkScheduleType } from "@/types/employee.types"
 import { useEmployeeCreateModal } from "@/hooks/employees/useEmployeeCreateModal"
 import { usePositions } from "@/hooks/use-position-query"
 
@@ -308,7 +310,7 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   <Select
                     value={watch("employeeType") || EMPLOYMENT_CATEGORY_TYPES[0]}
                     onValueChange={(val) => {
-                      setValue("employeeType", val as any, { shouldValidate: true, shouldDirty: true })
+                      setValue("employeeType", val as IEmploymentCategoryType, { shouldValidate: true, shouldDirty: true })
                     }}
                   >
                     <SelectTrigger id="employeeType" className="h-10 bg-background">
@@ -331,7 +333,7 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   <Select
                     value={watch("status") || EMPLOYEE_STATUSES[0]}
                     onValueChange={(val) => {
-                      setValue("status", val as any, { shouldValidate: true, shouldDirty: true })
+                      setValue("status", val as EmployeeStatus, { shouldValidate: true, shouldDirty: true })
                     }}
                   >
                     <SelectTrigger id="status" className="h-10 bg-background">
@@ -359,7 +361,7 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   <Select
                     value={watch("workScheduleType") || WORK_SCHEDULE_TYPES[0]}
                     onValueChange={(val) => {
-                      setValue("workScheduleType", val as any, { shouldValidate: true, shouldDirty: true })
+                      setValue("workScheduleType", val as WorkScheduleType, { shouldValidate: true, shouldDirty: true })
                     }}
                   >
                     <SelectTrigger id="workScheduleType" className="h-10 bg-background">

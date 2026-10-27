@@ -298,7 +298,9 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
     if (def.type === GANTT_FILTER_TYPE.EMPLOYEE) {
       if (operator !== GANTT_FILTER_OPERATOR.LA && operator !== GANTT_FILTER_OPERATOR.KHONG_LA) return null
       return (
-        <Select value={value || (assignees[0]?.id || "none")} onValueChange={(val) => onChange(val === "none" ? "" : val)}>
+        <Select value={value || (assignees[0]?.id || "none")} onValueChange={(val) => {
+          onChange(val === "none" ? "" : val)
+        }}>
           <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
             <SelectValue />
           </SelectTrigger>
