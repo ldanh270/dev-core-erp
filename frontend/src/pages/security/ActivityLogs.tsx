@@ -72,7 +72,7 @@ export default function ActivityLogs() {
           <p className="text-sm text-muted-foreground mt-2">
             Không thể tải nhật ký hoạt động. Vui lòng thử lại sau.
           </p>
-          <Button variant="outline" className="mt-4" onClick={() => { refetch(); }}>
+          <Button variant="outline" className="mt-4 rounded-full text-xs font-semibold" onClick={() => { refetch(); }}>
             Thử lại
           </Button>
         </div>
@@ -96,7 +96,7 @@ export default function ActivityLogs() {
           variant="outline"
           size="sm"
           onClick={() => { refetch(); }}
-          className="gap-1.5 h-8 px-3 text-xs"
+          className="gap-1.5 h-8 px-3 text-xs rounded-full font-semibold"
         >
           <RefreshCw className={cn("h-3 w-3", isFetching && "animate-spin")} />
           Làm mới
@@ -111,7 +111,7 @@ export default function ActivityLogs() {
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
               <Input
                 placeholder="Tìm theo ID nhân viên..."
-                className="pl-8 h-9 text-sm bg-background border-border"
+                className="pl-8 h-9 text-xs bg-background border-border/80 rounded-full focus:border-primary"
                 value={searchTerm}
                 onChange={handleSearch}
               />
@@ -125,7 +125,7 @@ export default function ActivityLogs() {
                   handleFilterChange("category", val === "all" ? undefined : val)
                 }}
               >
-                <SelectTrigger className="h-9 w-[170px] bg-background">
+                <SelectTrigger className="h-9 w-[170px] bg-background border-border/80 rounded-full text-xs font-semibold">
                   <SelectValue placeholder="Tất cả danh mục" />
                 </SelectTrigger>
                 <SelectContent>
@@ -179,7 +179,7 @@ export default function ActivityLogs() {
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8 text-xs"
+              className="h-8 w-8 text-xs rounded-full"
               disabled={query.page === 1}
               onClick={() => {
                 setQuery((prev) => ({ ...prev, page: Math.max(1, (prev.page || 1) - 1) }))
@@ -193,7 +193,7 @@ export default function ActivityLogs() {
                 key={p}
                 onClick={() => { setQuery((prev) => ({ ...prev, page: p })) }}
                 className={[
-                  "w-8 h-8 rounded-md text-xs flex items-center justify-center transition-all duration-200 border",
+                  "w-8 h-8 rounded-full text-xs font-semibold flex items-center justify-center transition-all duration-200 border",
                   query.page === p
                     ? "bg-primary text-primary-foreground font-bold border-primary shadow-sm"
                     : "bg-background text-muted-foreground hover:bg-muted border-border hover:border-muted-foreground/30",
@@ -206,7 +206,7 @@ export default function ActivityLogs() {
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8 text-xs"
+              className="h-8 w-8 text-xs rounded-full"
               disabled={!data || query.page === totalPages || totalPages === 0}
               onClick={() => { setQuery((prev) => ({ ...prev, page: (prev.page || 1) + 1 })) }}
             >
