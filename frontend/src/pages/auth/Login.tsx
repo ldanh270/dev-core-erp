@@ -13,12 +13,12 @@ const GeometricBackground = () => (
       <path d="M350,50 L950,350 L650,850 L250,750 Z" fill="url(#geom-grad-2)" />
       <defs>
         <linearGradient id="geom-grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.12" />
-          <stop offset="100%" stopColor="#2563eb" stopOpacity="0" />
+          <stop offset="0%" stopColor="hsl(var(--background))" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
         </linearGradient>
         <linearGradient id="geom-grad-2" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.18" />
-          <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0" />
+          <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
         </linearGradient>
       </defs>
     </svg>

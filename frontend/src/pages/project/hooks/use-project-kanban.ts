@@ -1,3 +1,4 @@
+import { DEFAULT_KANBAN_COLOR } from "@/config/entities/project.config"
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
@@ -44,7 +45,7 @@ export function useProjectKanban({
 
   // Form States
   const [columnName, columnNameSet] = useState("")
-  const [columnColor, columnColorSet] = useState("#6366F1")
+  const [columnColor, columnColorSet] = useState<string>(DEFAULT_KANBAN_COLOR)
   const [columnIsCompleted, columnIsCompletedSet] = useState(false)
   const [columnIsDefault, columnIsDefaultSet] = useState(false)
 
@@ -161,7 +162,7 @@ export function useProjectKanban({
 
   const resetForm = () => {
     columnNameSet("")
-    columnColorSet("#6366F1")
+    columnColorSet(DEFAULT_KANBAN_COLOR)
     columnIsCompletedSet(false)
     columnIsDefaultSet(false)
     setSelectedColumn(null)

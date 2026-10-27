@@ -215,3 +215,20 @@ export const PROJECT_ROLES = [
   PROJECT_ROLE.TESTER,
   PROJECT_ROLE.VIEWER,
 ] as const
+
+/**
+ * Centralized color palette for Kanban column customization
+ */
+export const KANBAN_PALETTE_COLORS = [
+  "#6366F1",
+  "#3B82F6",
+  "#06B6D4",
+  "#10B981",
+  "#F59E0B",
+  "#EF4444",
+  "#8B5CF6",
+  "#EC4899",
+  "#6B7280",
+] as const
+
+export const DEFAULT_KANBAN_COLOR: string = "#6366F1"

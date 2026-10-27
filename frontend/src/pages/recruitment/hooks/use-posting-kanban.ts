@@ -1,3 +1,4 @@
+import { KANBAN_PALETTE_COLORS, DEFAULT_KANBAN_COLOR } from "@/config/entities/project.config"
 import { useState, type DragEvent } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
@@ -5,7 +6,7 @@ import { jobPostingApi, applicationApi } from "@/lib/api/recruitment.api"
 import { extractErrorMessage } from "@/utils/error-helper"
 import type { KanbanApplication, RecruitmentPipelineStage } from "@/types/recruitment.types"
 
-const colors = ["#6366F1", "#3B82F6", "#06B6D4", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899", "#6B7280"]
+const colors = KANBAN_PALETTE_COLORS
 export { colors as POSTING_STAGE_COLORS }
 
 export function usePostingKanban(postingId: string, canManageStages: boolean) {
@@ -14,7 +15,7 @@ export function usePostingKanban(postingId: string, canManageStages: boolean) {
   const [isEditColumnOpen, setIsEditColumnOpen] = useState(false)
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
   const [columnName, setColumnName] = useState("")
-  const [columnColor, setColumnColor] = useState("#6366F1")
+  const [columnColor, setColumnColor] = useState<string>(DEFAULT_KANBAN_COLOR)
   const [columnIsCompleted, setColumnIsCompleted] = useState(false)
   const [columnIsDefault, setColumnIsDefault] = useState(false)
   const [selectedColumn, setSelectedColumn] = useState<RecruitmentPipelineStage | null>(null)
@@ -35,7 +36,7 @@ export function usePostingKanban(postingId: string, canManageStages: boolean) {
     void queryClient.invalidateQueries({ queryKey: applicationsKey })
     void queryClient.invalidateQueries({ queryKey: ["recruitment", "applications"] })
   }
-  const resetForm = () => { setColumnName(""); setColumnColor("#6366F1"); setColumnIsCompleted(false); setColumnIsDefault(false); setSelectedColumn(null); setFallbackColumnId("") }
+  const resetForm = () => { setColumnName(""); setColumnColor(DEFAULT_KANBAN_COLOR); setColumnIsCompleted(false); setColumnIsDefault(false); setSelectedColumn(null); setFallbackColumnId("") }
   const createStatusMutation = useMutation({ mutationFn: () => jobPostingApi.createStage(postingId, { name: columnName.trim(), color: columnColor, isCompleted: columnIsCompleted, isDefault: columnIsDefault }), onSuccess: () => { refresh(); toast.success("Đã tạo cột trạng thái mới"); setIsAddColumnOpen(false); resetForm() }, onError: (error) => toast.error(extractErrorMessage(error)) })
   const updateStatusMutation = useMutation({ mutationFn: () => selectedColumn ? jobPostingApi.updateStage(postingId, selectedColumn.id, { name: columnName.trim(), color: columnColor, isCompleted: columnIsCompleted, isDefault: columnIsDefault }) : Promise.reject(new Error("No column selected")), onSuccess: () => { refresh(); toast.success("Đã cập nhật trạng thái"); setIsEditColumnOpen(false); resetForm() }, onError: (error) => toast.error(extractErrorMessage(error)) })
   const deleteStatusMutation = useMutation({ mutationFn: () => selectedColumn ? jobPostingApi.deleteStage(postingId, selectedColumn.id, fallbackColumnId) : Promise.reject(new Error("No column selected")), onSuccess: () => { refresh(); toast.success("Đã xóa cột trạng thái"); setIsDeleteConfirmOpen(false); resetForm() }, onError: (error) => toast.error(extractErrorMessage(error)) })
