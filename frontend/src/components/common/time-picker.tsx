@@ -41,24 +41,18 @@ export function TimePicker({
 
   const hoursContainerRef = useRef<HTMLDivElement>(null)
   const minutesContainerRef = useRef<HTMLDivElement>(null)
+  const selectedHourRef = useRef<HTMLButtonElement>(null)
+  const selectedMinuteRef = useRef<HTMLButtonElement>(null)
 
   // Auto-scroll active items into view when opened
   useEffect(() => {
     if (open) {
       setTimeout(() => {
-        if (parsedHour && hoursContainerRef.current) {
-          const hourIndex = parseInt(parsedHour, 10)
-          const hourBtn = hoursContainerRef.current.children[hourIndex] as HTMLElement
-          if (hourBtn) {
-            hoursContainerRef.current.scrollTop = hourBtn.offsetTop - 60
-          }
+        if (hoursContainerRef.current && selectedHourRef.current) {
+          hoursContainerRef.current.scrollTop = selectedHourRef.current.offsetTop - 60
         }
-        if (parsedMinute && minutesContainerRef.current) {
-          const minuteIndex = parseInt(parsedMinute, 10)
-          const minuteBtn = minutesContainerRef.current.children[minuteIndex] as HTMLElement
-          if (minuteBtn) {
-            minutesContainerRef.current.scrollTop = minuteBtn.offsetTop - 60
-          }
+        if (minutesContainerRef.current && selectedMinuteRef.current) {
+          minutesContainerRef.current.scrollTop = selectedMinuteRef.current.offsetTop - 60
         }
       }, 50)
     }
@@ -156,8 +150,11 @@ export function TimePicker({
                 return (
                   <button
                     key={h}
+                    ref={isSelected ? selectedHourRef : undefined}
                     type="button"
-                    onClick={() => handleSelectHour(h)}
+                    onClick={() => {
+                      handleSelectHour(h)
+                    }}
                     className={cn(
                       "w-full h-7 rounded-lg text-xs font-mono font-medium flex items-center justify-center transition-colors cursor-pointer",
                       isSelected
@@ -186,8 +183,11 @@ export function TimePicker({
                 return (
                   <button
                     key={m}
+                    ref={isSelected ? selectedMinuteRef : undefined}
                     type="button"
-                    onClick={() => handleSelectMinute(m)}
+                    onClick={() => {
+                      handleSelectMinute(m)
+                    }}
                     className={cn(
                       "w-full h-7 rounded-lg text-xs font-mono font-medium flex items-center justify-center transition-colors cursor-pointer",
                       isSelected
