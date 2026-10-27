@@ -3,6 +3,13 @@ import { ActivityLogDetailDrawer } from "@/components/features/security/Activity
 import { ActivityLogsTable } from "@/components/features/security/ActivityLogsTable"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useActivityLogsMaster } from "@/hooks/security/use-activity-logs-master"
 import { cn } from "@/lib/utils"
 
@@ -112,16 +119,22 @@ export default function ActivityLogs() {
             
             <div className="flex items-center gap-2">
               <Filter size={14} className="text-muted-foreground" />
-              <select
-                className="h-9 rounded-full border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                value={query.category || ""}
-                onChange={(e) => { handleFilterChange("category", e.target.value || undefined); }}
+              <Select
+                value={query.category || "all"}
+                onValueChange={(val) => {
+                  handleFilterChange("category", val === "all" ? undefined : val)
+                }}
               >
-                <option value="">Tất cả danh mục</option>
-                <option value="role">Vai trò</option>
-                <option value="permission">Quyền hạn</option>
-                <option value="employee">Nhân sự</option>
-              </select>
+                <SelectTrigger className="h-9 w-[170px] bg-background">
+                  <SelectValue placeholder="Tất cả danh mục" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả danh mục</SelectItem>
+                  <SelectItem value="role">Vai trò</SelectItem>
+                  <SelectItem value="permission">Quyền hạn</SelectItem>
+                  <SelectItem value="employee">Nhân sự</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {query.actionType && (

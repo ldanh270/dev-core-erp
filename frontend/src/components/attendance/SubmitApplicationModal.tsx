@@ -2,10 +2,17 @@
 
 import { useSubmitApplication } from "@/hooks/application/useSubmitApplication"
 import { employeeApi, type IApprover } from "@/lib/api/employee.api"
-import { ArrowLeft, ChevronDown, Send, UserCheck, X } from "lucide-react"
+import { ArrowLeft, Send, UserCheck, X } from "lucide-react"
 import React, { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { DatePicker } from "@/components/common"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { APP_TYPE_META, LEAVE_TYPE_OPTIONS } from "./attendance-ui.meta"
 
 export interface SubmitModalProps {
@@ -252,20 +259,21 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                 <>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-muted-foreground">Loại nghỉ phép *</label>
-                    <div className="relative">
-                      <select
-                        value={form.leaveType}
-                        onChange={(e) => { set("leaveType", e.target.value); }}
-                        className="w-full px-3 py-2 border border-input rounded-lg text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-background text-foreground pr-8"
-                      >
+                    <Select
+                      value={form.leaveType}
+                      onValueChange={(val) => { set("leaveType", val); }}
+                    >
+                      <SelectTrigger className="h-10 rounded-full bg-background">
+                        <SelectValue placeholder="Chọn loại nghỉ phép..." />
+                      </SelectTrigger>
+                      <SelectContent>
                         {LEAVE_TYPE_OPTIONS.map((o) => (
-                          <option key={o.value} value={o.value}>
+                          <SelectItem key={o.value} value={o.value}>
                             {o.label}
-                          </option>
+                          </SelectItem>
                         ))}
-                      </select>
-                      <ChevronDown size={13} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/70 pointer-events-none" />
-                    </div>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-muted-foreground">Chế độ lương *</label>
@@ -526,20 +534,24 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                     Người duyệt đơn
                     <span className="text-muted-foreground/70 font-normal">(tùy chọn)</span>
                   </label>
-                  <select
-                    value={form.assignedToId}
-                    onChange={(e) => { set("assignedToId", e.target.value); }}
-                    className="px-3 py-2 border border-input bg-background rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  <Select
+                    value={form.assignedToId || "none"}
+                    onValueChange={(val) => { set("assignedToId", val === "none" ? "" : val); }}
                   >
-                    <option value="">-- Không chỉ định (bất kỳ ai có thẩm quyền) --</option>
-                    {approvers.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {a.fullName}
-                        {a.position ? ` — ${a.position}` : ""}
-                        {" "}({a.role.replace(/_/g, " ")})
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="h-10 rounded-full bg-background">
+                      <SelectValue placeholder="-- Không chỉ định (bất kỳ ai có thẩm quyền) --" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">-- Không chỉ định (bất kỳ ai có thẩm quyền) --</SelectItem>
+                      {approvers.map((a) => (
+                        <SelectItem key={a.id} value={a.id}>
+                          {a.fullName}
+                          {a.position ? ` — ${a.position}` : ""}
+                          {" "}({a.role.replace(/_/g, " ")})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
 
