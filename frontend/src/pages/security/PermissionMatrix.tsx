@@ -1,5 +1,12 @@
 import { PageCard } from "@/components/common"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { API_ENDPOINTS } from "@/config/api.config"
 import apiClient from "@/lib/api-client"
 import { cn } from "@/lib/utils"
@@ -237,32 +244,34 @@ export default function PermissionMatrix() {
           <div className="flex flex-wrap items-center gap-4 ml-auto">
             <div className="flex items-center gap-2">
               <ArrowUpDown size={15} className="text-muted-foreground" />
-              <select
-                className="h-8 text-sm bg-background border border-border rounded-md px-2.5 outline-none focus:ring-1 focus:ring-primary text-foreground shadow-sm"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="DEFAULT">Đường dẫn (A-Z)</option>
-                <option value="PATH_DESC">Đường dẫn (Z-A)</option>
-                <option value="SEC_DESC">Bảo mật (Cao đến thấp)</option>
-                <option value="SEC_ASC">Bảo mật (Thấp đến cao)</option>
-              </select>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="h-8 w-[200px] text-xs rounded-full bg-background">
+                  <SelectValue placeholder="Sắp xếp theo..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="DEFAULT">Đường dẫn (A-Z)</SelectItem>
+                  <SelectItem value="PATH_DESC">Đường dẫn (Z-A)</SelectItem>
+                  <SelectItem value="SEC_DESC">Bảo mật (Cao đến thấp)</SelectItem>
+                  <SelectItem value="SEC_ASC">Bảo mật (Thấp đến cao)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex items-center gap-2">
               <Filter size={15} className="text-muted-foreground" />
-              <select
-                className="h-8 text-sm bg-background border border-border rounded-md px-2.5 outline-none focus:ring-1 focus:ring-primary text-foreground shadow-sm"
-                value={methodFilter}
-                onChange={(e) => setMethodFilter(e.target.value)}
-              >
-                <option value="ALL">Tất cả phương thức</option>
-                <option value="GET">GET</option>
-                <option value="POST">POST</option>
-                <option value="PUT">PUT</option>
-                <option value="PATCH">PATCH</option>
-                <option value="DELETE">DELETE</option>
-              </select>
+              <Select value={methodFilter} onValueChange={setMethodFilter}>
+                <SelectTrigger className="h-8 w-[170px] text-xs rounded-full bg-background">
+                  <SelectValue placeholder="Phương thức..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">Tất cả phương thức</SelectItem>
+                  <SelectItem value="GET">GET</SelectItem>
+                  <SelectItem value="POST">POST</SelectItem>
+                  <SelectItem value="PUT">PUT</SelectItem>
+                  <SelectItem value="PATCH">PATCH</SelectItem>
+                  <SelectItem value="DELETE">DELETE</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

@@ -1,4 +1,11 @@
 import { DatePicker } from "@/components/common"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 "use client"
 
 import { APP_TYPE_META, LEAVE_TYPE_OPTIONS } from "@/components/attendance/attendance-ui.meta"
@@ -8,7 +15,7 @@ import { useSubmitApplication } from "@/hooks/application/useSubmitApplication"
 
 import { useState } from "react"
 
-import { ArrowLeft, ChevronDown, Send, X } from "lucide-react"
+import { ArrowLeft, Send, X } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
@@ -275,25 +282,23 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                 <>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-slate-600">Loại nghỉ phép *</label>
-                    <div className="relative">
-                      <select
-                        value={form.leaveType}
-                        onChange={(e) => {
-                          set("leaveType", e.target.value)
-                        }}
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-background pr-8"
-                      >
+                    <Select
+                      value={form.leaveType}
+                      onValueChange={(val) => {
+                        set("leaveType", val)
+                      }}
+                    >
+                      <SelectTrigger className="h-10 rounded-full bg-background">
+                        <SelectValue placeholder="Chọn loại nghỉ phép..." />
+                      </SelectTrigger>
+                      <SelectContent>
                         {LEAVE_TYPE_OPTIONS.map((o) => (
-                          <option key={o.value} value={o.value}>
+                          <SelectItem key={o.value} value={o.value}>
                             {o.label}
-                          </option>
+                          </SelectItem>
                         ))}
-                      </select>
-                      <ChevronDown
-                        size={13}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                      />
-                    </div>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-slate-600">Chế độ lương *</label>

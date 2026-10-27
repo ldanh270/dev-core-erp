@@ -241,69 +241,73 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
     if (key === GANTT_FILTER_KEY.STATUS) {
       if (operator !== GANTT_FILTER_OPERATOR.LA && operator !== GANTT_FILTER_OPERATOR.KHONG_LA) return null
       return (
-        <select
-          value={value || TASK_STATUS.TODO}
-          onChange={(e) => { onChange(e.target.value); }}
-          className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer"
-        >
-          <option value={TASK_STATUS.TODO}>New</option>
-          <option value={TASK_STATUS.IN_PROGRESS}>In Progress</option>
-          <option value={TASK_STATUS.IN_REVIEW}>In Review</option>
-          <option value={TASK_STATUS.DONE}>Done</option>
-          <option value={TASK_STATUS.CANCELLED}>Cancelled</option>
-          <option value={TASK_STATUS.REOPENED}>Reopened</option>
-        </select>
+        <Select value={value || TASK_STATUS.TODO} onValueChange={onChange}>
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            <SelectItem value={TASK_STATUS.TODO}>New</SelectItem>
+            <SelectItem value={TASK_STATUS.IN_PROGRESS}>In Progress</SelectItem>
+            <SelectItem value={TASK_STATUS.IN_REVIEW}>In Review</SelectItem>
+            <SelectItem value={TASK_STATUS.DONE}>Done</SelectItem>
+            <SelectItem value={TASK_STATUS.CANCELLED}>Cancelled</SelectItem>
+            <SelectItem value={TASK_STATUS.REOPENED}>Reopened</SelectItem>
+          </SelectContent>
+        </Select>
       )
     }
 
     if (key === GANTT_FILTER_KEY.TRACKER) {
       if (operator !== GANTT_FILTER_OPERATOR.IS && operator !== GANTT_FILTER_OPERATOR.IS_NOT) return null
       return (
-        <select
-          value={value || TASK_TRACKER.TASK}
-          onChange={(e) => { onChange(e.target.value); }}
-          className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer"
-        >
-          <option value={TASK_TRACKER.FEATURE}>Feature</option>
-          <option value={TASK_TRACKER.BUG}>Bug</option>
-          <option value={TASK_TRACKER.SUPPORT}>Support</option>
-          <option value={TASK_TRACKER.TASK}>Task</option>
-          <option value={TASK_TRACKER.MEETING}>Meeting</option>
-          <option value={TASK_TRACKER.TEST}>Test</option>
-          <option value={TASK_TRACKER.SUBTASK}>Subtask</option>
-          <option value={TASK_TRACKER.MANAGEMENT}>Management</option>
-        </select>
+        <Select value={value || TASK_TRACKER.TASK} onValueChange={onChange}>
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            <SelectItem value={TASK_TRACKER.FEATURE}>Feature</SelectItem>
+            <SelectItem value={TASK_TRACKER.BUG}>Bug</SelectItem>
+            <SelectItem value={TASK_TRACKER.SUPPORT}>Support</SelectItem>
+            <SelectItem value={TASK_TRACKER.TASK}>Task</SelectItem>
+            <SelectItem value={TASK_TRACKER.MEETING}>Meeting</SelectItem>
+            <SelectItem value={TASK_TRACKER.TEST}>Test</SelectItem>
+            <SelectItem value={TASK_TRACKER.SUBTASK}>Subtask</SelectItem>
+            <SelectItem value={TASK_TRACKER.MANAGEMENT}>Management</SelectItem>
+          </SelectContent>
+        </Select>
       )
     }
 
     if (key === GANTT_FILTER_KEY.PRIORITY) {
       if (operator !== GANTT_FILTER_OPERATOR.IS && operator !== GANTT_FILTER_OPERATOR.IS_NOT) return null
       return (
-        <select
-          value={value || TASK_PRIORITY.MEDIUM}
-          onChange={(e) => { onChange(e.target.value); }}
-          className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer"
-        >
-          <option value={TASK_PRIORITY.LOW}>Low</option>
-          <option value={TASK_PRIORITY.MEDIUM}>Medium</option>
-          <option value={TASK_PRIORITY.HIGH}>High</option>
-          <option value={TASK_PRIORITY.URGENT}>Urgent</option>
-        </select>
+        <Select value={value || TASK_PRIORITY.MEDIUM} onValueChange={onChange}>
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            <SelectItem value={TASK_PRIORITY.LOW}>Low</SelectItem>
+            <SelectItem value={TASK_PRIORITY.MEDIUM}>Medium</SelectItem>
+            <SelectItem value={TASK_PRIORITY.HIGH}>High</SelectItem>
+            <SelectItem value={TASK_PRIORITY.URGENT}>Urgent</SelectItem>
+          </SelectContent>
+        </Select>
       )
     }
 
     if (def.type === GANTT_FILTER_TYPE.EMPLOYEE) {
       if (operator !== GANTT_FILTER_OPERATOR.LA && operator !== GANTT_FILTER_OPERATOR.KHONG_LA) return null
       return (
-        <select
-          value={value || (assignees[0]?.id || "")}
-          onChange={(e) => { onChange(e.target.value); }}
-          className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer min-w-[120px]"
-        >
-          {assignees.map((a) => (
-            <option key={a.id} value={a.id}>{a.fullName}</option>
-          ))}
-        </select>
+        <Select value={value || (assignees[0]?.id || "none")} onValueChange={(val) => onChange(val === "none" ? "" : val)}>
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            {assignees.map((a) => (
+              <SelectItem key={a.id} value={a.id}>{a.fullName}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       )
     }
 
@@ -732,34 +736,42 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                 max="12"
               />
               <span className="text-muted-foreground font-medium">tháng từ</span>
-              <select 
-                value={monthInput} 
-                onChange={(e) => { setMonthInput(parseInt(e.target.value)); }} 
-                className="h-8 rounded-md border border-border/40 px-2 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer"
+              <Select 
+                value={String(monthInput)} 
+                onValueChange={(val) => { setMonthInput(parseInt(val)); }} 
               >
-                <option value={0}>Tháng một</option>
-                <option value={1}>Tháng hai</option>
-                <option value={2}>Tháng ba</option>
-                <option value={3}>Tháng tư</option>
-                <option value={4}>Tháng năm</option>
-                <option value={5}>Tháng sáu</option>
-                <option value={6}>Tháng bảy</option>
-                <option value={7}>Tháng tám</option>
-                <option value={8}>Tháng chín</option>
-                <option value={9}>Tháng mười</option>
-                <option value={10}>Tháng mười một</option>
-                <option value={11}>Tháng mười hai</option>
-              </select>
-              <select 
-                value={yearInput} 
-                onChange={(e) => { setYearInput(parseInt(e.target.value)); }} 
-                className="h-8 rounded-md border border-border/40 px-2 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer"
+                <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="0">Tháng một</SelectItem>
+                  <SelectItem value="1">Tháng hai</SelectItem>
+                  <SelectItem value="2">Tháng ba</SelectItem>
+                  <SelectItem value="3">Tháng tư</SelectItem>
+                  <SelectItem value="4">Tháng năm</SelectItem>
+                  <SelectItem value="5">Tháng sáu</SelectItem>
+                  <SelectItem value="6">Tháng bảy</SelectItem>
+                  <SelectItem value="7">Tháng tám</SelectItem>
+                  <SelectItem value="8">Tháng chín</SelectItem>
+                  <SelectItem value="9">Tháng mười</SelectItem>
+                  <SelectItem value="10">Tháng mười một</SelectItem>
+                  <SelectItem value="11">Tháng mười hai</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select 
+                value={String(yearInput)} 
+                onValueChange={(val) => { setYearInput(parseInt(val)); }} 
               >
-                <option value={2025}>2025</option>
-                <option value={2026}>2026</option>
-                <option value={2027}>2027</option>
-                <option value={2028}>2028</option>
-              </select>
+                <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[90px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="2025">2025</SelectItem>
+                  <SelectItem value="2026">2026</SelectItem>
+                  <SelectItem value="2027">2027</SelectItem>
+                  <SelectItem value="2028">2028</SelectItem>
+                </SelectContent>
+              </Select>
 
               <Button 
                 onClick={handleApplyFilters} 
