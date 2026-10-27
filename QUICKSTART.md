@@ -37,8 +37,7 @@ cp agent-gateway/.env.example agent-gateway/.env
 > [!IMPORTANT]
 > Mở file `backend/.env` và cập nhật tối thiểu:
 > 1. `DATABASE_URL` & `DIRECT_URL`: Chuỗi kết nối PostgreSQL (ví dụ Supabase).
-> 2. `SEED_CORE_ACCOUNTS_PASSWORD=Admin@123456` (dùng để tạo mật khẩu admin bootstrap/seed).
-> 3. `SEED_EMPLOYEE_PASSWORD=Employee@123456`
+> 2. `SEED_PASSWORD=Admin123@` (dùng để tạo mật khẩu mặc định khi seed tài khoản).
 
 ---
 
@@ -122,7 +121,7 @@ API Backend tại: **http://localhost:5000**
 
 * **Tài khoản Admin:**
   * **Username:** `admin` (hoặc email: `admin@company.com`)
-  * **Password:** Giá trị cấu hình tại `SEED_CORE_ACCOUNTS_PASSWORD` trong `backend/.env` (Mặc định gợi ý: `Admin@123456`).
+  * **Password:** Giá trị cấu hình tại `SEED_PASSWORD` trong `backend/.env` (Mặc định: `Admin123@`).
 
 ---
 
