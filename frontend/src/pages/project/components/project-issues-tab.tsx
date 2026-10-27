@@ -129,13 +129,13 @@ const COLUMN_METADATA = {
     label: "Kiểu công việc",
     className: "w-24 font-semibold text-xs",
     render: (task: Task) => {
-      let trackerColor = "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
+      let trackerColor = "bg-secondary text-secondary-foreground border-border"
       if (task.tracker === "bug") {
-        trackerColor = "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300"
+        trackerColor = "bg-destructive/10 text-destructive border-destructive/20"
       } else if (task.tracker === "feature") {
-        trackerColor = "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+        trackerColor = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400"
       } else if (task.tracker === "support") {
-        trackerColor = "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
+        trackerColor = "bg-sky-500/10 text-sky-600 border-sky-500/20 dark:text-sky-400"
       }
       return (
         <TableCell>
@@ -1090,7 +1090,7 @@ export function ProjectIssuesTab({
 
       {/* Dialog for Creating New Custom Query */}
       <Dialog open={isNewQueryOpen} onOpenChange={setIsNewQueryOpen}>
-        <DialogContent className="max-w-3xl rounded-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl rounded-xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2">
               <Save className="size-4 text-primary" />
@@ -1110,7 +1110,7 @@ export function ProjectIssuesTab({
                   value={newQueryName}
                   onChange={(e) => { setNewQueryName(e.target.value); }}
                   placeholder="Ví dụ: Công việc mở tuần này..."
-                  className="h-9 text-xs rounded-lg border-border"
+                  className="h-9 text-xs rounded-full border-border"
                   autoFocus
                   required
                 />
@@ -1125,7 +1125,7 @@ export function ProjectIssuesTab({
                   value={newQueryDesc}
                   onChange={(e) => { setNewQueryDesc(e.target.value); }}
                   placeholder="Mô tả mục đích của truy vấn..."
-                  className="h-9 text-xs rounded-lg border-border"
+                  className="h-9 text-xs rounded-full border-border"
                 />
               </div>
             </div>
@@ -1220,7 +1220,7 @@ export function ProjectIssuesTab({
                       }))
                     }}
                   >
-                    <SelectTrigger className="w-36 h-7 text-[10px] border-border rounded-md bg-background">
+                    <SelectTrigger className="w-36 h-7 text-[10px] border-border rounded-full bg-background">
                       <SelectValue placeholder="Chọn bộ lọc..." />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl bg-popover">
@@ -1260,7 +1260,7 @@ export function ProjectIssuesTab({
                         }))
                       }}
                     >
-                      <SelectTrigger className="w-44 h-8 text-xs border-border rounded-md bg-background">
+                      <SelectTrigger className="w-44 h-8 text-xs border-border rounded-full bg-background">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl bg-popover">
@@ -1299,7 +1299,7 @@ export function ProjectIssuesTab({
                         }))
                       }}
                     >
-                      <SelectTrigger className="w-44 h-8 text-xs border-border rounded-md bg-background">
+                      <SelectTrigger className="w-44 h-8 text-xs border-border rounded-full bg-background">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl bg-popover">
@@ -1337,7 +1337,7 @@ export function ProjectIssuesTab({
                         }))
                       }}
                     >
-                      <SelectTrigger className="w-44 h-8 text-xs border-border rounded-md bg-background">
+                      <SelectTrigger className="w-44 h-8 text-xs border-border rounded-full bg-background">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl bg-popover">
@@ -1375,7 +1375,7 @@ export function ProjectIssuesTab({
                         }))
                       }}
                     >
-                      <SelectTrigger className="w-44 h-8 text-xs border-border rounded-md bg-background">
+                      <SelectTrigger className="w-44 h-8 text-xs border-border rounded-full bg-background">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl bg-popover">
@@ -1421,7 +1421,7 @@ export function ProjectIssuesTab({
                         }))
                       }}
                     >
-                      <SelectTrigger className="w-44 h-8 text-xs border-border rounded-md bg-background">
+                      <SelectTrigger className="w-44 h-8 text-xs border-border rounded-full bg-background">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl bg-popover">
@@ -1457,10 +1457,10 @@ export function ProjectIssuesTab({
                       size={6}
                       value={availSelectedKey ? [availSelectedKey] : []}
                       onChange={(e) => { setAvailSelectedKey(e.target.value); }}
-                      className="w-full text-xs p-1.5 border border-border rounded-md h-32 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+                      className="w-full text-xs p-2 border border-border rounded-xl h-32 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
                     >
                       {AVAILABLE_COLUMNS.filter(col => !newQuerySelectedCols.includes(col.key)).map(col => (
-                        <option key={col.key} value={col.key} className="p-0.5 rounded hover:bg-muted">
+                        <option key={col.key} value={col.key} className="p-1 rounded-lg hover:bg-muted cursor-pointer">
                           {col.label}
                         </option>
                       ))}
@@ -1480,7 +1480,7 @@ export function ProjectIssuesTab({
                           setAvailSelectedKey(null)
                         }
                       }}
-                      className="rounded-md"
+                      className="rounded-full h-8 w-8"
                     >
                       <ArrowRight className="size-3.5" />
                     </Button>
@@ -1495,7 +1495,7 @@ export function ProjectIssuesTab({
                           setSelSelectedKey(null)
                         }
                       }}
-                      className="rounded-md"
+                      className="rounded-full h-8 w-8"
                     >
                       <ArrowLeft className="size-3.5" />
                     </Button>
@@ -1509,12 +1509,12 @@ export function ProjectIssuesTab({
                       size={6}
                       value={selSelectedKey ? [selSelectedKey] : []}
                       onChange={(e) => { setSelSelectedKey(e.target.value); }}
-                      className="w-full text-xs p-1.5 border border-border rounded-md h-32 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+                      className="w-full text-xs p-2 border border-border rounded-xl h-32 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
                     >
                       {newQuerySelectedCols.map(colKey => {
                         const col = AVAILABLE_COLUMNS.find(c => c.key === colKey)
                         return (
-                          <option key={colKey} value={colKey} className="p-0.5 rounded hover:bg-muted">
+                          <option key={colKey} value={colKey} className="p-1 rounded-lg hover:bg-muted cursor-pointer">
                             {col ? col.label : colKey}
                           </option>
                         )
@@ -1538,7 +1538,7 @@ export function ProjectIssuesTab({
                         }
                       }}
                       title="Đưa lên đầu"
-                      className="rounded-md"
+                      className="rounded-full h-7 w-7"
                     >
                       <ChevronsUp className="size-3.5" />
                     </Button>
@@ -1562,7 +1562,7 @@ export function ProjectIssuesTab({
                         }
                       }}
                       title="Lên một vị trí"
-                      className="rounded-md"
+                      className="rounded-full h-7 w-7"
                     >
                       <ChevronUp className="size-3.5" />
                     </Button>
@@ -1586,7 +1586,7 @@ export function ProjectIssuesTab({
                         }
                       }}
                       title="Xuống một vị trí"
-                      className="rounded-md"
+                      className="rounded-full h-7 w-7"
                     >
                       <ChevronDown className="size-3.5" />
                     </Button>
@@ -1604,7 +1604,7 @@ export function ProjectIssuesTab({
                         }
                       }}
                       title="Đưa xuống cuối"
-                      className="rounded-md"
+                      className="rounded-full h-7 w-7"
                     >
                       <ChevronsDown className="size-3.5" />
                     </Button>
