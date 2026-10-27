@@ -1,5 +1,6 @@
 import { EntityFormPage } from "@/components/common/entity-form-page"
 import { Badge } from "@/components/ui/badge"
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -350,14 +351,13 @@ export function PayslipDetailPage({ payslip, onClose }: PayslipDetailPageProps) 
               <Label htmlFor="payroll-feedback-date" className="text-xs font-medium text-muted-foreground">
                 Ngày sai lệch
               </Label>
-              <Input
+              <DatePicker
                 id="payroll-feedback-date"
-                type="date"
-                value={feedbackDate}
-                onChange={(event) => {
-                  setFeedbackDate(event.target.value)
+                value={feedbackDate || null}
+                onChange={(val) => {
+                  setFeedbackDate(val || "");
                 }}
-                className="h-10 rounded-full"
+                placeholder="Chọn ngày sai lệch..."
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

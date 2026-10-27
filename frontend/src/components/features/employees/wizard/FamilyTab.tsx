@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -221,11 +222,11 @@ export function FamilyTab({
                       </div>
                       <div className="space-y-1">
                         <Label className="text-[11px] font-medium text-muted-foreground">Ngày sinh</Label>
-                        <Input
-                          type="date"
-                          value={member.dateOfBirth}
-                          onChange={(e) => { updateFamilyMember(member.id, "dateOfBirth", e.target.value); }}
-                          className="rounded-full text-xs"
+                        <DatePicker
+                          value={member.dateOfBirth || null}
+                          onChange={(val) => { updateFamilyMember(member.id, "dateOfBirth", val || ""); }}
+                          size="sm"
+                          placeholder="Chọn ngày sinh..."
                         />
                       </div>
                       <div className="space-y-1">

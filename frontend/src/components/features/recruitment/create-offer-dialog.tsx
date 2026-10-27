@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -110,7 +111,11 @@ export function CreateOfferDialog({ applications, defaultApplicationId, open, on
             </div>
             <div className="grid gap-2">
               <Label>Ngày bắt đầu</Label>
-              <Input type="date" value={startDate} onChange={(event) => { setStartDate(event.target.value) }} className="rounded-full" />
+              <DatePicker
+                value={startDate || null}
+                onChange={(val) => { setStartDate(val || ""); }}
+                placeholder="Chọn ngày bắt đầu..."
+              />
             </div>
           </div>
           <div className="grid gap-2">

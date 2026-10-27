@@ -40,6 +40,7 @@ import type { CustomQuery } from "@/lib/api/custom-query.api"
 import { TaskReviewModal } from "./task-review-modal"
 import type { Project } from "@/types/project.types"
 import type { Task, TaskSpentTime } from "@/types/task.types"
+import { DatePicker, DateRangePicker } from "@/components/common"
 import { useProjectGantt } from "../hooks/use-project-gantt"
 import {
   FILTER_DEFINITIONS,
@@ -348,29 +349,23 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
       if (operator === GANTT_FILTER_OPERATOR.BETWEEN) {
         const [d1 = "", d2 = ""] = (value || "").split(",")
         return (
-          <div className="flex items-center gap-1 font-semibold">
-            <input
-              type="date"
-              value={d1}
-              onChange={(e) => { onChange(`${e.target.value},${d2}`); }}
-              className="h-8 rounded-full border border-border/40 px-3 text-[10px] focus:outline-none focus:border-primary bg-background"
-            />
-            <span>và</span>
-            <input
-              type="date"
-              value={d2}
-              onChange={(e) => { onChange(`${d1},${e.target.value}`); }}
-              className="h-8 rounded-full border border-border/40 px-3 text-[10px] focus:outline-none focus:border-primary bg-background"
-            />
-          </div>
+          <DateRangePicker
+            startDate={d1 || null}
+            endDate={d2 || null}
+            onChange={({ startDate, endDate }) => {
+              onChange(`${startDate || ""},${endDate || ""}`)
+            }}
+            size="sm"
+            placeholder="Khoảng ngày..."
+          />
         )
       }
       return (
-        <input
-          type="date"
-          value={value || ""}
-          onChange={(e) => { onChange(e.target.value); }}
-          className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background"
+        <DatePicker
+          value={value || null}
+          onChange={(val) => { onChange(val || ""); }}
+          size="sm"
+          placeholder="Chọn ngày..."
         />
       )
     }

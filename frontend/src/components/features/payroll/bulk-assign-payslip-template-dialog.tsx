@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge"
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -103,14 +104,13 @@ export function BulkAssignPayslipTemplateDialog({
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="bulk-template-effective-from">Ngày áp dụng</Label>
-              <Input
+              <DatePicker
                 id="bulk-template-effective-from"
-                type="date"
-                value={effectiveFrom}
-                onChange={(event) => {
-                  setEffectiveFrom(event.target.value)
+                value={effectiveFrom || null}
+                onChange={(val) => {
+                  setEffectiveFrom(val || "");
                 }}
-                className="rounded-full"
+                placeholder="Chọn ngày áp dụng..."
               />
             </div>
             <div className="grid gap-2">

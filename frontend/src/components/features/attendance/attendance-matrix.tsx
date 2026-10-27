@@ -1,5 +1,5 @@
 /** Interactive admin workforce matrix for weekly and monthly attendance review. */
-import { PageCard } from "@/components/common"
+import { DatePicker, PageCard } from "@/components/common"
 import { AttendanceMatrixCell } from "@/components/features/attendance/attendance-matrix-cell"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,7 +12,7 @@ import { ATTENDANCE_MATRIX_UI } from "@/config/rules/attendance.config"
 import { useAttendanceMatrix } from "@/hooks/attendance/use-attendance"
 import { getMatrixDates } from "@/utils/attendance/attendance-matrix.util"
 
-import { type MouseEvent, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 
 import dayjs from "dayjs"
 import { ChevronLeft, ChevronRight, Loader2, Search } from "lucide-react"
@@ -47,13 +47,6 @@ export function AttendanceMatrix() {
     setAnchor(view === ATTENDANCE_MATRIX_VIEW.MONTH ? `${value}-01` : value)
   }
 
-  const openPeriodPicker = (event: MouseEvent<HTMLInputElement>) => {
-    try {
-      event.currentTarget.showPicker()
-    } catch {
-      event.currentTarget.focus()
-    }
-  }
 
   return (
     <PageCard className="flex h-full min-h-0 flex-col overflow-hidden p-0">
@@ -85,20 +78,16 @@ export function AttendanceMatrix() {
           >
             <ChevronLeft />
           </Button>
-          <Input
-            aria-label={
-              view === ATTENDANCE_MATRIX_VIEW.MONTH ? "Chọn tháng" : "Chọn ngày trong tuần"
-            }
-            className={
-              view === ATTENDANCE_MATRIX_VIEW.MONTH ? "w-36 cursor-pointer" : "w-40 cursor-pointer"
-            }
-            type={view === ATTENDANCE_MATRIX_VIEW.MONTH ? "month" : "date"}
-            value={view === ATTENDANCE_MATRIX_VIEW.MONTH ? anchor.slice(0, 7) : anchor}
-            onClick={openPeriodPicker}
-            onChange={(event) => {
-              handlePeriodChange(event.target.value)
-            }}
-          />
+          <div className="w-40">
+            <DatePicker
+              value={anchor}
+              size="sm"
+              clearable={false}
+              onChange={(val) => {
+                if (val) handlePeriodChange(val)
+              }}
+            />
+          </div>
           <span className="min-w-44 text-center text-sm font-medium">{periodLabel}</span>
           <Button
             variant="outline"

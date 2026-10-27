@@ -1,4 +1,5 @@
 import { FormActionFooter } from "@/components/common/form-action-footer"
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -15,7 +16,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form-ui"
-import { Input } from "@/components/ui/input"
 import {
   Popover,
   PopoverContent,
@@ -131,7 +131,11 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
                     <FormItem>
                       <FormLabel>Shift Date <span className="text-destructive">*</span></FormLabel>
                       <FormControl>
-                        <Input type="date" className="h-11 rounded-2xl" {...field} />
+                        <DatePicker
+                          value={field.value || null}
+                          onChange={(val) => field.onChange(val || "")}
+                          placeholder="Chọn ngày ca làm..."
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

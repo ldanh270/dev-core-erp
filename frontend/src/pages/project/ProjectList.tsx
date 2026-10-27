@@ -1,5 +1,6 @@
 import { PageCard, PageHeader, StatusPill } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -440,14 +441,11 @@ export default function ProjectList() {
                 <Label htmlFor="projStart" className="text-xs font-semibold text-muted-foreground">
                   Ngày bắt đầu
                 </Label>
-                <Input
+                <DatePicker
                   id="projStart"
-                  type="date"
-                  value={newProjectStart}
-                  onChange={(e) => {
-                    setNewProjectStart(e.target.value)
-                  }}
-                  className="h-10 text-sm border-border rounded-full px-4"
+                  value={newProjectStart || null}
+                  onChange={(val) => setNewProjectStart(val || "")}
+                  placeholder="Chọn ngày bắt đầu..."
                 />
               </div>
 
@@ -455,14 +453,12 @@ export default function ProjectList() {
                 <Label htmlFor="projEnd" className="text-xs font-semibold text-muted-foreground">
                   Ngày dự kiến kết thúc
                 </Label>
-                <Input
+                <DatePicker
                   id="projEnd"
-                  type="date"
-                  value={newProjectEnd}
-                  onChange={(e) => {
-                    setNewProjectEnd(e.target.value)
-                  }}
-                  className="h-10 text-sm border-border rounded-full px-4"
+                  value={newProjectEnd || null}
+                  minDate={newProjectStart}
+                  onChange={(val) => setNewProjectEnd(val || "")}
+                  placeholder="Chọn ngày kết thúc..."
                 />
               </div>
             </div>

@@ -2,8 +2,7 @@
  * Per-project forecast card driven by the immutable deal target and a selected Monday week.
  * Historical weeks support backtesting; current/future weeks support staffing decisions.
  */
-import { PageCard } from "@/components/common"
-import { Input } from "@/components/ui/input"
+import { DatePicker, PageCard } from "@/components/common"
 import {
   CAPACITY_CONFIDENCE_LEVEL,
   CAPACITY_COPILOT_RULES,
@@ -149,13 +148,13 @@ export function ProjectCapacityCopilotCard({
             <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
               {weekModeTitle}
             </span>
-            <Input
-              type="date"
+            <DatePicker
               value={weekStart}
-              onChange={(event) => {
-                setWeekStart(getWeekStartDateKey(new Date(`${event.target.value}T00:00:00`)))
+              onChange={(val) => {
+                if (val) setWeekStart(getWeekStartDateKey(new Date(`${val}T00:00:00`)))
               }}
-              className="w-40 rounded-full"
+              size="sm"
+              triggerClassName="w-40"
             />
             <span className="text-xs font-medium text-muted-foreground">{forecastWeekLabel}</span>
             <span className="max-w-64 text-right text-[10px] text-muted-foreground">
