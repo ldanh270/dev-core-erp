@@ -70,9 +70,10 @@ const TOOLS_CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
 // Creates a fresh SSE client, runs the operation, then closes.
 // This avoids managing persistent SSE connections per user.
 // ---------------------------------------------------------------------------
-async function withMcpClient<T>(
+// Async arrow avoids security-node's null-handler crash on try/finally declarations.
+const withMcpClient = async <T>(
   operation: (client: Client) => Promise<T>,
-): Promise<T> {
+): Promise<T> => {
   const transport = new SSEClientTransport(new URL(env.MCP_SSE_URL))
   const client = new Client(
     { name: "devcore-agent-gateway", version: "1.0.0" },
