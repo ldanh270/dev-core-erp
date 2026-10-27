@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
-import { AppPagination, PageCard, PageHeader, useConfirm } from "@/components/common"
+import { AppPagination, EmptyState, PageCard, PageHeader, useConfirm } from "@/components/common"
 import { ContractModal, type ContractModalMode } from "@/components/employee-contract/ContractModal"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -51,7 +51,7 @@ const getStatusBadgeClass = (status: string) => {
     case "expired":
       return "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-50 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900/50"
     case "terminated":
-      return "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-100 dark:bg-slate-800/40 dark:text-slate-400 dark:border-slate-800"
+      return "bg-secondary text-secondary-foreground border-border hover:bg-secondary/80"
     default:
       return "bg-muted text-muted-foreground border-border"
   }
@@ -150,7 +150,7 @@ export default function ContractsPage() {
         title="Hợp đồng lao động"
         description="Quản lý hợp đồng lao động của toàn bộ nhân sự công ty."
         actions={
-          <Button size="sm" onClick={handleCreate} className="h-8 gap-1.5 px-3 text-xs">
+          <Button size="sm" onClick={handleCreate} className="h-8 gap-1.5 px-3 text-xs rounded-full font-semibold">
             <Plus size={13} strokeWidth={2.5} /> Thêm hợp đồng
           </Button>
         }
@@ -186,7 +186,7 @@ export default function ContractsPage() {
                 }}
                 placeholder="Tìm kiếm số HĐ, tiêu đề..."
                 aria-label="Tìm kiếm hợp đồng"
-                className="h-9 pl-9 pr-4 text-xs bg-background shadow-none border-border"
+                className="h-9 pl-9 pr-4 text-xs bg-background shadow-none border-border rounded-full"
               />
               <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             </div>
@@ -199,10 +199,10 @@ export default function ContractsPage() {
                 setSearchParams(params)
               }}
             >
-              <SelectTrigger className="h-9 w-44 text-xs bg-background border-border shadow-none">
+              <SelectTrigger className="h-9 w-44 text-xs bg-background border-border shadow-none rounded-full">
                 <SelectValue placeholder="Tất cả trạng thái" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl">
                 <SelectItem value="all">Tất cả trạng thái</SelectItem>
                 <SelectItem value="draft">Bản nháp</SelectItem>
                 <SelectItem value="active">Đang hiệu lực</SelectItem>
@@ -223,7 +223,7 @@ export default function ContractsPage() {
                 params.set("page", "1")
                 setSearchParams(params)
               }}
-              className="h-9 px-4 text-xs"
+              className="h-9 px-4 text-xs rounded-full font-semibold"
             >
               Tìm kiếm
             </Button>
@@ -236,9 +236,12 @@ export default function ContractsPage() {
               Đang tải dữ liệu hợp đồng...
             </div>
           ) : filteredContracts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-12 gap-3 text-center">
-              <FileText className="w-10 h-10 text-muted-foreground" />
-              <p className="text-sm font-medium text-foreground">Không tìm thấy hợp đồng lao động nào</p>
+            <div className="p-8">
+              <EmptyState
+                icon={FileText}
+                title="Không tìm thấy hợp đồng"
+                description="Không có hợp đồng lao động nào phù hợp với điều kiện tìm kiếm hoặc bộ lọc hiện tại."
+              />
             </div>
           ) : (
               <Table className="text-sm">
@@ -310,12 +313,12 @@ export default function ContractsPage() {
                     <TableCell className="px-5 py-3 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                          <Button variant="ghost" className="h-8 w-8 p-0 rounded-full">
                             <span className="sr-only">Open menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" className="rounded-xl">
                           <DropdownMenuItem onClick={() => { handleEdit(contract); }}>
                             Chỉnh sửa hợp đồng
                           </DropdownMenuItem>

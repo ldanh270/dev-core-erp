@@ -1,7 +1,7 @@
 import { ROUTES } from "@/config/routes.config"
 import { routerNavigate } from "@/lib/router-navigator"
 
-import { PageCard, PageHeader, StatusPill, AppPagination } from "@/components/common"
+import { PageCard, PageHeader, StatusPill, AppPagination, EmptyState } from "@/components/common"
 import { EmployeeCreateModal } from "@/components/features/employees/EmployeeCreateModal"
 import { EmployeeDetailsDrawer } from "@/components/features/employees/EmployeeDetailsDrawer"
 import { EmployeeEditDrawer } from "@/components/features/employees/EmployeeEditDrawer"
@@ -38,6 +38,7 @@ import {
   Search,
   Trash2,
   User,
+  UserX,
   Unlock,
 } from "lucide-react"
 
@@ -162,7 +163,7 @@ export default function EmployeeList() {
               onClick={() => {
                 routerNavigate(ROUTES.HRM.CREATE_EMPLOYEE)
               }}
-              className="gap-1.5 h-8 px-3 text-xs"
+              className="gap-1.5 h-8 px-3 text-xs rounded-full font-semibold"
             >
               <Plus size={13} strokeWidth={2.5} />
               Thêm nhân sự
@@ -238,7 +239,7 @@ export default function EmployeeList() {
                 autoComplete="off"
                 placeholder="Tìm kiếm họ tên, email..."
                 aria-label="Tìm kiếm nhân sự"
-                className="h-9 pl-9 pr-4 text-xs bg-background shadow-none border-border"
+                className="h-9 pl-9 pr-4 text-xs bg-background shadow-none border-border rounded-full"
               />
               <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             </div>
@@ -249,7 +250,7 @@ export default function EmployeeList() {
                 beginTransition()
                 setQuery((prev) => ({ ...prev, search: localKeyword, page: 1 }))
               }}
-              className="h-9 px-4 text-xs"
+              className="h-9 px-4 text-xs rounded-full font-semibold"
             >
               Tìm kiếm
             </Button>
@@ -301,8 +302,12 @@ export default function EmployeeList() {
                 </tr>
               ) : data?.data.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-16 text-center text-sm text-muted-foreground">
-                    Không tìm thấy nhân sự nào.
+                  <td colSpan={7} className="p-8">
+                    <EmptyState
+                      icon={UserX}
+                      title="Không tìm thấy nhân sự"
+                      description="Không có nhân sự nào phù hợp với bộ lọc hoặc từ khóa tìm kiếm hiện tại."
+                    />
                   </td>
                 </tr>
               ) : (
