@@ -51,7 +51,7 @@ export function TaskContextMenu({
   useEffect(() => {
     if (!isOpen || !task) return
 
-    const menuWidth = 180
+    const menuWidth = 196
     const menuHeight = 360
 
     const viewportWidth = window.innerWidth
@@ -130,7 +130,7 @@ export function TaskContextMenu({
     <div
       ref={menuRef}
       style={{ top: `${pos.top}px`, left: `${pos.left}px` }}
-      className="fixed z-[9999] w-44 bg-background border border-border rounded-xl shadow-xl p-1 text-xs space-y-0.5 transition-all duration-75 select-none"
+      className="fixed z-[9999] w-48 bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 text-xs space-y-0.5 transition-all duration-75 select-none backdrop-blur-sm"
       onClick={(e) => {
         e.stopPropagation()
       }}
@@ -151,7 +151,7 @@ export function TaskContextMenu({
           className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}
         >
           <div
-            className={`bg-background border border-border rounded-xl shadow-lg p-1 min-w-[140px] max-h-[220px] overflow-y-auto ${submenuAlignClass}`}
+            className={`bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 min-w-[140px] max-h-[220px] overflow-y-auto ${submenuAlignClass}`}
           >
             {statuses.length > 0 ? (
               statuses.map((st) => {
@@ -216,7 +216,7 @@ export function TaskContextMenu({
           className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}
         >
           <div
-            className={`bg-background border border-border rounded-xl shadow-lg p-1 min-w-[130px] ${submenuAlignClass}`}
+            className={`bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 min-w-[130px] ${submenuAlignClass}`}
           >
             {trackerOptions.map((tr) => {
               const isActive = task.tracker === tr.value
@@ -255,7 +255,7 @@ export function TaskContextMenu({
           className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}
         >
           <div
-            className={`bg-background border border-border rounded-xl shadow-lg p-1 min-w-[130px] ${submenuAlignClass}`}
+            className={`bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 min-w-[130px] ${submenuAlignClass}`}
           >
             {priorityOptions.map((pr) => {
               const isActive = task.priority === pr.value
@@ -294,7 +294,7 @@ export function TaskContextMenu({
           className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}
         >
           <div
-            className={`bg-background border border-border rounded-xl shadow-lg p-1 min-w-[160px] max-h-[200px] overflow-y-auto ${submenuAlignClass}`}
+            className={`bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 min-w-[160px] max-h-[200px] overflow-y-auto ${submenuAlignClass}`}
           >
             <button
               type="button"
@@ -344,7 +344,7 @@ export function TaskContextMenu({
           className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}
         >
           <div
-            className={`bg-background border border-border rounded-xl shadow-lg p-1 min-w-[110px] max-h-[200px] overflow-y-auto ${submenuAlignClass}`}
+            className={`bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 min-w-[110px] max-h-[200px] overflow-y-auto ${submenuAlignClass}`}
           >
             {progressOptions.map((p) => {
               const isActive = task.progress === Number(p)
@@ -383,7 +383,7 @@ export function TaskContextMenu({
           className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}
         >
           <div
-            className={`bg-background border border-border rounded-xl shadow-lg p-1 min-w-[160px] max-h-[200px] overflow-y-auto ${submenuAlignClass}`}
+            className={`bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 min-w-[160px] max-h-[200px] overflow-y-auto ${submenuAlignClass}`}
           >
             {projectMembers.map((m) => (
               <button
@@ -403,7 +403,7 @@ export function TaskContextMenu({
         </div>
       </div>
 
-      <div className="h-px bg-border my-1" />
+      <div className="h-px bg-border/60 my-1" />
 
       {/* Action: Log Time */}
       <button
