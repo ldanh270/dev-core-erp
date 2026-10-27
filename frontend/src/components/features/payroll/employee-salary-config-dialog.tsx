@@ -205,7 +205,7 @@ export default function EmployeeSalaryConfigDialog({ open, onOpenChange, employe
                             </FormDescription>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
-                                <SelectTrigger className="rounded-md h-10 bg-background">
+                                <SelectTrigger className="rounded-full h-10 bg-background">
                                   <SelectValue placeholder="-- Chọn mẫu phiếu lương --" />
                                 </SelectTrigger>
                               </FormControl>

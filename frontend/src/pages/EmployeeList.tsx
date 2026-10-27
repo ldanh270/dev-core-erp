@@ -390,7 +390,7 @@ export default function EmployeeList() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button
-                            className="p-1.5 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors outline-none cursor-pointer"
+                            className="p-1.5 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors outline-none cursor-pointer"
                             aria-label="Mở menu thao tác"
                           >
                             <MoreHorizontal size={15} />

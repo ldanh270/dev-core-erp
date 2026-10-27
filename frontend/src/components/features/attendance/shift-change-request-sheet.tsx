@@ -150,7 +150,7 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
                       <FormLabel>Your Current Shift <span className="text-destructive">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="rounded-2xl border-border h-11 bg-muted/30 shadow-none">
+                          <SelectTrigger className="rounded-full border-border h-11 bg-muted/30 shadow-none">
                             <SelectValue placeholder="-- Select your shift --" />
                           </SelectTrigger>
                         </FormControl>
@@ -251,7 +251,7 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
                       <FormLabel>Target Shift <span className="text-destructive">*</span></FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="rounded-2xl border-border h-11 bg-muted/30 shadow-none">
+                          <SelectTrigger className="rounded-full border-border h-11 bg-muted/30 shadow-none">
                             <SelectValue placeholder="-- Select target shift --" />
                           </SelectTrigger>
                         </FormControl>
