@@ -91,10 +91,10 @@ export function ScheduleInterviewDialog({ applications, open, onOpenChange, onCr
           <div className="space-y-1.5">
             <Label className="text-xs font-bold text-foreground">Ứng viên</Label>
             <Select value={applicationId} onValueChange={setApplicationId}>
-              <SelectTrigger className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
+              <SelectTrigger className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
                 <SelectValue placeholder="-- Chọn ứng viên cần lên lịch --" />
               </SelectTrigger>
-              <SelectContent className="rounded-2xl border-border bg-popover shadow-lg max-h-56">
+              <SelectContent className="rounded-xl border-border bg-popover shadow-lg max-h-56">
                 {applications.map((application) => (
                   <SelectItem key={application.id} value={application.id} className="text-xs font-medium py-2 rounded-xl cursor-pointer">
                     <div className="flex items-center gap-2">
@@ -116,10 +116,10 @@ export function ScheduleInterviewDialog({ applications, open, onOpenChange, onCr
               <span>Vòng phỏng vấn (Cột Kanban)</span>
             </Label>
             <Select value={title} onValueChange={setTitle}>
-              <SelectTrigger className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
+              <SelectTrigger className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
                 <SelectValue placeholder="-- Chọn vòng phỏng vấn theo Cột Kanban --" />
               </SelectTrigger>
-              <SelectContent className="rounded-2xl border-border bg-popover shadow-lg">
+              <SelectContent className="rounded-xl border-border bg-popover shadow-lg">
                 {selectedAppStages.map((stage) => (
                   <SelectItem key={stage.id} value={stage.name} className="text-xs font-medium py-2 rounded-xl cursor-pointer">
                     <div className="flex items-center gap-2">
@@ -141,10 +141,10 @@ export function ScheduleInterviewDialog({ applications, open, onOpenChange, onCr
                 <span>Hình thức</span>
               </Label>
               <Select value={format} onValueChange={setFormat}>
-                <SelectTrigger className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
+                <SelectTrigger className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="rounded-2xl border-border bg-popover shadow-lg">
+                <SelectContent className="rounded-xl border-border bg-popover shadow-lg">
                   <SelectItem value={INTERVIEW_FORMAT.VIDEO_CALL} className="text-xs font-medium py-1.5 rounded-xl cursor-pointer">
                     <div className="flex items-center gap-1.5">
                       <Video className="size-3 text-blue-500" />
@@ -174,10 +174,10 @@ export function ScheduleInterviewDialog({ applications, open, onOpenChange, onCr
                 <span>Thời lượng</span>
               </Label>
               <Select value={String(durationMinutes)} onValueChange={setDurationMinutes}>
-                <SelectTrigger className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
+                <SelectTrigger className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="rounded-2xl border-border bg-popover shadow-lg">
+                <SelectContent className="rounded-xl border-border bg-popover shadow-lg">
                   <SelectItem value="30" className="text-xs font-medium">30 phút</SelectItem>
                   <SelectItem value="45" className="text-xs font-medium">45 phút</SelectItem>
                   <SelectItem value="60" className="text-xs font-medium">60 phút</SelectItem>
@@ -230,7 +230,7 @@ export function ScheduleInterviewDialog({ applications, open, onOpenChange, onCr
                         setScheduledAt(`${dateVal}T${timeVal}`)
                       }}
                     >
-                      <SelectTrigger className="h-9 rounded-xl border-border/70 text-xs font-semibold">
+                      <SelectTrigger className="h-9 rounded-full border-border/70 text-xs font-semibold">
                         <SelectValue placeholder="Chọn giờ" />
                       </SelectTrigger>
                       <SelectContent className="max-h-48 rounded-xl">
@@ -253,10 +253,10 @@ export function ScheduleInterviewDialog({ applications, open, onOpenChange, onCr
               <span>Người phỏng vấn chính</span>
             </Label>
             <Select value={interviewerId} onValueChange={setInterviewerId}>
-              <SelectTrigger className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
+              <SelectTrigger className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
                 <SelectValue placeholder="-- Chọn nhân viên phỏng vấn --" />
               </SelectTrigger>
-              <SelectContent className="rounded-2xl border-border bg-popover shadow-lg max-h-56">
+              <SelectContent className="rounded-xl border-border bg-popover shadow-lg max-h-56">
                 {employees.map((employee) => (
                   <SelectItem key={employee.id} value={employee.id} className="text-xs font-medium py-2 rounded-xl cursor-pointer">
                     <div className="flex items-center gap-2.5">

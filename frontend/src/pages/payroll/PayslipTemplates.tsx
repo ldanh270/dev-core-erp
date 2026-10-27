@@ -207,7 +207,7 @@ export default function PayslipTemplates() {
                     <TableCell className="px-4 py-3 text-center">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-md">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
