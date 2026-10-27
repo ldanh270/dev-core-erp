@@ -121,7 +121,7 @@ export default function RequisitionDetailPage() {
                               cx="64"
                               cy="64"
                               r="50"
-                              style={{ stroke: stage.color || "#3b82f6" }}
+                              style={{ stroke: stage.color || "hsl(var(--primary))" }}
                               className="transition-all duration-300 hover:opacity-80"
                               strokeWidth="14"
                               fill="transparent"

@@ -835,7 +835,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
             <div key={status.id} className="flex items-center gap-2">
               <div 
                 className="size-3 rounded" 
-                style={{ backgroundColor: status.color || "#6366F1" }} 
+                style={{ backgroundColor: status.color || "hsl(var(--primary))" }} 
               />
               <span>{status.name}</span>
             </div>
@@ -1011,7 +1011,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                     const matchedStatus = statuses.find(
                       (s) => s.id === task.statusId || s.name.toLowerCase() === task.status.toLowerCase()
                     )
-                    const statusColor = matchedStatus?.color || "#38bdf8"
+                    const statusColor = matchedStatus?.color || "hsl(var(--primary))"
                     const isCompletedStatus = matchedStatus?.isCompleted === true || task.status === "done"
 
                     const getHexOpacity = (hex: string, opacityHex: string) => {
@@ -1049,7 +1049,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                         containerStyle = {
                           backgroundColor: statusColor,
                           borderColor: "transparent",
-                          color: "#ffffff",
+                          color: "hsl(var(--primary-foreground))",
                         }
                         progressStyle = {
                           backgroundColor: statusColor,
@@ -1059,9 +1059,9 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                     } else if (isOverdue) {
                       // Overdue: completed part is statusColor, remaining part is red/rose-600
                       containerStyle = {
-                        backgroundColor: "#e11d48",
+                        backgroundColor: "hsl(var(--destructive))",
                         borderColor: "transparent",
-                        color: "#ffffff",
+                        color: "hsl(var(--destructive-foreground))",
                       }
                       progressStyle = {
                         backgroundColor: statusColor,

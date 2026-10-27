@@ -9,7 +9,7 @@ import { POSTING_STAGE_COLORS } from "./use-posting-kanban"
 export function useRequisitionKanban(requisitionId: string, canManageStages: boolean) {
   const queryClient = useQueryClient()
   const [isAddColumnOpen, setIsAddColumnOpen] = useState(false); const [isEditColumnOpen, setIsEditColumnOpen] = useState(false); const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
-  const [columnName, setColumnName] = useState(""); const [columnColor, setColumnColor] = useState(POSTING_STAGE_COLORS[0]); const [columnIsCompleted, setColumnIsCompleted] = useState(false); const [columnIsDefault, setColumnIsDefault] = useState(false)
+  const [columnName, setColumnName] = useState(""); const [columnColor, setColumnColor] = useState<string>(POSTING_STAGE_COLORS[0]); const [columnIsCompleted, setColumnIsCompleted] = useState(false); const [columnIsDefault, setColumnIsDefault] = useState(false)
   const [selectedColumn, setSelectedColumn] = useState<RecruitmentPipelineStage | null>(null); const [fallbackColumnId, setFallbackColumnId] = useState(""); const [dragOverInfo, setDragOverInfo] = useState<{ taskId: string; position: "top" | "bottom" } | null>(null); const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null); const [draggingColumnId, setDraggingColumnId] = useState<string | null>(null); const [dragOverColumnId, setDragOverColumnId] = useState<string | null>(null)
   const stagesKey = ["recruitment", "requisition-stages", requisitionId] as const; const applicationsKey = ["recruitment", "requisition-kanban", requisitionId] as const
   const stagesQuery = useQuery({ queryKey: stagesKey, queryFn: () => requisitionApi.stages(requisitionId), enabled: Boolean(requisitionId) })

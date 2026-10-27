@@ -1,3 +1,4 @@
+import { KANBAN_PALETTE_COLORS } from "@/config/entities/project.config"
 import { useProjectKanban } from "../hooks/use-project-kanban"
 import { ROUTES } from "@/config/routes.config"
 import { 
@@ -413,7 +414,7 @@ export function ProjectKanbanTab({
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-foreground">Màu cột sắc đại diện</Label>
               <div className="flex flex-wrap gap-2.5">
-                {["#6366F1", "#3B82F6", "#06B6D4", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899", "#6B7280"].map((hex) => (
+                {KANBAN_PALETTE_COLORS.map((hex) => (
                   <button
                     key={hex}
                     type="button"
@@ -497,7 +498,7 @@ export function ProjectKanbanTab({
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-foreground">Màu cột sắc đại diện</Label>
               <div className="flex flex-wrap gap-2.5">
-                {["#6366F1", "#3B82F6", "#06B6D4", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899", "#6B7280"].map((hex) => (
+                {KANBAN_PALETTE_COLORS.map((hex) => (
                   <button
                     key={hex}
                     type="button"
