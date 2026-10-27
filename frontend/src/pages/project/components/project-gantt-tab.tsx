@@ -731,7 +731,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                 type="number" 
                 value={monthsInput} 
                 onChange={(e) => { setMonthsInput(e.target.value); }} 
-                className="w-12 h-8 rounded-md border border-border/40 px-2 text-center text-xs font-semibold focus:outline-none focus:border-primary bg-background"
+                className="w-12 h-8 rounded-full border border-border/40 px-2 text-center text-xs font-semibold focus:outline-none focus:border-primary bg-background"
                 min="1"
                 max="12"
               />
@@ -823,7 +823,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => { shiftTimelineByMonth(-1); }} 
-                  className="text-blue-600 dark:text-blue-400 hover:underline font-normal flex items-center gap-0.5"
+                  className="text-primary hover:underline font-medium flex items-center gap-0.5"
                 >
                   <ChevronLeft className="size-3.5" />
                   {getMonthOffsetLabel(-1)}
@@ -831,7 +831,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                 <span className="text-muted-foreground/30">|</span>
                 <button 
                   onClick={() => { shiftTimelineByMonth(1); }} 
-                  className="text-blue-600 dark:text-blue-400 hover:underline font-normal flex items-center gap-0.5"
+                  className="text-primary hover:underline font-medium flex items-center gap-0.5"
                 >
                   {getMonthOffsetLabel(1)}
                   <ChevronRight className="size-3.5" />
@@ -891,7 +891,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                           )}
                           <button
                             onClick={() => { setSelectedTaskForReview(task); }}
-                            className="text-blue-600 dark:text-blue-400 hover:underline font-normal shrink-0 mr-1"
+                            className="text-primary hover:underline font-normal shrink-0 mr-1"
                           >
                             {task.tracker ? task.tracker.charAt(0).toUpperCase() + task.tracker.slice(1) : "Task"} #{task?.id ? task.id.slice(-5) : "—"}
                           </button>
@@ -899,7 +899,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                             :{" "}
                             <Link
                               to={`/project/task/${task.id}`}
-                              className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors cursor-pointer text-foreground"
+                              className="hover:text-primary hover:underline transition-colors cursor-pointer text-foreground"
                             >
                               {task.title}
                             </Link>
@@ -1245,7 +1245,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
             <li>
               <button
                 onClick={() => { handleQuickQuery(QUICK_QUERY_TYPE.ASSIGNED_TO_ME); }}
-                className="text-blue-600 dark:text-blue-400 hover:underline text-left font-medium block w-full"
+                className="text-primary hover:underline text-left font-medium block w-full"
               >
                 Issues assigned to me
               </button>
@@ -1253,7 +1253,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
             <li>
               <button
                 onClick={() => { handleQuickQuery(QUICK_QUERY_TYPE.REPORTED_ISSUES); }}
-                className="text-blue-600 dark:text-blue-400 hover:underline text-left font-medium block w-full"
+                className="text-primary hover:underline text-left font-medium block w-full"
               >
                 Reported issues
               </button>
@@ -1261,7 +1261,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
             <li>
               <button
                 onClick={() => { handleQuickQuery(QUICK_QUERY_TYPE.UPDATED_ISSUES); }}
-                className="text-blue-600 dark:text-blue-400 hover:underline text-left font-medium block w-full"
+                className="text-primary hover:underline text-left font-medium block w-full"
               >
                 Updated issues
               </button>
@@ -1269,7 +1269,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
             <li>
               <button
                 onClick={() => { handleQuickQuery(QUICK_QUERY_TYPE.WATCHED_ISSUES); }}
-                className="text-rose-600 dark:text-rose-400 hover:underline text-left font-medium block w-full"
+                className="text-destructive hover:underline text-left font-medium block w-full"
               >
                 Watched issues
               </button>
@@ -1284,7 +1284,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                   <li key={q.id} className="flex items-center justify-between group">
                     <button
                       onClick={() => { applySavedQuery(q); }}
-                      className="text-sky-600 dark:text-sky-400 hover:underline text-left font-medium block truncate max-w-[150px]"
+                      className="text-primary hover:underline text-left font-medium block truncate max-w-[150px]"
                       title={q.name}
                     >
                       {q.name}
@@ -1490,7 +1490,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                       }))
                     }}
                   >
-                    <SelectTrigger className="w-36 h-7 text-[10px] border-border rounded-md bg-background">
+                    <SelectTrigger className="w-36 h-7 text-[10px] border-border rounded-full bg-background">
                       <SelectValue placeholder="Chọn bộ lọc..." />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl bg-popover max-h-60 overflow-y-auto">
@@ -1692,7 +1692,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                       size={3}
                       value={availSelectedKey ? [availSelectedKey] : []}
                       onChange={(e) => { setAvailSelectedKey(e.target.value); }}
-                      className="w-full text-xs p-1.5 border border-border rounded-md h-24 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+                      className="w-full text-xs p-1.5 border border-border rounded-lg h-24 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
                     >
                       {GANTT_AVAILABLE_COLUMNS.filter(col => !newQuerySelectedCols.includes(col.key)).map(col => (
                         <option key={col.key} value={col.key} className="p-0.5 rounded hover:bg-muted">
@@ -1715,7 +1715,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                           setAvailSelectedKey(null)
                         }
                       }}
-                      className="rounded-md"
+                      className="rounded-full"
                     >
                       <ArrowRight className="size-3.5" />
                     </Button>
@@ -1730,7 +1730,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                           setSelSelectedKey(null)
                         }
                       }}
-                      className="rounded-md"
+                      className="rounded-full"
                     >
                       <ArrowLeft className="size-3.5" />
                     </Button>
@@ -1744,7 +1744,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                       size={3}
                       value={selSelectedKey ? [selSelectedKey] : []}
                       onChange={(e) => { setSelSelectedKey(e.target.value); }}
-                      className="w-full text-xs p-1.5 border border-border rounded-md h-24 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+                      className="w-full text-xs p-1.5 border border-border rounded-lg h-24 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
                     >
                       {newQuerySelectedCols.map(colKey => {
                         const col = GANTT_AVAILABLE_COLUMNS.find(c => c.key === colKey)
@@ -1773,7 +1773,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                         }
                       }}
                       title="Đưa lên đầu"
-                      className="rounded-md"
+                      className="rounded-full"
                     >
                       <ChevronsUp className="size-3.5" />
                     </Button>
@@ -1795,7 +1795,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                         }
                       }}
                       title="Đưa xuống dưới"
-                      className="rounded-md"
+                      className="rounded-full"
                     >
                       <ChevronsDown className="size-3.5" />
                     </Button>
