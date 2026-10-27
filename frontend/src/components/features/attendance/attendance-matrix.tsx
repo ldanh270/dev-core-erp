@@ -60,7 +60,7 @@ export function AttendanceMatrix() {
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               aria-label="Tìm nhân viên"
-              className="pl-10"
+              className="pl-10 rounded-full h-9 bg-background border-border/80 text-xs"
               placeholder="Tìm họ tên hoặc email"
               value={search}
               onChange={(event) => {
@@ -71,12 +71,13 @@ export function AttendanceMatrix() {
           <Button
             variant="outline"
             size="icon"
+            className="rounded-full size-8 shrink-0"
             aria-label="Kỳ trước"
             onClick={() => {
               movePeriod(-1)
             }}
           >
-            <ChevronLeft />
+            <ChevronLeft className="size-4" />
           </Button>
           <div className="w-40">
             <DatePicker
@@ -92,18 +93,20 @@ export function AttendanceMatrix() {
           <Button
             variant="outline"
             size="icon"
+            className="rounded-full size-8 shrink-0"
             aria-label="Kỳ sau"
             onClick={() => {
               movePeriod(1)
             }}
           >
-            <ChevronRight />
+            <ChevronRight className="size-4" />
           </Button>
-          <div className="flex rounded-full border p-1">
+          <div className="flex rounded-full border border-border/80 p-0.5 bg-secondary/40">
             {ATTENDANCE_MATRIX_VIEW_VALUES.map((item) => (
               <Button
                 key={item}
                 size="sm"
+                className="rounded-full text-xs font-semibold px-3 h-7"
                 variant={view === item ? "default" : "ghost"}
                 onClick={() => {
                   setView(item)
@@ -138,7 +141,7 @@ export function AttendanceMatrix() {
                 <th className="sticky left-28 z-30 w-48 min-w-48 border-b bg-background p-3 text-left">
                   Họ và tên
                 </th>
-                <th className="sticky left-[19rem] z-30 w-40 min-w-40 border-b bg-background p-3 text-left">
+                <th className="sticky left-[19rem] z-30 w-40 min-w-40 border-b border-r border-border/60 shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] bg-background p-3 text-left">
                   Vị trí
                 </th>
                 {dates.map((date) => (
@@ -172,7 +175,7 @@ export function AttendanceMatrix() {
                       {employee.email}
                     </p>
                   </th>
-                  <td className="sticky left-[19rem] z-10 w-40 max-w-40 border-b bg-background p-3 text-muted-foreground">
+                  <td className="sticky left-[19rem] z-10 w-40 max-w-40 border-b border-r border-border/60 shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] bg-background p-3 text-muted-foreground">
                     <span className="block truncate" title={employee.position}>
                       {employee.position ?? "—"}
                     </span>

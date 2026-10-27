@@ -1,4 +1,4 @@
-import { StatusPill } from "@/components/common"
+import { EmptyState, StatusPill } from "@/components/common"
 import {
   ACTIVITY_ACTION_LABELS,
   ACTIVITY_ACTION_VARIANTS,
@@ -69,13 +69,12 @@ export function ActivityLogsTable({
         <tbody className="divide-y divide-border/40">
           {logs.length === 0 ? (
             <tr>
-              <td colSpan={hideEmployee ? 5 : 6} className="px-5 py-24 text-center">
-                <div className="flex flex-col items-center gap-3">
-                  <FileText className="h-10 w-10 text-muted-foreground opacity-20" />
-                  <p className="text-sm text-muted-foreground">
-                    Không tìm thấy bản ghi nhật ký nào.
-                  </p>
-                </div>
+              <td colSpan={hideEmployee ? 5 : 6} className="px-5 py-8 text-center">
+                <EmptyState
+                  icon={FileText}
+                  title="Không có bản ghi nhật ký"
+                  description="Không tìm thấy nhật ký hoạt động nào trong khoảng thời gian này."
+                />
               </td>
             </tr>
           ) : (
@@ -123,7 +122,7 @@ export function ActivityLogsTable({
                   />
                 </td>
                 <td className="px-5 py-4 font-mono text-[12px] text-muted-foreground">
-                  <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-muted/50 rounded-md border border-border/40">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-muted/50 rounded-full border border-border/40 text-xs">
                     <Globe className="w-3.5 h-3.5 opacity-50" />
                     <span>{log.ipAddress || "—"}</span>
                   </div>
