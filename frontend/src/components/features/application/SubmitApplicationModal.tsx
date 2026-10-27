@@ -1,4 +1,7 @@
 import { DatePicker } from "@/components/common"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
   SelectContent,
@@ -144,47 +147,51 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
         onClick={(e) => {
           e.stopPropagation()
         }}
-        className={`bg-background w-full ${step === "type" ? "max-w-3xl" : "max-w-lg"} rounded-2xl shadow-2xl shadow-slate-900/20 overflow-hidden flex flex-col max-h-[90vh] transition-all duration-300`}
+        className={`bg-background w-full ${step === "type" ? "max-w-3xl" : "max-w-lg"} rounded-xl border border-border shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-all duration-300`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div className="flex items-center gap-3">
             {step === "details" && (
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => {
                   setStep("type")
                 }}
-                className="p-1.5 rounded-full hover:bg-slate-100 transition-colors text-slate-500"
+                className="h-8 w-8 rounded-full text-muted-foreground hover:bg-muted"
               >
                 <ArrowLeft size={16} />
-              </button>
+              </Button>
             )}
             <div>
-              <h2 className="text-base font-bold text-slate-800">
+              <h2 className="text-base font-bold text-foreground">
                 {step === "type" ? "Tạo mới đơn từ" : `Tạo đơn ${meta.label}`}
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {step === "type"
                   ? "Chọn loại đơn bạn muốn gửi"
                   : "Điền thông tin chi tiết và xác nhận"}
               </p>
             </div>
           </div>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-slate-100 transition-colors text-slate-400"
+            className="h-8 w-8 rounded-full text-muted-foreground hover:bg-muted"
           >
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
         <div className="overflow-y-auto flex-1">
@@ -201,7 +208,7 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                       onClose()
                       navigate(ROUTES.APPLICATION.CREATE.replace(":type", type))
                     }}
-                    className="flex items-center gap-4 p-4 rounded-xl border border-slate-200 text-left hover:shadow-md hover:border-primary/30 transition-all active:scale-[0.98] bg-background"
+                    className="flex items-center gap-4 p-4 rounded-xl border border-border text-left hover:shadow-md hover:border-primary/50 transition-all active:scale-[0.98] bg-card hover:bg-muted/40 cursor-pointer"
                   >
                     <div
                       className={`h-10 w-10 shrink-0 rounded-full flex items-center justify-center ${m.color} ${m.bg}`}
@@ -209,8 +216,8 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                       <Icon size={18} />
                     </div>
                     <div>
-                      <p className="text-[14px] font-semibold text-slate-700">{m.label}</p>
-                      <p className="text-[12px] text-slate-500 mt-0.5 leading-snug">{m.hint}</p>
+                      <p className="text-[14px] font-semibold text-foreground">{m.label}</p>
+                      <p className="text-[12px] text-muted-foreground mt-0.5 leading-snug">{m.hint}</p>
                     </div>
                   </button>
                 )
@@ -238,7 +245,7 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
               {/* Dates */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-600">
+                  <label className="text-xs font-semibold text-muted-foreground">
                     {selectedType === APPLICATION_TYPES.LATE_EARLY.LABEL
                       ? "Ngày làm việc *"
                       : selectedType === APPLICATION_TYPES.RESIGNATION.LABEL
@@ -263,7 +270,7 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                   ] as string[]
                 ).includes(selectedType) && (
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-600">Ngày kết thúc</label>
+                    <label className="text-xs font-semibold text-muted-foreground">Ngày kết thúc</label>
                     <DatePicker
                       value={form.endDate || null}
                       minDate={form.startDate}
@@ -281,7 +288,7 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
               {selectedType === APPLICATION_TYPES.LEAVE.LABEL && (
                 <>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-600">Loại nghỉ phép *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">Loại nghỉ phép *</label>
                     <Select
                       value={form.leaveType}
                       onValueChange={(val) => {
@@ -301,23 +308,20 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                     </Select>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-600">Chế độ lương *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">Chế độ lương *</label>
                     <div className="grid grid-cols-2 gap-2">
                       {([REGIME_TYPE.PAID, REGIME_TYPE.UNPAID] as const).map((rt) => (
-                        <button
+                        <Button
                           key={rt}
                           type="button"
+                          variant={form.leaveRegimeType === rt ? "default" : "outline"}
                           onClick={() => {
                             set("leaveRegimeType", rt)
                           }}
-                          className={`py-2 rounded-lg border-2 text-sm font-semibold transition-all ${
-                            form.leaveRegimeType === rt
-                              ? "border-primary bg-primary/5 text-primary"
-                              : "border-slate-200 text-slate-500 hover:border-slate-300"
-                          }`}
+                          className="rounded-full h-10 text-xs font-semibold"
                         >
                           {rt === REGIME_TYPE.PAID ? "Có lương" : "Không lương"}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   </div>
@@ -327,16 +331,15 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
               {/* ── OVERTIME ── */}
               {selectedType === APPLICATION_TYPES.OVERTIME.LABEL && (
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-600">ID Ca làm việc *</label>
-                  <input
-                    type="text"
+                  <label className="text-xs font-semibold text-muted-foreground">ID Ca làm việc *</label>
+                  <Input
                     required
                     placeholder="Nhập CUID ca làm việc..."
                     value={form.employeeShiftId}
                     onChange={(e) => {
                       set("employeeShiftId", e.target.value)
                     }}
-                    className="px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    className="font-mono bg-background"
                   />
                 </div>
               )}
@@ -345,44 +348,40 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
               {selectedType === APPLICATION_TYPES.LATE_EARLY.LABEL && (
                 <>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-600">ID Ca làm việc *</label>
-                    <input
-                      type="text"
+                    <label className="text-xs font-semibold text-muted-foreground">ID Ca làm việc *</label>
+                    <Input
                       required
                       placeholder="Nhập CUID ca làm việc..."
                       value={form.employeeShiftId}
                       onChange={(e) => {
                         set("employeeShiftId", e.target.value)
                       }}
-                      className="px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="font-mono bg-background"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-600">Loại *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">Loại *</label>
                     <div className="grid grid-cols-2 gap-2">
                       {([true, false] as const).map((v) => (
-                        <button
+                        <Button
                           key={String(v)}
                           type="button"
+                          variant={form.isLate === v ? "default" : "outline"}
                           onClick={() => {
                             set("isLate", v)
                           }}
-                          className={`py-2 rounded-lg border-2 text-sm font-semibold transition-all ${
-                            form.isLate === v
-                              ? "border-primary bg-primary/5 text-primary"
-                              : "border-slate-200 text-slate-500 hover:border-slate-300"
-                          }`}
+                          className="rounded-full h-10 text-xs font-semibold"
                         >
                           {v ? "Đi muộn" : "Về sớm"}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-600">
+                    <label className="text-xs font-semibold text-muted-foreground">
                       Số phút (1–480) *
                     </label>
-                    <input
+                    <Input
                       type="number"
                       required
                       min={1}
@@ -391,7 +390,7 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                       onChange={(e) => {
                         set("durationMinutes", Number(e.target.value))
                       }}
-                      className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="bg-background"
                     />
                   </div>
                 </>
@@ -401,44 +400,41 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
               {selectedType === APPLICATION_TYPES.SHIFT_SWAP.LABEL && (
                 <>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-600">ID Ca của bạn *</label>
-                    <input
-                      type="text"
+                    <label className="text-xs font-semibold text-muted-foreground">ID Ca của bạn *</label>
+                    <Input
                       required
                       placeholder="Nhập CUID ca làm việc..."
                       value={form.employeeShiftId}
                       onChange={(e) => {
                         set("employeeShiftId", e.target.value)
                       }}
-                      className="px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="font-mono bg-background"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-600">
+                    <label className="text-xs font-semibold text-muted-foreground">
                       ID Nhân viên muốn đổi (tùy chọn)
                     </label>
-                    <input
-                      type="text"
+                    <Input
                       placeholder="CUID nhân viên..."
                       value={form.swapWithEmployeeId}
                       onChange={(e) => {
                         set("swapWithEmployeeId", e.target.value)
                       }}
-                      className="px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="font-mono bg-background"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-600">
+                    <label className="text-xs font-semibold text-muted-foreground">
                       ID Ca muốn đổi sang (tùy chọn)
                     </label>
-                    <input
-                      type="text"
+                    <Input
                       placeholder="CUID ca làm việc..."
                       value={form.swapWithShiftId}
                       onChange={(e) => {
                         set("swapWithShiftId", e.target.value)
                       }}
-                      className="px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="font-mono bg-background"
                     />
                   </div>
                 </>
@@ -447,27 +443,25 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
               {/* ── WFH ── */}
               {selectedType === APPLICATION_TYPES.WORK_FROM_HOME.LABEL && (
                 <div className="flex flex-col gap-1.5">
-                  {/* Backend field name: "location" */}
-                  <label className="text-xs font-semibold text-slate-600">Địa điểm làm việc</label>
-                  <input
-                    type="text"
+                  <label className="text-xs font-semibold text-muted-foreground">Địa điểm làm việc</label>
+                  <Input
                     placeholder="VD: Tại nhà, Quán cà phê..."
                     value={form.location}
                     onChange={(e) => {
                       set("location", e.target.value)
                     }}
-                    className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    className="bg-background"
                   />
                 </div>
               )}
 
               {/* Reason */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-600">
+                <label className="text-xs font-semibold text-muted-foreground">
                   Lý do{" "}
-                  <span className="text-slate-400 font-normal">(tối thiểu 5 ký tự nếu điền)</span>
+                  <span className="text-muted-foreground/70 font-normal">(tối thiểu 5 ký tự nếu điền)</span>
                 </label>
-                <textarea
+                <Textarea
                   rows={3}
                   minLength={5}
                   placeholder="Nhập lý do gửi đơn..."
@@ -475,21 +469,20 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                   onChange={(e) => {
                     set("reason", e.target.value)
                   }}
-                  className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+                  className="rounded-xl border border-input bg-background resize-none"
                 />
               </div>
 
               {/* Note */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-600">Ghi chú thêm</label>
-                <input
-                  type="text"
+                <label className="text-xs font-semibold text-muted-foreground">Ghi chú thêm</label>
+                <Input
                   placeholder="Thông tin bổ sung (nếu có)..."
                   value={form.note}
                   onChange={(e) => {
                     set("note", e.target.value)
                   }}
-                  className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  className="bg-background"
                 />
               </div>
             </form>
@@ -498,25 +491,26 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
 
         {/* Footer */}
         {step === "details" && (
-          <div className="border-t border-slate-100 px-5 py-4 flex gap-3 bg-slate-50">
-            <button
+          <div className="border-t border-border px-5 py-4 flex gap-3 bg-muted/20">
+            <Button
               type="button"
+              variant="outline"
               onClick={() => {
                 setStep("type")
               }}
-              className="flex-1 py-2.5 border border-slate-200 rounded-full text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+              className="flex-1 rounded-full h-10 font-semibold"
             >
               Quay lại
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               form="submit-form"
               disabled={isSubmitting}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-60 text-white rounded-full text-sm font-bold transition-all active:scale-[0.98]"
+              className="flex-1 rounded-full h-10 font-bold gap-2"
             >
               {isSubmitting ? (
                 <>
-                  <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                  <div className="h-4 w-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
                   Đang gửi...
                 </>
               ) : (
@@ -525,7 +519,7 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                   Gửi đơn
                 </>
               )}
-            </button>
+            </Button>
           </div>
         )}
       </div>
