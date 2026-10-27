@@ -6,6 +6,9 @@ import { ArrowLeft, Send, UserCheck, X } from "lucide-react"
 import React, { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { DatePicker } from "@/components/common"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
   SelectContent,
@@ -160,18 +163,20 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
-      <div className="bg-background w-full max-w-lg rounded-2xl shadow-lg overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-background w-full max-w-lg rounded-xl border border-border shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div className="flex items-center gap-3">
             {step === "details" && (
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => { setStep("type"); }}
-                className="p-1.5 rounded-full hover:bg-muted transition-colors text-muted-foreground"
+                className="h-8 w-8 rounded-full text-muted-foreground hover:bg-muted"
               >
                 <ArrowLeft size={16} />
-              </button>
+              </Button>
             )}
             <div>
               <h2 className="text-base font-bold text-foreground">
@@ -184,13 +189,15 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               </p>
             </div>
           </div>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground/70"
+            className="h-8 w-8 rounded-full text-muted-foreground hover:bg-muted"
           >
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
         <div className="overflow-y-auto flex-1">
@@ -279,18 +286,15 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                     <label className="text-xs font-semibold text-muted-foreground">Chế độ lương *</label>
                     <div className="grid grid-cols-2 gap-2">
                       {(["paid", "unpaid"] as const).map((rt) => (
-                        <button
+                        <Button
                           key={rt}
                           type="button"
+                          variant={form.leaveRegimeType === rt ? "default" : "outline"}
                           onClick={() => { set("leaveRegimeType", rt); }}
-                          className={`py-2 rounded-lg border-2 text-sm font-semibold transition-all ${
-                            form.leaveRegimeType === rt
-                              ? "border-primary bg-primary/5 text-primary"
-                              : "border-input text-muted-foreground hover:border-primary/50"
-                          }`}
+                          className="rounded-full h-10 text-xs font-semibold"
                         >
                           {rt === "paid" ? "Có lương" : "Không lương"}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   </div>
@@ -301,13 +305,12 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               {selectedType === "overtime" && (
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-muted-foreground">ID Ca làm việc *</label>
-                  <input
-                    type="text"
+                  <Input
                     required
                     placeholder="Nhập CUID ca làm việc..."
                     value={form.employeeShiftId}
                     onChange={(e) => { set("employeeShiftId", e.target.value); }}
-                    className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    className="font-mono bg-background"
                   />
                 </div>
               )}
@@ -317,44 +320,40 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                 <>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-muted-foreground">ID Ca làm việc *</label>
-                    <input
-                      type="text"
+                    <Input
                       required
                       placeholder="Nhập CUID ca làm việc..."
                       value={form.employeeShiftId}
                       onChange={(e) => { set("employeeShiftId", e.target.value); }}
-                      className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="font-mono bg-background"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-muted-foreground">Loại *</label>
                     <div className="grid grid-cols-2 gap-2">
                       {([true, false] as const).map((v) => (
-                        <button
+                        <Button
                           key={String(v)}
                           type="button"
+                          variant={form.isLate === v ? "default" : "outline"}
                           onClick={() => { set("isLate", v); }}
-                          className={`py-2 rounded-lg border-2 text-sm font-semibold transition-all ${
-                            form.isLate === v
-                              ? "border-primary bg-primary/5 text-primary"
-                              : "border-input text-muted-foreground hover:border-primary/50"
-                          }`}
+                          className="rounded-full h-10 text-xs font-semibold"
                         >
                           {v ? "Đi muộn" : "Về sớm"}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-muted-foreground">Số phút (1–480) *</label>
-                    <input
+                    <Input
                       type="number"
                       required
                       min={1}
                       max={480}
                       value={form.durationMinutes}
                       onChange={(e) => { set("durationMinutes", Number(e.target.value)); }}
-                      className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="bg-background"
                     />
                   </div>
                 </>
@@ -365,33 +364,30 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                 <>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-muted-foreground">ID Ca của bạn *</label>
-                    <input
-                      type="text"
+                    <Input
                       required
                       placeholder="Nhập CUID ca làm việc..."
                       value={form.employeeShiftId}
                       onChange={(e) => { set("employeeShiftId", e.target.value); }}
-                      className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="font-mono bg-background"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-muted-foreground">ID Nhân viên muốn đổi (tùy chọn)</label>
-                    <input
-                      type="text"
+                    <Input
                       placeholder="CUID nhân viên..."
                       value={form.swapWithEmployeeId}
                       onChange={(e) => { set("swapWithEmployeeId", e.target.value); }}
-                      className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="font-mono bg-background"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-muted-foreground">ID Ca muốn đổi sang (tùy chọn)</label>
-                    <input
-                      type="text"
+                    <Input
                       placeholder="CUID ca làm việc..."
                       value={form.swapWithShiftId}
                       onChange={(e) => { set("swapWithShiftId", e.target.value); }}
-                      className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="font-mono bg-background"
                     />
                   </div>
                 </>
@@ -401,12 +397,11 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               {selectedType === "work_from_home" && (
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-muted-foreground">Địa điểm làm việc</label>
-                  <input
-                    type="text"
+                  <Input
                     placeholder="VD: Tại nhà, Quán cà phê..."
                     value={form.location}
                     onChange={(e) => { set("location", e.target.value); }}
-                    className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    className="bg-background"
                   />
                 </div>
               )}
@@ -416,23 +411,21 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                 <>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-muted-foreground">Địa điểm công tác *</label>
-                    <input
-                      type="text"
+                    <Input
                       required
                       placeholder="VD: Hà Nội, TP.HCM..."
                       value={form.destination}
                       onChange={(e) => { set("destination", e.target.value); }}
-                      className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="bg-background"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-muted-foreground">Mục đích chuyến đi</label>
-                    <input
-                      type="text"
+                    <Input
                       placeholder="Mô tả mục đích..."
                       value={form.purpose}
                       onChange={(e) => { set("purpose", e.target.value); }}
-                      className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="bg-background"
                     />
                   </div>
                 </>
@@ -445,18 +438,15 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                     <label className="text-xs font-semibold text-muted-foreground">Chế độ lương *</label>
                     <div className="grid grid-cols-2 gap-2">
                       {(["paid", "unpaid"] as const).map((rt) => (
-                        <button
+                        <Button
                           key={rt}
                           type="button"
+                          variant={form.regimeType === rt ? "default" : "outline"}
                           onClick={() => { set("regimeType", rt); }}
-                          className={`py-2 rounded-lg border-2 text-sm font-semibold transition-all ${
-                            form.regimeType === rt
-                              ? "border-primary bg-primary/5 text-primary"
-                              : "border-input text-muted-foreground hover:border-primary/50"
-                          }`}
+                          className="rounded-full h-10 text-xs font-semibold"
                         >
                           {rt === "paid" ? "Có lương" : "Không lương"}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   </div>
@@ -464,14 +454,14 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                     <label className="text-xs font-semibold text-muted-foreground">
                       Số phút giảm/ngày (0–480) *
                     </label>
-                    <input
+                    <Input
                       type="number"
                       required
                       min={0}
                       max={480}
                       value={form.reducedMinutesPerDay}
                       onChange={(e) => { set("reducedMinutesPerDay", Number(e.target.value)); }}
-                      className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="bg-background"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
@@ -499,12 +489,12 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                     <label className="text-xs font-semibold text-muted-foreground">
                       URL chứng từ (tùy chọn)
                     </label>
-                    <input
+                    <Input
                       type="url"
                       placeholder="https://..."
                       value={form.documentUrl}
                       onChange={(e) => { set("documentUrl", e.target.value); }}
-                      className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="bg-background"
                     />
                   </div>
                 </>
@@ -516,13 +506,13 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                   Lý do{" "}
                   <span className="text-muted-foreground/70 font-normal">(tối thiểu 5 ký tự nếu điền)</span>
                 </label>
-                <textarea
+                <Textarea
                   rows={3}
                   minLength={5}
                   placeholder="Nhập lý do gửi đơn..."
                   value={form.reason}
                   onChange={(e) => { set("reason", e.target.value); }}
-                  className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+                  className="rounded-xl border border-input bg-background resize-none"
                 />
               </div>
 
@@ -558,12 +548,11 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               {/* Note */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-muted-foreground">Ghi chú thêm</label>
-                <input
-                  type="text"
+                <Input
                   placeholder="Thông tin bổ sung (nếu có)..."
                   value={form.note}
                   onChange={(e) => { set("note", e.target.value); }}
-                  className="px-3 py-2 border border-input bg-transparent rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  className="bg-background"
                 />
               </div>
             </form>
@@ -572,23 +561,24 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
 
         {/* Footer */}
         {step === "details" && (
-          <div className="border-t border-border px-5 py-4 flex gap-3 bg-muted/30">
-            <button
+          <div className="border-t border-border px-5 py-4 flex gap-3 bg-muted/20">
+            <Button
               type="button"
+              variant="outline"
               onClick={() => { setStep("type"); }}
-              className="flex-1 py-2.5 border border-input rounded-full text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+              className="flex-1 rounded-full h-10 font-semibold"
             >
               Quay lại
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               form="submit-form"
               disabled={isSubmitting}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-60 text-white rounded-full text-sm font-bold transition-all active:scale-[0.98]"
+              className="flex-1 rounded-full h-10 font-bold gap-2"
             >
               {isSubmitting ? (
                 <>
-                  <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                  <div className="h-4 w-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
                   Đang gửi...
                 </>
               ) : (
@@ -597,7 +587,7 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                   Gửi đơn
                 </>
               )}
-            </button>
+            </Button>
           </div>
         )}
       </div>
