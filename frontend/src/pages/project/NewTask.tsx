@@ -1,5 +1,5 @@
 // Import custom page container component
-import { PageCard } from "@/components/common"
+import { DatePicker, PageCard } from "@/components/common"
 // Import UI buttons, inputs, labels, and select components
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -489,12 +489,11 @@ export default function NewTask() {
               <Label htmlFor="startDate" className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
                 NGÀY BẮT ĐẦU
               </Label>
-              <Input
+              <DatePicker
                 id="startDate"
-                type="date"
-                value={taskStart}
-                onChange={(e) => { setTaskStart(e.target.value) }}
-                className="w-full h-10 text-sm border-border rounded-full px-4 bg-background"
+                value={taskStart || null}
+                onChange={(val) => setTaskStart(val || "")}
+                placeholder="Chọn ngày bắt đầu..."
               />
             </div>
 
@@ -502,12 +501,11 @@ export default function NewTask() {
               <Label htmlFor="dueDate" className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
                 HẠN HOÀN THÀNH
               </Label>
-              <Input
+              <DatePicker
                 id="dueDate"
-                type="date"
-                value={taskDue}
-                onChange={(e) => { setTaskDue(e.target.value) }}
-                className="w-full h-10 text-sm border-border rounded-full px-4 bg-background"
+                value={taskDue || null}
+                onChange={(val) => setTaskDue(val || "")}
+                placeholder="Chọn hạn hoàn thành..."
               />
             </div>
           </div>

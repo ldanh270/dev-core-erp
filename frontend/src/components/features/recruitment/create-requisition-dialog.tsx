@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { DatePicker } from "@/components/common"
 import {
   Dialog,
   DialogContent,
@@ -325,10 +326,22 @@ export function CreateRequisitionDialog({
               )}
             </Field>
             <Field label="Ngày dự kiến tuyển" error={errors.targetHireDate?.message}>
-              <Input type="date" {...form.register("targetHireDate")} />
+              <DatePicker
+                value={form.watch("targetHireDate") || null}
+                size="sm"
+                onChange={(val) => {
+                  form.setValue("targetHireDate", val || "", { shouldValidate: true, shouldDirty: true });
+                }}
+              />
             </Field>
             <Field label="Ngày dự kiến đóng" error={errors.targetCloseDate?.message}>
-              <Input type="date" {...form.register("targetCloseDate")} />
+              <DatePicker
+                value={form.watch("targetCloseDate") || null}
+                size="sm"
+                onChange={(val) => {
+                  form.setValue("targetCloseDate", val || "", { shouldValidate: true, shouldDirty: true });
+                }}
+              />
             </Field>
             <Field
               label="Lý do tuyển dụng"

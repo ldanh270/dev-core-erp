@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -133,11 +134,10 @@ export function BioTab({
 
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Ngày sinh</Label>
-                  <Input
-                    type="date"
-                    value={formData.dateOfBirth}
-                    onChange={(e) => { updateField("dateOfBirth", e.target.value); }}
-                    className="rounded-full"
+                  <DatePicker
+                    value={formData.dateOfBirth || null}
+                    onChange={(val) => { updateField("dateOfBirth", val || ""); }}
+                    placeholder="Chọn ngày sinh..."
                   />
                 </div>
 
@@ -193,11 +193,10 @@ export function BioTab({
 
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Ngày cấp</Label>
-                  <Input
-                    type="date"
-                    value={formData.idIssueDate}
-                    onChange={(e) => { updateField("idIssueDate", e.target.value); }}
-                    className="rounded-full"
+                  <DatePicker
+                    value={formData.idIssueDate || null}
+                    onChange={(val) => { updateField("idIssueDate", val || ""); }}
+                    placeholder="Chọn ngày cấp..."
                   />
                 </div>
 

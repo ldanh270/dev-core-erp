@@ -9,6 +9,7 @@ import {
   SPENT_TIME_ACTIVITY,
   SPENT_TIME_WORK_TIME_TYPE,
 } from "@/config/entities/project.config"
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -194,13 +195,11 @@ export default function LogTimeModal({
               <Label htmlFor="date" className="text-xs font-semibold text-muted-foreground">
                 Ngày thực hiện
               </Label>
-              <Input
+              <DatePicker
                 id="date"
-                type="date"
                 value={date}
-                onChange={(e) => { setDate(e.target.value) }}
-                className="h-10 text-sm border-border rounded-full px-4"
-                required
+                onChange={(val) => { setDate(val || "") }}
+                placeholder="Chọn ngày thực hiện..."
               />
             </div>
 

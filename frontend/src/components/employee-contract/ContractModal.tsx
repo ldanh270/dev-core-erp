@@ -12,6 +12,7 @@ import {
 } from "@/hooks/employee-contract/use-contracts"
 import type { IContract } from "@/types/employee-contract.types"
 
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -218,13 +219,11 @@ export function ContractModal({
                 <Label htmlFor="terminationDate" className="text-xs font-medium">
                   Ngày chấm dứt <span className="text-destructive">*</span>
                 </Label>
-                <Input
+                <DatePicker
                   id="terminationDate"
-                  type="date"
-                  value={terminationDate}
-                  onChange={(e) => { setTerminationDate(e.target.value); }}
-                  className="rounded-full"
-                  required
+                  value={terminationDate || null}
+                  onChange={(val) => { setTerminationDate(val || ""); }}
+                  placeholder="Chọn ngày chấm dứt..."
                 />
               </div>
 
@@ -297,13 +296,11 @@ export function ContractModal({
                 <Label htmlFor="startDate" className="text-xs font-medium">
                   Ngày bắt đầu <span className="text-destructive">*</span>
                 </Label>
-                <Input
+                <DatePicker
                   id="startDate"
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => { setStartDate(e.target.value); }}
-                  className="rounded-full"
-                  required
+                  value={startDate || null}
+                  onChange={(val) => { setStartDate(val || ""); }}
+                  placeholder="Chọn ngày bắt đầu..."
                 />
               </div>
 
@@ -311,12 +308,12 @@ export function ContractModal({
                 <Label htmlFor="endDate" className="text-xs font-medium">
                   Ngày kết thúc {contractType === "indefinite" ? "" : "(để trống nếu vô hạn)"}
                 </Label>
-                <Input
+                <DatePicker
                   id="endDate"
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => { setEndDate(e.target.value); }}
-                  className="rounded-full"
+                  value={endDate || null}
+                  minDate={startDate}
+                  onChange={(val) => { setEndDate(val || ""); }}
+                  placeholder="Chọn ngày kết thúc..."
                 />
               </div>
 
@@ -325,12 +322,11 @@ export function ContractModal({
                   <Label htmlFor="trialEndDate" className="text-xs font-medium">
                     Hết hạn thử việc
                   </Label>
-                  <Input
+                  <DatePicker
                     id="trialEndDate"
-                    type="date"
-                    value={trialEndDate}
-                    onChange={(e) => { setTrialEndDate(e.target.value); }}
-                    className="rounded-full"
+                    value={trialEndDate || null}
+                    onChange={(val) => { setTrialEndDate(val || ""); }}
+                    placeholder="Chọn ngày kết thúc thử việc..."
                   />
                 </div>
               )}

@@ -1,5 +1,6 @@
 import { AppDrawer } from "@/components/common"
 import { EmployeeWeeklyScheduleSection } from "@/components/features/employees/employee-weekly-schedule-section"
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -39,6 +40,7 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
     register,
     handleSubmit,
     watch,
+    setValue,
     onSubmitEmployee,
     errors,
     isPending: isEmployeePending,
@@ -214,11 +216,13 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                     <Label htmlFor="dateOfBirth" className="text-[12px] text-muted-foreground">
                       Ngày sinh
                     </Label>
-                    <Input
+                    <DatePicker
                       id="dateOfBirth"
-                      type="date"
-                      {...register("dateOfBirth")}
-                      className={`bg-background ${errors.dateOfBirth ? "border-destructive" : ""}`}
+                      value={watch("dateOfBirth") || null}
+                      onChange={(val) => {
+                        setValue("dateOfBirth", val || "", { shouldValidate: true, shouldDirty: true });
+                      }}
+                      placeholder="Chọn ngày sinh..."
                     />
                     {errors.dateOfBirth && (
                       <p className="text-xs text-destructive">{errors.dateOfBirth.message}</p>
@@ -342,11 +346,13 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                     <Label htmlFor="startDate" className="text-[12px] text-muted-foreground">
                       Ngày bắt đầu
                     </Label>
-                    <Input
+                    <DatePicker
                       id="startDate"
-                      type="date"
-                      {...register("startDate")}
-                      className={`bg-background ${errors.startDate ? "border-destructive" : ""}`}
+                      value={watch("startDate") || null}
+                      onChange={(val) => {
+                        setValue("startDate", val || "", { shouldValidate: true, shouldDirty: true });
+                      }}
+                      placeholder="Chọn ngày bắt đầu..."
                     />
                     {errors.startDate && (
                       <p className="text-xs text-destructive">{errors.startDate.message}</p>
@@ -357,11 +363,13 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                     <Label htmlFor="endDate" className="text-[12px] text-muted-foreground">
                       Ngày kết thúc
                     </Label>
-                    <Input
+                    <DatePicker
                       id="endDate"
-                      type="date"
-                      {...register("endDate")}
-                      className={`bg-background ${errors.endDate ? "border-destructive" : ""}`}
+                      value={watch("endDate") || null}
+                      onChange={(val) => {
+                        setValue("endDate", val || "", { shouldValidate: true, shouldDirty: true });
+                      }}
+                      placeholder="Chọn ngày kết thúc..."
                     />
                     {errors.endDate && (
                       <p className="text-xs text-destructive">{errors.endDate.message}</p>

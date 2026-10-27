@@ -1,4 +1,4 @@
-import { PageCard } from "@/components/common"
+import { DateRangePicker, PageCard } from "@/components/common"
 import { ActivityLogDetailDrawer } from "@/components/features/security/ActivityLogDetailDrawer"
 import { ActivityLogsTable } from "@/components/features/security/ActivityLogsTable"
 import { Button } from "@/components/ui/button"
@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils"
 
 import {
   AlertTriangle,
-  Calendar,
   Filter,
   Loader2,
   RefreshCw,
@@ -139,20 +138,16 @@ export default function ActivityLogs() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Calendar size={14} className="text-muted-foreground" />
             <span className="text-xs text-muted-foreground font-medium">Lọc theo ngày:</span>
-            <Input
-              type="date"
-              className="h-9 w-40 text-xs"
-              value={query.fromDate || ""}
-              onChange={(e) => { handleFilterChange("fromDate", e.target.value || undefined); }}
-            />
-            <span className="text-muted-foreground">—</span>
-            <Input
-              type="date"
-              className="h-9 w-40 text-xs"
-              value={query.toDate || ""}
-              onChange={(e) => { handleFilterChange("toDate", e.target.value || undefined); }}
+            <DateRangePicker
+              startDate={query.fromDate || null}
+              endDate={query.toDate || null}
+              onChange={({ startDate, endDate }) => {
+                handleFilterChange("fromDate", startDate || undefined);
+                handleFilterChange("toDate", endDate || undefined);
+              }}
+              size="sm"
+              placeholder="Chọn khoảng ngày..."
             />
           </div>
         </div>

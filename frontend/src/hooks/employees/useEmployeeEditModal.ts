@@ -20,6 +20,7 @@ export function useEmployeeEditModal(employee: Employee | null, isOpen: boolean)
   const {
     register,
     handleSubmit,
+    setValue,
     watch,
     formState: { errors },
   } = useForm<EmployeeEditFormValues>({
@@ -47,6 +48,7 @@ export function useEmployeeEditModal(employee: Employee | null, isOpen: boolean)
 
   return {
     register,
+    setValue,
     handleSubmit,
     watch,
     onSubmitEmployee,
