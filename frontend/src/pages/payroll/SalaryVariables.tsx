@@ -1,6 +1,7 @@
 import {
   AppPagination,
   DataTableToolbar,
+  EmptyState,
   PageCard,
   PageHeader,
   useConfirm,
@@ -22,7 +23,7 @@ import type { ISalaryVariable } from "@/hooks/payroll/use-salary-variable"
 
 import { useState } from "react"
 
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react"
+import { Loader2, Pencil, Plus, SlidersHorizontal, Trash2 } from "lucide-react"
 
 type VariableRow = Omit<ISalaryVariable, "value"> & {
   value: number | string
@@ -241,6 +242,16 @@ export default function SalaryVariablesPage() {
                 <TableRow>
                   <TableCell colSpan={6} className="h-24 text-center">
                     <Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground" />
+                  </TableCell>
+                </TableRow>
+              ) : paginatedVariables.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="p-8">
+                    <EmptyState
+                      icon={SlidersHorizontal}
+                      title="Không tìm thấy biến tính lương"
+                      description="Không có biến số nào khớp với từ khóa tìm kiếm."
+                    />
                   </TableCell>
                 </TableRow>
               ) : (

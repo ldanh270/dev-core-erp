@@ -1,4 +1,4 @@
-import { AppPagination, DataTableToolbar, PageCard, PageHeader } from "@/components/common"
+import { AppPagination, DataTableToolbar, EmptyState, PageCard, PageHeader } from "@/components/common"
 import { SalaryComponentFormPage } from "@/components/features/payroll/salary-component-form-page"
 import { Button } from "@/components/ui/button"
 import {
@@ -24,7 +24,7 @@ import type { ISalaryComponent } from "@/types/payroll.types"
 
 import { useState } from "react"
 
-import { Loader2, MoreHorizontal, Plus } from "lucide-react"
+import { Calculator, Loader2, MoreHorizontal, Plus } from "lucide-react"
 
 export default function SalaryComponents() {
   const { data: components, isLoading, isError } = useSalaryComponents()
@@ -75,7 +75,7 @@ export default function SalaryComponents() {
         title="Thành phần lương"
         description="Định nghĩa các thành phần thu nhập, khấu trừ và công thức tính lương."
         actions={
-          <Button className="gap-2" onClick={handleCreate}>
+          <Button className="gap-2 rounded-full font-semibold" onClick={handleCreate}>
             <Plus size={16} /> Thêm thành phần
           </Button>
         }
@@ -131,8 +131,12 @@ export default function SalaryComponents() {
                 </TableRow>
               ) : paginatedComponents.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
-                    Chưa có thành phần lương nào được cấu hình.
+                  <TableCell colSpan={7} className="p-8">
+                    <EmptyState
+                      icon={Calculator}
+                      title="Chưa có thành phần lương"
+                      description="Chưa có thành phần thu nhập hay khoản khấu trừ nào được thiết lập."
+                    />
                   </TableCell>
                 </TableRow>
               ) : (
@@ -167,12 +171,12 @@ export default function SalaryComponents() {
                     <TableCell className="px-4 py-3 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                          <Button variant="ghost" className="h-8 w-8 p-0 rounded-full">
                             <span className="sr-only">Open menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" className="rounded-xl">
                           <DropdownMenuItem onClick={() => handleEdit(comp)}>
                             Sửa thành phần
                           </DropdownMenuItem>
