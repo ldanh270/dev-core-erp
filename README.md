@@ -79,14 +79,14 @@ The backend follows `Route → Controller → Service → Repository → Prisma/
    nr dev
    ```
 
-`nr dev` starts backend, frontend, MCP server and agent gateway concurrently. Use `nr dev:stage` when the gateway is not required.
+`nr dev` starts backend and frontend concurrently. Use `nr dev:all` when MCP server and agent gateway are also required.
 
 ## Common commands
 
 | Command | Purpose |
 |---|---|
-| `nr dev` | Start backend, frontend, MCP and gateway |
-| `nr dev:stage` | Start backend, frontend and MCP |
+| `nr dev` | Start backend and frontend (Web ERP) |
+| `nr dev:all` | Start backend, frontend, MCP and gateway |
 | `nr dev:backend` / `dev:frontend` / `dev:mcp` / `dev:gateway` | Start one package |
 | `nr db:generate` | Generate Prisma client |
 | `nr db:deploy` | Apply committed migrations |
