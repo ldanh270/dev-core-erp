@@ -7,6 +7,14 @@ import { CancelDialog } from "@/components/features/application/CancelDialog"
 import { RejectDialog } from "@/components/features/application/RejectDialog"
 import { SubmitApplicationModal } from "@/components/features/application/SubmitApplicationModal"
 import { Button } from "@/components/ui/button"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { ROUTES } from "@/config/routes.config"
 import { useAllApplications } from "@/hooks/application/useAllApplications"
 import { useManageApplications } from "@/hooks/application/useManageApplications"
@@ -179,14 +187,14 @@ export default function ApplicationDashboard() {
           }
           actions={
             <Button
-              size="lg"
-              className="h-11 px-5"
+              size="sm"
+              className="h-9 px-4 rounded-full font-semibold gap-1.5 text-xs"
               onClick={() => {
                 setCreateType(undefined)
                 setShowSubmitModal(true)
               }}
             >
-              <Plus size={16} strokeWidth={2.5} />
+              <Plus size={15} strokeWidth={2.5} />
               Tạo đơn
             </Button>
           }
@@ -242,44 +250,36 @@ export default function ApplicationDashboard() {
           />
         </PageCard>
       ) : (
-        <PageCard className="min-w-0 overflow-hidden p-0" noBorder={false}>
-          <div className="overflow-x-auto">
-            <table className="w-full text-[13px] border-collapse border border-border">
-              <thead>
-                <tr>
-                  <th
-                    colSpan={3}
-                    className="px-4 py-3 bg-muted/50 border border-border text-center font-semibold text-foreground"
-                  >
-                    Tổng phép
-                  </th>
-                </tr>
-                <tr>
-                  <th className="px-4 py-3 bg-muted/50 border border-border text-center font-semibold text-foreground w-1/3">
+        <PageCard className="min-w-0 overflow-hidden p-0 rounded-xl" noBorder={false}>
+          <div className="overflow-x-auto p-4">
+            <Table className="text-sm">
+              <TableHeader className="bg-muted/40">
+                <TableRow className="hover:bg-transparent border-b">
+                  <TableHead className="text-center font-semibold text-foreground text-xs uppercase">
                     Số phép
-                  </th>
-                  <th className="px-4 py-3 bg-muted/50 border border-border text-center font-semibold text-foreground w-1/3">
+                  </TableHead>
+                  <TableHead className="text-center font-semibold text-foreground text-xs uppercase">
                     Đã dùng
-                  </th>
-                  <th className="px-4 py-3 bg-muted/50 border border-border text-center font-semibold text-foreground w-1/3">
+                  </TableHead>
+                  <TableHead className="text-center font-semibold text-foreground text-xs uppercase">
                     Còn lại
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="px-4 py-4 border border-border text-center text-foreground font-medium">
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow className="hover:bg-transparent border-b-0">
+                  <TableCell className="py-6 text-center font-mono font-medium text-foreground text-lg">
                     7
-                  </td>
-                  <td className="px-4 py-4 border border-border text-center text-foreground font-medium">
+                  </TableCell>
+                  <TableCell className="py-6 text-center font-mono font-medium text-foreground text-lg">
                     0
-                  </td>
-                  <td className="px-4 py-4 border border-border text-center text-foreground font-medium">
+                  </TableCell>
+                  <TableCell className="py-6 text-center font-mono font-bold text-primary text-lg">
                     7
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
           </div>
         </PageCard>
       )}
