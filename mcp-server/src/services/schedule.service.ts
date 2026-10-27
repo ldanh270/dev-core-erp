@@ -1,4 +1,4 @@
-import { HRP_API_CONSTANTS } from "../constants/hrp-api.constants.js"
+import { DEVCORE_API_CONSTANTS } from "../constants/devcore-api.constants.js"
 import type {
   AssignScheduleInput,
   GenerateScheduleInput,
@@ -6,7 +6,7 @@ import type {
   UpdateScheduleSettingsInput,
 } from "../schemas/shift.schema.js"
 import { SessionData } from "../types/session.types.js"
-import { createAuthedClient } from "../utils/hrp-client.js"
+import { createAuthedClient } from "../utils/devcore-client.js"
 
 export class ScheduleService {
   private client(session: SessionData) {
@@ -24,7 +24,7 @@ export class ScheduleService {
 
   async getMySchedule(session: SessionData) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_MY)
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_MY)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to fetch my schedule")
@@ -34,7 +34,7 @@ export class ScheduleService {
   async listMySchedules(session: SessionData) {
     try {
       const res = await this.client(session).get(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_MY_ALL,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_MY_ALL,
       )
       return res.data
     } catch (e: any) {
@@ -45,7 +45,7 @@ export class ScheduleService {
   async getEmployeeSchedule(session: SessionData, employeeId: string) {
     try {
       const res = await this.client(session).get(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_EMPLOYEE(employeeId),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_EMPLOYEE(employeeId),
       )
       return res.data
     } catch (e: any) {
@@ -56,7 +56,7 @@ export class ScheduleService {
   async listEmployeeSchedules(session: SessionData, employeeId: string) {
     try {
       const res = await this.client(session).get(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_EMPLOYEE_ALL(employeeId),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_EMPLOYEE_ALL(employeeId),
       )
       return res.data
     } catch (e: any) {
@@ -67,7 +67,7 @@ export class ScheduleService {
   async assign(session: SessionData, data: AssignScheduleInput) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_ASSIGN,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_ASSIGN,
         data,
       )
       return res.data
@@ -79,7 +79,7 @@ export class ScheduleService {
   async override(session: SessionData, data: OverrideShiftInput) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_OVERRIDE,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_OVERRIDE,
         data,
       )
       return res.data
@@ -91,7 +91,7 @@ export class ScheduleService {
   async previewGenerate(session: SessionData, data: GenerateScheduleInput) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_GENERATE_PREVIEW,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_GENERATE_PREVIEW,
         data,
       )
       return res.data
@@ -103,7 +103,7 @@ export class ScheduleService {
   async generate(session: SessionData, data: GenerateScheduleInput) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_GENERATE,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_GENERATE,
         data,
       )
       return res.data
@@ -115,7 +115,7 @@ export class ScheduleService {
   async getSettings(session: SessionData) {
     try {
       const res = await this.client(session).get(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_SETTINGS,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_SETTINGS,
       )
       return res.data
     } catch (e: any) {
@@ -126,7 +126,7 @@ export class ScheduleService {
   async updateSettings(session: SessionData, data: UpdateScheduleSettingsInput) {
     try {
       const res = await this.client(session).put(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_SETTINGS,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_SETTINGS,
         data,
       )
       return res.data

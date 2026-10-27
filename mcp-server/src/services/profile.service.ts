@@ -1,11 +1,11 @@
-import { HRP_API_CONSTANTS } from "../constants/hrp-api.constants.js"
+import { DEVCORE_API_CONSTANTS } from "../constants/devcore-api.constants.js"
 import type {
   ChangePasswordInput,
   LinkEmployeeInput,
   UpdateProfileInput,
 } from "../schemas/profile.schema.js"
 import { SessionData } from "../types/session.types.js"
-import { createAuthedClient } from "../utils/hrp-client.js"
+import { createAuthedClient } from "../utils/devcore-client.js"
 
 export class ProfileService {
   private client(session: SessionData) {
@@ -23,7 +23,7 @@ export class ProfileService {
 
   async getMe(session: SessionData) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.PROFILE.ME)
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.PROFILE.ME)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to fetch profile")
@@ -32,7 +32,7 @@ export class ProfileService {
 
   async updateMe(session: SessionData, data: UpdateProfileInput) {
     try {
-      const res = await this.client(session).patch(HRP_API_CONSTANTS.ENDPOINTS.PROFILE.ME, data)
+      const res = await this.client(session).patch(DEVCORE_API_CONSTANTS.ENDPOINTS.PROFILE.ME, data)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to update profile")
@@ -52,7 +52,7 @@ export class ProfileService {
   async changePassword(session: SessionData, data: ChangePasswordInput) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.PROFILE.CHANGE_PASSWORD,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROFILE.CHANGE_PASSWORD,
         data,
       )
       return res.data
@@ -64,7 +64,7 @@ export class ProfileService {
   async linkEmployee(session: SessionData, data: LinkEmployeeInput) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.PROFILE.LINK_EMPLOYEE,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROFILE.LINK_EMPLOYEE,
         data,
       )
       return res.data

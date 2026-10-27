@@ -6,15 +6,17 @@ import {
   successResponse,
   type ApiResponse,
 } from '../contracts/api.contract.js'
-import { HrpApiError } from '../errors/hrp-api.error.js'
-import { createAuthedClient, hrpClient } from '../utils/hrp-client.js'
+import { DevcoreApiError } from '../errors/devcore-api.error.js'
+import { createAuthedClient, devcoreClient } from '../utils/devcore-client.js'
 
-export type HrpApiSession = {
+export type DevcoreApiSession = {
   jwt: string
   cookies?: string[]
 }
 
-export class HrpApiClient {
+export type HrpApiSession = DevcoreApiSession
+
+export class DevcoreApiClient {
   constructor(private readonly client: AxiosInstance) {}
 
   public async request<T>(config: AxiosRequestConfig): Promise<ApiResponse<T>> {
@@ -34,7 +36,7 @@ export class HrpApiClient {
 
       const apiError = normalizeApiError(
         error.response?.data,
-        error.message || 'HRP API request failed',
+        error.message || 'DevCore ERP API request failed',
         `HTTP_${error.response?.status ?? 'ERROR'}`,
       )
       return errorResponse(apiError, { status: error.response?.status ?? null })
@@ -44,7 +46,7 @@ export class HrpApiClient {
   public async requestOrThrow<T>(config: AxiosRequestConfig): Promise<T> {
     const response = await this.request<T>(config)
     if (response.error) {
-      throw new HrpApiError(response.error, this.statusFromMeta(response.meta))
+      throw new DevcoreApiError(response.error, this.statusFromMeta(response.meta))
     }
     return response.data as T
   }
@@ -56,7 +58,11 @@ export class HrpApiClient {
   }
 }
 
-export const publicHrpApi = new HrpApiClient(hrpClient)
+export const publicDevcoreApi = new DevcoreApiClient(devcoreClient)
+export const publicHrpApi = publicDevcoreApi
 
-export const createHrpApiClient = (session: HrpApiSession): HrpApiClient =>
-  new HrpApiClient(createAuthedClient(session))
+export const createDevcoreApiClient = (session: DevcoreApiSession): DevcoreApiClient =>
+  new DevcoreApiClient(createAuthedClient(session))
+
+export const createHrpApiClient = createDevcoreApiClient
+export const HrpApiClient = DevcoreApiClient

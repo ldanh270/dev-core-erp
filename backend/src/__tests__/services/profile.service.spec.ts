@@ -272,7 +272,7 @@ describe("ProfileService", () => {
       expect(cloudinary.uploader.destroy).toHaveBeenCalledWith("old_avatar_id")
       expect(cloudinary.uploader.upload_stream).toHaveBeenCalledWith(
         expect.objectContaining({
-          folder: "hrp/avatars",
+          folder: "devcore/avatars",
           public_id: expect.stringMatching(/^avatar_\d+_emp-123$/),
           overwrite: true,
           format: "webp",

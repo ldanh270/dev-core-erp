@@ -10,7 +10,7 @@
 
 set -euo pipefail
 
-echo "🚀 Starting HRP EC2 setup..."
+echo "🚀 Starting DevCore ERP EC2 setup..."
 
 # Detect OS
 if [ -f /etc/amazon-linux-release ] || grep -q "Amazon Linux" /etc/os-release 2>/dev/null; then
@@ -52,12 +52,12 @@ docker-compose --version
 
 # ---- Create project directory ----
 echo "📂 Creating project directory..."
-mkdir -p ~/hrp/nginx/conf.d
+mkdir -p ~/devcore-erp/nginx/conf.d
 
 # ---- Create env file templates ----
 echo "📝 Creating env file templates..."
 
-cat > ~/hrp/backend.env.example << 'EOF'
+cat > ~/devcore-erp/backend.env.example << 'EOF'
 NODE_ENV=production
 PORT=5000
 SERVER_URL=https://YOUR_DOMAIN
@@ -77,17 +77,18 @@ GOOGLE_OAUTH_CLIENT_SECRET=
 AI_API_KEY=
 AI_BASE_URL=https://openrouter.ai/api/v1
 AI_MODEL=google/gemini-2.5-flash
+SEED_PASSWORD=
 EOF
 
-cat > ~/hrp/mcp.env.example << 'EOF'
+cat > ~/devcore-erp/mcp.env.example << 'EOF'
 NODE_ENV=production
 PORT=3001
-HRP_API_BASE_URL=http://backend:5000
+DEVCORE_API_BASE_URL=http://backend:5000
 PUBLIC_BASE_URL=https://YOUR_DOMAIN/mcp
 DEBUG=false
 EOF
 
-cat > ~/hrp/gateway.env.example << 'EOF'
+cat > ~/devcore-erp/gateway.env.example << 'EOF'
 NODE_ENV=production
 TELEGRAM_BOT_TOKEN=
 NINE_ROUTER_BASE_URL=https://openrouter.ai/api/v1
@@ -99,7 +100,7 @@ REDIS_URL=redis://:REDIS_PASSWORD@redis:6379
 PORT=3002
 EOF
 
-cat > ~/hrp/.env.example << 'EOF'
+cat > ~/devcore-erp/.env.example << 'EOF'
 GITHUB_REPO=your-github-org/dev-core-erp
 IMAGE_TAG=latest
 REDIS_PASSWORD=your_strong_redis_password_here
@@ -112,11 +113,11 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "📋 NEXT STEPS:"
 echo ""
 echo "1. Copy env files and fill in values:"
-echo "   cp ~/hrp/backend.env.example ~/hrp/backend.env"
-echo "   cp ~/hrp/mcp.env.example     ~/hrp/mcp.env"
-echo "   cp ~/hrp/gateway.env.example ~/hrp/gateway.env"
-echo "   cp ~/hrp/.env.example        ~/hrp/.env"
-echo "   nano ~/hrp/backend.env  # fill in all values"
+echo "   cp ~/devcore-erp/backend.env.example ~/devcore-erp/backend.env"
+echo "   cp ~/devcore-erp/mcp.env.example     ~/devcore-erp/mcp.env"
+echo "   cp ~/devcore-erp/gateway.env.example ~/devcore-erp/gateway.env"
+echo "   cp ~/devcore-erp/.env.example        ~/devcore-erp/.env"
+echo "   nano ~/devcore-erp/backend.env  # fill in all values"
 echo ""
 echo "2. Configure GitHub Secrets (repo Settings → Secrets → Actions):"
 echo "   EC2_HOST            = $(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)"
