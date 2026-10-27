@@ -1,7 +1,7 @@
-import { HRP_API_CONSTANTS } from "../constants/hrp-api.constants.js"
+import { DEVCORE_API_CONSTANTS } from "../constants/devcore-api.constants.js"
 import type { CreateHolidayInput, UpdateHolidayInput } from "../schemas/shift.schema.js"
 import { SessionData } from "../types/session.types.js"
-import { createAuthedClient } from "../utils/hrp-client.js"
+import { createAuthedClient } from "../utils/devcore-client.js"
 
 export class HolidayService {
   private client(session: SessionData) {
@@ -19,7 +19,7 @@ export class HolidayService {
 
   async list(session: SessionData) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.HOLIDAY.BASE)
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.HOLIDAY.BASE)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to list holidays")
@@ -28,7 +28,7 @@ export class HolidayService {
 
   async getOne(session: SessionData, id: string) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.HOLIDAY.BY_ID(id))
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.HOLIDAY.BY_ID(id))
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to fetch holiday")
@@ -37,7 +37,7 @@ export class HolidayService {
 
   async check(session: SessionData, date: string) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.HOLIDAY.CHECK, {
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.HOLIDAY.CHECK, {
         params: { date },
       })
       return res.data
@@ -48,7 +48,7 @@ export class HolidayService {
 
   async create(session: SessionData, data: CreateHolidayInput) {
     try {
-      const res = await this.client(session).post(HRP_API_CONSTANTS.ENDPOINTS.HOLIDAY.BASE, data)
+      const res = await this.client(session).post(DEVCORE_API_CONSTANTS.ENDPOINTS.HOLIDAY.BASE, data)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to create holiday")
@@ -58,7 +58,7 @@ export class HolidayService {
   async update(session: SessionData, id: string, data: UpdateHolidayInput) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.HOLIDAY.BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.HOLIDAY.BY_ID(id),
         data,
       )
       return res.data
@@ -69,7 +69,7 @@ export class HolidayService {
 
   async delete(session: SessionData, id: string) {
     try {
-      const res = await this.client(session).delete(HRP_API_CONSTANTS.ENDPOINTS.HOLIDAY.BY_ID(id))
+      const res = await this.client(session).delete(DEVCORE_API_CONSTANTS.ENDPOINTS.HOLIDAY.BY_ID(id))
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to delete holiday")

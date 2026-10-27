@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios"
 
-import { HRP_API_CONSTANTS } from "../constants/hrp-api.constants.js"
+import { DEVCORE_API_CONSTANTS } from "../constants/devcore-api.constants.js"
 import { logger } from "./logger.js"
 
 /**
@@ -51,13 +51,15 @@ function attachLoggingInterceptors(client: AxiosInstance, label: string): void {
 /**
  * Default HTTP Client without authentication (Used for login, forgot-password, etc.)
  */
-export const hrpClient = axios.create({
-  baseURL: HRP_API_CONSTANTS.BASE_URL,
+export const devcoreClient = axios.create({
+  baseURL: DEVCORE_API_CONSTANTS.BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 })
-attachLoggingInterceptors(hrpClient, "public")
+attachLoggingInterceptors(devcoreClient, "public")
+
+export const hrpClient = devcoreClient
 
 /**
  * Create an HTTP Client with a Bearer token and optional Cookies (Used for authenticated requests)
@@ -76,7 +78,7 @@ export const createAuthedClient = (session: { jwt: string; cookies?: string[] })
   }
 
   const client = axios.create({
-    baseURL: HRP_API_CONSTANTS.BASE_URL,
+    baseURL: DEVCORE_API_CONSTANTS.BASE_URL,
     headers,
     withCredentials: true,
   })

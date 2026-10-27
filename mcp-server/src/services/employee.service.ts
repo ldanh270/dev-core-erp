@@ -1,4 +1,4 @@
-import { HRP_API_CONSTANTS } from "../constants/hrp-api.constants.js"
+import { DEVCORE_API_CONSTANTS } from "../constants/devcore-api.constants.js"
 import type {
   CreateEmployeeInput,
   ListEmployeesInput,
@@ -6,7 +6,7 @@ import type {
   UpdateEmployeeStatusInput,
 } from "../schemas/employee.schema.js"
 import { SessionData } from "../types/session.types.js"
-import { createAuthedClient } from "../utils/hrp-client.js"
+import { createAuthedClient } from "../utils/devcore-client.js"
 
 export class EmployeeService {
   private client(session: SessionData) {
@@ -24,7 +24,7 @@ export class EmployeeService {
 
   async list(session: SessionData, params?: ListEmployeesInput) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.EMPLOYEE.BASE, {
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.EMPLOYEE.BASE, {
         params,
       })
       return res.data
@@ -35,7 +35,7 @@ export class EmployeeService {
 
   async listApprovers(session: SessionData) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.EMPLOYEE.APPROVERS)
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.EMPLOYEE.APPROVERS)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to list approvers")
@@ -44,7 +44,7 @@ export class EmployeeService {
 
   async getOne(session: SessionData, id: string) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.EMPLOYEE.BY_ID(id))
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.EMPLOYEE.BY_ID(id))
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to fetch employee")
@@ -53,7 +53,7 @@ export class EmployeeService {
 
   async create(session: SessionData, data: CreateEmployeeInput) {
     try {
-      const res = await this.client(session).post(HRP_API_CONSTANTS.ENDPOINTS.EMPLOYEE.BASE, data)
+      const res = await this.client(session).post(DEVCORE_API_CONSTANTS.ENDPOINTS.EMPLOYEE.BASE, data)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to create employee")
@@ -63,7 +63,7 @@ export class EmployeeService {
   async update(session: SessionData, id: string, data: UpdateEmployeeInput) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.EMPLOYEE.BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.EMPLOYEE.BY_ID(id),
         data,
       )
       return res.data
@@ -75,7 +75,7 @@ export class EmployeeService {
   async updateStatus(session: SessionData, id: string, data: UpdateEmployeeStatusInput) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.EMPLOYEE.STATUS(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.EMPLOYEE.STATUS(id),
         data,
       )
       return res.data
@@ -86,7 +86,7 @@ export class EmployeeService {
 
   async delete(session: SessionData, id: string) {
     try {
-      const res = await this.client(session).delete(HRP_API_CONSTANTS.ENDPOINTS.EMPLOYEE.BY_ID(id))
+      const res = await this.client(session).delete(DEVCORE_API_CONSTANTS.ENDPOINTS.EMPLOYEE.BY_ID(id))
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to delete employee")
