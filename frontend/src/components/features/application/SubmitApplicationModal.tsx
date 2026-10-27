@@ -1,3 +1,5 @@
+"use client"
+
 import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-"use client"
 
 import { APP_TYPE_META, LEAVE_TYPE_OPTIONS } from "@/components/attendance/attendance-ui.meta"
 import { APPLICATION_TYPES, REGIME_TYPE } from "@/config/entities/attendance.config"
