@@ -239,12 +239,13 @@ export default function ProjectList() {
         <div className="relative w-full md:w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
           <Input
+            size="sm"
             placeholder="Tìm theo tên, mô tả, công nghệ..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value)
             }}
-            className="pl-9 h-9 text-xs border-border rounded-full bg-background shadow-none"
+            className="pl-9 border-border bg-background shadow-none"
           />
         </div>
 
@@ -254,7 +255,7 @@ export default function ProjectList() {
             Trạng thái:
           </Label>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-40 h-9 border-border rounded-full px-3 text-xs bg-background shadow-none">
+            <SelectTrigger size="sm" className="w-40 border-border bg-background shadow-none">
               <SelectValue placeholder="Tất cả" />
             </SelectTrigger>
             <SelectContent position="popper" className="rounded-xl border-border bg-popover">

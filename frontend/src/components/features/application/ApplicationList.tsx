@@ -172,7 +172,7 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
                   autoComplete="off"
                   placeholder="Tìm theo tên, người duyệt hoặc mã…"
                   aria-label="Tìm kiếm đơn"
-                  className="h-9 pl-9 pr-4 text-xs bg-background shadow-none border-border rounded-full"
+                  className="pl-9 pr-4 bg-background shadow-none border-border"
                 />
                 <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
               </div>
@@ -186,7 +186,7 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
                     setPage(1)
                   }}
                 >
-                  <SelectTrigger aria-label="Lọc theo loại đơn" className="h-9 bg-background px-4 text-xs border-border shadow-none rounded-full">
+                  <SelectTrigger size="sm" aria-label="Lọc theo loại đơn" className="bg-background border-border shadow-none">
                     <SelectValue placeholder="Loại đơn" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
@@ -211,7 +211,7 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
                   setTypeFilter("all")
                   setPage(1)
                 }}
-                className="h-9 px-4 text-xs rounded-full"
+                className="gap-1.5"
               >
                 <RotateCcw className="size-3.5" />
                 Đặt lại

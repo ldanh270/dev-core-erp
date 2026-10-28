@@ -225,7 +225,7 @@ export default function RequisitionsPage() {
                       setPage(1)
                     }}
                   >
-                    <SelectTrigger className="w-[170px] h-9 text-xs bg-background rounded-full">
+                    <SelectTrigger size="sm" className="w-[170px] bg-background">
                       <SelectValue placeholder="Độ ưu tiên" />
                     </SelectTrigger>
                     <SelectContent>

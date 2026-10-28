@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { getControlSizeClass, type ControlSize } from "@/config/ui-density.config"
 import { cn } from "@/lib/utils"
 
 import * as React from "react"
@@ -21,7 +22,7 @@ export interface DatePickerProps {
   disabled?: boolean
   className?: string
   triggerClassName?: string
-  size?: "default" | "sm"
+  size?: ControlSize
   clearable?: boolean
   minDate?: string
   maxDate?: string
@@ -191,8 +192,8 @@ export function DatePicker({
             variant="outline"
             disabled={disabled}
             className={cn(
-              "w-full justify-start text-left font-normal rounded-full border-border bg-background hover:bg-muted/40 transition-colors shadow-xs",
-              size === "sm" ? "h-9 px-4 text-xs" : "h-11 px-5 text-sm",
+              "w-full justify-start text-left font-normal border-border bg-background hover:bg-muted/40 transition-colors shadow-xs",
+              getControlSizeClass(size),
               !value && "text-muted-foreground",
               triggerClassName,
             )}
@@ -358,7 +359,7 @@ export interface DateRangePickerProps {
   disabled?: boolean
   className?: string
   triggerClassName?: string
-  size?: "default" | "sm"
+  size?: ControlSize
   clearable?: boolean
 }
 
@@ -421,8 +422,8 @@ export function DateRangePicker({
             variant="outline"
             disabled={disabled}
             className={cn(
-              "w-full justify-start text-left font-normal rounded-full border-border bg-background hover:bg-muted/40 transition-colors shadow-xs",
-              size === "sm" ? "h-9 px-4 text-xs" : "h-11 px-5 text-sm",
+              "w-full justify-start text-left font-normal border-border bg-background hover:bg-muted/40 transition-colors shadow-xs",
+              getControlSizeClass(size),
               !startDate && !endDate && "text-muted-foreground",
               triggerClassName,
             )}

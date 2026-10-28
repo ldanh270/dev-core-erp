@@ -110,8 +110,9 @@ export default function ActivityLogs() {
             <div className="relative w-full max-w-xs">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
               <Input
+                size="sm"
                 placeholder="Tìm theo ID nhân viên..."
-                className="pl-8 h-9 text-xs bg-background border-border/80 rounded-full focus:border-primary"
+                className="pl-8 bg-background border-border/80 focus:border-primary"
                 value={searchTerm}
                 onChange={handleSearch}
               />
@@ -125,7 +126,7 @@ export default function ActivityLogs() {
                   handleFilterChange("category", val === "all" ? undefined : val)
                 }}
               >
-                <SelectTrigger className="h-9 w-[170px] bg-background border-border/80 rounded-full text-xs font-semibold">
+                <SelectTrigger size="sm" className="w-[170px] bg-background border-border/80 font-semibold">
                   <SelectValue placeholder="Tất cả danh mục" />
                 </SelectTrigger>
                 <SelectContent>

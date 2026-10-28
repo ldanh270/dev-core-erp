@@ -219,6 +219,7 @@ export default function EmployeeList() {
             {/* Search */}
             <div className="relative flex-1 sm:max-w-xs">
               <Input
+                size="sm"
                 type="text"
                 value={localKeyword}
                 onChange={(e) => {
@@ -239,7 +240,7 @@ export default function EmployeeList() {
                 autoComplete="off"
                 placeholder="Tìm kiếm họ tên, email..."
                 aria-label="Tìm kiếm nhân sự"
-                className="h-9 pl-9 pr-4 text-xs bg-background shadow-none border-border rounded-full"
+                className="pl-9 pr-4 bg-background shadow-none border-border"
               />
               <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             </div>
@@ -250,12 +251,12 @@ export default function EmployeeList() {
                 beginTransition()
                 setQuery((prev) => ({ ...prev, search: localKeyword, page: 1 }))
               }}
-              className="h-9 px-4 text-xs rounded-full font-semibold"
+              className="px-4 font-semibold"
             >
               Tìm kiếm
             </Button>
           </div>
-          <Button variant="outline" size="sm" className="h-9 px-3 gap-1.5 text-xs text-muted-foreground bg-background border border-border rounded-full hover:bg-accent">
+          <Button variant="outline" size="sm" className="gap-1.5 text-muted-foreground bg-background border-border hover:bg-accent">
             <FileDown size={13.5} />
             Xuất Excel
           </Button>

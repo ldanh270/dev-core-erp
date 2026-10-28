@@ -161,6 +161,7 @@ export default function ContractsPage() {
           <div className="flex w-full flex-1 items-center gap-3 sm:w-auto">
             <div className="relative flex-1 sm:max-w-xs">
               <Input
+                size="sm"
                 value={keyword}
                 onChange={(event) => {
                   const val = event.target.value
@@ -186,7 +187,7 @@ export default function ContractsPage() {
                 }}
                 placeholder="Tìm kiếm số HĐ, tiêu đề..."
                 aria-label="Tìm kiếm hợp đồng"
-                className="h-9 pl-9 pr-4 text-xs bg-background shadow-none border-border rounded-full"
+                className="pl-9 pr-4 bg-background shadow-none border-border"
               />
               <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             </div>
@@ -199,7 +200,7 @@ export default function ContractsPage() {
                 setSearchParams(params)
               }}
             >
-              <SelectTrigger className="h-9 w-44 text-xs bg-background border-border shadow-none rounded-full">
+              <SelectTrigger size="sm" className="w-44 bg-background border-border shadow-none">
                 <SelectValue placeholder="Tất cả trạng thái" />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
@@ -223,7 +224,7 @@ export default function ContractsPage() {
                 params.set("page", "1")
                 setSearchParams(params)
               }}
-              className="h-9 px-4 text-xs rounded-full font-semibold"
+              className="px-4 font-semibold"
             >
               Tìm kiếm
             </Button>
