@@ -235,8 +235,9 @@ export default function PermissionMatrix() {
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
             <Input
+              size="sm"
               placeholder="Tìm kiếm API, đường dẫn..."
-              className="pl-8 h-8 text-xs bg-background border-border/80 rounded-full focus:border-primary transition-colors"
+              className="pl-8 bg-background border-border/80 focus:border-primary transition-colors"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -245,7 +246,7 @@ export default function PermissionMatrix() {
             <div className="flex items-center gap-2">
               <ArrowUpDown size={15} className="text-muted-foreground" />
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="h-8 w-[200px] text-xs rounded-full bg-background">
+                <SelectTrigger size="sm" className="w-[200px] bg-background">
                   <SelectValue placeholder="Sắp xếp theo..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -260,7 +261,7 @@ export default function PermissionMatrix() {
             <div className="flex items-center gap-2">
               <Filter size={15} className="text-muted-foreground" />
               <Select value={methodFilter} onValueChange={setMethodFilter}>
-                <SelectTrigger className="h-8 w-[170px] text-xs rounded-full bg-background">
+                <SelectTrigger size="sm" className="w-[170px] bg-background">
                   <SelectValue placeholder="Phương thức..." />
                 </SelectTrigger>
                 <SelectContent>

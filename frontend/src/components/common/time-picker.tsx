@@ -1,4 +1,5 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { getControlSizeClass, type ControlSize } from "@/config/ui-density.config"
 import { cn } from "@/lib/utils"
 
 import * as React from "react"
@@ -12,7 +13,7 @@ export interface TimePickerProps {
   placeholder?: string
   disabled?: boolean
   className?: string
-  size?: "default" | "sm"
+  size?: ControlSize
   clearable?: boolean
 }
 
@@ -80,8 +81,6 @@ export function TimePicker({
     onChange?.("")
   }
 
-  const sizeClasses = size === "sm" ? "h-9 text-xs" : "h-10 text-sm"
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -90,8 +89,8 @@ export function TimePicker({
           id={id}
           disabled={disabled}
           className={cn(
-            "w-full rounded-full border border-input bg-background px-4 font-normal text-foreground transition-all duration-200 outline-none flex items-center justify-between gap-2 shadow-2xs hover:border-primary/50 focus:border-ring focus:ring-2 focus:ring-ring/20 disabled:cursor-not-allowed disabled:opacity-50",
-            sizeClasses,
+            "w-full border border-input bg-background font-normal text-foreground transition-all duration-200 outline-none flex items-center justify-between gap-2 shadow-2xs hover:border-primary/50 focus:border-ring focus:ring-2 focus:ring-ring/20 disabled:cursor-not-allowed disabled:opacity-50",
+            getControlSizeClass(size),
             className
           )}
         >
