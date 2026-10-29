@@ -1,13 +1,15 @@
-import { useMemo, useState, useEffect } from "react"
-import { useSearchParams } from "react-router-dom"
-import { PageCard, PageHeader, AppPagination } from "@/components/common"
+import { AppPagination, EmptyState, PageCard, PageHeader } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import { formatCurrency } from "@/lib/utils"
 import type { Employee } from "@/types/employee.types"
-import { Plus, Search } from "lucide-react"
+
+import { useEffect, useMemo, useState } from "react"
+
+import { Plus, Search, ShieldAlert } from "lucide-react"
+import { useSearchParams } from "react-router-dom"
 
 const EMPTY_EMPLOYEES: Employee[] = []
 
@@ -48,7 +50,7 @@ export default function InsurancePage() {
         title="Bảo hiểm"
         description="Theo dõi thông tin bảo hiểm xã hội, y tế và thất nghiệp của nhân sự."
         actions={
-          <Button size="sm" className="h-8 gap-1.5 px-3 text-xs">
+          <Button size="sm" className="h-8 gap-1.5 px-3 text-xs rounded-full font-semibold">
             <Plus size={13} strokeWidth={2.5} />
             Khai báo bảo hiểm
           </Button>
@@ -85,7 +87,7 @@ export default function InsurancePage() {
                 }}
                 placeholder="Tìm kiếm họ tên, mã BH..."
                 aria-label="Tìm kiếm bảo hiểm"
-                className="h-9 pl-9 pr-4 text-xs bg-background shadow-none border-border"
+                className="h-9 pl-9 pr-4 text-xs bg-background shadow-none border-border rounded-full"
               />
               <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             </div>
@@ -102,7 +104,7 @@ export default function InsurancePage() {
                 params.set("page", "1")
                 setSearchParams(params)
               }}
-              className="h-9 px-4 text-xs"
+              className="h-9 px-4 text-xs rounded-full font-semibold"
             >
               Tìm kiếm
             </Button>
@@ -111,27 +113,82 @@ export default function InsurancePage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr className="border-b border-border">
-              <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">Nhân sự</th>
-              <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">Mã NV</th>
-              <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">Số sổ BHXH</th>
-              <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">Mã BHYT</th>
-              <th className="px-5 py-3 text-right text-[11px] font-medium text-muted-foreground">Lương đóng BH</th>
-              <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">Trạng thái</th>
-            </tr></thead>
+            <thead>
+              <tr className="border-b border-border">
+                <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">
+                  Nhân sự
+                </th>
+                <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">
+                  Mã NV
+                </th>
+                <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">
+                  Số sổ BHXH
+                </th>
+                <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">
+                  Mã BHYT
+                </th>
+                <th className="px-5 py-3 text-right text-[11px] font-medium text-muted-foreground">
+                  Lương đóng BH
+                </th>
+                <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">
+                  Trạng thái
+                </th>
+              </tr>
+            </thead>
             <tbody>
-              {isLoading ? <tr><td colSpan={6} className="px-5 py-16 text-center text-sm text-muted-foreground">Đang tải dữ liệu bảo hiểm...</td></tr>
-                : filteredEmployees.length === 0 ? <tr><td colSpan={6} className="px-5 py-16 text-center text-sm text-muted-foreground">Không tìm thấy nhân sự nào.</td></tr>
-                : paginatedEmployees.map((employee: Employee) => (
-                  <tr key={employee.id} className="border-b border-border last:border-0 transition-colors duration-100 hover:bg-muted/25">
-                    <td className="px-5 py-3"><div className="text-[13px] font-medium text-foreground">{employee.fullName}</div><div className="text-[11px] text-muted-foreground">{employee.username}</div></td>
-                    <td className="px-5 py-3"><span className="rounded bg-muted/60 px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">{employee?.id ? employee.id.slice(-6).toUpperCase() : "—"}</span></td>
-                    <td className="px-5 py-3 font-mono text-[11px] text-muted-foreground">{employee?.nationalId ? `79${employee.nationalId.slice(0, 8)}` : "—"}</td>
-                    <td className="px-5 py-3 font-mono text-[11px] text-muted-foreground">{employee?.nationalId ? `DN4${employee.nationalId.slice(0, 10)}` : "—"}</td>
-                    <td className="px-5 py-3 text-right text-[13px] text-foreground">{formatCurrency(5000000)}</td>
-                    <td className="px-5 py-3"><Badge className="px-2 py-0 text-[10px]">Đang đóng BHXH</Badge></td>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="px-5 py-16 text-center text-sm text-muted-foreground">
+                    Đang tải dữ liệu bảo hiểm...
+                  </td>
+                </tr>
+              ) : filteredEmployees.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-8">
+                    <EmptyState
+                      icon={ShieldAlert}
+                      title="Không tìm thấy dữ liệu bảo hiểm"
+                      description="Không có nhân sự hoặc hồ sơ bảo hiểm nào phù hợp với từ khóa tìm kiếm."
+                    />
+                  </td>
+                </tr>
+              ) : (
+                paginatedEmployees.map((employee: Employee) => (
+                  <tr
+                    key={employee.id}
+                    className="border-b border-border last:border-0 transition-colors duration-100 hover:bg-muted/25"
+                  >
+                    <td className="px-5 py-3">
+                      <div className="text-[13px] font-medium text-foreground">
+                        {employee.fullName}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground">{employee.username}</div>
+                    </td>
+                    <td className="px-5 py-3">
+                      <span className="rounded bg-muted/60 px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+                        {employee?.id ? employee.id.slice(-6).toUpperCase() : "—"}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3 font-mono text-[11px] text-muted-foreground">
+                      {employee?.nationalId ? `79${employee.nationalId.slice(0, 8)}` : "—"}
+                    </td>
+                    <td className="px-5 py-3 font-mono text-[11px] text-muted-foreground">
+                      {employee?.nationalId ? `DN4${employee.nationalId.slice(0, 10)}` : "—"}
+                    </td>
+                    <td className="px-5 py-3 text-right text-[13px] text-foreground">
+                      {formatCurrency(5000000)}
+                    </td>
+                    <td className="px-5 py-3">
+                      <Badge
+                        variant="outline"
+                        className="rounded-full shadow-none font-medium px-2.5 py-0.5 border bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400 text-[10px]"
+                      >
+                        Đang đóng BHXH
+                      </Badge>
+                    </td>
                   </tr>
-                ))}
+                ))
+              )}
             </tbody>
           </table>
         </div>

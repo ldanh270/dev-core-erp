@@ -25,10 +25,11 @@ export function DataTableToolbar({
           <div className="relative w-full max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
+              size="sm"
               placeholder={searchPlaceholder}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-9 h-9 bg-background shadow-none rounded-full"
+              className="pl-9 bg-background shadow-none"
             />
           </div>
         )}

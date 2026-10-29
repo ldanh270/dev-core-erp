@@ -896,10 +896,10 @@ export default function ApplicationDetailPage() {
               </Label>
               {dynamicStages.length > 0 ? (
                 <Select value={roundTitle} onValueChange={setRoundTitle}>
-                  <SelectTrigger className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
+                  <SelectTrigger className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
                     <SelectValue placeholder="-- Chọn giai đoạn phỏng vấn từ Cột Kanban --" />
                   </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-border bg-popover shadow-lg">
+                  <SelectContent className="rounded-xl border-border bg-popover shadow-lg">
                     {dynamicStages.map((stg) => (
                       <SelectItem key={stg.id} value={stg.name} className="text-xs font-medium py-2 rounded-xl cursor-pointer">
                         <div className="flex items-center gap-2">
@@ -915,7 +915,7 @@ export default function ApplicationDetailPage() {
                   value={roundTitle}
                   onChange={(e) => { setRoundTitle(e.target.value); }}
                   placeholder="Ví dụ: Phỏng vấn vòng 1, Phỏng vấn vòng 2"
-                  className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold"
+                  className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold"
                 />
               )}
             </div>
@@ -929,10 +929,10 @@ export default function ApplicationDetailPage() {
                   <span>Hình thức</span>
                 </Label>
                 <Select value={roundFormat} onValueChange={setRoundFormat}>
-                  <SelectTrigger className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
+                  <SelectTrigger className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-border bg-popover shadow-lg">
+                  <SelectContent className="rounded-xl border-border bg-popover shadow-lg">
                     <SelectItem value={INTERVIEW_FORMAT.VIDEO_CALL} className="text-xs font-medium py-1.5 rounded-xl cursor-pointer">
                       <div className="flex items-center gap-1.5">
                         <Video className="size-3 text-blue-500" />
@@ -962,10 +962,10 @@ export default function ApplicationDetailPage() {
                   <span>Thời lượng</span>
                 </Label>
                 <Select value={String(roundDuration)} onValueChange={setRoundDuration}>
-                  <SelectTrigger className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
+                  <SelectTrigger className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-border bg-popover shadow-lg">
+                  <SelectContent className="rounded-xl border-border bg-popover shadow-lg">
                     <SelectItem value="30" className="text-xs font-medium">30 phút</SelectItem>
                     <SelectItem value="45" className="text-xs font-medium">45 phút</SelectItem>
                     <SelectItem value="60" className="text-xs font-medium">60 phút</SelectItem>
@@ -986,7 +986,7 @@ export default function ApplicationDetailPage() {
                     <Button
                       type="button"
                       variant="outline"
-                      className="h-10 w-full justify-start rounded-2xl border border-border/70 bg-background px-3 text-xs font-semibold hover:border-primary/50 transition-colors shadow-2xs"
+                      className="h-10 w-full justify-start rounded-full border border-border/70 bg-background px-3 text-xs font-semibold hover:border-primary/50 transition-colors shadow-2xs"
                     >
                       <Calendar className="mr-1.5 size-3.5 text-emerald-500 shrink-0" />
                       <span className="truncate">
@@ -996,7 +996,7 @@ export default function ApplicationDetailPage() {
                       </span>
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent align="end" className="w-64 p-3 rounded-2xl space-y-3 bg-popover border border-border shadow-xl">
+                  <PopoverContent align="end" className="w-64 p-3 rounded-xl space-y-3 bg-popover border border-border shadow-xl">
                     <div className="space-y-1">
                       <Label className="text-[11px] font-bold text-muted-foreground">Chọn ngày</Label>
                       <DatePicker
@@ -1018,7 +1018,7 @@ export default function ApplicationDetailPage() {
                           setRoundScheduledAt(`${dateVal}T${timeVal}`)
                         }}
                       >
-                        <SelectTrigger className="h-9 rounded-xl border-border/70 text-xs font-semibold">
+                        <SelectTrigger className="h-9 rounded-full border-border/70 text-xs font-semibold">
                           <SelectValue placeholder="Chọn giờ" />
                         </SelectTrigger>
                         <SelectContent className="max-h-48 rounded-xl">
@@ -1042,10 +1042,10 @@ export default function ApplicationDetailPage() {
                 <span>Người phỏng vấn chính (Interviewer)</span>
               </Label>
               <Select value={roundInterviewerId} onValueChange={setRoundInterviewerId}>
-                <SelectTrigger className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
+                <SelectTrigger className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
                   <SelectValue placeholder="-- Chọn người phỏng vấn phụ trách --" />
                 </SelectTrigger>
-                <SelectContent className="rounded-2xl border-border bg-popover shadow-lg max-h-56">
+                <SelectContent className="rounded-xl border-border bg-popover shadow-lg max-h-56">
                   {employees.map((emp) => (
                     <SelectItem key={emp.id} value={emp.id} className="text-xs font-medium py-2 rounded-xl cursor-pointer">
                       <div className="flex items-center gap-2.5">
@@ -1108,10 +1108,10 @@ export default function ApplicationDetailPage() {
               </Label>
               {dynamicStages.length > 0 ? (
                 <Select value={editTitle} onValueChange={setEditTitle}>
-                  <SelectTrigger className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
+                  <SelectTrigger className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
                     <SelectValue placeholder="-- Chọn giai đoạn phỏng vấn từ Cột Kanban --" />
                   </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-border bg-popover shadow-lg">
+                  <SelectContent className="rounded-xl border-border bg-popover shadow-lg">
                     {dynamicStages.map((stg) => (
                       <SelectItem key={stg.id} value={stg.name} className="text-xs font-medium py-2 rounded-xl cursor-pointer">
                         <div className="flex items-center gap-2">
@@ -1127,7 +1127,7 @@ export default function ApplicationDetailPage() {
                   value={editTitle}
                   onChange={(e) => { setEditTitle(e.target.value); }}
                   placeholder="Ví dụ: Phỏng vấn vòng 1, Phỏng vấn vòng 2"
-                  className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold"
+                  className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold"
                 />
               )}
             </div>
@@ -1141,10 +1141,10 @@ export default function ApplicationDetailPage() {
                   <span>Hình thức</span>
                 </Label>
                 <Select value={editFormat} onValueChange={setEditFormat}>
-                  <SelectTrigger className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
+                  <SelectTrigger className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-border bg-popover shadow-lg">
+                  <SelectContent className="rounded-xl border-border bg-popover shadow-lg">
                     <SelectItem value={INTERVIEW_FORMAT.VIDEO_CALL} className="text-xs font-medium py-1.5 rounded-xl cursor-pointer">
                       <div className="flex items-center gap-1.5">
                         <Video className="size-3 text-blue-500" />
@@ -1174,10 +1174,10 @@ export default function ApplicationDetailPage() {
                   <span>Thời lượng</span>
                 </Label>
                 <Select value={String(editDuration)} onValueChange={setEditDuration}>
-                  <SelectTrigger className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
+                  <SelectTrigger className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-border bg-popover shadow-lg">
+                  <SelectContent className="rounded-xl border-border bg-popover shadow-lg">
                     <SelectItem value="30" className="text-xs font-medium">30 phút</SelectItem>
                     <SelectItem value="45" className="text-xs font-medium">45 phút</SelectItem>
                     <SelectItem value="60" className="text-xs font-medium">60 phút</SelectItem>
@@ -1198,7 +1198,7 @@ export default function ApplicationDetailPage() {
                     <Button
                       type="button"
                       variant="outline"
-                      className="h-10 w-full justify-start rounded-2xl border border-border/70 bg-background px-3 text-xs font-semibold hover:border-primary/50 transition-colors shadow-2xs"
+                      className="h-10 w-full justify-start rounded-full border border-border/70 bg-background px-3 text-xs font-semibold hover:border-primary/50 transition-colors shadow-2xs"
                     >
                       <Calendar className="mr-1.5 size-3.5 text-emerald-500 shrink-0" />
                       <span className="truncate">
@@ -1208,7 +1208,7 @@ export default function ApplicationDetailPage() {
                       </span>
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent align="end" className="w-64 p-3 rounded-2xl space-y-3 bg-popover border border-border shadow-xl">
+                  <PopoverContent align="end" className="w-64 p-3 rounded-xl space-y-3 bg-popover border border-border shadow-xl">
                     <div className="space-y-1">
                       <Label className="text-[11px] font-bold text-muted-foreground">Chọn ngày</Label>
                       <DatePicker
@@ -1230,7 +1230,7 @@ export default function ApplicationDetailPage() {
                           setEditScheduledAt(`${dateVal}T${timeVal}`)
                         }}
                       >
-                        <SelectTrigger className="h-9 rounded-xl border-border/70 text-xs font-semibold">
+                        <SelectTrigger className="h-9 rounded-full border-border/70 text-xs font-semibold">
                           <SelectValue placeholder="Chọn giờ" />
                         </SelectTrigger>
                         <SelectContent className="max-h-48 rounded-xl">
@@ -1254,10 +1254,10 @@ export default function ApplicationDetailPage() {
                 <span>Người phỏng vấn chính (Interviewer)</span>
               </Label>
               <Select value={editInterviewerId} onValueChange={setEditInterviewerId}>
-                <SelectTrigger className="h-10 rounded-2xl border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
+                <SelectTrigger className="h-10 rounded-full border-border/70 bg-background text-xs font-semibold hover:border-primary/50 transition-colors">
                   <SelectValue placeholder="-- Chọn người phỏng vấn phụ trách --" />
                 </SelectTrigger>
-                <SelectContent className="rounded-2xl border-border bg-popover shadow-lg max-h-56">
+                <SelectContent className="rounded-xl border-border bg-popover shadow-lg max-h-56">
                   {employees.map((emp) => (
                     <SelectItem key={emp.id} value={emp.id} className="text-xs font-medium py-2 rounded-xl cursor-pointer">
                       <div className="flex items-center gap-2.5">

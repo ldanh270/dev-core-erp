@@ -1,6 +1,6 @@
-import { DatePicker } from "@/components/common"
 "use client"
 
+import { DatePicker, TimePicker } from "@/components/common"
 import { LEAVE_TYPE_OPTIONS } from "@/components/attendance/attendance-ui.meta"
 import { AddRegimeCategoryDialog } from "@/components/features/application/add-regime-category-dialog"
 import { FileUploader } from "@/components/ui/file-uploader"
@@ -140,8 +140,8 @@ export function CreateApplicationTimeSection({
   const showDateFutureError = isForgotCard && isStartDateFuture
 
   return (
-    <div className="bg-background rounded-lg border border-border shadow-sm overflow-visible shrink-0 relative flex flex-col">
-      <div className="px-5 py-4 border-b border-border bg-muted/50 rounded-t-lg flex items-center gap-3">
+    <div className="bg-background rounded-xl border border-border shadow-sm overflow-visible shrink-0 relative flex flex-col">
+      <div className="px-5 py-4 border-b border-border bg-muted/50 rounded-t-xl flex items-center gap-3">
         {formIndex !== undefined && (
           <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold shrink-0">
             {formIndex + 1}
@@ -251,7 +251,7 @@ export function CreateApplicationTimeSection({
                       onChange={(e) => {
                         set("reason", e.target.value)
                       }}
-                      className="w-full h-9 px-3 text-[13px] border border-input bg-background rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+                      className="w-full h-9 px-4 text-xs border border-input bg-background rounded-full focus:outline-none focus:ring-1 focus:ring-primary"
                     />
                   </div>
                 </div>
@@ -402,7 +402,7 @@ export function CreateApplicationTimeSection({
                     set("overtimeHours", parseFloat(e.target.value))
                   }}
                   placeholder="Nhập số giờ"
-                  className="w-full h-9 px-3 text-sm border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full h-9 px-4 text-xs border border-input rounded-full bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
             )}
@@ -419,7 +419,7 @@ export function CreateApplicationTimeSection({
                     onChange={(e) => {
                       set("durationMinutes", parseInt(e.target.value))
                     }}
-                    className="w-full h-9 px-3 text-sm border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="w-full h-9 px-4 text-xs border border-input rounded-full bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -492,7 +492,7 @@ export function CreateApplicationTimeSection({
                     type="number"
                     disabled
                     value={form.regimeLateMinutes}
-                    className="w-full h-9 px-3 text-sm border border-input rounded-md bg-muted text-muted-foreground cursor-not-allowed"
+                    className="w-full h-9 px-4 text-xs border border-input rounded-full bg-muted text-muted-foreground cursor-not-allowed"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -503,7 +503,7 @@ export function CreateApplicationTimeSection({
                     type="number"
                     disabled
                     value={form.regimeEarlyMinutes}
-                    className="w-full h-9 px-3 text-sm border border-input rounded-md bg-muted text-muted-foreground cursor-not-allowed"
+                    className="w-full h-9 px-4 text-xs border border-input rounded-full bg-muted text-muted-foreground cursor-not-allowed"
                   />
                 </div>
                 <AddRegimeCategoryDialog
@@ -522,24 +522,24 @@ export function CreateApplicationTimeSection({
               <>
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-foreground">Giờ vào</label>
-                  <input
-                    type="time"
+                  <TimePicker
                     value={form.checkInAt}
-                    onChange={(e) => {
-                      set("checkInAt", e.target.value)
+                    onChange={(val) => {
+                      set("checkInAt", val)
                     }}
-                    className="w-full h-9 px-3 text-sm border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                    placeholder="Chọn giờ vào..."
+                    size="sm"
                   />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-foreground">Giờ ra</label>
-                  <input
-                    type="time"
+                  <TimePicker
                     value={form.checkOutAt}
-                    onChange={(e) => {
-                      set("checkOutAt", e.target.value)
+                    onChange={(val) => {
+                      set("checkOutAt", val)
                     }}
-                    className="w-full h-9 px-3 text-sm border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                    placeholder="Chọn giờ ra..."
+                    size="sm"
                   />
                 </div>
                 <div className="space-y-1.5 col-span-2">
@@ -647,7 +647,7 @@ export function CreateApplicationTimeSection({
                 onChange={(e) => {
                   set("reason", e.target.value)
                 }}
-                className="w-full p-3 text-sm border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full p-3 text-xs border border-input rounded-xl bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
           </div>

@@ -21,7 +21,7 @@ import type { IApplicationListItem } from "@/lib/api/application.api"
 
 import { useEffect, useState } from "react"
 
-import { Filter, RotateCcw, Search } from "lucide-react"
+import { FileText, Filter, RotateCcw, Search } from "lucide-react"
 
 type StatusVariant = "success" | "warning" | "danger" | "neutral"
 
@@ -151,7 +151,7 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
 
         {/* Filters and Actions */}
         {mode !== "manage" && (
-          <div className="flex flex-col gap-3 border-b border-border p-5 lg:flex-row lg:items-center">
+          <div className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-center bg-muted/20">
             <div className="flex flex-1 items-center gap-3 w-full sm:w-auto">
               {/* Search */}
               <div className="relative flex-1 sm:max-w-sm">
@@ -172,9 +172,9 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
                   autoComplete="off"
                   placeholder="Tìm theo tên, người duyệt hoặc mã…"
                   aria-label="Tìm kiếm đơn"
-                  className="h-11 pl-11 pr-4 text-sm"
+                  className="pl-9 pr-4 bg-background shadow-none border-border"
                 />
-                <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
               </div>
 
               <div className="min-w-[180px]">
@@ -186,10 +186,10 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
                     setPage(1)
                   }}
                 >
-                  <SelectTrigger aria-label="Lọc theo loại đơn" className="h-11 bg-background px-4">
+                  <SelectTrigger size="sm" aria-label="Lọc theo loại đơn" className="bg-background border-border shadow-none">
                     <SelectValue placeholder="Loại đơn" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="rounded-xl">
                     <SelectItem value="all">Loại đơn</SelectItem>
                     {Object.values(APPLICATION_TYPES).map((t) => (
                       <SelectItem key={t.LABEL} value={t.LABEL}>
@@ -203,7 +203,7 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
               <Button
                 type="button"
                 variant="outline"
-                size="lg"
+                size="sm"
                 onClick={() => {
                   beginTransition()
                   setLocalKeyword("")
@@ -211,22 +211,22 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
                   setTypeFilter("all")
                   setPage(1)
                 }}
-                className="h-11 px-4"
+                className="gap-1.5"
               >
-                <RotateCcw className="size-4" />
+                <RotateCcw className="size-3.5" />
                 Đặt lại
               </Button>
               <Button
                 type="button"
-                size="lg"
+                size="sm"
                 onClick={() => {
                   beginTransition()
                   setKeyword(localKeyword)
                   setPage(1)
                 }}
-                className="h-11 px-5"
+                className="h-9 px-5 text-xs rounded-full font-semibold"
               >
-                <Filter className="size-4" />
+                <Filter className="size-3.5" />
                 Tìm kiếm
               </Button>
             </div>
@@ -269,9 +269,13 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
                 <tr>
                   <td
                     colSpan={mode === "manage" || mode === "all" ? 8 : 6}
-                    className="h-80 text-center"
+                    className="p-8"
                   >
-                    <EmptyState message="Không tìm thấy đơn phù hợp" />
+                    <EmptyState
+                      icon={FileText}
+                      title="Không tìm thấy đơn phù hợp"
+                      description="Không có đơn từ nào phù hợp với bộ lọc hoặc từ khóa tìm kiếm hiện tại."
+                    />
                   </td>
                 </tr>
               ) : (

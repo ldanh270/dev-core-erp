@@ -88,9 +88,9 @@ export default function CreateApplicationPage() {
             <div className="flex justify-center mt-4">
               <button
                 onClick={addForm}
-                className="flex h-11 items-center gap-2 rounded-full border border-dashed border-primary px-6 text-sm font-medium text-primary transition-colors hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                className="flex h-10 items-center gap-2 rounded-full border border-dashed border-primary px-6 text-xs font-semibold text-primary transition-colors hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
               >
-                <Plus size={16} /> Thêm {typeLabel.toLowerCase()}
+                <Plus size={15} /> Thêm {typeLabel.toLowerCase()}
               </button>
             </div>
           </div>
@@ -99,7 +99,7 @@ export default function CreateApplicationPage() {
         <div className="mt-auto flex justify-end gap-3 pb-2 pt-6">
           <button
             onClick={handleBack}
-            className="h-11 rounded-full border border-input px-6 font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            className="h-10 rounded-full border border-input px-6 text-xs font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             Hủy
           </button>
@@ -109,7 +109,7 @@ export default function CreateApplicationPage() {
               void handleSubmit()
             }}
             disabled={isSubmitting}
-            className="h-11 rounded-full bg-primary px-6 font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50"
+            className="h-10 rounded-full bg-primary px-6 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50"
           >
             {isSubmitting ? "Đang gửi..." : `Gửi ${forms.length} đơn`}
           </button>

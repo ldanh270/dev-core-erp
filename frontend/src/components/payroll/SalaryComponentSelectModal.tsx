@@ -132,19 +132,19 @@ export function SalaryComponentSelectModal({
                 <SelectTrigger className="w-45 rounded-full border-border h-11 bg-card shadow-none focus:ring-1 focus:ring-primary">
                   <SelectValue placeholder="Loại thành phần" />
                 </SelectTrigger>
-                <SelectContent className="border-border rounded-md shadow-sm">
-                  <SelectItem value="all" className="rounded-sm cursor-pointer focus:bg-muted">
+                <SelectContent className="border-border rounded-xl shadow-sm">
+                  <SelectItem value="all" className="rounded-lg cursor-pointer focus:bg-muted">
                     Tất cả loại
                   </SelectItem>
                   <SelectItem
                     value={COMPONENT_TYPE.ADDITION}
-                    className="rounded-sm cursor-pointer focus:bg-muted"
+                    className="rounded-lg cursor-pointer focus:bg-muted"
                   >
                     Cộng vào
                   </SelectItem>
                   <SelectItem
                     value={COMPONENT_TYPE.DEDUCTION}
-                    className="rounded-sm cursor-pointer focus:bg-muted"
+                    className="rounded-lg cursor-pointer focus:bg-muted"
                   >
                     Khấu trừ
                   </SelectItem>

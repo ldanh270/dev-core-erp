@@ -229,7 +229,7 @@ export function CreatePayslipTemplateForm({
                     <SelectTrigger className="w-50 rounded-full border-border h-11 bg-card shadow-none focus:ring-1 focus:ring-primary">
                       <SelectValue placeholder="Chọn mẫu lương..." />
                     </SelectTrigger>
-                    <SelectContent className="border-border rounded-md shadow-sm">
+                    <SelectContent className="border-border rounded-xl shadow-sm">
                       <SelectItem value="none" disabled>
                         Chưa có mẫu nào
                       </SelectItem>
