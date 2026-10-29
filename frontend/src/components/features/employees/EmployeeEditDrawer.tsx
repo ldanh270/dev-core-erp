@@ -5,6 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   EMPLOYEE_STATUSES,
   EMPLOYEE_STATUS_LABELS,
   EMPLOYMENT_CATEGORY_TYPES,
@@ -21,7 +28,7 @@ import {
   useUpdateEmployeeRoles,
 } from "@/hooks/security/queries/use-security-query"
 import { usePositions } from "@/hooks/use-position-query"
-import type { Employee } from "@/types/employee.types"
+import type { Employee, EmployeeStatus, EmployeeType, WorkScheduleType } from "@/types/employee.types"
 import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util"
 
 import { useState } from "react"
@@ -159,20 +166,25 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                     <Label htmlFor="role-select" className="text-[12px] text-muted-foreground">
                       Phân quyền
                     </Label>
-                    <select
+                    <Select
                       key={roleSeedKey}
-                      id="role-select"
-                      className="flex h-12 w-full rounded-full border border-input bg-background px-6 py-3 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                      defaultValue={employeeRoles?.[0]?.id || ""}
-                      onChange={(e) => { handleRoleSelectionChange([e.target.value]); }}
+                      value={selectedRoleIds[0] || (employeeRoles?.[0]?.id ?? "none")}
+                      onValueChange={(val) => {
+                        handleRoleSelectionChange(val === "none" ? [] : [val]);
+                      }}
                     >
-                      <option value="">-- Chọn phân quyền --</option>
-                      {allRoles?.data?.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {getRoleLabel(r.name)}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger id="role-select" className="h-10 bg-background">
+                        <SelectValue placeholder="-- Chọn phân quyền --" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">-- Chọn phân quyền --</SelectItem>
+                        {allRoles?.data?.map((r) => (
+                          <SelectItem key={r.id} value={r.id}>
+                            {getRoleLabel(r.name)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -270,18 +282,27 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                     <Label htmlFor="positionId" className="text-[12px] text-muted-foreground">
                       Chức danh (Vị trí)
                     </Label>
-                    <select
-                      id="positionId"
-                      {...register("positionId")}
-                      className="flex h-12 w-full rounded-full border border-input bg-background px-6 py-3 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    <Select
+                      value={watch("positionId") || "none"}
+                      onValueChange={(val) => {
+                        setValue("positionId", val === "none" ? "" : val, { shouldValidate: true, shouldDirty: true });
+                      }}
                     >
-                      <option value="">-- Chọn chức danh --</option>
-                      {positions.map((pos: { id: string; name: string }) => (
-                        <option key={pos.id} value={pos.id}>
-                          {pos.name}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger
+                        id="positionId"
+                        className={`h-10 bg-background ${errors.positionId ? "border-destructive" : ""}`}
+                      >
+                        <SelectValue placeholder="-- Chọn chức danh --" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">-- Chọn chức danh --</SelectItem>
+                        {positions.map((pos: { id: string; name: string }) => (
+                          <SelectItem key={pos.id} value={pos.id}>
+                            {pos.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     {errors.positionId && (
                       <p className="text-xs text-destructive">{errors.positionId.message}</p>
                     )}
@@ -291,17 +312,23 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                     <Label htmlFor="employeeType" className="text-[12px] text-muted-foreground">
                       Loại nhân sự
                     </Label>
-                    <select
-                      id="employeeType"
-                      {...register("employeeType")}
-                      className="flex h-12 w-full rounded-full border border-input bg-background px-6 py-3 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    <Select
+                      value={watch("employeeType") || EMPLOYMENT_CATEGORY_TYPES[0]}
+                      onValueChange={(val) => {
+                        setValue("employeeType", val as EmployeeType, { shouldValidate: true, shouldDirty: true });
+                      }}
                     >
-                      {EMPLOYMENT_CATEGORY_TYPES.map((typeKey) => (
-                        <option key={typeKey} value={typeKey}>
-                          {getEmployeeTypeLabel(typeKey)}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger id="employeeType" className="h-10 bg-background">
+                        <SelectValue placeholder="Chọn loại nhân sự..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {EMPLOYMENT_CATEGORY_TYPES.map((typeKey) => (
+                          <SelectItem key={typeKey} value={typeKey}>
+                            {getEmployeeTypeLabel(typeKey)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
@@ -310,34 +337,46 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                     <Label htmlFor="status" className="text-[12px] text-muted-foreground">
                       Trạng thái
                     </Label>
-                    <select
-                      id="status"
-                      {...register("status")}
-                      className="flex h-12 w-full rounded-full border border-input bg-background px-6 py-3 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    <Select
+                      value={watch("status") || EMPLOYEE_STATUSES[0]}
+                      onValueChange={(val) => {
+                        setValue("status", val as EmployeeStatus, { shouldValidate: true, shouldDirty: true });
+                      }}
                     >
-                      {EMPLOYEE_STATUSES.map((statusKey) => (
-                        <option key={statusKey} value={statusKey}>
-                          {EMPLOYEE_STATUS_LABELS[statusKey]}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger id="status" className="h-10 bg-background">
+                        <SelectValue placeholder="Chọn trạng thái..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {EMPLOYEE_STATUSES.map((statusKey) => (
+                          <SelectItem key={statusKey} value={statusKey}>
+                            {EMPLOYEE_STATUS_LABELS[statusKey]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="space-y-1.5">
                     <Label htmlFor="workScheduleType" className="text-[12px] text-muted-foreground">
                       Hình thức làm việc
                     </Label>
-                    <select
-                      id="workScheduleType"
-                      {...register("workScheduleType")}
-                      className="flex h-12 w-full rounded-full border border-input bg-background px-6 py-3 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    <Select
+                      value={watch("workScheduleType") || WORK_SCHEDULE_TYPES[0]}
+                      onValueChange={(val) => {
+                        setValue("workScheduleType", val as WorkScheduleType, { shouldValidate: true, shouldDirty: true });
+                      }}
                     >
-                      {WORK_SCHEDULE_TYPES.map((typeKey) => (
-                        <option key={typeKey} value={typeKey}>
-                          {getWorkScheduleTypeLabel(typeKey)}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger id="workScheduleType" className="h-10 bg-background">
+                        <SelectValue placeholder="Chọn hình thức làm việc..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {WORK_SCHEDULE_TYPES.map((typeKey) => (
+                          <SelectItem key={typeKey} value={typeKey}>
+                            {getWorkScheduleTypeLabel(typeKey)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 

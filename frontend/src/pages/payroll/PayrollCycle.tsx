@@ -35,7 +35,7 @@ import { useNavigate } from "react-router-dom"
 
 function CycleContextPanel() {
   return (
-    <div className="p-8 md:p-10 border-b md:border-b-0 md:border-r border-border bg-muted/20 md:w-1/3 flex flex-col gap-6">
+    <div className="p-8 md:p-10 border-b xl:border-b-0 xl:border-r border-border bg-muted/20 xl:w-80 shrink-0 flex flex-col gap-6">
       <div>
         <div className="flex items-center gap-2 mb-4">
           <div className="h-8 w-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
@@ -118,28 +118,30 @@ function ScheduleTimeField({
   label: string
 }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <FormLabel className="text-sm font-medium text-foreground block">
         {label}
       </FormLabel>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 w-full max-w-sm">
         <FormField
           control={control}
           name={hourName}
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex-1">
               <Select
-                onValueChange={(val) => field.onChange(Number(val))}
+                onValueChange={(val) => {
+                  field.onChange(Number(val))
+                }}
                 value={field.value?.toString()}
               >
                 <FormControl>
-                  <SelectTrigger className="w-24 sm:w-28 rounded-full border-border h-10 shadow-sm transition-shadow hover:shadow-md focus:shadow-md">
+                  <SelectTrigger className="w-full rounded-full border-border h-10 px-4 shadow-sm transition-shadow hover:shadow-md focus:shadow-md">
                     <SelectValue placeholder="Giờ" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent position="popper" className="max-h-64 rounded-xl">
+                <SelectContent position="popper" className="max-h-64 rounded-xl min-w-[130px]">
                   {Array.from({ length: 24 }).map((_, i) => (
-                    <SelectItem key={i} value={i.toString()} className="rounded-lg">
+                    <SelectItem key={i} value={i.toString()} className="rounded-lg whitespace-nowrap">
                       {i.toString().padStart(2, "0")} Giờ
                     </SelectItem>
                   ))}
@@ -149,24 +151,26 @@ function ScheduleTimeField({
             </FormItem>
           )}
         />
-        <span className="text-muted-foreground font-medium pb-2">:</span>
+        <span className="text-muted-foreground font-semibold text-base shrink-0 pb-1">:</span>
         <FormField
           control={control}
           name={minuteName}
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex-1">
               <Select
-                onValueChange={(val) => field.onChange(Number(val))}
+                onValueChange={(val) => {
+                  field.onChange(Number(val))
+                }}
                 value={field.value?.toString()}
               >
                 <FormControl>
-                  <SelectTrigger className="w-24 sm:w-28 rounded-full border-border h-10 shadow-sm transition-shadow hover:shadow-md focus:shadow-md">
+                  <SelectTrigger className="w-full rounded-full border-border h-10 px-4 shadow-sm transition-shadow hover:shadow-md focus:shadow-md">
                     <SelectValue placeholder="Phút" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent position="popper" className="max-h-64 rounded-xl">
+                <SelectContent position="popper" className="max-h-64 rounded-xl min-w-[130px]">
                   {Array.from({ length: 60 }).map((_, i) => (
-                    <SelectItem key={i} value={i.toString()} className="rounded-lg">
+                    <SelectItem key={i} value={i.toString()} className="rounded-lg whitespace-nowrap">
                       {i.toString().padStart(2, "0")} Phút
                     </SelectItem>
                   ))}
@@ -177,7 +181,7 @@ function ScheduleTimeField({
           )}
         />
       </div>
-      <FormDescription className="text-xs max-w-sm mt-1.5 leading-relaxed">
+      <FormDescription className="text-xs text-muted-foreground leading-relaxed pt-1">
         Nên chọn thời điểm ngoài giờ hành chính để hạn chế ảnh hưởng thao tác của HR và nhân viên.
       </FormDescription>
     </div>
@@ -200,25 +204,27 @@ function ScheduleDayField({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="space-y-4">
+        <FormItem className="space-y-3">
           <div className="space-y-1">
             <FormLabel className="text-sm font-medium text-foreground">{label}</FormLabel>
-            <FormDescription className="text-xs leading-relaxed max-w-md">
+            <FormDescription className="text-xs text-muted-foreground leading-relaxed min-h-[36px] flex items-start">
               {description}
             </FormDescription>
           </div>
           <Select
-            onValueChange={(val) => field.onChange(Number(val))}
+            onValueChange={(val) => {
+              field.onChange(Number(val))
+            }}
             value={field.value?.toString()}
           >
             <FormControl>
-              <SelectTrigger className="w-full max-w-xs rounded-full border-border h-10 shadow-sm transition-shadow hover:shadow-md focus:shadow-md">
+              <SelectTrigger className="w-full max-w-sm rounded-full border-border h-10 px-4 shadow-sm transition-shadow hover:shadow-md focus:shadow-md">
                 <SelectValue placeholder="Chọn ngày (1-28)" />
               </SelectTrigger>
             </FormControl>
-            <SelectContent position="popper" className="max-h-64 rounded-xl">
+            <SelectContent position="popper" className="max-h-64 rounded-xl min-w-[200px]">
               {Array.from({ length: 28 }).map((_, i) => (
-                <SelectItem key={i + 1} value={(i + 1).toString()} className="rounded-lg">
+                <SelectItem key={i + 1} value={(i + 1).toString()} className="rounded-lg whitespace-nowrap">
                   Ngày {i + 1} hàng tháng
                 </SelectItem>
               ))}
@@ -292,42 +298,56 @@ function PayrollCycleForm({ settings }: { settings: IPayrollSettings }) {
                   <Separator className="bg-border/50" />
 
                   <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                    <div className="rounded-xl border border-border p-5 space-y-5">
-                      <div className="flex items-center gap-2">
-                        <CalendarClock className="h-4 w-4 text-primary" />
-                        <h4 className="font-medium">Tự động tạo payroll</h4>
+                    <div className="rounded-xl border border-border bg-card/40 p-6 flex flex-col justify-between space-y-6">
+                      <div className="flex items-center gap-3 pb-3 border-b border-border/50">
+                        <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                          <CalendarClock className="h-4 w-4 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-sm text-foreground">Tự động tạo payroll</h4>
+                          <p className="text-xs text-muted-foreground">Tạo bảng lương nháp định kỳ</p>
+                        </div>
                       </div>
-                      <ScheduleDayField
-                        control={form.control}
-                        name="triggerDay"
-                        label="Ngày tạo payroll"
-                        description="Ngày hệ thống tự tạo bảng lương nháp để nhân viên xem payslip và gửi feedback."
-                      />
-                      <ScheduleTimeField
-                        control={form.control}
-                        hourName="triggerHour"
-                        minuteName="triggerMinute"
-                        label="Giờ tạo payroll"
-                      />
+                      <div className="space-y-6">
+                        <ScheduleDayField
+                          control={form.control}
+                          name="triggerDay"
+                          label="Ngày tạo payroll"
+                          description="Ngày hệ thống tự tạo bảng lương nháp để nhân viên xem payslip và gửi feedback."
+                        />
+                        <ScheduleTimeField
+                          control={form.control}
+                          hourName="triggerHour"
+                          minuteName="triggerMinute"
+                          label="Giờ tạo payroll"
+                        />
+                      </div>
                     </div>
 
-                    <div className="rounded-xl border border-border p-5 space-y-5">
-                      <div className="flex items-center gap-2">
-                        <CalendarCheck className="h-4 w-4 text-success" />
-                        <h4 className="font-medium">Tự động duyệt payroll</h4>
+                    <div className="rounded-xl border border-border bg-card/40 p-6 flex flex-col justify-between space-y-6">
+                      <div className="flex items-center gap-3 pb-3 border-b border-border/50">
+                        <div className="h-9 w-9 rounded-lg bg-success/10 border border-success/20 flex items-center justify-center shrink-0">
+                          <CalendarCheck className="h-4 w-4 text-success" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-sm text-foreground">Tự động duyệt payroll</h4>
+                          <p className="text-xs text-muted-foreground">Tự động duyệt vào ngày phát lương</p>
+                        </div>
                       </div>
-                      <ScheduleDayField
-                        control={form.control}
-                        name="approvalDay"
-                        label="Ngày duyệt payroll"
-                        description="Ngày hệ thống tự duyệt payroll đã tạo, thường là ngày phát lương."
-                      />
-                      <ScheduleTimeField
-                        control={form.control}
-                        hourName="approvalHour"
-                        minuteName="approvalMinute"
-                        label="Giờ duyệt payroll"
-                      />
+                      <div className="space-y-6">
+                        <ScheduleDayField
+                          control={form.control}
+                          name="approvalDay"
+                          label="Ngày duyệt payroll"
+                          description="Ngày hệ thống tự duyệt payroll đã tạo, thường là ngày phát lương."
+                        />
+                        <ScheduleTimeField
+                          control={form.control}
+                          hourName="approvalHour"
+                          minuteName="approvalMinute"
+                          label="Giờ duyệt payroll"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>

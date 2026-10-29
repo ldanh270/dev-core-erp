@@ -371,7 +371,7 @@ function AdminAttendanceDashboard() {
             value={statusFilter}
             onValueChange={(v) => setStatusFilter(v as IAttendanceStatus | "all")}
           >
-            <SelectTrigger className="w-44 h-9 text-sm">
+            <SelectTrigger size="sm" className="w-44">
               <SelectValue placeholder="Trạng thái" />
             </SelectTrigger>
             <SelectContent>

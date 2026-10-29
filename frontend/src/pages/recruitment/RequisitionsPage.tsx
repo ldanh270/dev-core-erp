@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
-import { Check, Eye, FilePlus2, Filter, Pencil, Plus, RotateCcw, Send, X } from "lucide-react"
-import { AppPagination, DataTableToolbar, PageCard, PageHeader } from "@/components/common"
+import { Check, Eye, FilePlus2, FileSearch, Filter, Pencil, Plus, RotateCcw, Send, X } from "lucide-react"
+import { AppPagination, DataTableToolbar, EmptyState, PageCard, PageHeader } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { CreateRequisitionDialog } from "@/components/features/recruitment/create-requisition-dialog"
 import { RejectRequisitionDialog } from "@/components/features/recruitment/reject-requisition-dialog"
@@ -225,7 +225,7 @@ export default function RequisitionsPage() {
                       setPage(1)
                     }}
                   >
-                    <SelectTrigger className="w-[170px] h-9 text-xs bg-background rounded-full">
+                    <SelectTrigger size="sm" className="w-[170px] bg-background">
                       <SelectValue placeholder="Độ ưu tiên" />
                     </SelectTrigger>
                     <SelectContent>
@@ -286,8 +286,16 @@ export default function RequisitionsPage() {
                   ))
                 ) : paginatedRequisitions.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                      {hasActiveFilters ? "Không tìm thấy yêu cầu phù hợp với bộ lọc" : "Chưa có yêu cầu tuyển dụng nào"}
+                    <TableCell colSpan={7} className="p-8">
+                      <EmptyState
+                        icon={FileSearch}
+                        title={hasActiveFilters ? "Không tìm thấy yêu cầu phù hợp" : "Chưa có yêu cầu tuyển dụng nào"}
+                        description={
+                          hasActiveFilters
+                            ? "Không có yêu cầu tuyển dụng nào khớp với bộ lọc hoặc từ khóa tìm kiếm."
+                            : "Hiện tại chưa có yêu cầu tuyển dụng nào được tạo. Hãy bấm 'Tạo yêu cầu mới' để bắt đầu."
+                        }
+                      />
                     </TableCell>
                   </TableRow>
                 ) : (

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
-import { ExternalLink, Eye, FileSpreadsheet, Plus, RefreshCw } from "lucide-react"
+import { ExternalLink, Eye, FileSpreadsheet, Plus, RefreshCw, Share2 } from "lucide-react"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { AppPagination, DataTableToolbar, PageCard, PageHeader } from "@/components/common"
+import { AppPagination, DataTableToolbar, EmptyState, PageCard, PageHeader } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { CreateJobPostingDialog } from "@/components/features/recruitment/create-job-posting-dialog"
 import { Button } from "@/components/ui/button"
@@ -79,8 +79,8 @@ export default function JobPostingsPage() {
         description="Tạo và quản lý bài đăng tuyển dụng trên các kênh (Google Form, LinkedIn, Facebook, v.v.)"
         actions={
           hasPermission("recruitment.posting.manage") ? (
-            <Button className="rounded-full" onClick={() => { handleOpenCreate(); }}>
-              <Plus className="mr-2 h-4 w-4" />
+            <Button className="rounded-full font-semibold gap-1.5" onClick={() => { handleOpenCreate(); }}>
+              <Plus className="h-4 w-4" />
               Tạo bài đăng
             </Button>
           ) : undefined
@@ -151,8 +151,16 @@ export default function JobPostingsPage() {
                 ))
               ) : visible.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                    {keyword || activeTab !== "all" ? "Không tìm thấy dữ liệu phù hợp với bộ lọc" : "Chưa có bài đăng nào."}
+                  <TableCell colSpan={5} className="p-8">
+                    <EmptyState
+                      icon={Share2}
+                      title={keyword || activeTab !== "all" ? "Không tìm thấy bài đăng" : "Chưa có bài đăng tuyển dụng"}
+                      description={
+                        keyword || activeTab !== "all"
+                          ? "Không có bài đăng tuyển dụng nào phù hợp với bộ lọc hoặc từ khóa tìm kiếm."
+                          : "Hiện tại chưa có bài đăng tuyển dụng nào được tạo. Hãy bấm 'Tạo bài đăng' để bắt đầu."
+                      }
+                    />
                   </TableCell>
                 </TableRow>
               ) : (
