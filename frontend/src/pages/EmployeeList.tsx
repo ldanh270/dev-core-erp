@@ -1,7 +1,7 @@
 import { ROUTES } from "@/config/routes.config"
 import { routerNavigate } from "@/lib/router-navigator"
 
-import { PageCard, PageHeader, StatusPill, AppPagination, EmptyState } from "@/components/common"
+import { AppPagination, EmptyState, PageCard, PageContainer, PageHeader, StatusPill } from "@/components/common"
 import { EmployeeCreateModal } from "@/components/features/employees/EmployeeCreateModal"
 import { EmployeeDetailsDrawer } from "@/components/features/employees/EmployeeDetailsDrawer"
 import { EmployeeEditDrawer } from "@/components/features/employees/EmployeeEditDrawer"
@@ -151,7 +151,7 @@ export default function EmployeeList() {
   }
 
   return (
-    <div className="container px-3 sm:px-6 py-4 sm:py-6">
+    <PageContainer variant="table">
       {/* ── Page header ───────────────────────────────────────────── */}
       <PageHeader
         title="Nhân sự"
@@ -163,7 +163,7 @@ export default function EmployeeList() {
               onClick={() => {
                 routerNavigate(ROUTES.HRM.CREATE_EMPLOYEE)
               }}
-              className="gap-1.5 h-8 px-3 text-xs rounded-full font-semibold"
+              className="gap-1.5 h-9 px-4 text-xs rounded-full font-semibold"
             >
               <Plus size={13} strokeWidth={2.5} />
               Thêm nhân sự
@@ -172,11 +172,11 @@ export default function EmployeeList() {
         }
       />
 
-      <PageCard className="p-0 overflow-hidden" noBorder={false}>
+      <PageCard padding="none" className="flex-1 min-h-0 flex flex-col overflow-hidden">
         {/* ── Tab bar ───────────────────────────────────────────────── */}
         <nav
           aria-label="Lọc nhân sự"
-          className="flex items-center gap-6 overflow-x-auto border-b border-border px-6 hide-scrollbar"
+          className="flex items-center gap-6 overflow-x-auto border-b border-border px-6 hide-scrollbar shrink-0"
         >
           {TAB_DEFINITIONS.map((tab) => {
             const isActive = activeTab === tab.id
@@ -214,7 +214,7 @@ export default function EmployeeList() {
         </nav>
 
         {/* ── Toolbar ──────────────────────────────────────────────── */}
-        <div className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-center justify-between bg-muted/20">
+        <div className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-center justify-between bg-muted/20 shrink-0">
           <div className="flex flex-1 items-center gap-3 w-full sm:w-auto">
             {/* Search */}
             <div className="relative flex-1 sm:max-w-xs">
@@ -263,10 +263,10 @@ export default function EmployeeList() {
         </div>
 
         {/* ── Table ────────────────────────────────────────────────── */}
-        <div className="overflow-x-auto">
+        <div className="flex-1 min-h-0 overflow-auto overscroll-contain">
           <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border">
+            <thead className="sticky top-0 z-10 bg-card border-b border-border shadow-xs">
+              <tr>
                 <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">
                   Nhân sự
                 </th>
@@ -465,20 +465,22 @@ export default function EmployeeList() {
 
         {/* ── Pagination ───────────────────────────────────────────── */}
         {data && data.data.length > 0 && (
-          <AppPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(p) => {
-              beginTransition()
-              setQuery((prev) => ({ ...prev, page: p }))
-            }}
-            totalItems={data.meta.total}
-            itemsPerPage={pageSize}
-            onItemsPerPageChange={(limit) => {
-              beginTransition()
-              setQuery((prev) => ({ ...prev, limit, page: 1 }))
-            }}
-          />
+          <div className="shrink-0 border-t border-border">
+            <AppPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(p) => {
+                beginTransition()
+                setQuery((prev) => ({ ...prev, page: p }))
+              }}
+              totalItems={data.meta.total}
+              itemsPerPage={pageSize}
+              onItemsPerPageChange={(limit) => {
+                beginTransition()
+                setQuery((prev) => ({ ...prev, limit, page: 1 }))
+              }}
+            />
+          </div>
         )}
       </PageCard>
 
@@ -507,6 +509,6 @@ export default function EmployeeList() {
         }}
         onEdit={(emp) => setEditEmployee(emp)}
       />
-    </div>
+    </PageContainer>
   )
 }

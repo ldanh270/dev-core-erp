@@ -33,9 +33,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
       <Sidebar className="hidden md:flex shrink-0" />
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         <Header />
-        <main className="flex-1 overflow-y-auto px-4 md:px-6 lg:px-8">{children}</main>
+        <main className="flex-1 overflow-y-auto min-w-0">{children}</main>
       </div>
     </div>
   )

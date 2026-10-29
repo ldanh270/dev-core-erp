@@ -1,4 +1,4 @@
-import { EmptyState, PageCard, PageHeader, StatusPill } from "@/components/common"
+import { EmptyState, PageCard, PageContainer, PageHeader, StatusPill } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
@@ -212,29 +212,29 @@ export default function ProjectList() {
   }
 
   return (
-    <div className="container p-8 space-y-6">
+    <PageContainer variant="table">
       {/* Top Header section layout */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <PageHeader
-          title="Danh sách dự án"
-          description="Quản lý các dự án đang phát triển trong công ty"
-        />
-        {/* Render create project button if user has appropriate access rights */}
-        {isManager && (
-          <Button
-            onClick={() => {
-              setIsOpenCreateModal(true)
-            }}
-            className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1.5 h-9 px-4 text-xs font-semibold"
-          >
-            <Plus className="size-3.5" />
-            Tạo dự án mới
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        title="Danh sách dự án"
+        description="Quản lý các dự án đang phát triển trong công ty"
+        actions={
+          isManager && (
+            <Button
+              size="sm"
+              onClick={() => {
+                setIsOpenCreateModal(true)
+              }}
+              className="gap-1.5 h-9 rounded-full px-4 text-xs font-semibold"
+            >
+              <Plus className="size-3.5" />
+              Tạo dự án mới
+            </Button>
+          )
+        }
+      />
 
       {/* Toolbar and filter inputs */}
-      <PageCard className="p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <PageCard padding="none" className="p-4 flex flex-col md:flex-row gap-4 items-center justify-between shrink-0">
         {/* Search input field */}
         <div className="relative w-full md:w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
@@ -273,7 +273,7 @@ export default function ProjectList() {
       </PageCard>
 
       {/* Main content display area */}
-      <PageCard className="p-0 overflow-hidden">
+      <PageCard padding="none" className="flex-1 min-h-0 flex flex-col overflow-hidden">
         {/* Display loading screen placeholder if fetching projects */}
         {isLoading ? (
           <div className="p-6 space-y-4">
@@ -297,9 +297,9 @@ export default function ProjectList() {
           </div>
         ) : (
           // Projects grid listing table representation
-          <div className="relative overflow-x-auto">
+          <div className="flex-1 min-h-0 overflow-auto overscroll-contain">
             <Table>
-              <TableHeader>
+              <TableHeader className="sticky top-0 z-10 bg-card border-b border-border shadow-xs">
                 <TableRow className="hover:bg-transparent h-12">
                   <TableHead className="font-semibold">Tên dự án</TableHead>
                   <TableHead className="font-semibold">Trưởng nhóm (TL)</TableHead>
@@ -676,6 +676,6 @@ export default function ProjectList() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageContainer>
   )
 }

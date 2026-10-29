@@ -3,6 +3,7 @@
  * Import from "@/components/common" everywhere.
  */
 export { PageCard } from "./page-card"
+export { PageContainer, type PageContainerVariant } from "./page-container"
 export { SectionHeader } from "./section-header"
 export { StatRow } from "./stat-row"
 export { IconBox } from "./icon-box"
