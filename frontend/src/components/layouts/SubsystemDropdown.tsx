@@ -4,6 +4,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { BRANDING_CONFIG } from "@/config/branding.config"
 import { SUBSYSTEMS } from "@/config/subsystem.config"
 import type { SubsystemId } from "@/config/subsystem.config"
 import { useProfile } from "@/hooks/use-profile"
@@ -65,19 +66,21 @@ export default function SubsystemDropdown() {
           }`}
           title={isCollapsed ? activeConfig?.name : undefined}
         >
-          <div className={`flex min-w-0 items-center overflow-hidden ${isCollapsed ? "justify-center" : "flex-1 gap-2"}`}>
+          <div
+            className={`flex min-w-0 items-center overflow-hidden ${isCollapsed ? "justify-center" : "flex-1 gap-2"}`}
+          >
             <img
-              src="/logo.jpg"
-              alt="DevCore ERP"
+              src={BRANDING_CONFIG.LOGO_URL}
+              alt={BRANDING_CONFIG.LOGO_ALT}
               className="size-10 shrink-0 rounded-xl object-cover object-center shadow-sm"
             />
             {!isCollapsed && (
               <div className="flex min-w-0 flex-1 flex-col items-start overflow-hidden text-left leading-tight">
                 <span className="max-w-full truncate font-semibold text-foreground">
-                  DevCore ERP
+                  {BRANDING_CONFIG.APP_NAME}
                 </span>
                 <span className="truncate text-xs text-muted-foreground">
-                  Enterprise Resource Planning
+                  {BRANDING_CONFIG.APP_SUBTITLE}
                 </span>
               </div>
             )}

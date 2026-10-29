@@ -34,3 +34,5 @@ export const COMMON_TEXTS = {
   NOT_AVAILABLE: "N/A",
   SYSTEM: "Hệ thống",
 } as const
+
+export * from "./branding.config"
