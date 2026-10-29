@@ -188,14 +188,14 @@ Rules:
 ## 5 · Payroll Module Analysis (2026-07-19)
 
 ### Summary
-Phân tích toàn bộ payroll module và tìm 16 issues theo severity:
+Comprehensive analysis of the entire payroll module identified 16 issues categorized by severity:
 
 | Severity | Count | Examples |
 |----------|-------|----------|
-| 🔴 CRITICAL | 4 | Transaction, Race condition, Missing status validation |
-| 🟠 HIGH | 5 | No input validation, Part-time silent skip, Missing workflow |
-| 🟡 MEDIUM | 4 | API naming confusion, Hardcoded 22 days, No pagination |
-| 🟢 LOW | 3 | CSV broken, No formula validation, Cron miss |
+| CRITICAL | 4 | Transaction safety, race condition, missing status validation |
+| HIGH | 5 | Missing input validation, part-time silent skip, missing workflow |
+| MEDIUM | 4 | API naming consistency, hardcoded 22-day working month, missing pagination |
+| LOW | 3 | CSV formatting, missing formula validation, cron error recovery |
 
 ### Fixed (Phase 1 - Critical)
 - **C1**: Wrap generatePayroll in Prisma transaction - atomic all-or-nothing

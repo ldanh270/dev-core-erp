@@ -21,62 +21,62 @@ Base path: /api/1.0/hrm/application
 
 ---
 
-## POST / (Tạo đơn)
+## POST / (Create Application)
 
 Full URL: https://api-staging-lm.vnbro.com/api/1.0/hrm/application
 Create a new application. Body: JSON.
-_Lưu ý: `employeeId` được hệ thống tự động trích xuất từ JWT token._
+_Note: `employeeId` is automatically extracted by the system from the authenticated JWT token._
 
 Required base fields (validated via Zod):
 
 - type (string): "leave" | "overtime" | "work_from_home" | "shift_swap" | "business_trip" | "late_early" | "regime"
 - startDate (date-time)
-- detail (object): Yêu cầu các field cụ thể phụ thuộc vào giá trị của `type` (xem chi tiết bên dưới)
+- detail (object): Specific fields required depend on the `type` value (see details below)
 
 Optional base fields:
 
-- endDate (date-time) - _Bắt buộc (Required) nếu type là "leave"_
-- reason (string): 5 đến 500 ký tự
-- note (string): Tối đa 1000 ký tự
+- endDate (date-time) - _Required when type is "leave"_
+- reason (string): 5 to 500 characters
+- note (string): Maximum 1000 characters
 - assignedToId (string cuid)
 
-### Chi tiết required fields trong object `detail` theo từng `type`:
+### Required fields in object `detail` by `type`:
 
-**1. type = "leave" (Đơn xin nghỉ phép)**
+**1. type = "leave" (Leave Request)**
 
 - Required: `leaveType` (enum), `regimeType` (enum).
-- _(Nhắc lại: Bắt buộc phải có `endDate` ở phần base fields)._
+- _(Note: `endDate` is required in base fields)._
 
-**2. type = "overtime" (Đơn làm thêm giờ)**
+**2. type = "overtime" (Overtime Request)**
 
 - Required: `employeeShiftId` (string cuid).
 
-**3. type = "work_from_home" (Đơn làm việc tại nhà/từ xa)**
+**3. type = "work_from_home" (Remote / Work From Home Request)**
 
-- Optional: `location` (string, max 255 ký tự).
+- Optional: `location` (string, max 255 characters).
 
-**4. type = "shift_swap" (Đơn đổi ca)**
+**4. type = "shift_swap" (Shift Swap Request)**
 
 - Required: `employeeShiftId` (string cuid).
 - Optional: `workingShiftId` (string cuid), `swapWithEmployeeId` (string cuid), `swapWithShiftId` (string cuid).
 
-**5. type = "business_trip" (Đơn công tác)**
+**5. type = "business_trip" (Business Trip Request)**
 
-- Required: `location` (string, 2-255 ký tự).
-- Optional: `purpose` (string, max 500 ký tự), `budget` (number).
+- Required: `location` (string, 2-255 characters).
+- Optional: `purpose` (string, max 500 characters), `budget` (number).
 
-**6. type = "late_early" (Đơn đi muộn / về sớm)**
+**6. type = "late_early" (Late Arrival / Early Departure Request)**
 
-- Required: `employeeShiftId` (string cuid), `durationMinutes` (int, 1-480 phút), `isLate` (boolean).
+- Required: `employeeShiftId` (string cuid), `durationMinutes` (int, 1-480 minutes), `isLate` (boolean).
 
-**7. type = "regime" (Đơn chế độ: thai sản / con ốm...)**
+**7. type = "regime" (Statutory Regime Request: maternity, sick leave, etc.)**
 
 - Required: `regimeType` (enum), `reducedMinutesPerDay` (int, 0-480).
 - Optional: `applyToStart` (boolean, default false), `applyToEnd` (boolean, default false), `documentUrl` (url string).
 
 ---
 
-## GET /me (Danh sách đơn của tôi)
+## GET /me (List Personal Applications)
 
 Full URL: https://api-staging-lm.vnbro.com/api/1.0/hrm/application/me
 List own applications with pagination and filters.
@@ -92,29 +92,29 @@ Query parameters (optional):
 
 ---
 
-## GET /:id (Chi tiết đơn)
+## GET /:id (Application Details)
 
 Full URL: https://api-staging-lm.vnbro.com/api/1.0/hrm/application/{id}
-Get specific application by ID (dành cho người nộp hoặc Quản lý).
+Get specific application by ID (accessible by applicant or managers).
 
 ---
 
-## PATCH /:id/cancel (Hủy đơn)
+## PATCH /:id/cancel (Cancel Application)
 
 Full URL: https://api-staging-lm.vnbro.com/api/1.0/hrm/application/{id}/cancel
 Cancel own pending application. Body: JSON.
 
 Optional fields:
 
-- reason (string): max 500 ký tự
+- reason (string): max 500 characters
 
 ---
 
-## GET / (Danh sách toàn bộ đơn)
+## GET / (List All Applications)
 
 Full URL: https://api-staging-lm.vnbro.com/api/1.0/hrm/application
 List all applications across the organization.
-_Yêu cầu quyền: Admin, HR Manager, General Manager, hoặc Team Leader._
+_Required roles: Admin, HR Manager, General Manager, or Team Leader._
 
 Query parameters (optional):
 
@@ -128,15 +128,15 @@ Query parameters (optional):
 
 ---
 
-## GET /employee/:employeeId (Danh sách đơn theo nhân viên)
+## GET /employee/:employeeId (List Applications by Employee)
 
 Full URL: https://api-staging-lm.vnbro.com/api/1.0/hrm/application/employee/{employeeId}
 List applications for a specific employee.
-_Yêu cầu quyền: Admin, HR Manager, General Manager, hoặc Team Leader._
+_Required roles: Admin, HR Manager, General Manager, or Team Leader._
 
 Required fields:
 
-- employeeId (string cuid) truyền vào qua params trên URL. _(Note: Code hiện tại trong Controller có thể đang check thêm trường `employeeId` gửi qua Body, bạn cần gửi kèm body `{ "employeeId": "..." }` cho an toàn nếu chưa refactor)._
+- employeeId (string cuid) provided as a URL route parameter.
 
 Query parameters (optional):
 
@@ -144,29 +144,29 @@ Query parameters (optional):
 
 ---
 
-## PATCH /:id/approve (Duyệt đơn)
+## PATCH /:id/approve (Approve Application)
 
 Full URL: https://api-staging-lm.vnbro.com/api/1.0/hrm/application/{id}/approve
 Approve a pending application.
-_Yêu cầu quyền: Admin, HR Manager, General Manager, hoặc Team Leader._
+_Required roles: Admin, HR Manager, General Manager, or Team Leader._
 Body: JSON.
 
 Required fields:
 
-- status (string): Bắt buộc giá trị là `"approved"`
+- status (string): Required value is `"approved"`
 
 ---
 
-## PATCH /:id/reject (Từ chối đơn)
+## PATCH /:id/reject (Reject Application)
 
 Full URL: https://api-staging-lm.vnbro.com/api/1.0/hrm/application/{id}/reject
 Reject a pending application.
-_Yêu cầu quyền: Admin, HR Manager, General Manager, hoặc Team Leader._
+_Required roles: Admin, HR Manager, General Manager, or Team Leader._
 Body: JSON.
 
 Required fields:
 
-- rejectReason (string): Bắt buộc từ 5 đến 500 ký tự.
+- rejectReason (string): Required, 5 to 500 characters.
 
 Optional fields:
 

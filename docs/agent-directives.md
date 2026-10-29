@@ -34,7 +34,7 @@ MUST:
 ```
 
 ```ts
-// ✅ Correct route file structure
+// Correct route file structure
 const repo       = new PgAuthRepository(db)
 const service    = new AuthService(repo)
 const controller = new AuthController(service)
@@ -70,7 +70,7 @@ MUST NOT:
 ```
 
 ```ts
-// ✅ Correct controller
+// Correct controller
 export class AuthController {
   constructor(private service: IAuthService) {} // ← interface, not class
 
@@ -100,7 +100,7 @@ ALLOWED to:
 ```
 
 ```ts
-// ✅ Correct service
+// Correct service
 export class AuthService implements IAuthService {
   constructor(private repo: IAuthRepository) {} // ← interface
 
@@ -131,7 +131,7 @@ CLASS NAME: Prefix with driver name → PgAuthRepository, MysqlAuthRepository
 ```
 
 ```ts
-// ✅ Correct repository
+// Correct repository
 export class PgAuthRepository implements IAuthRepository {
   constructor(private db: Pool) {}
 

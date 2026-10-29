@@ -1,11 +1,11 @@
 # HRM Request - Authentication & Authorization Endpoints
 
-Base path: /api/auth và /api/security
+Base path: /api/auth and /api/security
 
 ## Required headers (all endpoints)
 
-- Content-Type: application/json (Bắt buộc đối với các yêu cầu có gửi kèm dữ liệu dạng JSON trong Body).
-- Authorization: Bearer {token} (Bắt buộc đối với các API yêu cầu xác thực bảo mật/phân quyền: Đăng xuất, Đổi mật khẩu, Nhật ký hoạt động, Dashboard bảo mật, Mở khóa tài khoản).
+- Content-Type: application/json (Required for requests containing a JSON body).
+- Authorization: Bearer {token} (Required for authenticated endpoints: logout, change password, activity logs, security dashboard, unlock account).
 
 ## Common status codes
 
@@ -16,17 +16,17 @@ Base path: /api/auth và /api/security
 - 404: Not found (resource not found).
 - 500: Internal server error.
 
-## POST /login (Đăng nhập)
+## POST /login (User Login)
 
 Full URL: {{base_url}}/api/auth/login
-Đăng nhập người dùng vào hệ thống và nhận mã Access Token (JWT). Body: JSON.
+Authenticate user credentials and receive access and refresh tokens. Body: JSON.
 
 ### Request Body
 
 ```json
 {
-  "username": "username_hoac_email",
-  "password": "Mật khẩu (tối thiểu 8 ký tự, gồm 1 chữ hoa, 1 chữ thường, 1 số, 1 ký tự đặc biệt)"
+  "username": "username_or_email",
+  "password": "Password123!"
 }
 ```
 
@@ -41,7 +41,7 @@ Full URL: {{base_url}}/api/auth/login
       "id": "7b58fae4-05db-4e1b-90a6-c9bc6b328a9b",
       "username": "nguyenvana",
       "email": "vana@company.com",
-      "fullName": "Nguyễn Văn A",
+      "fullName": "John Doe",
       "role": "employee"
     }
   }
@@ -59,11 +59,11 @@ Full URL: {{base_url}}/api/auth/login
 
 ---
 
-## POST /logout (Đăng xuất)
+## POST /logout (User Logout)
 
 Full URL: {{base_url}}/api/auth/logout
-Đăng xuất người dùng ra khỏi hệ thống và lưu nhật ký hoạt động. Body: None.
-Yêu cầu header `Authorization: Bearer {token}`.
+Log out the current user session and record security audit log. Body: None.
+Requires header `Authorization: Bearer {token}`.
 
 ### Response (200 OK)
 
@@ -76,18 +76,18 @@ Yêu cầu header `Authorization: Bearer {token}`.
 
 ---
 
-## POST /change-password (Thay đổi mật khẩu)
+## POST /change-password (Change Password)
 
 Full URL: {{base_url}}/api/auth/change-password
-Thay đổi mật khẩu cho người dùng hiện tại đang đăng nhập. Body: JSON.
-Yêu cầu header `Authorization: Bearer {token}`.
+Change password for currently authenticated user. Body: JSON.
+Requires header `Authorization: Bearer {token}`.
 
 ### Request Body
 
 ```json
 {
-  "oldPassword": "Mật khẩu hiện tại",
-  "newPassword": "Mật khẩu mới (phải khác mật khẩu hiện tại, tối thiểu 8 ký tự, có chữ hoa, thường, số, ký tự đặc biệt)"
+  "oldPassword": "CurrentPassword123!",
+  "newPassword": "NewSecurePassword123!"
 }
 ```
 
@@ -102,10 +102,10 @@ Yêu cầu header `Authorization: Bearer {token}`.
 
 ---
 
-## POST /forgot-password (Quên mật khẩu)
+## POST /forgot-password (Forgot Password)
 
 Full URL: {{base_url}}/api/auth/forgot-password
-Yêu cầu gửi email đặt lại mật khẩu. Hệ thống sẽ gửi token reset về email nếu email tồn tại và đang hoạt động. Body: JSON.
+Request password reset email. The system sends a reset token to the registered email if the account exists. Body: JSON.
 
 ### Request Body
 
@@ -115,7 +115,7 @@ Yêu cầu gửi email đặt lại mật khẩu. Hệ thống sẽ gửi token 
 }
 ```
 
-### Response (200 OK - Luôn trả về phản hồi chung để bảo mật thông tin tài khoản)
+### Response (200 OK - Generic response to prevent account enumeration)
 
 ```json
 {
@@ -126,10 +126,10 @@ Yêu cầu gửi email đặt lại mật khẩu. Hệ thống sẽ gửi token 
 
 ---
 
-## POST /validate-reset-token (Xác thực token reset mật khẩu)
+## POST /validate-reset-token (Validate Reset Token)
 
 Full URL: {{base_url}}/api/auth/validate-reset-token
-Kiểm tra xem token đặt lại mật khẩu nhận từ email có hợp lệ và còn thời hạn hay không. Body: JSON.
+Validate whether the reset token received via email is valid and unexpired. Body: JSON.
 
 ### Request Body
 
@@ -139,7 +139,7 @@ Kiểm tra xem token đặt lại mật khẩu nhận từ email có hợp lệ 
 }
 ```
 
-### Response (200 OK - Token hợp lệ)
+### Response (200 OK - Valid token)
 
 ```json
 {
@@ -150,7 +150,7 @@ Kiểm tra xem token đặt lại mật khẩu nhận từ email có hợp lệ 
 }
 ```
 
-### Response (400 Bad Request - Token không hợp lệ hoặc đã hết hạn)
+### Response (400 Bad Request - Invalid or expired token)
 
 ```json
 {
@@ -161,17 +161,17 @@ Kiểm tra xem token đặt lại mật khẩu nhận từ email có hợp lệ 
 
 ---
 
-## POST /reset-password (Đặt lại mật khẩu)
+## POST /reset-password (Reset Password)
 
 Full URL: {{base_url}}/api/auth/reset-password
-Thiết lập mật khẩu mới bằng token reset mật khẩu nhận được qua email. Body: JSON.
+Set a new password using the validated reset token received via email. Body: JSON.
 
 ### Request Body
 
 ```json
 {
   "token": "token_chuoi_hex",
-  "newPassword": "Mật khẩu mới muốn thay đổi"
+  "newPassword": "NewPassword123!"
 }
 ```
 
@@ -186,21 +186,21 @@ Thiết lập mật khẩu mới bằng token reset mật khẩu nhận được
 
 ---
 
-## GET /activity-logs (Xem lịch sử hoạt động)
+## GET /activity-logs (View Activity Logs)
 
 Full URL: {{base_url}}/api/auth/activity-logs
-Lấy danh sách lịch sử hoạt động có phân trang và lọc dữ liệu. Body: Query Params.
-Yêu cầu header `Authorization: Bearer {token}`. Vai trò được phép: `ADMIN`, `HR_MANAGER`, `GENERAL_MANAGER`.
+Retrieve paginated and filtered activity audit logs. Query Parameters.
+Requires header `Authorization: Bearer {token}`. Allowed roles: `ADMIN`, `HR_MANAGER`, `GENERAL_MANAGER`.
 
 ### Optional Query Parameters
 
-- `employeeId` (string): Lọc theo ID nhân viên
-- `category` (string): Lọc theo nhóm hành động (`auth`, `role`, `security`)
-- `actionType` (string): Lọc theo loại hành động (`login`, `logout`, `failed_login`, `account_locked`, v.v.)
-- `fromDate` (date-string ISO): Từ ngày (Ví dụ: `2026-06-01T00:00:00Z`)
-- `toDate` (date-string ISO): Đến ngày (Ví dụ: `2026-06-15T23:59:59Z`)
-- `page` (int, default: 1): Trang cần xem
-- `limit` (int, default: 20): Số bản ghi trên mỗi trang
+- `employeeId` (string): Filter by employee ID
+- `category` (string): Filter by action category (`auth`, `role`, `security`)
+- `actionType` (string): Filter by action type (`login`, `logout`, `failed_login`, `account_locked`, etc.)
+- `fromDate` (date-string ISO): Start date (e.g., `2026-06-01T00:00:00Z`)
+- `toDate` (date-string ISO): End date (e.g., `2026-06-15T23:59:59Z`)
+- `page` (int, default: 1): Page number
+- `limit` (int, default: 20): Items per page
 
 ### Response (200 OK)
 
@@ -212,7 +212,7 @@ Yêu cầu header `Authorization: Bearer {token}`. Vai trò được phép: `ADM
       {
         "id": "e391ca34-738b-4b1f-aa2c-29a3a9bf8c19",
         "employeeId": "7b58fae4-05db-4e1b-90a6-c9bc6b328a9b",
-        "employeeName": "Nguyễn Văn A",
+        "employeeName": "John Doe",
         "category": "auth",
         "actionType": "login",
         "ipAddress": "127.0.0.1",
@@ -232,11 +232,11 @@ Yêu cầu header `Authorization: Bearer {token}`. Vai trò được phép: `ADM
 
 ---
 
-## GET /activity-logs/:id (Chi tiết lịch sử hoạt động)
+## GET /activity-logs/:id (Activity Log Details)
 
 Full URL: {{base_url}}/api/auth/activity-logs/{id}
-Xem chi tiết một bản ghi lịch sử hoạt động theo ID. Body: None.
-Yêu cầu header `Authorization: Bearer {token}`. Vai trò được phép: `ADMIN`, `HR_MANAGER`, `GENERAL_MANAGER`.
+Retrieve details of a specific activity log record by ID. Body: None.
+Requires header `Authorization: Bearer {token}`. Allowed roles: `ADMIN`, `HR_MANAGER`, `GENERAL_MANAGER`.
 
 ### Response (200 OK)
 
@@ -246,7 +246,7 @@ Yêu cầu header `Authorization: Bearer {token}`. Vai trò được phép: `ADM
   "data": {
     "id": "e391ca34-738b-4b1f-aa2c-29a3a9bf8c19",
     "employeeId": "7b58fae4-05db-4e1b-90a6-c9bc6b328a9b",
-    "employeeName": "Nguyễn Văn A",
+    "employeeName": "John Doe",
     "category": "security",
     "actionType": "account_locked",
     "ipAddress": "127.0.0.1",
@@ -258,11 +258,11 @@ Yêu cầu header `Authorization: Bearer {token}`. Vai trò được phép: `ADM
 
 ---
 
-## GET /security/dashboard (Tổng quan bảo mật)
+## GET /security/dashboard (Security Dashboard Overview)
 
 Full URL: {{base_url}}/api/security/dashboard
-Lấy thống kê nhanh phục vụ hiển thị Dashboard giám sát an ninh hệ thống. Body: None.
-Yêu cầu header `Authorization: Bearer {token}`. Vai trò được phép: `ADMIN`, `GENERAL_MANAGER`, `HR_MANAGER`.
+Retrieve summary statistics for the security monitoring dashboard. Body: None.
+Requires header `Authorization: Bearer {token}`. Allowed roles: `ADMIN`, `GENERAL_MANAGER`, `HR_MANAGER`.
 
 ### Response (200 OK)
 
@@ -276,7 +276,7 @@ Yêu cầu header `Authorization: Bearer {token}`. Vai trò được phép: `ADM
     "recentSecurityEvents": [
       {
         "id": "a1b2c3d4-...",
-        "employeeName": "Trần Văn B",
+        "employeeName": "Jane Smith",
         "category": "security",
         "actionType": "account_locked",
         "createdAt": "2026-06-14T09:15:30.000Z"
@@ -289,11 +289,11 @@ Yêu cầu header `Authorization: Bearer {token}`. Vai trò được phép: `ADM
 
 ---
 
-## GET /security/locked-accounts (Danh sách tài khoản bị khóa)
+## GET /security/locked-accounts (List Locked Accounts)
 
 Full URL: {{base_url}}/api/security/locked-accounts
-Lấy danh sách tất cả tài khoản nhân viên hiện đang bị khóa tạm thời do nhập sai mật khẩu quá 5 lần. Body: None.
-Yêu cầu header `Authorization: Bearer {token}`. Vai trò được phép: `ADMIN`, `GENERAL_MANAGER`, `HR_MANAGER`.
+Retrieve list of employee accounts temporarily locked due to excessive failed login attempts (5+). Body: None.
+Requires header `Authorization: Bearer {token}`. Allowed roles: `ADMIN`, `GENERAL_MANAGER`, `HR_MANAGER`.
 
 ### Response (200 OK)
 
@@ -303,7 +303,7 @@ Yêu cầu header `Authorization: Bearer {token}`. Vai trò được phép: `ADM
   "data": [
     {
       "employeeId": "8f8bca12-32a1-432d-98bc-ab543ef8902c",
-      "employeeName": "Trần Văn B",
+      "employeeName": "Jane Smith",
       "email": "tranvanb@company.com",
       "failedLoginCount": 5,
       "lockedUntil": "2026-06-14T13:05:00.000Z"
@@ -314,11 +314,11 @@ Yêu cầu header `Authorization: Bearer {token}`. Vai trò được phép: `ADM
 
 ---
 
-## PATCH /security/unlock/:employeeId (Mở khóa tài khoản)
+## PATCH /security/unlock/:employeeId (Unlock Account)
 
 Full URL: {{base_url}}/api/security/unlock/{employeeId}
-Mở khóa tài khoản thủ công cho nhân viên đang bị khóa. Body: None.
-Yêu cầu header `Authorization: Bearer {token}`. Vai trò được phép: `ADMIN`, `GENERAL_MANAGER`, `HR_MANAGER`.
+Manually unlock a locked employee account. Body: None.
+Requires header `Authorization: Bearer {token}`. Allowed roles: `ADMIN`, `GENERAL_MANAGER`, `HR_MANAGER`.
 
 ### Response (200 OK)
 

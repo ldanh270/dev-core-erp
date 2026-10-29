@@ -383,12 +383,12 @@ export const useAuth = () => {
 ## Anti-Patterns — Never Do
 
 ```
-❌ God class          → one class doing everything
-❌ Anemic domain      → classes with only getters/setters, logic in controller
-❌ Service locator    → static registry of dependencies (use DI instead)
-❌ Singleton via static getInstance() → use module exports or DI
-❌ Primitive obsession → pass (email: string, password: string, name: string, role: string) → use DTO
-❌ Magic strings/numbers → use constants
-❌ Deep inheritance    → max 1 level. Prefer composition
-❌ Premature pattern   → don't add Strategy if there's only one algorithm
+- God class          → one class doing everything
+- Anemic domain      → classes with only getters/setters, logic in controller
+- Service locator    → static registry of dependencies (use DI instead)
+- Singleton via static getInstance() → use module exports or DI
+- Primitive obsession → pass (email: string, password: string, name: string, role: string) → use DTO
+- Magic strings/numbers → use constants
+- Deep inheritance    → max 1 level. Prefer composition
+- Premature pattern   → don't add Strategy if there's only one algorithm
 ```
