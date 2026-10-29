@@ -1,42 +1,44 @@
-# Quản lý Bảng Dữ Liệu (Data Table UI/UX Standard)
+# Data Table UI/UX Standard
 
-> **Tài liệu Chuẩn hóa UI/UX Bảng Dữ Liệu cho Toàn bộ Hệ thống HRM**  
-> Dựa trên thiết kế và cấu trúc của trang **Yêu cầu tuyển dụng (`/recruitment/requisitions`)**.
+> **Enterprise Data Table UI/UX Specification for DevCore ERP**  
+> Modeled after the Job Requisition workspace standard (`/recruitment/requisitions`).
 
 ---
 
-## 1. Tổng quan Kiến trúc Giao diện (Layout Structure)
+## 1. Layout Hierarchy
 
-Mỗi trang hiển thị bảng dữ liệu (Data Table) trong hệ thống đều tuân thủ cấu trúc phân cấp từ ngoài vào trong như sau:
+Every data table page across the application adheres to the following nested structure:
 
 ```
 Container (p-4 sm:p-6, gap-6)
-├── PageHeader (Tiêu đề, Mô tả, Button Hành động chính dạng rounded-full)
-└── PageCard (Rounded-xl, Padding="none", overflow-hidden)
-    ├── Status Tab Navigation (Thanh tab chuyển đổi trạng thái)
-    ├── DataTableToolbar (Thanh công cụ Tìm kiếm + Bộ lọc)
-    ├── Table (Cấu trúc bảng dữ liệu responsive)
-    └── AppPagination (Thanh phân trang chuẩn ở footer)
+├── PageHeader (Title, description, primary CTA formatted with rounded-full)
+└── PageCard (rounded-xl, padding="none", overflow-hidden)
+    ├── Status Tab Navigation (Horizontal scrolling status filter bar)
+    ├── DataTableToolbar (Search input + filter dropdowns)
+    ├── Table (Responsive data table structure)
+    └── AppPagination (Standard footer pagination controls)
 ```
 
 ---
 
-## 2. Chi tiết từng Thành phần (Component Details & Code Snippets)
+## 2. Component Specifications & Code Snippets
 
-### 2.1. Khung chứa chính (PageCard Container)
-Sử dụng `<PageCard padding="sm" className="p-0 overflow-hidden">` làm container bao bọc toàn bộ Tab, Toolbar, Table và Pagination.
+### 2.1. PageCard Container
 
-- **Thuộc tính:** `p-0` loại bỏ padding viền ngoài card để Tab và Toolbar tràn viền hoàn toàn.
-- **Bo góc:** `rounded-xl` chuẩn container.
+Wrap tabs, toolbar, table, and pagination inside `<PageCard padding="sm" className="p-0 overflow-hidden">`.
+
+- **Padding:** `p-0` removes outer container padding so status tabs and toolbars span edge-to-edge.
+- **Corner Radius:** `rounded-xl` container standard.
 
 ---
 
-### 2.2. Thanh Chuyển Tab Trạng Thái (Status Tab Navigation)
-Được đặt ở đầu Card, hỗ trợ cuộn ngang (`overflow-x-auto hide-scrollbar`) khi có nhiều tab.
+### 2.2. Status Tab Navigation
+
+Placed at the top of the card with horizontal scrolling support (`overflow-x-auto hide-scrollbar`).
 
 ```tsx
 <nav
-  aria-label="Lọc theo trạng thái"
+  aria-label="Filter by status"
   className="flex items-center gap-6 overflow-x-auto border-b border-border px-6 hide-scrollbar bg-background"
 >
   {TAB_DEFINITIONS.map((tab) => {
@@ -74,8 +76,9 @@ Sử dụng `<PageCard padding="sm" className="p-0 overflow-hidden">` làm conta
 
 ---
 
-### 2.3. Thanh Tìm kiếm & Bộ Lọc (DataTableToolbar)
-Sử dụng component `<DataTableToolbar />` dùng chung. **KHÔNG bọc thêm div xám bên ngoài** để tránh lỗi lặp ô bóng mờ.
+### 2.3. Search & Filter Bar (DataTableToolbar)
+
+Use the shared `<DataTableToolbar />` component. Do not nest extra wrapper divs to prevent unintended drop-shadow duplication.
 
 ```tsx
 <DataTableToolbar
@@ -84,10 +87,10 @@ Sử dụng component `<DataTableToolbar />` dùng chung. **KHÔNG bọc thêm d
     setKeyword(value)
     setPage(1)
   }}
-  searchPlaceholder="Tìm theo mã, tên, phòng ban..."
+  searchPlaceholder="Search by ID, name, department..."
   actions={
     <div className="flex items-center gap-2">
-      {/* Bộ lọc Dropdown */}
+      {/* Filter Dropdown */}
       <div className="flex items-center gap-2">
         <Filter className="h-3.5 w-3.5 text-muted-foreground hidden sm:block" />
         <Select
@@ -98,16 +101,16 @@ Sử dụng component `<DataTableToolbar />` dùng chung. **KHÔNG bọc thêm d
           }}
         >
           <SelectTrigger size="sm" className="w-[170px] h-9 text-xs bg-background rounded-full">
-            <SelectValue placeholder="Lọc thuộc tính" />
+            <SelectValue placeholder="Filter attribute" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Tất cả</SelectItem>
-            <SelectItem value="OPTION_1">Tùy chọn 1</SelectItem>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="OPTION_1">Option 1</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {/* Nút Xóa Lọc (Reset) */}
+      {/* Reset Filter Button */}
       {hasActiveFilters && (
         <Tooltip>
           <TooltipTrigger asChild>
@@ -118,10 +121,10 @@ Sử dụng component `<DataTableToolbar />` dùng chung. **KHÔNG bọc thêm d
               className="h-9 px-3 text-xs gap-1.5 rounded-full text-muted-foreground hover:text-foreground"
             >
               <RotateCcw className="h-3.5 w-3.5" />
-              Xóa lọc
+              Reset
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Đặt lại tất cả bộ lọc</TooltipContent>
+          <TooltipContent>Reset all active filters</TooltipContent>
         </Tooltip>
       )}
     </div>
@@ -131,27 +134,28 @@ Sử dụng component `<DataTableToolbar />` dùng chung. **KHÔNG bọc thêm d
 
 ---
 
-### 2.4. Bảng Dữ Liệu (Table & Row Styling)
-Bảng sử dụng `<div className="overflow-x-auto">` (KHÔNG dùng `border-b` ở div này để tránh kẻ 2 đường viền ở footer).
+### 2.4. Table & Row Styling
 
-#### 📐 Quy định Cột & Responsive
-- **Cột Mã / ID:** `w-28 font-mono text-xs text-primary font-medium` (Link bấm được).
-- **Cột Tiêu đề chính / Tên:** `min-w-56` (Cho phép hiển thị thông tin kèm phụ đề text-muted-foreground bên dưới).
-- **Các cột bổ trợ (Phòng ban, Ngân sách, Hạn chót...):** Gán width rõ ràng (`w-36`, `w-44`) và dùng ẩn responsive (`hidden md:table-cell`, `hidden lg:table-cell`).
-- **Cột Trạng thái:** `w-36` sử dụng `<StatusPill />`.
-- **Cột Thao tác:** `w-36 text-right` chứa các icon button dạng `rounded-full`.
+Enclose within `<div className="overflow-x-auto">` (do not add `border-b` on this wrapper to prevent double borders above footer).
+
+#### Column Specifications & Responsive Behavior
+- **Identifier / Code Column:** `w-28 font-mono text-xs text-primary font-medium` (interactive link).
+- **Primary Title / Name:** `min-w-56` (supports primary title with subtitle in `text-muted-foreground`).
+- **Auxiliary Columns (Department, Budget, Deadline):** Explicit widths (`w-36`, `w-44`) with responsive hiding (`hidden md:table-cell`, `hidden lg:table-cell`).
+- **Status Column:** `w-36` using `<StatusPill />`.
+- **Actions Column:** `w-36 text-right` housing icon buttons with `rounded-full`.
 
 ```tsx
 <div className="overflow-x-auto">
   <Table>
     <TableHeader className="bg-muted/40">
       <TableRow>
-        <TableHead className="w-28 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Mã</TableHead>
-        <TableHead className="min-w-56 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Tên / Vị trí</TableHead>
-        <TableHead className="hidden lg:table-cell w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Phòng ban</TableHead>
-        <TableHead className="hidden md:table-cell w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Người phụ trách</TableHead>
-        <TableHead className="w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Trạng thái</TableHead>
-        <TableHead className="w-36 px-4 py-3 text-right text-xs font-medium uppercase text-muted-foreground">Thao tác</TableHead>
+        <TableHead className="w-28 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Code</TableHead>
+        <TableHead className="min-w-56 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Title / Role</TableHead>
+        <TableHead className="hidden lg:table-cell w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Department</TableHead>
+        <TableHead className="hidden md:table-cell w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Assignee</TableHead>
+        <TableHead className="w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Status</TableHead>
+        <TableHead className="w-36 px-4 py-3 text-right text-xs font-medium uppercase text-muted-foreground">Actions</TableHead>
       </TableRow>
     </TableHeader>
     <TableBody>
@@ -166,7 +170,7 @@ Bảng sử dụng `<div className="overflow-x-auto">` (KHÔNG dùng `border-b` 
       ) : items.length === 0 ? (
         <TableRow>
           <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
-            {hasActiveFilters ? "Không tìm thấy dữ liệu phù hợp với bộ lọc" : "Chưa có dữ liệu nào"}
+            {hasActiveFilters ? "No matching records found for active filters" : "No records available"}
           </TableCell>
         </TableRow>
       ) : (
@@ -176,18 +180,18 @@ Bảng sử dụng `<div className="overflow-x-auto">` (KHÔNG dùng `border-b` 
             onClick={() => handleViewDetails(item.id)}
             className="cursor-pointer transition-colors duration-100 hover:bg-muted/25"
           >
-            {/* Mã */}
+            {/* Code */}
             <TableCell className="px-4 py-3 font-mono text-xs font-medium text-primary">
               {item.code}
             </TableCell>
 
-            {/* Tên chính & Mô tả phụ */}
+            {/* Title & Subtitle */}
             <TableCell className="px-4 py-3">
               <div className="font-medium text-foreground">{item.name}</div>
               <div className="text-xs text-muted-foreground mt-0.5">{item.subText}</div>
             </TableCell>
 
-            {/* Cột ẩn responsive */}
+            {/* Responsive Columns */}
             <TableCell className="hidden lg:table-cell px-4 py-3 text-sm">
               {item.department}
             </TableCell>
@@ -195,12 +199,12 @@ Bảng sử dụng `<div className="overflow-x-auto">` (KHÔNG dùng `border-b` 
               {item.assignee}
             </TableCell>
 
-            {/* Trạng thái */}
+            {/* Status */}
             <TableCell className="px-4 py-3">
               <StatusPill label={item.statusLabel} variant={item.statusVariant} />
             </TableCell>
 
-            {/* Thao tác */}
+            {/* Actions */}
             <TableCell className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
               <div className="flex justify-end gap-1">
                 <Tooltip>
@@ -209,7 +213,7 @@ Bảng sử dụng `<div className="overflow-x-auto">` (KHÔNG dùng `border-b` 
                       <Eye className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Xem chi tiết</TooltipContent>
+                  <TooltipContent>View details</TooltipContent>
                 </Tooltip>
               </div>
             </TableCell>
@@ -223,8 +227,9 @@ Bảng sử dụng `<div className="overflow-x-auto">` (KHÔNG dùng `border-b` 
 
 ---
 
-### 2.5. Thanh Phân Trang Footer (AppPagination)
-Thẻ `<AppPagination>` được đặt **trực tiếp** trong `<PageCard>`, **KHÔNG bọc div wrapper**.
+### 2.5. Footer Pagination (AppPagination)
+
+Render `<AppPagination>` directly inside `<PageCard>` without additional wrapping div elements.
 
 ```tsx
 <AppPagination
@@ -240,21 +245,21 @@ Thẻ `<AppPagination>` được đặt **trực tiếp** trong `<PageCard>`, **
 />
 ```
 
-#### Quy chuẩn UI của `AppPagination`:
-- **Đường viền:** Duy nhất 1 đường `border-t border-border` phía trên ngăn cách với Table.
-- **Nền:** Trong suốt/trắng hòa nhập với Card (`bg-background`).
-- **Nút chọn số bản ghi (SelectTrigger):** Sử dụng `size="sm"` (`w-16 h-7.5 rounded-full text-xs font-medium px-2.5 shadow-none`).
-- **Độ cao:** Padding `px-6 py-2.5`, font chữ `text-xs`.
+#### Pagination Design Rules:
+- **Divider:** Single `border-t border-border` dividing table and footer.
+- **Surface:** Seamless blend with card background (`bg-background`).
+- **Page Size Selector (SelectTrigger):** Uses `size="sm"` (`w-16 h-7.5 rounded-full text-xs font-medium px-2.5 shadow-none`).
+- **Dimensions:** Padding `px-6 py-2.5`, text size `text-xs`.
 
 ---
 
-## 3. Checklist Kiểm Tra Chuẩn UI/UX (DoD Checklist)
+## 3. UI/UX Definition of Done Checklist
 
-| STT | Quy chuẩn | Yêu cầu kiểm tra |
+| No. | Rule | Verification Requirement |
 | --- | --- | --- |
-| 1 | **Pill Rule** | Tất cả Button, Input tìm kiếm, SelectTrigger, Badge, TooltipIcon dùng `rounded-full`. |
-| 2 | **No Double Borders** | Không có 2 đường line kẻ song song giữa Bảng và Phân trang. |
-| 3 | **No Double Backgrounds** | Không bọc `DataTableToolbar` hay `AppPagination` trong các div `bg-muted/20` dầy cộp. |
-| 4 | **Select Size** | Ô chọn số trang `AppPagination` dùng `size="sm" w-16 h-7.5 text-xs`. |
-| 5 | **Responsive Widths** | Cột chính có `min-w-*`, cột phụ dùng `hidden md:table-cell` / `hidden lg:table-cell`. |
-| 6 | **State Handling** | Đầy đủ Skeleton khi `isLoading`, Empty State thông báo chuẩn khi lọc không ra kết quả. |
+| 1 | **The Pill Rule** | All Buttons, Search Inputs, SelectTriggers, Badges, and Tooltip Icons must use `rounded-full`. |
+| 2 | **No Double Borders** | No duplicate parallel borders between Table and Pagination footer. |
+| 3 | **No Double Backgrounds** | Never wrap `DataTableToolbar` or `AppPagination` in dense `bg-muted/20` containers. |
+| 4 | **Select Size** | Pagination items-per-page select must use `size="sm" w-16 h-7.5 text-xs`. |
+| 5 | **Responsive Widths** | Primary columns enforce `min-w-*`; secondary columns apply `hidden md:table-cell` or `hidden lg:table-cell`. |
+| 6 | **State Handling** | Proper loading skeletons when `isLoading` is true; dedicated EmptyState when filter results are empty. |

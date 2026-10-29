@@ -8,7 +8,7 @@ export const UPLOAD_CONFIG = {
     "application/pdf",
   ],
   CLOUDINARY_FOLDERS: {
-    APPLICATIONS: "hrp/applications",
-    AVATARS: "hrp/avatars",
+    APPLICATIONS: "devcore/applications",
+    AVATARS: "devcore/avatars",
   },
 } as const

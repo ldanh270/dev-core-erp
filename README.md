@@ -1,6 +1,6 @@
 # DevCore ERP (`dev-core-erp`)
 
-> 📖 **Mới vào dự án?** Xem ngay [QUICKSTART.md](QUICKSTART.md) để thiết lập và chạy nhanh trong 5 phút.
+> **New to the project?** See [QUICKSTART.md](QUICKSTART.md) to get set up and running in 5 minutes.
 
 DevCore ERP is an integrated Enterprise Resource Planning (ERP) platform designed specifically for IT outsourcing companies, software development houses, and digital marketing agencies. Built as a TypeScript monorepo, it seamlessly unifies workforce administration, attendance and scheduling, employee requests and approvals, payroll processing, recruitment pipelines, project and task delivery, and an authenticated AI operations assistant.
 
@@ -79,14 +79,14 @@ The backend follows `Route → Controller → Service → Repository → Prisma/
    nr dev
    ```
 
-`nr dev` starts backend, frontend, MCP server and agent gateway concurrently. Use `nr dev:stage` when the gateway is not required.
+`nr dev` starts backend and frontend concurrently. Use `nr dev:all` when MCP server and agent gateway are also required.
 
 ## Common commands
 
 | Command | Purpose |
 |---|---|
-| `nr dev` | Start backend, frontend, MCP and gateway |
-| `nr dev:stage` | Start backend, frontend and MCP |
+| `nr dev` | Start backend and frontend (Web ERP) |
+| `nr dev:all` | Start backend, frontend, MCP and gateway |
 | `nr dev:backend` / `dev:frontend` / `dev:mcp` / `dev:gateway` | Start one package |
 | `nr db:generate` | Generate Prisma client |
 | `nr db:deploy` | Apply committed migrations |

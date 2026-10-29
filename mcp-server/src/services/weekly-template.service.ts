@@ -1,10 +1,10 @@
-import { HRP_API_CONSTANTS } from "../constants/hrp-api.constants.js"
+import { DEVCORE_API_CONSTANTS } from "../constants/devcore-api.constants.js"
 import type {
   CreateWeeklyTemplateInput,
   UpdateWeeklyTemplateInput,
 } from "../schemas/shift.schema.js"
 import { SessionData } from "../types/session.types.js"
-import { createAuthedClient } from "../utils/hrp-client.js"
+import { createAuthedClient } from "../utils/devcore-client.js"
 
 export class WeeklyTemplateService {
   private client(session: SessionData) {
@@ -22,7 +22,7 @@ export class WeeklyTemplateService {
 
   async list(session: SessionData) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.WEEKLY_TEMPLATE.BASE)
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.WEEKLY_TEMPLATE.BASE)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to list weekly templates")
@@ -32,7 +32,7 @@ export class WeeklyTemplateService {
   async getOne(session: SessionData, id: string) {
     try {
       const res = await this.client(session).get(
-        HRP_API_CONSTANTS.ENDPOINTS.WEEKLY_TEMPLATE.BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.WEEKLY_TEMPLATE.BY_ID(id),
       )
       return res.data
     } catch (e: any) {
@@ -43,7 +43,7 @@ export class WeeklyTemplateService {
   async create(session: SessionData, data: CreateWeeklyTemplateInput) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.WEEKLY_TEMPLATE.BASE,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.WEEKLY_TEMPLATE.BASE,
         data,
       )
       return res.data
@@ -55,7 +55,7 @@ export class WeeklyTemplateService {
   async update(session: SessionData, id: string, data: UpdateWeeklyTemplateInput) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.WEEKLY_TEMPLATE.BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.WEEKLY_TEMPLATE.BY_ID(id),
         data,
       )
       return res.data
@@ -67,7 +67,7 @@ export class WeeklyTemplateService {
   async delete(session: SessionData, id: string) {
     try {
       const res = await this.client(session).delete(
-        HRP_API_CONSTANTS.ENDPOINTS.WEEKLY_TEMPLATE.BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.WEEKLY_TEMPLATE.BY_ID(id),
       )
       return res.data
     } catch (e: any) {
@@ -78,7 +78,7 @@ export class WeeklyTemplateService {
   async apply(session: SessionData, id: string, employeeIds: string[]) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.WEEKLY_TEMPLATE.APPLY(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.WEEKLY_TEMPLATE.APPLY(id),
         {
           employeeIds,
         },

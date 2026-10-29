@@ -28,6 +28,6 @@
 	}
 
 	handle {
-		respond "HRP services are running" 200
+		respond "DevCore ERP services are running" 200
 	}
 }

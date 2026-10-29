@@ -13,7 +13,7 @@ export const registerApplicationTools = () => {
     "Create any HR application using the exact backend form schema, including forgot card, regime, recruitment, and resignation.",
     {
       sessionId: z.string().describe("Active session ID"),
-      form: ApplicationFormSchema.describe("Exact application form accepted by the HRP backend"),
+      form: ApplicationFormSchema.describe("Exact application form accepted by the DevCore ERP backend"),
     },
     async ({ sessionId, form }) => {
       try {

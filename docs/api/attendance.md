@@ -2,10 +2,10 @@
 
 Base paths:
 
-- `/api/attendance` — Chấm công (check-in / check-out / history / export)
-- `/api/shifts` — Quản lý ca làm việc
-- `/api/schedules` — Lịch ca của nhân viên
-- `/api/shift-change-requests` — Yêu cầu đổi ca
+- `/api/attendance` — Attendance management (check-in / check-out / history / export)
+- `/api/shifts` — Working shift management
+- `/api/schedules` — Employee schedules
+- `/api/shift-change-requests` — Shift swap and change requests
 
 ## Required headers (all endpoints)
 
@@ -25,7 +25,7 @@ Base paths:
 
 ## [Attendance] Fingerprint Check-in / Check-out
 
-### POST /api/attendance/check-in (Chấm công vào)
+### POST /api/attendance/check-in (Check-in)
 
 Create a check-in record for the authenticated employee. Body: JSON.
 
@@ -49,7 +49,7 @@ Output body (failed):
 - 401: error.message = "Unauthorized", error.code = "UNAUTHORIZED"
 - 400: error.message = "Validation error", error.code = "VALIDATION_ERROR", error.meta = zod issues array
 
-### POST /api/attendance/check-out (Chấm công ra)
+### POST /api/attendance/check-out (Check-out)
 
 Create a check-out record for the authenticated employee. Body: JSON.
 
@@ -75,7 +75,7 @@ Output body (failed):
 - 401: error.message = "Unauthorized", error.code = "UNAUTHORIZED"
 - 400: error.message = "Validation error", error.code = "VALIDATION_ERROR", error.meta = zod issues array
 
-### POST /api/attendance/scan (Chấm công tự động — QR / Virtual Scanner)
+### POST /api/attendance/scan (Automated Check-in — QR / Virtual Scanner)
 
 Smart scan — auto-determines check-in or check-out based on today's existing record. Body: JSON.
 
@@ -114,9 +114,9 @@ System logic (used in logic, not input fields):
 
 ---
 
-## [Attendance] View Attendance History (Employee — xem lịch sử của mình)
+## [Attendance] View Attendance History (Employee — Personal History)
 
-### GET /api/attendance (Lịch sử chấm công)
+### GET /api/attendance (Attendance History)
 
 Query attendance records. Query string parameters.
 
@@ -158,7 +158,7 @@ Output body (failed):
 
 ---
 
-## [Attendance] View All Attendance History (HR Manager — xem toàn bộ)
+## [Attendance] View All Attendance History (HR Manager — Organization-wide)
 
 Same endpoint as above: GET /api/attendance
 
@@ -170,9 +170,9 @@ Additional filter for HR:
 
 ---
 
-## [Attendance] Export Attendance Report (HR Manager — xuất báo cáo)
+## [Attendance] Export Attendance Report (HR Manager — Export)
 
-### GET /api/attendance/export (Xuất báo cáo chấm công)
+### GET /api/attendance/export (Export Attendance Report)
 
 Export attendance records as a UTF-8 CSV file. Query string parameters.
 
@@ -199,9 +199,9 @@ Output body (failed):
 
 ---
 
-## [Working Shift] Create Working Shift (HR Manager — tạo ca mới)
+## [Working Shift] Create Working Shift (HR Manager — Create Shift)
 
-### POST /api/shifts (Tạo ca làm việc)
+### POST /api/shifts (Create Working Shift)
 
 Create a new working shift. Body: JSON.
 
@@ -229,9 +229,9 @@ Output body (failed):
 
 ---
 
-## [Working Shift] Modify Working Shift (HR Manager — chỉnh sửa ca)
+## [Working Shift] Modify Working Shift (HR Manager — Update Shift)
 
-### PATCH /api/shifts/:id (Cập nhật ca làm việc)
+### PATCH /api/shifts/:id (Update Working Shift)
 
 Update an existing working shift. Body: JSON.
 
@@ -264,9 +264,9 @@ Output body (failed):
 
 ---
 
-## [Working Shift] View Working Shift (Employee — xem lịch ca của bản thân)
+## [Working Shift] View Working Shift (Employee — View Own Shifts)
 
-### GET /api/shifts (Danh sách ca làm việc)
+### GET /api/shifts (List Working Shifts)
 
 List all working shifts. No role restriction beyond authentication.
 
@@ -284,7 +284,7 @@ Output body (failed):
 
 - 401: error.message = "Unauthorized", error.code = "UNAUTHORIZED"
 
-### GET /api/shifts/:id (Chi tiết ca làm việc)
+### GET /api/shifts/:id (Working Shift Details)
 
 Get a specific shift by ID.
 
@@ -299,7 +299,7 @@ Output body (failed):
 - 404: error.message = "Not found", error.code = "NOT_FOUND"
 - 401: error.message = "Unauthorized", error.code = "UNAUTHORIZED"
 
-### GET /api/schedules/my (Lịch ca hiện tại của tôi)
+### GET /api/schedules/my (Current Employee Schedule)
 
 Get the authenticated employee's current assigned schedule. Employee identified by JWT.
 
@@ -317,7 +317,7 @@ Output body (failed):
 
 - 401: error.message = "Unauthorized", error.code = "UNAUTHORIZED"
 
-### GET /api/schedules/my/all (Lịch sử lịch ca của tôi)
+### GET /api/schedules/my/all (Historical Employee Schedules)
 
 List all schedule history for the authenticated employee.
 
@@ -331,9 +331,9 @@ Output body (failed):
 
 ---
 
-## [Working Shift] Shift Change Request (Employee — gửi yêu cầu đổi ca)
+## [Working Shift] Shift Change Request (Employee — Submit Swap Request)
 
-### POST /api/shift-change-requests (Gửi yêu cầu đổi ca)
+### POST /api/shift-change-requests (Submit Shift Change Request)
 
 Submit a shift change request. Body: JSON.
 
@@ -361,7 +361,7 @@ Output body (failed):
 - 401: error.message = "Unauthorized", error.code = "UNAUTHORIZED"
 - 400: error.message = "Validation error", error.code = "VALIDATION_ERROR", error.meta = zod issues array
 
-### GET /api/shift-change-requests/mine (Danh sách yêu cầu đổi ca của tôi)
+### GET /api/shift-change-requests/mine (List My Shift Change Requests)
 
 List the authenticated employee's own shift change requests.
 
@@ -385,7 +385,7 @@ Output body (failed):
 
 ## [Working Shift] Approve/Reject Shift Change Request (HR / Team Leader)
 
-### PATCH /api/shift-change-requests/:id/approve (Duyệt yêu cầu đổi ca)
+### PATCH /api/shift-change-requests/:id/approve (Approve Shift Change Request)
 
 Approve a pending shift change request. Body: JSON.
 
@@ -408,7 +408,7 @@ Output body (failed):
 - 401: error.message = "Unauthorized", error.code = "UNAUTHORIZED"
 - 400: error.message = "Validation error", error.code = "VALIDATION_ERROR", error.meta = zod issues array
 
-### PATCH /api/shift-change-requests/:id/reject (Từ chối yêu cầu đổi ca)
+### PATCH /api/shift-change-requests/:id/reject (Reject Shift Change Request)
 
 Reject a pending shift change request with a mandatory reason. Body: JSON.
 
@@ -433,9 +433,9 @@ Output body (failed):
 
 ---
 
-## [Working Shift] Assign Schedule to Employee (HR Manager — phân ca nhân viên)
+## [Working Shift] Assign Schedule to Employee (HR Manager — Assign Schedule)
 
-### POST /api/schedules/assign (Phân ca nhân viên)
+### POST /api/schedules/assign (Assign Employee Schedule)
 
 Assign a working shift to an employee. Body: JSON.
 
@@ -455,7 +455,7 @@ Output body (failed):
 - 401: error.message = "Unauthorized", error.code = "UNAUTHORIZED"
 - 400: error.message = "Validation error", error.code = "VALIDATION_ERROR", error.meta = zod issues array
 
-### POST /api/schedules/override (Ghi đè ca cho một ngày cụ thể)
+### POST /api/schedules/override (Override Schedule for Date)
 
 Override an employee's assigned shift for a specific date. Body: JSON.
 

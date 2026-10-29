@@ -6,14 +6,14 @@
 
 ## Naming Conventions
 
-| Kind        | Convention  | Example                          | Status                                  |
-| ----------- | ----------- | -------------------------------- | --------------------------------------- |
-| Classes     | PascalCase  | `AuthController`, `AppError`     | ✅ Used                                 |
-| Files       | kebab-case  | `auth.controller.ts`             | ✅ Used                                 |
-| Constants   | UPPER_SNAKE | `ACCESS_TOKEN_SECRET`, `MAX_...` | ✅ Used                                 |
-| Methods     | camelCase   | `signup`, `connectDB`            | ✅ Used                                 |
-| Types/enums | PascalCase  | `HttpStatusCodeType`             | ✅ Used                                 |
-| Interfaces  | `I` prefix  | `IOrderRepository`               | ❌ Not yet used (no interfaces defined) |
+| Kind        | Convention  | Example                          | Status                                 |
+| ----------- | ----------- | -------------------------------- | -------------------------------------- |
+| Classes     | PascalCase  | `AuthController`, `AppError`     | Compliant                              |
+| Files       | kebab-case  | `auth.controller.ts`             | Compliant                              |
+| Constants   | UPPER_SNAKE | `ACCESS_TOKEN_SECRET`, `MAX_...` | Compliant                              |
+| Methods     | camelCase   | `signup`, `connectDB`            | Compliant                              |
+| Types/enums | PascalCase  | `HttpStatusCodeType`             | Compliant                              |
+| Interfaces  | `I` prefix  | `IOrderRepository`               | Pending (no interfaces defined)        |
 
 ---
 
@@ -47,7 +47,8 @@ const service = new AuthService()
 const controller = new AuthController(service)
 ```
 
-> ⚠️ No DI container — manual wiring. Acceptable for scale, but consider `tsyringe` or `inversify` if complexity grows.
+> [!NOTE]
+> No DI container — manual wiring. Acceptable for scale, but consider `tsyringe` or `inversify` if complexity grows.
 
 ---
 
@@ -65,7 +66,8 @@ Fields: `message`, `statusCode`, `layer`
 
 `globalErrorHandler` middleware catches `AppError` → typed JSON response. Unknown errors → 500.
 
-> ⚠️ Currently NOT registered in `index.ts` — raw inline handler used instead. Fix: replace inline with `app.use(globalErrorHandler)`.
+> [!WARNING]
+> Currently NOT registered in `index.ts` — raw inline handler used instead. Fix: replace inline with `app.use(globalErrorHandler)`.
 
 ---
 
@@ -88,25 +90,25 @@ Rules:
 
 | Standard                                                  | Required By       | Status                       |
 | --------------------------------------------------------- | ----------------- | ---------------------------- |
-| `env.ts` — typed env wrapper with startup validation      | CLAUDE.md §1      | ❌ Missing                   |
-| `types/index.ts` — shared type barrel                     | CLAUDE.md §1      | ❌ Missing                   |
-| Zod validation at every controller boundary               | CLAUDE.md §8, §12 | ❌ Missing                   |
-| `Result<T, E>` return type or try/catch in every async fn | CLAUDE.md §6      | ❌ Partial                   |
-| No `any` types                                            | CLAUDE.md §14     | ❌ Violated in controller    |
-| Interfaces for repository (`IAuthRepository`)             | CLAUDE.md §2-D    | ❌ Missing                   |
-| `cors` middleware                                         | Security baseline | ❌ Missing                   |
-| Rate limiting on auth endpoints                           | CLAUDE.md §12     | ❌ Missing                   |
-| Tests (`tests/` or `*.test.ts`)                           | CLAUDE.md §10     | ❌ Missing entirely          |
-| Password hashing (`bcrypt`)                               | Security baseline | ❌ Missing                   |
-| API versioning (`/api/v1/`)                               | CLAUDE.md §8      | ❌ `/api/auth` not versioned |
+| `env.ts` — typed env wrapper with startup validation      | CLAUDE.md §1      | Missing                      |
+| `types/index.ts` — shared type barrel                     | CLAUDE.md §1      | Missing                      |
+| Zod validation at every controller boundary               | CLAUDE.md §8, §12 | Missing                      |
+| `Result<T, E>` return type or try/catch in every async fn | CLAUDE.md §6      | Partial                      |
+| No `any` types                                            | CLAUDE.md §14     | Violated in controller       |
+| Interfaces for repository (`IAuthRepository`)             | CLAUDE.md §2-D    | Missing                      |
+| `cors` middleware                                         | Security baseline | Missing                      |
+| Rate limiting on auth endpoints                           | CLAUDE.md §12     | Missing                      |
+| Tests (`tests/` or `*.test.ts`)                           | CLAUDE.md §10     | Missing entirely             |
+| Password hashing (`bcrypt`)                               | Security baseline | Missing                      |
+| API versioning (`/api/v1/`)                               | CLAUDE.md §8      | Not versioned                |
 
 ---
 
 ## File Length & Function Rules
 
-- Max fn: 20 lines ✅ (all current fns are short)
-- Max params: 3 ✅
-- No commented-out code: ❌ `index.ts` line 12 has commented import
+- Max fn: 20 lines (Compliant; all current functions are short)
+- Max params: 3 (Compliant)
+- No commented-out code: Violated (`index.ts` line 12 has commented import)
 
 ---
 

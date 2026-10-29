@@ -1,7 +1,7 @@
-import { HRP_API_CONSTANTS } from "../constants/hrp-api.constants.js"
+import { DEVCORE_API_CONSTANTS } from "../constants/devcore-api.constants.js"
 import type { CreateShiftChangeRequestInput } from "../schemas/shift.schema.js"
 import { SessionData } from "../types/session.types.js"
-import { createAuthedClient } from "../utils/hrp-client.js"
+import { createAuthedClient } from "../utils/devcore-client.js"
 
 export class ShiftChangeRequestService {
   private client(session: SessionData) {
@@ -20,7 +20,7 @@ export class ShiftChangeRequestService {
   async getMine(session: SessionData) {
     try {
       const res = await this.client(session).get(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_MINE,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_MINE,
       )
       return res.data
     } catch (e: any) {
@@ -31,7 +31,7 @@ export class ShiftChangeRequestService {
   async create(session: SessionData, data: CreateShiftChangeRequestInput) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_REQUESTS,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_REQUESTS,
         data,
       )
       return res.data
@@ -45,7 +45,7 @@ export class ShiftChangeRequestService {
   async approve(session: SessionData, id: string) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_APPROVE(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_APPROVE(id),
       )
       return res.data
     } catch (e: any) {
@@ -56,7 +56,7 @@ export class ShiftChangeRequestService {
   async reject(session: SessionData, id: string) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_REJECT(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_REJECT(id),
       )
       return res.data
     } catch (e: any) {

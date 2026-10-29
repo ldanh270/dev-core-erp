@@ -36,7 +36,7 @@ export class EmployeesSeeder implements ISeeder {
     const gmPos = await prisma.position.findUnique({ where: { code: "gm" } })
     const adminPos = await prisma.position.findUnique({ where: { code: "admin" } })
 
-    const passwordHashCore = await HashUtil.hash(getSeedPassword("SEED_CORE_ACCOUNTS_PASSWORD"))
+    const passwordHash = await HashUtil.hash(getSeedPassword("SEED_PASSWORD"))
 
     for (const role of rolesToSeed) {
       const username = role === "admin" ? "admin" : role
@@ -64,7 +64,7 @@ export class EmployeesSeeder implements ISeeder {
         existing = await prisma.employee.create({
           data: {
             username,
-            passwordHash: passwordHashCore,
+            passwordHash,
 
             fullName: `${fullName} User`,
             email: `${username}@example.com`,
@@ -89,7 +89,7 @@ export class EmployeesSeeder implements ISeeder {
       partTimeAccount = await prisma.employee.create({
         data: {
           username: partTimeUsername,
-          passwordHash: passwordHashCore,
+          passwordHash,
           employeeType: EMPLOYEE_TYPE.FULL_TIME,
           workScheduleType: WORK_SCHEDULE_TYPE.PART_TIME, // PT schedule, not contract type
           fullName: "Part Time User",
@@ -104,7 +104,6 @@ export class EmployeesSeeder implements ISeeder {
     }
 
     // Seed 6 random employees
-    const passwordHash = await HashUtil.hash(getSeedPassword("SEED_EMPLOYEE_PASSWORD"))
     const numEmployeesToCreate = 6
     const employeesData = Array.from({ length: numEmployeesToCreate }).map((_, index) => {
       const firstName = faker.person.firstName()

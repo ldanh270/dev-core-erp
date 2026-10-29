@@ -49,7 +49,7 @@ pnpm dev
 | Variable | Purpose |
 |---|---|
 | `PORT` | HTTP server port; default 3001 |
-| `HRP_API_BASE_URL` | Backend base URL |
+| `DEVCORE_API_BASE_URL` | Backend base URL |
 | `PUBLIC_BASE_URL` | Public browser-login URL base; required for generated login URLs |
 | `DEBUG` | Enables verbose diagnostics |
 

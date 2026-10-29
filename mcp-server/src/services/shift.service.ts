@@ -1,7 +1,7 @@
-import { HRP_API_CONSTANTS } from "../constants/hrp-api.constants.js"
+import { DEVCORE_API_CONSTANTS } from "../constants/devcore-api.constants.js"
 import type { CreateShiftInput, UpdateShiftInput } from "../schemas/shift.schema.js"
 import { SessionData } from "../types/session.types.js"
-import { createAuthedClient } from "../utils/hrp-client.js"
+import { createAuthedClient } from "../utils/devcore-client.js"
 
 export class ShiftService {
   private client(session: SessionData) {
@@ -19,7 +19,7 @@ export class ShiftService {
 
   async list(session: SessionData) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.BASE)
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.BASE)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to list shifts")
@@ -28,7 +28,7 @@ export class ShiftService {
 
   async getOne(session: SessionData, id: string) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.BY_ID(id))
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.BY_ID(id))
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to fetch shift")
@@ -37,7 +37,7 @@ export class ShiftService {
 
   async create(session: SessionData, data: CreateShiftInput) {
     try {
-      const res = await this.client(session).post(HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.BASE, data)
+      const res = await this.client(session).post(DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.BASE, data)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to create shift")
@@ -47,7 +47,7 @@ export class ShiftService {
   async update(session: SessionData, id: string, data: UpdateShiftInput) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.BY_ID(id),
         data,
       )
       return res.data
@@ -58,7 +58,7 @@ export class ShiftService {
 
   async delete(session: SessionData, id: string) {
     try {
-      const res = await this.client(session).delete(HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.BY_ID(id))
+      const res = await this.client(session).delete(DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.BY_ID(id))
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to delete shift")
