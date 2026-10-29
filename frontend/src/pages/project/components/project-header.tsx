@@ -44,18 +44,18 @@ export function ProjectHeader({
               onClick={() => {
                 navigate(`/project/${projectId}/task/new`)
               }}
-              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/95 flex items-center gap-1.5 h-10 text-xs px-4"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1.5 h-9 text-xs px-4 font-semibold"
             >
-              <Plus className="size-4" />
+              <Plus className="size-3.5" />
               Công việc mới
             </Button>
             {onOpenAiDecompose && (
               <Button
                 variant="outline"
                 onClick={onOpenAiDecompose}
-                className="rounded-full border-purple-200 hover:bg-purple-50 dark:border-purple-900 dark:hover:bg-purple-950/20 text-purple-600 dark:text-purple-400 flex items-center gap-1.5 h-10 text-xs px-4"
+                className="rounded-full border-purple-500/30 hover:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center gap-1.5 h-9 text-xs px-4 font-semibold"
               >
-                <Sparkles className="size-4" />
+                <Sparkles className="size-3.5" />
                 AI phân rã task
               </Button>
             )}
@@ -67,17 +67,17 @@ export function ProjectHeader({
             <Button
               variant="outline"
               onClick={onOpenEditProject}
-              className="rounded-full border-border hover:bg-muted/50 flex items-center gap-1.5 h-10 text-xs px-4"
+              className="rounded-full border-border hover:bg-muted/50 flex items-center gap-1.5 h-9 text-xs px-4 font-semibold"
             >
-              <Settings className="size-4" />
+              <Settings className="size-3.5" />
               Chỉnh sửa dự án
             </Button>
             <Button
               variant="outline"
               onClick={onOpenAddMember}
-              className="rounded-full border-border hover:bg-muted/50 flex items-center gap-1.5 h-10 text-xs px-4"
+              className="rounded-full border-border hover:bg-muted/50 flex items-center gap-1.5 h-9 text-xs px-4 font-semibold"
             >
-              <UserPlus className="size-4" />
+              <UserPlus className="size-3.5" />
               Thêm thành viên
             </Button>
           </>

@@ -1,3 +1,4 @@
+import { KANBAN_PALETTE_COLORS } from "@/config/entities/project.config"
 import { useProjectKanban } from "../hooks/use-project-kanban"
 import { ROUTES } from "@/config/routes.config"
 import { 
@@ -283,21 +284,21 @@ export function ProjectKanbanTab({
                 }}
               >
                 {colTasks.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-10 text-center border-2 border-dashed border-border/40 rounded-lg">
+                  <div className="flex flex-col items-center justify-center py-10 text-center border-2 border-dashed border-border/40 rounded-xl">
                     <Sparkles className="size-5 text-muted-foreground/30 mb-1" />
                     <p className="text-[10px] font-medium text-muted-foreground/60">Không có công việc</p>
                   </div>
                 ) : (
                   colTasks.map((task) => {
-                    let priorityColor = "bg-secondary text-secondary-foreground"
-                    if (task.priority === "urgent") priorityColor = "bg-destructive/10 text-destructive"
-                    else if (task.priority === "high") priorityColor = "bg-amber-500/10 text-amber-600 dark:text-amber-500"
-                    else if (task.priority === "medium") priorityColor = "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                    let priorityColor = "bg-secondary text-secondary-foreground border-border"
+                    if (task.priority === "urgent") priorityColor = "bg-destructive/10 text-destructive border-destructive/20"
+                    else if (task.priority === "high") priorityColor = "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:text-amber-500"
+                    else if (task.priority === "medium") priorityColor = "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400"
 
-                    let trackerColor = "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
-                    if (task.tracker === "bug") trackerColor = "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300"
-                    else if (task.tracker === "feature") trackerColor = "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-                    else if (task.tracker === "support") trackerColor = "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
+                    let trackerColor = "bg-secondary text-secondary-foreground border-border"
+                    if (task.tracker === "bug") trackerColor = "bg-destructive/10 text-destructive border-destructive/20"
+                    else if (task.tracker === "feature") trackerColor = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400"
+                    else if (task.tracker === "support") trackerColor = "bg-sky-500/10 text-sky-600 border-sky-500/20 dark:text-sky-400"
 
                     return (
                       <div key={task.id} className="relative">
@@ -390,7 +391,7 @@ export function ProjectKanbanTab({
 
       {/* CREATE COLUMN DIALOG */}
       <Dialog open={isAddColumnOpen} onOpenChange={setIsAddColumnOpen}>
-        <DialogContent className="rounded-2xl border-border bg-popover max-w-sm">
+        <DialogContent className="rounded-xl border-border bg-popover max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2">
               <Sparkles className="size-4 text-primary" />
@@ -406,14 +407,14 @@ export function ProjectKanbanTab({
                 onChange={(e) => { setColumnName(e.target.value) }}
                 placeholder="Ví dụ: Đang đợi, QC, Hoàn tất..."
                 required
-                className="h-9 text-xs border-border rounded-lg"
+                className="h-9 text-xs border-border rounded-full"
               />
             </div>
 
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-foreground">Màu cột sắc đại diện</Label>
               <div className="flex flex-wrap gap-2.5">
-                {["#6366F1", "#3B82F6", "#06B6D4", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899", "#6B7280"].map((hex) => (
+                {KANBAN_PALETTE_COLORS.map((hex) => (
                   <button
                     key={hex}
                     type="button"
@@ -474,7 +475,7 @@ export function ProjectKanbanTab({
 
       {/* EDIT COLUMN DIALOG */}
       <Dialog open={isEditColumnOpen} onOpenChange={setIsEditColumnOpen}>
-        <DialogContent className="rounded-2xl border-border bg-popover max-w-sm">
+        <DialogContent className="rounded-xl border-border bg-popover max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2">
               <Settings className="size-4 text-primary" />
@@ -490,14 +491,14 @@ export function ProjectKanbanTab({
                 onChange={(e) => { setColumnName(e.target.value) }}
                 placeholder="Ví dụ: Đang đợi, QC, Hoàn tất..."
                 required
-                className="h-9 text-xs border-border rounded-lg"
+                className="h-9 text-xs border-border rounded-full"
               />
             </div>
 
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-foreground">Màu cột sắc đại diện</Label>
               <div className="flex flex-wrap gap-2.5">
-                {["#6366F1", "#3B82F6", "#06B6D4", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899", "#6B7280"].map((hex) => (
+                {KANBAN_PALETTE_COLORS.map((hex) => (
                   <button
                     key={hex}
                     type="button"
@@ -559,7 +560,7 @@ export function ProjectKanbanTab({
 
       {/* CONFIRM DELETE DIALOG */}
       <Dialog open={isDeleteConfirmOpen} onOpenChange={setIsDeleteConfirmOpen}>
-        <DialogContent className="rounded-2xl border-border bg-popover max-w-sm">
+        <DialogContent className="rounded-xl border-border bg-popover max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2 text-destructive">
               <AlertCircle className="size-4" />
@@ -581,7 +582,7 @@ export function ProjectKanbanTab({
                   Chuyển công việc hiện tại sang cột:
                 </Label>
                 <Select value={fallbackColumnId} onValueChange={setFallbackColumnId}>
-                  <SelectTrigger className="w-full h-9 border-border rounded-lg text-xs bg-background">
+                  <SelectTrigger className="w-full h-9 border-border rounded-full text-xs bg-background">
                     <SelectValue placeholder="Chọn cột thay thế..." />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-border bg-popover">

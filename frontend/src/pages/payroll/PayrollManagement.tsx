@@ -32,6 +32,7 @@ export default function PayrollManagement() {
               variant="outline"
               onClick={handleExport}
               disabled={!payrolls || payrolls.length === 0}
+              className="rounded-full font-semibold"
             >
               <Download className="w-4 h-4 mr-2" />
               Xuất CSV

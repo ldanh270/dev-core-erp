@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react"
 import { AppPagination, DataTableToolbar, PageCard, PageHeader } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { ViewOfferDialog } from "@/components/features/recruitment/view-offer-dialog"
@@ -12,28 +11,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import {
-  useOffers,
-  useSendOffer,
-} from "@/hooks/recruitment/use-recruitment-queries"
-import {
-  OFFER_STATUS_LABELS,
-  OFFER_RESPONSE_LABELS,
-  OFFER_RESPONSE,
   CURRENCY,
+  OFFER_RESPONSE,
+  OFFER_RESPONSE_LABELS,
+  OFFER_STATUS_LABELS,
 } from "@/config/entities/recruitment.config"
-import type { RecruitmentOffer } from "@/types/recruitment.types"
-import { Plus, Send, Eye, DollarSign } from "lucide-react"
+import { ROUTES } from "@/config/routes.config"
+import { useOffers, useSendOffer } from "@/hooks/recruitment/use-recruitment-queries"
 import { usePermission } from "@/hooks/use-permission"
 import { routerNavigate } from "@/lib/router-navigator"
-import { ROUTES } from "@/config/routes.config"
+import type { RecruitmentOffer } from "@/types/recruitment.types"
+
+import { useMemo, useState } from "react"
+
 import { format, parseISO } from "date-fns"
 import { vi } from "date-fns/locale"
+import { DollarSign, Eye, Plus, Send } from "lucide-react"
 
 const statusVariantMap: Record<string, "success" | "warning" | "danger" | "info" | "neutral"> = {
   draft: "neutral",
@@ -109,7 +104,11 @@ export default function OffersPage() {
       const jobTitle = (offer.jobTitle ?? "").toLowerCase()
       const department = (offer.department ?? "").toLowerCase()
 
-      return candidateName.includes(searchStr) || jobTitle.includes(searchStr) || department.includes(searchStr)
+      return (
+        candidateName.includes(searchStr) ||
+        jobTitle.includes(searchStr) ||
+        department.includes(searchStr)
+      )
     })
   }, [offers, activeTab, keyword])
 
@@ -135,7 +134,11 @@ export default function OffersPage() {
         title="Quản lý Offer"
         description="Tạo và quản lý offer cho ứng viên"
         actions={
-          <Button className="rounded-full" onClick={() => routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS)} disabled={!hasPermission("recruitment.create")}>
+          <Button
+            className="rounded-full"
+            onClick={() => routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS)}
+            disabled={!hasPermission("recruitment.create")}
+          >
             <Plus className="mr-2 h-4 w-4" />
             Tạo offer mới
           </Button>
@@ -159,7 +162,9 @@ export default function OffersPage() {
                   setPage(1)
                 }}
                 className={`relative flex items-center gap-2 py-4 font-medium text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
-                  isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"
+                  isActive
+                    ? "text-primary font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {tab.label}
@@ -193,13 +198,27 @@ export default function OffersPage() {
           <Table>
             <TableHeader className="bg-muted/40">
               <TableRow>
-                <TableHead className="min-w-64 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Ứng viên</TableHead>
-                <TableHead className="min-w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Vị trí / Phòng ban</TableHead>
-                <TableHead className="w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Mức lương</TableHead>
-                <TableHead className="hidden md:table-cell w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Ngày bắt đầu</TableHead>
-                <TableHead className="w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Trạng thái</TableHead>
-                <TableHead className="hidden lg:table-cell w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Phản hồi</TableHead>
-                <TableHead className="w-28 px-4 py-3 text-right text-xs font-medium uppercase text-muted-foreground">Thao tác</TableHead>
+                <TableHead className="min-w-64 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                  Ứng viên
+                </TableHead>
+                <TableHead className="min-w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                  Vị trí / Phòng ban
+                </TableHead>
+                <TableHead className="w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                  Mức lương
+                </TableHead>
+                <TableHead className="hidden md:table-cell w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                  Ngày bắt đầu
+                </TableHead>
+                <TableHead className="w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                  Trạng thái
+                </TableHead>
+                <TableHead className="hidden lg:table-cell w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                  Phản hồi
+                </TableHead>
+                <TableHead className="w-28 px-4 py-3 text-right text-xs font-medium uppercase text-muted-foreground">
+                  Thao tác
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -212,18 +231,33 @@ export default function OffersPage() {
                   </TableRow>
                 ))
               ) : isError ? (
-                <TableRow><TableCell colSpan={7} className="h-32 text-center"><p className="font-medium text-destructive">Không tải được danh sách offer.</p><Button variant="outline" className="mt-3 rounded-full" onClick={() => void refetch()}>Thử lại</Button></TableCell></TableRow>
+                <TableRow>
+                  <TableCell colSpan={7} className="h-32 text-center">
+                    <p className="font-medium text-destructive">Không tải được danh sách offer.</p>
+                    <Button
+                      variant="outline"
+                      className="mt-3 rounded-full"
+                      onClick={() => void refetch()}
+                    >
+                      Thử lại
+                    </Button>
+                  </TableCell>
+                </TableRow>
               ) : filteredOffers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                    {keyword || activeTab !== "all" ? "Không tìm thấy offer phù hợp với bộ lọc" : "Chưa có offer nào"}
+                    {keyword || activeTab !== "all"
+                      ? "Không tìm thấy offer phù hợp với bộ lọc"
+                      : "Chưa có offer nào"}
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredOffers.map((offer: RecruitmentOffer) => (
                   <TableRow
                     key={offer.id}
-                    onClick={() => { handleViewDetails(offer); }}
+                    onClick={() => {
+                      handleViewDetails(offer)
+                    }}
                     className="cursor-pointer transition-colors duration-100 hover:bg-muted/25"
                   >
                     <TableCell className="px-4 py-3">
@@ -234,8 +268,12 @@ export default function OffersPage() {
                           </span>
                         </div>
                         <div>
-                          <p className="font-medium text-foreground text-sm">{getCandidateName(offer)}</p>
-                          <p className="text-xs text-muted-foreground mt-0.5">{getCandidateEmail(offer)}</p>
+                          <p className="font-medium text-foreground text-sm">
+                            {getCandidateName(offer)}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {getCandidateEmail(offer)}
+                          </p>
                         </div>
                       </div>
                     </TableCell>
@@ -270,7 +308,10 @@ export default function OffersPage() {
                         <span className="text-xs text-muted-foreground">Chưa phản hồi</span>
                       )}
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                    <TableCell
+                      className="px-4 py-3 text-right"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <div className="flex items-center justify-end gap-1">
                         {offer.status === "draft" && hasPermission("recruitment.approve") && (
                           <Tooltip>
@@ -279,7 +320,9 @@ export default function OffersPage() {
                                 variant="ghost"
                                 size="icon"
                                 className="rounded-full hover:bg-muted"
-                                onClick={() => { sendOffer.mutate(offer.id); }}
+                                onClick={() => {
+                                  sendOffer.mutate(offer.id)
+                                }}
                               >
                                 <Send className="h-4 w-4" />
                               </Button>
@@ -293,7 +336,9 @@ export default function OffersPage() {
                               variant="ghost"
                               size="icon"
                               className="rounded-full hover:bg-muted"
-                              onClick={() => { handleViewDetails(offer); }}
+                              onClick={() => {
+                                handleViewDetails(offer)
+                              }}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -322,11 +367,7 @@ export default function OffersPage() {
         />
       </PageCard>
 
-      <ViewOfferDialog
-        open={viewOfferOpen}
-        onOpenChange={setViewOfferOpen}
-        offer={selectedOffer}
-      />
+      <ViewOfferDialog open={viewOfferOpen} onOpenChange={setViewOfferOpen} offer={selectedOffer} />
     </div>
   )
 }

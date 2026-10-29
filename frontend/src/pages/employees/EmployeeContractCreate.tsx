@@ -527,7 +527,7 @@ export default function EmployeeContractCreate() {
               variant="ghost"
               size="sm"
               onClick={handleAddAllowanceRow}
-              className="text-primary hover:text-primary/90 text-xs font-medium gap-1"
+              className="text-primary hover:text-primary/90 text-xs font-semibold gap-1 rounded-full"
             >
               <PlusCircle size={15} /> Thêm khoản phụ cấp
             </Button>
@@ -564,7 +564,7 @@ export default function EmployeeContractCreate() {
                           <SelectTrigger className="rounded-full">
                             <SelectValue placeholder="Khoản phụ cấp" />
                           </SelectTrigger>
-                          <SelectContent className="max-h-60">
+                          <SelectContent className="max-h-60 rounded-xl">
                             {allowanceOptions.map((opt) => (
                               <SelectItem key={opt} value={opt}>
                                 {opt}
@@ -574,7 +574,7 @@ export default function EmployeeContractCreate() {
                               <button
                                 type="button"
                                 onClick={() => { setIsCustomAllowanceModalOpen(true); }}
-                                className="w-full py-2 px-3 text-xs font-medium text-emerald-700 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 rounded-lg flex items-center justify-center gap-1 transition-colors"
+                                className="w-full py-2 px-3 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-full flex items-center justify-center gap-1 transition-colors"
                               >
                                 + Tạo mới khoản phụ cấp
                               </button>
@@ -599,7 +599,7 @@ export default function EmployeeContractCreate() {
                           variant="ghost"
                           size="icon"
                           onClick={() => { handleRemoveAllowanceRow(row.id); }}
-                          className="h-8 w-8 text-destructive"
+                          className="h-8 w-8 text-destructive rounded-full hover:bg-destructive/10"
                         >
                           <Trash2 size={14} />
                         </Button>
@@ -641,7 +641,7 @@ export default function EmployeeContractCreate() {
             <Button
               type="button"
               onClick={handleCreateCustomAllowance}
-              className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
             >
               Tạo mới
             </Button>

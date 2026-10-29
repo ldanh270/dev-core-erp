@@ -1,4 +1,5 @@
 import { FormActionFooter } from "@/components/common/form-action-footer"
+import { TimePicker } from "@/components/common"
 import { GpsMapPicker } from "@/components/features/attendance/gps-map-picker"
 import {
   Dialog,
@@ -257,7 +258,7 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                     <FormItem>
                       <FormLabel>Bắt đầu nghỉ</FormLabel>
                       <FormControl>
-                        <Input type="time" className="h-11 rounded-full" {...field} />
+                        <TimePicker value={field.value} onChange={field.onChange} className="h-11" placeholder="--:--" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -270,7 +271,7 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                     <FormItem>
                       <FormLabel>Kết thúc nghỉ</FormLabel>
                       <FormControl>
-                        <Input type="time" className="h-11 rounded-full" {...field} />
+                        <TimePicker value={field.value} onChange={field.onChange} className="h-11" placeholder="--:--" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -309,7 +310,7 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                         Start Time <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input type="time" className="h-11 rounded-full" {...field} />
+                        <TimePicker value={field.value} onChange={field.onChange} className="h-11" placeholder="--:--" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -326,7 +327,7 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                         End Time <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input type="time" className="h-11 rounded-full" {...field} />
+                        <TimePicker value={field.value} onChange={field.onChange} className="h-11" placeholder="--:--" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

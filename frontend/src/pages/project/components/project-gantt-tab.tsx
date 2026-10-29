@@ -241,69 +241,75 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
     if (key === GANTT_FILTER_KEY.STATUS) {
       if (operator !== GANTT_FILTER_OPERATOR.LA && operator !== GANTT_FILTER_OPERATOR.KHONG_LA) return null
       return (
-        <select
-          value={value || TASK_STATUS.TODO}
-          onChange={(e) => { onChange(e.target.value); }}
-          className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer"
-        >
-          <option value={TASK_STATUS.TODO}>New</option>
-          <option value={TASK_STATUS.IN_PROGRESS}>In Progress</option>
-          <option value={TASK_STATUS.IN_REVIEW}>In Review</option>
-          <option value={TASK_STATUS.DONE}>Done</option>
-          <option value={TASK_STATUS.CANCELLED}>Cancelled</option>
-          <option value={TASK_STATUS.REOPENED}>Reopened</option>
-        </select>
+        <Select value={value || TASK_STATUS.TODO} onValueChange={onChange}>
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            <SelectItem value={TASK_STATUS.TODO}>New</SelectItem>
+            <SelectItem value={TASK_STATUS.IN_PROGRESS}>In Progress</SelectItem>
+            <SelectItem value={TASK_STATUS.IN_REVIEW}>In Review</SelectItem>
+            <SelectItem value={TASK_STATUS.DONE}>Done</SelectItem>
+            <SelectItem value={TASK_STATUS.CANCELLED}>Cancelled</SelectItem>
+            <SelectItem value={TASK_STATUS.REOPENED}>Reopened</SelectItem>
+          </SelectContent>
+        </Select>
       )
     }
 
     if (key === GANTT_FILTER_KEY.TRACKER) {
       if (operator !== GANTT_FILTER_OPERATOR.IS && operator !== GANTT_FILTER_OPERATOR.IS_NOT) return null
       return (
-        <select
-          value={value || TASK_TRACKER.TASK}
-          onChange={(e) => { onChange(e.target.value); }}
-          className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer"
-        >
-          <option value={TASK_TRACKER.FEATURE}>Feature</option>
-          <option value={TASK_TRACKER.BUG}>Bug</option>
-          <option value={TASK_TRACKER.SUPPORT}>Support</option>
-          <option value={TASK_TRACKER.TASK}>Task</option>
-          <option value={TASK_TRACKER.MEETING}>Meeting</option>
-          <option value={TASK_TRACKER.TEST}>Test</option>
-          <option value={TASK_TRACKER.SUBTASK}>Subtask</option>
-          <option value={TASK_TRACKER.MANAGEMENT}>Management</option>
-        </select>
+        <Select value={value || TASK_TRACKER.TASK} onValueChange={onChange}>
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            <SelectItem value={TASK_TRACKER.FEATURE}>Feature</SelectItem>
+            <SelectItem value={TASK_TRACKER.BUG}>Bug</SelectItem>
+            <SelectItem value={TASK_TRACKER.SUPPORT}>Support</SelectItem>
+            <SelectItem value={TASK_TRACKER.TASK}>Task</SelectItem>
+            <SelectItem value={TASK_TRACKER.MEETING}>Meeting</SelectItem>
+            <SelectItem value={TASK_TRACKER.TEST}>Test</SelectItem>
+            <SelectItem value={TASK_TRACKER.SUBTASK}>Subtask</SelectItem>
+            <SelectItem value={TASK_TRACKER.MANAGEMENT}>Management</SelectItem>
+          </SelectContent>
+        </Select>
       )
     }
 
     if (key === GANTT_FILTER_KEY.PRIORITY) {
       if (operator !== GANTT_FILTER_OPERATOR.IS && operator !== GANTT_FILTER_OPERATOR.IS_NOT) return null
       return (
-        <select
-          value={value || TASK_PRIORITY.MEDIUM}
-          onChange={(e) => { onChange(e.target.value); }}
-          className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer"
-        >
-          <option value={TASK_PRIORITY.LOW}>Low</option>
-          <option value={TASK_PRIORITY.MEDIUM}>Medium</option>
-          <option value={TASK_PRIORITY.HIGH}>High</option>
-          <option value={TASK_PRIORITY.URGENT}>Urgent</option>
-        </select>
+        <Select value={value || TASK_PRIORITY.MEDIUM} onValueChange={onChange}>
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            <SelectItem value={TASK_PRIORITY.LOW}>Low</SelectItem>
+            <SelectItem value={TASK_PRIORITY.MEDIUM}>Medium</SelectItem>
+            <SelectItem value={TASK_PRIORITY.HIGH}>High</SelectItem>
+            <SelectItem value={TASK_PRIORITY.URGENT}>Urgent</SelectItem>
+          </SelectContent>
+        </Select>
       )
     }
 
     if (def.type === GANTT_FILTER_TYPE.EMPLOYEE) {
       if (operator !== GANTT_FILTER_OPERATOR.LA && operator !== GANTT_FILTER_OPERATOR.KHONG_LA) return null
       return (
-        <select
-          value={value || (assignees[0]?.id || "")}
-          onChange={(e) => { onChange(e.target.value); }}
-          className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer min-w-[120px]"
-        >
-          {assignees.map((a) => (
-            <option key={a.id} value={a.id}>{a.fullName}</option>
-          ))}
-        </select>
+        <Select value={value || (assignees[0]?.id || "none")} onValueChange={(val) => {
+          onChange(val === "none" ? "" : val)
+        }}>
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            {assignees.map((a) => (
+              <SelectItem key={a.id} value={a.id}>{a.fullName}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       )
     }
 
@@ -727,39 +733,47 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                 type="number" 
                 value={monthsInput} 
                 onChange={(e) => { setMonthsInput(e.target.value); }} 
-                className="w-12 h-8 rounded-md border border-border/40 px-2 text-center text-xs font-semibold focus:outline-none focus:border-primary bg-background"
+                className="w-12 h-8 rounded-full border border-border/40 px-2 text-center text-xs font-semibold focus:outline-none focus:border-primary bg-background"
                 min="1"
                 max="12"
               />
               <span className="text-muted-foreground font-medium">tháng từ</span>
-              <select 
-                value={monthInput} 
-                onChange={(e) => { setMonthInput(parseInt(e.target.value)); }} 
-                className="h-8 rounded-md border border-border/40 px-2 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer"
+              <Select 
+                value={String(monthInput)} 
+                onValueChange={(val) => { setMonthInput(parseInt(val)); }} 
               >
-                <option value={0}>Tháng một</option>
-                <option value={1}>Tháng hai</option>
-                <option value={2}>Tháng ba</option>
-                <option value={3}>Tháng tư</option>
-                <option value={4}>Tháng năm</option>
-                <option value={5}>Tháng sáu</option>
-                <option value={6}>Tháng bảy</option>
-                <option value={7}>Tháng tám</option>
-                <option value={8}>Tháng chín</option>
-                <option value={9}>Tháng mười</option>
-                <option value={10}>Tháng mười một</option>
-                <option value={11}>Tháng mười hai</option>
-              </select>
-              <select 
-                value={yearInput} 
-                onChange={(e) => { setYearInput(parseInt(e.target.value)); }} 
-                className="h-8 rounded-md border border-border/40 px-2 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer"
+                <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="0">Tháng một</SelectItem>
+                  <SelectItem value="1">Tháng hai</SelectItem>
+                  <SelectItem value="2">Tháng ba</SelectItem>
+                  <SelectItem value="3">Tháng tư</SelectItem>
+                  <SelectItem value="4">Tháng năm</SelectItem>
+                  <SelectItem value="5">Tháng sáu</SelectItem>
+                  <SelectItem value="6">Tháng bảy</SelectItem>
+                  <SelectItem value="7">Tháng tám</SelectItem>
+                  <SelectItem value="8">Tháng chín</SelectItem>
+                  <SelectItem value="9">Tháng mười</SelectItem>
+                  <SelectItem value="10">Tháng mười một</SelectItem>
+                  <SelectItem value="11">Tháng mười hai</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select 
+                value={String(yearInput)} 
+                onValueChange={(val) => { setYearInput(parseInt(val)); }} 
               >
-                <option value={2025}>2025</option>
-                <option value={2026}>2026</option>
-                <option value={2027}>2027</option>
-                <option value={2028}>2028</option>
-              </select>
+                <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[90px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="2025">2025</SelectItem>
+                  <SelectItem value="2026">2026</SelectItem>
+                  <SelectItem value="2027">2027</SelectItem>
+                  <SelectItem value="2028">2028</SelectItem>
+                </SelectContent>
+              </Select>
 
               <Button 
                 onClick={handleApplyFilters} 
@@ -811,7 +825,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => { shiftTimelineByMonth(-1); }} 
-                  className="text-blue-600 dark:text-blue-400 hover:underline font-normal flex items-center gap-0.5"
+                  className="text-primary hover:underline font-medium flex items-center gap-0.5"
                 >
                   <ChevronLeft className="size-3.5" />
                   {getMonthOffsetLabel(-1)}
@@ -819,7 +833,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                 <span className="text-muted-foreground/30">|</span>
                 <button 
                   onClick={() => { shiftTimelineByMonth(1); }} 
-                  className="text-blue-600 dark:text-blue-400 hover:underline font-normal flex items-center gap-0.5"
+                  className="text-primary hover:underline font-medium flex items-center gap-0.5"
                 >
                   {getMonthOffsetLabel(1)}
                   <ChevronRight className="size-3.5" />
@@ -835,7 +849,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
             <div key={status.id} className="flex items-center gap-2">
               <div 
                 className="size-3 rounded" 
-                style={{ backgroundColor: status.color || "#6366F1" }} 
+                style={{ backgroundColor: status.color || "hsl(var(--primary))" }} 
               />
               <span>{status.name}</span>
             </div>
@@ -879,7 +893,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                           )}
                           <button
                             onClick={() => { setSelectedTaskForReview(task); }}
-                            className="text-blue-600 dark:text-blue-400 hover:underline font-normal shrink-0 mr-1"
+                            className="text-primary hover:underline font-normal shrink-0 mr-1"
                           >
                             {task.tracker ? task.tracker.charAt(0).toUpperCase() + task.tracker.slice(1) : "Task"} #{task?.id ? task.id.slice(-5) : "—"}
                           </button>
@@ -887,7 +901,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                             :{" "}
                             <Link
                               to={`/project/task/${task.id}`}
-                              className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors cursor-pointer text-foreground"
+                              className="hover:text-primary hover:underline transition-colors cursor-pointer text-foreground"
                             >
                               {task.title}
                             </Link>
@@ -1011,7 +1025,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                     const matchedStatus = statuses.find(
                       (s) => s.id === task.statusId || s.name.toLowerCase() === task.status.toLowerCase()
                     )
-                    const statusColor = matchedStatus?.color || "#38bdf8"
+                    const statusColor = matchedStatus?.color || "hsl(var(--primary))"
                     const isCompletedStatus = matchedStatus?.isCompleted === true || task.status === "done"
 
                     const getHexOpacity = (hex: string, opacityHex: string) => {
@@ -1049,7 +1063,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                         containerStyle = {
                           backgroundColor: statusColor,
                           borderColor: "transparent",
-                          color: "#ffffff",
+                          color: "hsl(var(--primary-foreground))",
                         }
                         progressStyle = {
                           backgroundColor: statusColor,
@@ -1059,9 +1073,9 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                     } else if (isOverdue) {
                       // Overdue: completed part is statusColor, remaining part is red/rose-600
                       containerStyle = {
-                        backgroundColor: "#e11d48",
+                        backgroundColor: "hsl(var(--destructive))",
                         borderColor: "transparent",
-                        color: "#ffffff",
+                        color: "hsl(var(--destructive-foreground))",
                       }
                       progressStyle = {
                         backgroundColor: statusColor,
@@ -1233,7 +1247,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
             <li>
               <button
                 onClick={() => { handleQuickQuery(QUICK_QUERY_TYPE.ASSIGNED_TO_ME); }}
-                className="text-blue-600 dark:text-blue-400 hover:underline text-left font-medium block w-full"
+                className="text-primary hover:underline text-left font-medium block w-full"
               >
                 Issues assigned to me
               </button>
@@ -1241,7 +1255,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
             <li>
               <button
                 onClick={() => { handleQuickQuery(QUICK_QUERY_TYPE.REPORTED_ISSUES); }}
-                className="text-blue-600 dark:text-blue-400 hover:underline text-left font-medium block w-full"
+                className="text-primary hover:underline text-left font-medium block w-full"
               >
                 Reported issues
               </button>
@@ -1249,7 +1263,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
             <li>
               <button
                 onClick={() => { handleQuickQuery(QUICK_QUERY_TYPE.UPDATED_ISSUES); }}
-                className="text-blue-600 dark:text-blue-400 hover:underline text-left font-medium block w-full"
+                className="text-primary hover:underline text-left font-medium block w-full"
               >
                 Updated issues
               </button>
@@ -1257,7 +1271,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
             <li>
               <button
                 onClick={() => { handleQuickQuery(QUICK_QUERY_TYPE.WATCHED_ISSUES); }}
-                className="text-rose-600 dark:text-rose-400 hover:underline text-left font-medium block w-full"
+                className="text-destructive hover:underline text-left font-medium block w-full"
               >
                 Watched issues
               </button>
@@ -1272,7 +1286,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                   <li key={q.id} className="flex items-center justify-between group">
                     <button
                       onClick={() => { applySavedQuery(q); }}
-                      className="text-sky-600 dark:text-sky-400 hover:underline text-left font-medium block truncate max-w-[150px]"
+                      className="text-primary hover:underline text-left font-medium block truncate max-w-[150px]"
                       title={q.name}
                     >
                       {q.name}
@@ -1478,7 +1492,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                       }))
                     }}
                   >
-                    <SelectTrigger className="w-36 h-7 text-[10px] border-border rounded-md bg-background">
+                    <SelectTrigger className="w-36 h-7 text-[10px] border-border rounded-full bg-background">
                       <SelectValue placeholder="Chọn bộ lọc..." />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl bg-popover max-h-60 overflow-y-auto">
@@ -1680,7 +1694,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                       size={3}
                       value={availSelectedKey ? [availSelectedKey] : []}
                       onChange={(e) => { setAvailSelectedKey(e.target.value); }}
-                      className="w-full text-xs p-1.5 border border-border rounded-md h-24 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+                      className="w-full text-xs p-1.5 border border-border rounded-lg h-24 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
                     >
                       {GANTT_AVAILABLE_COLUMNS.filter(col => !newQuerySelectedCols.includes(col.key)).map(col => (
                         <option key={col.key} value={col.key} className="p-0.5 rounded hover:bg-muted">
@@ -1703,7 +1717,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                           setAvailSelectedKey(null)
                         }
                       }}
-                      className="rounded-md"
+                      className="rounded-full"
                     >
                       <ArrowRight className="size-3.5" />
                     </Button>
@@ -1718,7 +1732,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                           setSelSelectedKey(null)
                         }
                       }}
-                      className="rounded-md"
+                      className="rounded-full"
                     >
                       <ArrowLeft className="size-3.5" />
                     </Button>
@@ -1732,7 +1746,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                       size={3}
                       value={selSelectedKey ? [selSelectedKey] : []}
                       onChange={(e) => { setSelSelectedKey(e.target.value); }}
-                      className="w-full text-xs p-1.5 border border-border rounded-md h-24 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+                      className="w-full text-xs p-1.5 border border-border rounded-lg h-24 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
                     >
                       {newQuerySelectedCols.map(colKey => {
                         const col = GANTT_AVAILABLE_COLUMNS.find(c => c.key === colKey)
@@ -1761,7 +1775,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                         }
                       }}
                       title="Đưa lên đầu"
-                      className="rounded-md"
+                      className="rounded-full"
                     >
                       <ChevronsUp className="size-3.5" />
                     </Button>
@@ -1783,7 +1797,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                         }
                       }}
                       title="Đưa xuống dưới"
-                      className="rounded-md"
+                      className="rounded-full"
                     >
                       <ChevronsDown className="size-3.5" />
                     </Button>

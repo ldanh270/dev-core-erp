@@ -1,4 +1,4 @@
-import { AppPagination, DataTableToolbar, PageCard, PageHeader } from "@/components/common"
+import { AppPagination, DataTableToolbar, EmptyState, PageCard, PageHeader } from "@/components/common"
 import { ViewCandidateDialog } from "@/components/features/recruitment/view-candidate-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -18,7 +18,7 @@ import { useCandidates } from "@/hooks/recruitment/use-recruitment-queries"
 import { usePermission } from "@/hooks/use-permission"
 import { routerNavigate } from "@/lib/router-navigator"
 import type { Candidate } from "@/types/recruitment.types"
-import { Eye, Mail, Phone, Plus } from "lucide-react"
+import { Eye, Mail, Phone, Plus, UserX } from "lucide-react"
 import { useState } from "react"
 
 export default function CandidatesPage() {
@@ -54,8 +54,8 @@ export default function CandidatesPage() {
         title="Ứng viên"
         description="Quản lý danh sách ứng viên và hồ sơ"
         actions={hasPermission("recruitment.intake.manage") ? (
-          <Button className="rounded-full" onClick={() => routerNavigate(ROUTES.RECRUITMENT.APPLICANT_INTAKE)}>
-            <Plus className="mr-2 h-4 w-4" />
+          <Button className="rounded-full font-semibold gap-1.5" onClick={() => routerNavigate(ROUTES.RECRUITMENT.APPLICANT_INTAKE)}>
+            <Plus className="h-4 w-4" />
             Tiếp nhận ứng viên
           </Button>
         ) : undefined}
@@ -95,8 +95,16 @@ export default function CandidatesPage() {
                 ))
               ) : candidates.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                    {keyword ? "Không tìm thấy ứng viên phù hợp với từ khóa" : "Chưa có ứng viên nào"}
+                  <TableCell colSpan={7} className="p-8">
+                    <EmptyState
+                      icon={UserX}
+                      title={keyword ? "Không tìm thấy ứng viên phù hợp" : "Chưa có ứng viên nào"}
+                      description={
+                        keyword
+                          ? "Không có hồ sơ ứng viên nào khớp với từ khóa tìm kiếm."
+                          : "Hiện tại chưa có hồ sơ ứng viên nào được tiếp nhận vào hệ thống."
+                      }
+                    />
                   </TableCell>
                 </TableRow>
               ) : (
