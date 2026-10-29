@@ -144,7 +144,7 @@ export function FamilyTab({
             variant="ghost"
             size="sm"
             onClick={() => { addFamilyMember(); }}
-            className="text-primary hover:text-primary/90 text-xs font-medium gap-1"
+            className="text-primary hover:text-primary/90 text-xs font-semibold gap-1 rounded-full"
           >
             <PlusCircle size={15} /> Thêm thành viên
           </Button>
@@ -181,7 +181,7 @@ export function FamilyTab({
                         variant="ghost"
                         size="sm"
                         onClick={() => { removeFamilyMember(member.id); }}
-                        className="h-7 px-2 text-destructive hover:bg-destructive/10 gap-1 text-xs"
+                        className="h-7 px-2 text-destructive hover:bg-destructive/10 gap-1 text-xs rounded-full"
                       >
                         <Trash2 size={13} /> Xóa
                       </Button>

@@ -3,8 +3,16 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   EMPLOYEE_STATUSES,
   EMPLOYMENT_CATEGORY_TYPES,
+  type IEmploymentCategoryType,
   getEmployeeStatusLabel,
   getEmployeeTypeLabel,
   getRoleLabel,
@@ -12,6 +20,7 @@ import {
   WORK_SCHEDULE_TYPE_LABELS,
   WORK_SCHEDULE_TYPES,
 } from "@/config/entities/employee.config"
+import type { EmployeeStatus, WorkScheduleType } from "@/types/employee.types"
 import { useEmployeeCreateModal } from "@/hooks/employees/useEmployeeCreateModal"
 import { usePositions } from "@/hooks/use-position-query"
 
@@ -124,17 +133,23 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   <Label htmlFor="role" className="text-[12px] text-muted-foreground font-medium">
                     Phân quyền
                   </Label>
-                  <select
-                    id="role"
-                    {...register("role")}
-                    className="flex h-10 w-full rounded-full border border-input bg-background px-4 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  <Select
+                    value={watch("role") || (roles[0]?.name ?? "")}
+                    onValueChange={(val) => {
+                      setValue("role", val, { shouldValidate: true, shouldDirty: true })
+                    }}
                   >
-                    {roles.map((r) => (
-                      <option key={r.id} value={r.name}>
-                        {getRoleLabel(r.name)}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger id="role" className="h-10 bg-background">
+                      <SelectValue placeholder="Chọn phân quyền..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roles.map((r) => (
+                        <SelectItem key={r.id} value={r.name}>
+                          {getRoleLabel(r.name)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </section>
@@ -259,18 +274,27 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   >
                     Chức danh (Vị trí)
                   </Label>
-                  <select
-                    id="positionId"
-                    {...register("positionId")}
-                    className="flex h-10 w-full rounded-full border border-input bg-background px-4 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  <Select
+                    value={watch("positionId") || "none"}
+                    onValueChange={(val) => {
+                      setValue("positionId", val === "none" ? "" : val, { shouldValidate: true, shouldDirty: true })
+                    }}
                   >
-                    <option value="">-- Chọn chức danh --</option>
-                    {positions.map((pos: { id: string; name: string }) => (
-                      <option key={pos.id} value={pos.id}>
-                        {pos.name}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger
+                      id="positionId"
+                      className={`h-10 bg-background ${errors.positionId ? "border-destructive" : ""}`}
+                    >
+                      <SelectValue placeholder="-- Chọn chức danh --" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">-- Chọn chức danh --</SelectItem>
+                      {positions.map((pos: { id: string; name: string }) => (
+                        <SelectItem key={pos.id} value={pos.id}>
+                          {pos.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {errors.positionId && (
                     <p className="text-xs text-destructive">{errors.positionId.message}</p>
                   )}
@@ -283,35 +307,46 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   >
                     Loại nhân sự
                   </Label>
-                  <select
-                    id="employeeType"
-                    {...register("employeeType")}
-                    className="flex h-10 w-full rounded-full border border-input bg-background px-4 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  <Select
+                    value={watch("employeeType") || EMPLOYMENT_CATEGORY_TYPES[0]}
+                    onValueChange={(val) => {
+                      setValue("employeeType", val as IEmploymentCategoryType, { shouldValidate: true, shouldDirty: true })
+                    }}
                   >
-                    {EMPLOYMENT_CATEGORY_TYPES.map((typeKey) => (
-                      // Contract category only; part-time schedule is workScheduleType below.
-                      <option key={typeKey} value={typeKey}>
-                        {getEmployeeTypeLabel(typeKey)}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger id="employeeType" className="h-10 bg-background">
+                      <SelectValue placeholder="Chọn loại nhân sự..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {EMPLOYMENT_CATEGORY_TYPES.map((typeKey) => (
+                        <SelectItem key={typeKey} value={typeKey}>
+                          {getEmployeeTypeLabel(typeKey)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-1.5">
                   <Label htmlFor="status" className="text-[12px] text-muted-foreground font-medium">
                     Trạng thái ban đầu
                   </Label>
-                  <select
-                    id="status"
-                    {...register("status")}
-                    className="flex h-10 w-full rounded-full border border-input bg-background px-4 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  <Select
+                    value={watch("status") || EMPLOYEE_STATUSES[0]}
+                    onValueChange={(val) => {
+                      setValue("status", val as EmployeeStatus, { shouldValidate: true, shouldDirty: true })
+                    }}
                   >
-                    {EMPLOYEE_STATUSES.map((statusKey) => (
-                      <option key={statusKey} value={statusKey}>
-                        {getEmployeeStatusLabel(statusKey)}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger id="status" className="h-10 bg-background">
+                      <SelectValue placeholder="Chọn trạng thái..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {EMPLOYEE_STATUSES.map((statusKey) => (
+                        <SelectItem key={statusKey} value={statusKey}>
+                          {getEmployeeStatusLabel(statusKey)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
 
@@ -323,20 +358,25 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   >
                     Hình thức làm việc
                   </Label>
-                  <select
-                    id="workScheduleType"
-                    {...register("workScheduleType")}
-                    className="flex h-10 w-full rounded-full border border-input bg-background px-4 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  <Select
+                    value={watch("workScheduleType") || WORK_SCHEDULE_TYPES[0]}
+                    onValueChange={(val) => {
+                      setValue("workScheduleType", val as WorkScheduleType, { shouldValidate: true, shouldDirty: true })
+                    }}
                   >
-                    {WORK_SCHEDULE_TYPES.map((typeKey) => (
-                      // Drives PT vs FT product paths (availability vs weekly template, payroll branch).
-                      <option key={typeKey} value={typeKey}>
-                        {typeKey === WORK_SCHEDULE_TYPE.FULL_TIME
-                          ? WORK_SCHEDULE_TYPE_LABELS.full_time
-                          : WORK_SCHEDULE_TYPE_LABELS.part_time}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger id="workScheduleType" className="h-10 bg-background">
+                      <SelectValue placeholder="Chọn hình thức làm việc..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {WORK_SCHEDULE_TYPES.map((typeKey) => (
+                        <SelectItem key={typeKey} value={typeKey}>
+                          {typeKey === WORK_SCHEDULE_TYPE.FULL_TIME
+                            ? WORK_SCHEDULE_TYPE_LABELS.full_time
+                            : WORK_SCHEDULE_TYPE_LABELS.part_time}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="col-span-2 space-y-1.5">

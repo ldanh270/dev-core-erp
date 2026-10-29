@@ -103,12 +103,12 @@ export function GeneratePayrollModal() {
                           <SelectValue placeholder="Select month" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="border-border rounded-md shadow-sm">
+                      <SelectContent className="border-border rounded-xl shadow-sm">
                         {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
                           <SelectItem 
                             key={m} 
                             value={m.toString()}
-                            className="rounded-sm cursor-pointer focus:bg-muted"
+                            className="rounded-lg cursor-pointer focus:bg-muted"
                           >
                             Month {m}
                           </SelectItem>
@@ -132,12 +132,12 @@ export function GeneratePayrollModal() {
                           <SelectValue placeholder="Select year" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="border-border rounded-md shadow-sm">
+                      <SelectContent className="border-border rounded-xl shadow-sm">
                         {[currentYear - 1, currentYear, currentYear + 1].map((y) => (
                           <SelectItem 
                             key={y} 
                             value={y.toString()}
-                            className="rounded-sm cursor-pointer focus:bg-muted"
+                            className="rounded-lg cursor-pointer focus:bg-muted"
                           >
                             {y}
                           </SelectItem>

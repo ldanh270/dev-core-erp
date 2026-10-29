@@ -375,7 +375,7 @@ export function BioTab({
             variant="ghost"
             size="sm"
             onClick={() => { addEducation(); }}
-            className="text-primary hover:text-primary/90 text-xs font-medium gap-1"
+            className="text-primary hover:text-primary/90 text-xs font-semibold gap-1 rounded-full"
           >
             <PlusCircle size={15} /> Thêm trình độ
           </Button>
@@ -399,7 +399,7 @@ export function BioTab({
                       variant="ghost"
                       size="sm"
                       onClick={() => { removeEducation(item.id); }}
-                      className="h-7 px-2 text-destructive hover:bg-destructive/10 gap-1 text-xs"
+                      className="h-7 px-2 text-destructive hover:bg-destructive/10 gap-1 text-xs rounded-full"
                     >
                       <Trash2 size={13} /> Xóa
                     </Button>
@@ -476,7 +476,7 @@ export function BioTab({
             variant="ghost"
             size="sm"
             onClick={() => { addExperience(); }}
-            className="text-primary hover:text-primary/90 text-xs font-medium gap-1"
+            className="text-primary hover:text-primary/90 text-xs font-semibold gap-1 rounded-full"
           >
             <PlusCircle size={15} /> Thêm kinh nghiệm
           </Button>
@@ -500,7 +500,7 @@ export function BioTab({
                       variant="ghost"
                       size="sm"
                       onClick={() => { removeExperience(item.id); }}
-                      className="h-7 px-2 text-destructive hover:bg-destructive/10 gap-1 text-xs"
+                      className="h-7 px-2 text-destructive hover:bg-destructive/10 gap-1 text-xs rounded-full"
                     >
                       <Trash2 size={13} /> Xóa
                     </Button>

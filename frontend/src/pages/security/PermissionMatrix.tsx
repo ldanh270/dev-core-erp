@@ -1,5 +1,12 @@
-import { PageCard } from "@/components/common"
+import { EmptyState, PageCard } from "@/components/common"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { API_ENDPOINTS } from "@/config/api.config"
 import apiClient from "@/lib/api-client"
 import { cn } from "@/lib/utils"
@@ -97,7 +104,7 @@ export default function PermissionMatrix() {
   const renderPermissionsList = (permissions: string[] | null) => {
     if (!permissions || permissions.length === 0) {
       return (
-        <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 font-semibold bg-emerald-50 dark:bg-emerald-950/20 px-2 py-0.5 rounded border border-emerald-100 dark:border-emerald-900/30">
+        <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
           <CheckCircle2 size={11} />
           Tất cả quyền
         </span>
@@ -109,7 +116,7 @@ export default function PermissionMatrix() {
         {permissions.map((p) => (
           <span
             key={p}
-            className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-primary/5 text-primary border border-primary/10 font-mono"
+            className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-mono"
           >
             {p}
           </span>
@@ -135,7 +142,7 @@ export default function PermissionMatrix() {
     }
     const className = colors[method] || colors.ALL
     return (
-      <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded border", className)}>
+      <span className={cn("text-[10px] font-bold px-2.5 py-0.5 rounded-full border shadow-xs", className)}>
         {method}
       </span>
     )
@@ -228,8 +235,9 @@ export default function PermissionMatrix() {
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
             <Input
+              size="sm"
               placeholder="Tìm kiếm API, đường dẫn..."
-              className="pl-8 h-8 text-sm bg-muted/40 border-transparent focus:bg-background focus:border-border transition-colors"
+              className="pl-8 bg-background border-border/80 focus:border-primary transition-colors"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -237,32 +245,34 @@ export default function PermissionMatrix() {
           <div className="flex flex-wrap items-center gap-4 ml-auto">
             <div className="flex items-center gap-2">
               <ArrowUpDown size={15} className="text-muted-foreground" />
-              <select
-                className="h-8 text-sm bg-background border border-border rounded-md px-2.5 outline-none focus:ring-1 focus:ring-primary text-foreground shadow-sm"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="DEFAULT">Đường dẫn (A-Z)</option>
-                <option value="PATH_DESC">Đường dẫn (Z-A)</option>
-                <option value="SEC_DESC">Bảo mật (Cao đến thấp)</option>
-                <option value="SEC_ASC">Bảo mật (Thấp đến cao)</option>
-              </select>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger size="sm" className="w-[200px] bg-background">
+                  <SelectValue placeholder="Sắp xếp theo..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="DEFAULT">Đường dẫn (A-Z)</SelectItem>
+                  <SelectItem value="PATH_DESC">Đường dẫn (Z-A)</SelectItem>
+                  <SelectItem value="SEC_DESC">Bảo mật (Cao đến thấp)</SelectItem>
+                  <SelectItem value="SEC_ASC">Bảo mật (Thấp đến cao)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex items-center gap-2">
               <Filter size={15} className="text-muted-foreground" />
-              <select
-                className="h-8 text-sm bg-background border border-border rounded-md px-2.5 outline-none focus:ring-1 focus:ring-primary text-foreground shadow-sm"
-                value={methodFilter}
-                onChange={(e) => setMethodFilter(e.target.value)}
-              >
-                <option value="ALL">Tất cả phương thức</option>
-                <option value="GET">GET</option>
-                <option value="POST">POST</option>
-                <option value="PUT">PUT</option>
-                <option value="PATCH">PATCH</option>
-                <option value="DELETE">DELETE</option>
-              </select>
+              <Select value={methodFilter} onValueChange={setMethodFilter}>
+                <SelectTrigger size="sm" className="w-[170px] bg-background">
+                  <SelectValue placeholder="Phương thức..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">Tất cả phương thức</SelectItem>
+                  <SelectItem value="GET">GET</SelectItem>
+                  <SelectItem value="POST">POST</SelectItem>
+                  <SelectItem value="PUT">PUT</SelectItem>
+                  <SelectItem value="PATCH">PATCH</SelectItem>
+                  <SelectItem value="DELETE">DELETE</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
@@ -301,7 +311,7 @@ export default function PermissionMatrix() {
                       {renderMethodBadge(row.method)}
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className="font-mono text-[11px] text-muted-foreground bg-muted/65 px-1.5 py-0.5 rounded break-all">
+                      <span className="font-mono text-[11px] text-foreground bg-muted/60 px-2.5 py-0.5 rounded-full border border-border/40 inline-block break-all">
                         {row.path}
                       </span>
                     </td>
@@ -328,8 +338,12 @@ export default function PermissionMatrix() {
               })}
               {filteredManifest.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-5 py-10 text-center text-muted-foreground">
-                    Không tìm thấy dữ liệu Route Manifest.
+                  <td colSpan={5} className="px-5 py-8">
+                    <EmptyState
+                      icon={ShieldCheck}
+                      title="Không tìm thấy API nào"
+                      description="Không có route nào khớp với từ khóa tìm kiếm hoặc bộ lọc phương thức hiện tại."
+                    />
                   </td>
                 </tr>
               )}

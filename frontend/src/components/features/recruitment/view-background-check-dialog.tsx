@@ -1,9 +1,16 @@
 import { StatusPill } from "@/components/common/status-pill"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { BGC_GROUP_LABELS, BGC_STATUS_LABELS } from "@/config/entities/recruitment.config"
 import type { BackgroundCheck } from "@/types/recruitment.types"
+
 import { ShieldCheck, UserCheck } from "lucide-react"
 
 interface Props {
@@ -33,7 +40,10 @@ export function ViewBackgroundCheckDialog({ open, onOpenChange, backgroundCheck 
             </Badge>
             <StatusPill
               label={BGC_STATUS_LABELS[backgroundCheck.status] || backgroundCheck.status}
-              variant={statusVariantMap[backgroundCheck.status as keyof typeof statusVariantMap] ?? "neutral"}
+              variant={
+                statusVariantMap[backgroundCheck.status as keyof typeof statusVariantMap] ??
+                "neutral"
+              }
             />
           </div>
           <DialogTitle className="mt-2 text-xl font-bold text-foreground flex items-center gap-2">
@@ -51,13 +61,17 @@ export function ViewBackgroundCheckDialog({ open, onOpenChange, backgroundCheck 
               </span>
             </div>
             <div>
-              <span className="text-xs text-muted-foreground block font-medium">Vị trí tuyển dụng</span>
+              <span className="text-xs text-muted-foreground block font-medium">
+                Vị trí tuyển dụng
+              </span>
               <span className="text-sm font-medium text-foreground">
                 {backgroundCheck.positionTitle}
               </span>
             </div>
             <div>
-              <span className="text-xs text-muted-foreground block font-medium">Người thẩm định / kiểm tra</span>
+              <span className="text-xs text-muted-foreground block font-medium">
+                Người thẩm định / kiểm tra
+              </span>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <UserCheck className="h-3.5 w-3.5 text-muted-foreground" />
                 <span className="text-sm font-medium text-foreground">
@@ -69,7 +83,9 @@ export function ViewBackgroundCheckDialog({ open, onOpenChange, backgroundCheck 
 
           {backgroundCheck.remarks && (
             <div className="space-y-1.5">
-              <span className="text-xs text-muted-foreground block font-medium">Ghi chú / Kết quả thẩm định</span>
+              <span className="text-xs text-muted-foreground block font-medium">
+                Ghi chú / Kết quả thẩm định
+              </span>
               <div className="rounded-lg bg-muted/20 p-3 border border-border text-xs text-foreground whitespace-pre-wrap">
                 {backgroundCheck.remarks}
               </div>
@@ -80,20 +96,30 @@ export function ViewBackgroundCheckDialog({ open, onOpenChange, backgroundCheck 
             <div>
               <span>Ngày bắt đầu: </span>
               <span className="font-medium text-foreground">
-                {backgroundCheck.createdAt ? new Date(backgroundCheck.createdAt).toLocaleDateString("vi-VN") : "—"}
+                {backgroundCheck.createdAt
+                  ? new Date(backgroundCheck.createdAt).toLocaleDateString("vi-VN")
+                  : "—"}
               </span>
             </div>
             <div>
               <span>Hoàn thành: </span>
               <span className="font-medium text-foreground">
-                {backgroundCheck.completedAt ? new Date(backgroundCheck.completedAt).toLocaleDateString("vi-VN") : "Chưa xong"}
+                {backgroundCheck.completedAt
+                  ? new Date(backgroundCheck.completedAt).toLocaleDateString("vi-VN")
+                  : "Chưa xong"}
               </span>
             </div>
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" className="rounded-full border-border text-foreground hover:bg-muted" onClick={() => { onOpenChange(false); }}>
+          <Button
+            variant="outline"
+            className="rounded-full border-border text-foreground hover:bg-muted"
+            onClick={() => {
+              onOpenChange(false)
+            }}
+          >
             Đóng
           </Button>
         </DialogFooter>

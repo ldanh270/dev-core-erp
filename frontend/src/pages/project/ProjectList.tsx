@@ -1,4 +1,4 @@
-import { PageCard, PageHeader, StatusPill } from "@/components/common"
+import { EmptyState, PageCard, PageHeader, StatusPill } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
@@ -225,9 +225,9 @@ export default function ProjectList() {
             onClick={() => {
               setIsOpenCreateModal(true)
             }}
-            className="rounded-full bg-primary text-primary-foreground hover:bg-primary/95 flex items-center gap-1.5 h-11 px-5 text-sm"
+            className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1.5 h-9 px-4 text-xs font-semibold"
           >
-            <Plus className="size-4" />
+            <Plus className="size-3.5" />
             Tạo dự án mới
           </Button>
         )}
@@ -237,14 +237,15 @@ export default function ProjectList() {
       <PageCard className="p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
         {/* Search input field */}
         <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
           <Input
+            size="sm"
             placeholder="Tìm theo tên, mô tả, công nghệ..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value)
             }}
-            className="pl-11 h-10 text-sm border-border rounded-full"
+            className="pl-9 border-border bg-background shadow-none"
           />
         </div>
 
@@ -254,15 +255,15 @@ export default function ProjectList() {
             Trạng thái:
           </Label>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-40 h-10 border-border rounded-full px-4 bg-background">
+            <SelectTrigger size="sm" className="w-40 border-border bg-background shadow-none">
               <SelectValue placeholder="Tất cả" />
             </SelectTrigger>
             <SelectContent position="popper" className="rounded-xl border-border bg-popover">
-              <SelectItem value="all" className="rounded-lg">
+              <SelectItem value="all" className="rounded-lg text-xs">
                 Tất cả
               </SelectItem>
               {PROJECT_STATUSES.map((st) => (
-                <SelectItem key={st} value={st} className="rounded-lg">
+                <SelectItem key={st} value={st} className="rounded-lg text-xs">
                   {formatStatus(st)}
                 </SelectItem>
               ))}
@@ -272,10 +273,10 @@ export default function ProjectList() {
       </PageCard>
 
       {/* Main content display area */}
-      <PageCard className="p-6">
+      <PageCard className="p-0 overflow-hidden">
         {/* Display loading screen placeholder if fetching projects */}
         {isLoading ? (
-          <div className="space-y-4">
+          <div className="p-6 space-y-4">
             <Skeleton className="h-10 w-full rounded-full" />
             <Skeleton className="h-14 w-full rounded-xl" />
             <Skeleton className="h-14 w-full rounded-xl" />
@@ -283,18 +284,20 @@ export default function ProjectList() {
           </div>
         ) : filteredProjects.length === 0 ? (
           // Display empty statement state if search contains no entries
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="rounded-full bg-secondary p-4 mb-4 text-muted-foreground">
-              <FolderKanban className="size-8" />
-            </div>
-            <h3 className="text-base font-bold text-foreground">Không tìm thấy dự án nào</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Vui lòng điều chỉnh bộ lọc hoặc tạo dự án mới.
-            </p>
+          <div className="p-8">
+            <EmptyState
+              icon={FolderKanban}
+              title="Không tìm thấy dự án nào"
+              description={
+                search || statusFilter !== "all"
+                  ? "Không có dự án nào phù hợp với bộ lọc hoặc từ khóa tìm kiếm."
+                  : "Chưa có dự án nào trong hệ thống. Hãy bấm 'Tạo dự án mới' để bắt đầu."
+              }
+            />
           </div>
         ) : (
           // Projects grid listing table representation
-          <div className="relative overflow-x-auto rounded-lg border border-border">
+          <div className="relative overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent h-12">
@@ -657,14 +660,14 @@ export default function ProjectList() {
                 onClick={() => {
                   setIsOpenCreateModal(false)
                 }}
-                className="h-10 rounded-full px-5 text-sm"
+                className="h-9 rounded-full px-4 text-xs font-medium"
                 disabled={createMutation.isPending}
               >
                 Hủy
               </Button>
               <Button
                 type="submit"
-                className="h-10 rounded-full px-5 text-sm bg-primary text-primary-foreground hover:bg-primary/95"
+                className="h-9 rounded-full px-4 text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90"
                 disabled={createMutation.isPending}
               >
                 {createMutation.isPending ? "Đang tạo..." : "Tạo dự án"}
