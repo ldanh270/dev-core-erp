@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button.tsx"
 import { Input } from "@/components/ui/input.tsx"
 import { Label } from "@/components/ui/label.tsx"
+import { BRANDING_CONFIG } from "@/config/branding.config"
 import { ROUTES } from "@/config/routes.config"
 import { useAuth } from "@/hooks/use-auth.ts"
 import { resetPasswordSchema } from "@/schemas/auth.schema.ts"
@@ -34,7 +35,11 @@ const GeometricBackground = () => (
 )
 
 const BrandLogo = () => (
-  <img src="/logo.jpg" alt="DevCore ERP" className="size-14 rounded-lg object-cover shadow-lg" />
+  <img
+    src={BRANDING_CONFIG.LOGO_URL}
+    alt={BRANDING_CONFIG.LOGO_ALT}
+    className="size-14 rounded-lg object-cover shadow-lg"
+  />
 )
 
 export default function ResetPassword() {
@@ -111,7 +116,12 @@ export default function ResetPassword() {
               Liên kết đặt lại mật khẩu đã hết hạn hoặc không tồn tại. Vui lòng yêu cầu lại.
             </p>
           </div>
-          <Button onClick={() => { navigate(ROUTES.AUTH.LOGIN) }} className="w-full h-12 rounded-full">
+          <Button
+            onClick={() => {
+              navigate(ROUTES.AUTH.LOGIN)
+            }}
+            className="w-full h-12 rounded-full"
+          >
             Quay lại đăng nhập
           </Button>
         </div>
@@ -126,7 +136,7 @@ export default function ResetPassword() {
         <GeometricBackground />
         <div className="relative z-10 flex items-center gap-3">
           <BrandLogo />
-          <span className="text-xl font-bold tracking-wide">DevCore ERP</span>
+          <span className="text-xl font-bold tracking-wide">{BRANDING_CONFIG.APP_NAME}</span>
         </div>
         <div className="relative z-10 my-auto flex flex-col items-start space-y-6 max-w-md">
           <h1 className="text-4xl font-bold leading-tight">Đặt lại mật khẩu</h1>
@@ -170,7 +180,9 @@ export default function ResetPassword() {
                 />
                 <button
                   type="button"
-                  onClick={() => { setShowPassword(!showPassword) }}
+                  onClick={() => {
+                    setShowPassword(!showPassword)
+                  }}
                   className="absolute right-4 text-muted-foreground hover:text-foreground focus:outline-none"
                   tabIndex={-1}
                 >
@@ -202,7 +214,9 @@ export default function ResetPassword() {
             <Button
               type="button"
               variant="ghost"
-              onClick={() => { navigate(ROUTES.AUTH.LOGIN) }}
+              onClick={() => {
+                navigate(ROUTES.AUTH.LOGIN)
+              }}
               className="w-full h-12 text-sm font-semibold flex items-center justify-center gap-2 rounded-full"
             >
               Quay lại đăng nhập
