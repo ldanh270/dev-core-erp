@@ -1,22 +1,22 @@
-# 🚀 Quickstart Guide — DevCore ERP
+# Quickstart Guide — DevCore ERP
 
-Hướng dẫn thiết lập và chạy dự án cho người mới (hỗ trợ cả **Node.js/npm/pnpm** và **Bun**).
-
----
-
-## 1. Yêu cầu hệ thống (Prerequisites)
-
-* **Runtime:** Node.js v20+ **hoặc** Bun v1.1+ (chọn 1 trong 2, cái nào cũng chạy được).
-* **Package Manager:** `pnpm`, `npm`, `yarn` hoặc `bun`.
-* **Database:** PostgreSQL (khuyến nghị dùng Supabase hoặc PostgreSQL local / Docker).
+Onboarding and setup guide for developers (supporting **Node.js/npm/pnpm** and **Bun**).
 
 ---
 
-## 2. Các bước khởi chạy nhanh (4 Bước)
+## 1. Prerequisites
 
-### Bước 1: Sao chép file cấu hình môi trường (.env)
+* **Runtime:** Node.js v20+ or Bun v1.1+ (either runtime is supported).
+* **Package Manager:** `pnpm`, `npm`, `yarn`, or `bun`.
+* **Database:** PostgreSQL (Supabase, local PostgreSQL, or Docker container).
 
-Mở terminal tại thư mục gốc của dự án và chạy:
+---
+
+## 2. Quick Setup (4 Steps)
+
+### Step 1: Copy Environment Configuration (.env)
+
+Open a terminal at the project root and execute:
 
 **Windows (PowerShell):**
 ```powershell
@@ -35,30 +35,30 @@ cp agent-gateway/.env.example agent-gateway/.env
 ```
 
 > [!IMPORTANT]
-> Mở file `backend/.env` và cập nhật tối thiểu:
-> 1. `DATABASE_URL` & `DIRECT_URL`: Chuỗi kết nối PostgreSQL (ví dụ Supabase).
-> 2. `SEED_PASSWORD=Admin123@` (dùng để tạo mật khẩu mặc định khi seed tài khoản).
+> Open `backend/.env` and configure the following parameters:
+> 1. `DATABASE_URL` & `DIRECT_URL`: PostgreSQL connection strings (e.g., Supabase instance).
+> 2. `SEED_PASSWORD=Admin123@` (used to generate default credentials during database seeding).
 
 ---
 
-### Bước 2: Cài đặt Dependencies
+### Step 2: Install Dependencies
 
-Dùng thẳng package manager bạn quen thuộc (`pnpm`, `bun`, hoặc `npm`), không cần cài thêm tool gì khác:
+Use your preferred package manager (`pnpm`, `bun`, or `npm`):
 
-#### Cách 1: Dùng pnpm (hoặc npm)
+#### Option 1: Using pnpm (or npm)
 ```bash
-# Cài backend
+# Backend installation
 cd backend && pnpm install
-# hoặc: npm install --legacy-peer-deps
+# Alternatively: npm install --legacy-peer-deps
 
-# Cài frontend
+# Frontend installation
 cd ../frontend && pnpm install
-# hoặc: npm install
+# Alternatively: npm install
 
 cd ..
 ```
 
-#### Cách 2: Dùng Bun (Nhanh nhất)
+#### Option 2: Using Bun (Fastest)
 ```bash
 cd backend && bun install
 cd ../frontend && bun install
@@ -67,69 +67,69 @@ cd ..
 
 ---
 
-### Bước 3: Chuẩn bị Cơ sở dữ liệu (Prisma)
+### Step 3: Database Setup (Prisma)
 
-Tạo Prisma Client và deploy schema vào Database:
+Generate the Prisma Client and apply migrations to the database:
 
-**Nếu dùng Bun:**
+**Using Bun:**
 ```bash
 cd backend
 bun x prisma generate
 bun x prisma migrate deploy
 ```
 
-**Nếu dùng npm / npx:**
+**Using npm / npx:**
 ```bash
 cd backend
 npx prisma generate
 npx prisma migrate deploy
 ```
 
-*(Tùy chọn) Nạp dữ liệu mẫu (Seed Data):*
+*(Optional) Seed Sample Data:*
 ```bash
-# Seed dữ liệu demo (tài khoản, dự án, chấm công...)
+# Seed demonstration data (accounts, departments, projects, attendance)
 npm run seed
-# hoặc: bun run seed
+# Alternatively: bun run seed
 ```
 
 ---
 
-### Bước 4: Chạy Development Server
+### Step 4: Start Development Servers
 
-Dự án gồm 2 phần chính phục vụ giao diện Web ERP:
+The web application consists of two primary services:
 
-#### Mở Terminal 1 — Chạy Backend (Port 5000):
+#### Terminal 1 — Backend API (Port 5000):
 ```bash
 cd backend
 npm run dev
-# hoặc: bun run dev
+# Alternatively: bun run dev
 ```
 
-#### Mở Terminal 2 — Chạy Frontend Web (Port 5173):
+#### Terminal 2 — Frontend Web (Port 5173):
 ```bash
 cd frontend
 npm run dev
-# hoặc: bun run dev
+# Alternatively: bun run dev
 ```
 
-Truy cập web tại: **http://localhost:5173**  
-API Backend tại: **http://localhost:5000**
+Access the Web application at: **http://localhost:5173**  
+Backend REST API endpoint: **http://localhost:5000**
 
 ---
 
-## 3. Tài khoản đăng nhập mặc định (Sau khi Seed / Bootstrap)
+## 3. Default Login Credentials (After Seeding)
 
-* **Tài khoản Admin:**
-  * **Username:** `admin` (hoặc email: `admin@company.com`)
-  * **Password:** Giá trị cấu hình tại `SEED_PASSWORD` trong `backend/.env` (Mặc định: `Admin123@`).
+* **Admin Account:**
+  * **Username:** `admin` (or email: `admin@company.com`)
+  * **Password:** Configured via `SEED_PASSWORD` in `backend/.env` (Default: `Admin123@`).
 
 ---
 
-## 4. (Tùy chọn) Chạy AI Assistant & Telegram Bot
+## 4. (Optional) Run AI Assistant & Telegram Bot
 
-Nếu bạn cần phát triển thêm tính năng AI Telegram Bot / MCP Server:
+To run the AI Telegram Assistant and MCP Server locally:
 ```bash
-# Yêu cầu cài Docker Desktop
+# Requires Docker Desktop
 docker compose up -d --build
 ```
 * MCP Server: `http://localhost:3001`

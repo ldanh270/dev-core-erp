@@ -1,6 +1,6 @@
 # DevCore ERP (`dev-core-erp`)
 
-> 📖 **Mới vào dự án?** Xem ngay [QUICKSTART.md](QUICKSTART.md) để thiết lập và chạy nhanh trong 5 phút.
+> **New to the project?** See [QUICKSTART.md](QUICKSTART.md) to get set up and running in 5 minutes.
 
 DevCore ERP is an integrated Enterprise Resource Planning (ERP) platform designed specifically for IT outsourcing companies, software development houses, and digital marketing agencies. Built as a TypeScript monorepo, it seamlessly unifies workforce administration, attendance and scheduling, employee requests and approvals, payroll processing, recruitment pipelines, project and task delivery, and an authenticated AI operations assistant.
 

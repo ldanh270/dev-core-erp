@@ -1,6 +1,6 @@
 # ĐẶC TẢ THIẾT KẾ GIAO DIỆN CHUNG (FRONTEND DESIGN SPEC)
 **Hệ thống:** DevCore ERP (Enterprise Resource Planning for IT Outsourcing)  
-**Tài liệu tham chiếu:** [`docs/reference-survey.md`](file:///d:/web_erp/dev-core-erp/docs/reference-survey.md), [`docs/module-mapping.md`](file:///d:/web_erp/dev-core-erp/docs/module-mapping.md), [`AGENTS.md`](file:///d:/web_erp/dev-core-erp/AGENTS.md)  
+**Tài liệu tham chiếu:** [`docs/frontend-design-spec.md`](docs/frontend-design-spec.md), [`AGENTS.md`](AGENTS.md)  
 **Trạng thái áp dụng:** Chuẩn mực bắt buộc cho toàn bộ FE (Single Source of Truth).
 
 ---
@@ -248,8 +248,8 @@ Dưới đây là các màn hình có nghiệp vụ hiển thị vượt ra ngo�
 ## 6. Mục "Tuân Thủ Rule" (Compliance Verification)
 
 * **Các Rule Đã Áp Dụng Triệt Để:**
-  - ✅ **The Pill Rule:** 100% Buttons, Inputs, Badges và Select Triggers trong tài liệu này đều quy định bo góc tròn `rounded-full`.
-  - ✅ **Token-Only Rule:** 100% quy định màu sắc đều sử dụng tên token chuẩn (`bg-background`, `text-foreground`, `border-border`, `bg-primary`, `bg-card`).
-  - ✅ **Giữ Nguyên Module:** Không thêm, bớt hoặc đổi tên bất kỳ route/phân hệ nào của DevCore ERP.
-* **Chỗ Nào Không Thể Tuân Thủ / Cần Xác Nhận Thêm:**
-  - ⚠️ *Ảnh tham khảo từ ERPNext chưa đủ chi tiết về tương tác DateRangePicker trên di động:* Trong tài liệu này tạm thời quy định DatePicker trên mobile mở dạng modal sheet đáy màn hình; phần này đánh dấu **Cần xác nhận** thêm từ người dùng khi triển khai thực tế.
+  - **The Pill Rule:** 100% Buttons, Inputs, Badges và Select Triggers trong tài liệu này đều quy định bo góc tròn `rounded-full`.
+  - **Token-Only Rule:** 100% quy định màu sắc đều sử dụng tên token chuẩn (`bg-background`, `text-foreground`, `border-border`, `bg-primary`, `bg-card`).
+  - **Giữ Nguyên Module:** Không thêm, bớt hoặc đổi tên bất kỳ route/phân hệ nào của DevCore ERP.
+* **Hạng mục Cần Xác Nhận Thêm:**
+  - *Tương tác DateRangePicker trên di động:* Trong tài liệu này tạm thời quy định DatePicker trên mobile mở dạng modal sheet đáy màn hình; phần này đánh dấu **Cần xác nhận** thêm khi triển khai thực tế.
