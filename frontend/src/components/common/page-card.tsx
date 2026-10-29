@@ -1,19 +1,23 @@
 import { cn } from "@/lib/utils"
 
-interface PageCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode
-  padding?: "sm" | "md" | "lg"
+import type { HTMLAttributes, ReactNode } from "react"
+
+interface PageCardProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode
+  padding?: "none" | "sm" | "md" | "lg"
   noBorder?: boolean
 }
 
 const paddingMap = {
-  sm: "p-3",
-  md: "p-4",
-  lg: "p-5",
+  none: "p-0",
+  sm: "p-4",
+  md: "p-6",
+  lg: "p-8",
 }
 
 /**
  * PageCard — Standard card container used across all pages.
+ * Enforces rounded-xl (12px), bg-card, and standardized concentric border.
  */
 export function PageCard({
   children,
@@ -26,7 +30,7 @@ export function PageCard({
     <div
       className={cn(
         "rounded-xl bg-card",
-        !noBorder && "border border-border",
+        !noBorder && "border border-border/80",
         paddingMap[padding],
         className,
       )}
