@@ -1,13 +1,15 @@
-import { useMemo, useState, useEffect } from "react"
-import { useSearchParams } from "react-router-dom"
-import { PageCard, PageHeader, AppPagination, EmptyState } from "@/components/common"
+import { AppPagination, EmptyState, PageCard, PageHeader } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import { formatCurrency } from "@/lib/utils"
 import type { Employee } from "@/types/employee.types"
+
+import { useEffect, useMemo, useState } from "react"
+
 import { Plus, Search, ShieldAlert } from "lucide-react"
+import { useSearchParams } from "react-router-dom"
 
 const EMPTY_EMPLOYEES: Employee[] = []
 
@@ -111,33 +113,71 @@ export default function InsurancePage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr className="border-b border-border">
-              <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">Nhân sự</th>
-              <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">Mã NV</th>
-              <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">Số sổ BHXH</th>
-              <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">Mã BHYT</th>
-              <th className="px-5 py-3 text-right text-[11px] font-medium text-muted-foreground">Lương đóng BH</th>
-              <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">Trạng thái</th>
-            </tr></thead>
+            <thead>
+              <tr className="border-b border-border">
+                <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">
+                  Nhân sự
+                </th>
+                <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">
+                  Mã NV
+                </th>
+                <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">
+                  Số sổ BHXH
+                </th>
+                <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">
+                  Mã BHYT
+                </th>
+                <th className="px-5 py-3 text-right text-[11px] font-medium text-muted-foreground">
+                  Lương đóng BH
+                </th>
+                <th className="px-5 py-3 text-left text-[11px] font-medium text-muted-foreground">
+                  Trạng thái
+                </th>
+              </tr>
+            </thead>
             <tbody>
-              {isLoading ? <tr><td colSpan={6} className="px-5 py-16 text-center text-sm text-muted-foreground">Đang tải dữ liệu bảo hiểm...</td></tr>
-                : filteredEmployees.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="p-8">
-                      <EmptyState
-                        icon={ShieldAlert}
-                        title="Không tìm thấy dữ liệu bảo hiểm"
-                        description="Không có nhân sự hoặc hồ sơ bảo hiểm nào phù hợp với từ khóa tìm kiếm."
-                      />
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="px-5 py-16 text-center text-sm text-muted-foreground">
+                    Đang tải dữ liệu bảo hiểm...
+                  </td>
+                </tr>
+              ) : filteredEmployees.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-8">
+                    <EmptyState
+                      icon={ShieldAlert}
+                      title="Không tìm thấy dữ liệu bảo hiểm"
+                      description="Không có nhân sự hoặc hồ sơ bảo hiểm nào phù hợp với từ khóa tìm kiếm."
+                    />
+                  </td>
+                </tr>
+              ) : (
+                paginatedEmployees.map((employee: Employee) => (
+                  <tr
+                    key={employee.id}
+                    className="border-b border-border last:border-0 transition-colors duration-100 hover:bg-muted/25"
+                  >
+                    <td className="px-5 py-3">
+                      <div className="text-[13px] font-medium text-foreground">
+                        {employee.fullName}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground">{employee.username}</div>
                     </td>
-                  </tr>
-                ) : paginatedEmployees.map((employee: Employee) => (
-                  <tr key={employee.id} className="border-b border-border last:border-0 transition-colors duration-100 hover:bg-muted/25">
-                    <td className="px-5 py-3"><div className="text-[13px] font-medium text-foreground">{employee.fullName}</div><div className="text-[11px] text-muted-foreground">{employee.username}</div></td>
-                    <td className="px-5 py-3"><span className="rounded bg-muted/60 px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">{employee?.id ? employee.id.slice(-6).toUpperCase() : "—"}</span></td>
-                    <td className="px-5 py-3 font-mono text-[11px] text-muted-foreground">{employee?.nationalId ? `79${employee.nationalId.slice(0, 8)}` : "—"}</td>
-                    <td className="px-5 py-3 font-mono text-[11px] text-muted-foreground">{employee?.nationalId ? `DN4${employee.nationalId.slice(0, 10)}` : "—"}</td>
-                    <td className="px-5 py-3 text-right text-[13px] text-foreground">{formatCurrency(5000000)}</td>
+                    <td className="px-5 py-3">
+                      <span className="rounded bg-muted/60 px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+                        {employee?.id ? employee.id.slice(-6).toUpperCase() : "—"}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3 font-mono text-[11px] text-muted-foreground">
+                      {employee?.nationalId ? `79${employee.nationalId.slice(0, 8)}` : "—"}
+                    </td>
+                    <td className="px-5 py-3 font-mono text-[11px] text-muted-foreground">
+                      {employee?.nationalId ? `DN4${employee.nationalId.slice(0, 10)}` : "—"}
+                    </td>
+                    <td className="px-5 py-3 text-right text-[13px] text-foreground">
+                      {formatCurrency(5000000)}
+                    </td>
                     <td className="px-5 py-3">
                       <Badge
                         variant="outline"
@@ -147,7 +187,8 @@ export default function InsurancePage() {
                       </Badge>
                     </td>
                   </tr>
-                ))}
+                ))
+              )}
             </tbody>
           </table>
         </div>
