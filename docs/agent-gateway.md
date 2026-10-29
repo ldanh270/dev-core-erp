@@ -16,12 +16,12 @@ Xây dựng service `agent-gateway/` là một Telegram Bot thông minh đóng v
 | | **Option A: sessionId via tool param** | **Option B: Thêm Bearer Token header** | **Option C: Login flow chuẩn** |
 |---|---|---|---|
 | **Cơ chế** | Gateway lưu `sessionId` trong Redis, truyền vào mỗi MCP tool call | Sửa MCP Server để validate `Authorization` header trên SSEServerTransport | Dùng `login_start` → `login_status` flow, Gateway poll đến khi user login xong |
-| **Ưu điểm** | ✅ Không sửa MCP Server. ✅ Align với thiết kế hiện tại. ✅ Session isolation tự nhiên (mỗi user dùng sessionId riêng). ✅ Implement nhanh | ✅ Cleaner architecture về lý thuyết. ✅ Token tự validate ở transport layer | ✅ Dùng đúng `login_start`/`login_status` built-in tools. ✅ Zero-code MCP change |
-| **Nhược điểm** | ❌ Gateway cần biết format `sessionId` của MCP. ❌ Mỗi tool call phải inject sessionId vào arguments | ❌ Phải sửa MCP Server SSE transport layer (breaking change). ❌ Phức tạp hơn | ❌ Gateway phải tổ chức polling loop ngay trong Telegram flow. ❌ UX phức tạp (user mở browser, poll đến khi xong) |
-| **Sửa MCP?** | ❌ Không | ✅ Cần sửa | ❌ Không |
-| **Best Practice** | ✅ Best với codebase hiện tại | Tốt nhưng overkill | ✅ Dùng được nhưng UX phức tạp |
+| **Ưu điểm** | Không sửa MCP Server. Align với thiết kế hiện tại. Session isolation tự nhiên (mỗi user dùng sessionId riêng). Triển khai nhanh | Cleaner architecture về lý thuyết. Token tự validate ở transport layer | Dùng đúng `login_start`/`login_status` built-in tools. Zero-code MCP change |
+| **Nhược điểm** | Gateway cần biết format `sessionId` của MCP. Mỗi tool call phải inject sessionId vào arguments | Phải sửa MCP Server SSE transport layer (breaking change). Phức tạp hơn | Gateway phải tổ chức polling loop ngay trong Telegram flow. UX phức tạp (user mở browser, poll đến khi xong) |
+| **Sửa MCP?** | Không | Cần sửa | Không |
+| **Đánh giá** | Phù hợp nhất với kiến trúc hiện tại | Tốt nhưng vượt quá phạm vi cần thiết | Sử dụng được nhưng trải nghiệm người dùng phức tạp |
 
-### 🏆 Lựa chọn: Kết hợp Option A + Option C (Hybrid)
+### Quyết định kiến trúc: Kết hợp Option A + Option C (Hybrid)
 
 **Lý do:** MCP đã có sẵn `login_start` / `login_status` tools → tận dụng hoàn toàn, không sửa MCP Server. Gateway dùng Telegram như UI cho browser-based login:
 
@@ -36,10 +36,10 @@ Xây dựng service `agent-gateway/` là một Telegram Bot thông minh đóng v
 
 ## Open Questions (Đã giải quyết)
 
-- ✅ **Auth**: Hybrid Option A+C (sessionId via tool param + browser login flow)
-- ✅ **LLM**: Cả hai — 9Router routing động, config linh hoạt (primary: OpenAI-compatible API)
-- ✅ **Deploy**: Docker Compose cùng MCP Server
-- ✅ **Redis**: Setup mới trong Docker Compose (thêm Redis container)
+- **Auth**: Hybrid Option A+C (sessionId via tool param + browser login flow)
+- **LLM**: Cả hai — 9Router routing động, config linh hoạt (primary: OpenAI-compatible API)
+- **Deploy**: Docker Compose cùng MCP Server
+- **Redis**: Setup mới trong Docker Compose (thêm Redis container)
 
 ---
 

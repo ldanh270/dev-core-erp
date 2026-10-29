@@ -74,7 +74,7 @@ export async function bootstrapAdmin(): Promise<void> {
   })
 
   if (!adminEmployee) {
-    const defaultPassword = getSeedPassword("SEED_CORE_ACCOUNTS_PASSWORD")
+    const defaultPassword = getSeedPassword("SEED_PASSWORD")
     const defaultPasswordHash = await HashUtil.hash(defaultPassword)
     adminEmployee = await prisma.employee.create({
       data: {
@@ -86,7 +86,7 @@ export async function bootstrapAdmin(): Promise<void> {
         position: "Administrator",
       },
     })
-    console.log("[created] employee 'admin' with password from SEED_CORE_ACCOUNTS_PASSWORD.")
+    console.log("[created] employee 'admin' with password from SEED_PASSWORD.")
   } else if (adminEmployee.status !== "active") {
     adminEmployee = await prisma.employee.update({
       where: { id: adminEmployee.id },

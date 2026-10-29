@@ -1,4 +1,4 @@
-import { HRP_API_CONSTANTS } from "../constants/hrp-api.constants.js"
+import { DEVCORE_API_CONSTANTS } from "../constants/devcore-api.constants.js"
 import type {
   CreateProjectInput,
   CreateTaskInput,
@@ -11,7 +11,7 @@ import type {
   UpdateTaskInput,
 } from "../schemas/project.schema.js"
 import { SessionData } from "../types/session.types.js"
-import { createAuthedClient } from "../utils/hrp-client.js"
+import { createAuthedClient } from "../utils/devcore-client.js"
 
 export class ProjectService {
   private client(session: SessionData) {
@@ -31,7 +31,7 @@ export class ProjectService {
 
   async listProjects(session: SessionData, params?: ListProjectsInput) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.BASE, {
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.BASE, {
         params,
       })
       return res.data
@@ -42,7 +42,7 @@ export class ProjectService {
 
   async getProject(session: SessionData, id: string) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.BY_ID(id))
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.BY_ID(id))
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to fetch project")
@@ -51,7 +51,7 @@ export class ProjectService {
 
   async createProject(session: SessionData, data: CreateProjectInput) {
     try {
-      const res = await this.client(session).post(HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.BASE, data)
+      const res = await this.client(session).post(DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.BASE, data)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to create project")
@@ -61,7 +61,7 @@ export class ProjectService {
   async updateProject(session: SessionData, id: string, data: UpdateProjectInput) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.BY_ID(id),
         data,
       )
       return res.data
@@ -72,7 +72,7 @@ export class ProjectService {
 
   async deleteProject(session: SessionData, id: string) {
     try {
-      const res = await this.client(session).delete(HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.BY_ID(id))
+      const res = await this.client(session).delete(DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.BY_ID(id))
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to delete project")
@@ -81,7 +81,7 @@ export class ProjectService {
 
   async getProjectMembers(session: SessionData, id: string) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.MEMBERS(id))
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.MEMBERS(id))
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to fetch project members")
@@ -91,7 +91,7 @@ export class ProjectService {
   async addProjectMember(session: SessionData, projectId: string, employeeId: string) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.MEMBERS(projectId),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.MEMBERS(projectId),
         { employeeId },
       )
       return res.data
@@ -103,7 +103,7 @@ export class ProjectService {
   async removeProjectMember(session: SessionData, projectId: string, employeeId: string) {
     try {
       const res = await this.client(session).delete(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.MEMBER_BY_ID(projectId, employeeId),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.MEMBER_BY_ID(projectId, employeeId),
       )
       return res.data
     } catch (e: any) {
@@ -115,7 +115,7 @@ export class ProjectService {
 
   async listTasks(session: SessionData, params?: ListTasksInput) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.TASKS, {
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.TASKS, {
         params,
       })
       return res.data
@@ -127,7 +127,7 @@ export class ProjectService {
   async getTask(session: SessionData, id: string) {
     try {
       const res = await this.client(session).get(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.TASK_BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.TASK_BY_ID(id),
       )
       return res.data
     } catch (e: any) {
@@ -137,7 +137,7 @@ export class ProjectService {
 
   async createTask(session: SessionData, data: CreateTaskInput) {
     try {
-      const res = await this.client(session).post(HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.TASKS, data)
+      const res = await this.client(session).post(DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.TASKS, data)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to create task")
@@ -147,7 +147,7 @@ export class ProjectService {
   async updateTask(session: SessionData, id: string, data: UpdateTaskInput) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.TASK_BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.TASK_BY_ID(id),
         data,
       )
       return res.data
@@ -159,7 +159,7 @@ export class ProjectService {
   async deleteTask(session: SessionData, id: string) {
     try {
       const res = await this.client(session).delete(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.TASK_BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.TASK_BY_ID(id),
       )
       return res.data
     } catch (e: any) {
@@ -172,7 +172,7 @@ export class ProjectService {
   async listCategories(session: SessionData, projectId: string) {
     try {
       const res = await this.client(session).get(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.CATEGORIES(projectId),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.CATEGORIES(projectId),
       )
       return res.data
     } catch (e: any) {
@@ -183,7 +183,7 @@ export class ProjectService {
   async createCategory(session: SessionData, projectId: string, name: string) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.CATEGORIES(projectId),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.CATEGORIES(projectId),
         { name },
       )
       return res.data
@@ -195,7 +195,7 @@ export class ProjectService {
   async updateCategory(session: SessionData, projectId: string, categoryId: string, name: string) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.CATEGORY_BY_ID(projectId, categoryId),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.CATEGORY_BY_ID(projectId, categoryId),
         { name },
       )
       return res.data
@@ -207,7 +207,7 @@ export class ProjectService {
   async deleteCategory(session: SessionData, projectId: string, categoryId: string) {
     try {
       const res = await this.client(session).delete(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.CATEGORY_BY_ID(projectId, categoryId),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.CATEGORY_BY_ID(projectId, categoryId),
       )
       return res.data
     } catch (e: any) {
@@ -219,7 +219,7 @@ export class ProjectService {
 
   async listSpentTimes(session: SessionData, params?: ListSpentTimesInput) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.SPENT_TIMES, {
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.SPENT_TIMES, {
         params,
       })
       return res.data
@@ -231,7 +231,7 @@ export class ProjectService {
   async getSpentTime(session: SessionData, id: string) {
     try {
       const res = await this.client(session).get(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.SPENT_TIME_BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.SPENT_TIME_BY_ID(id),
       )
       return res.data
     } catch (e: any) {
@@ -242,7 +242,7 @@ export class ProjectService {
   async logSpentTime(session: SessionData, data: LogSpentTimeInput) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.SPENT_TIMES,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.SPENT_TIMES,
         data,
       )
       return res.data
@@ -254,7 +254,7 @@ export class ProjectService {
   async updateSpentTime(session: SessionData, id: string, data: UpdateSpentTimeInput) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.SPENT_TIME_BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.SPENT_TIME_BY_ID(id),
         data,
       )
       return res.data
@@ -266,7 +266,7 @@ export class ProjectService {
   async deleteSpentTime(session: SessionData, id: string) {
     try {
       const res = await this.client(session).delete(
-        HRP_API_CONSTANTS.ENDPOINTS.PROJECTS.SPENT_TIME_BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.PROJECTS.SPENT_TIME_BY_ID(id),
       )
       return res.data
     } catch (e: any) {

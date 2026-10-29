@@ -1,11 +1,11 @@
-import { HRP_API_CONSTANTS } from "../constants/hrp-api.constants.js"
+import { DEVCORE_API_CONSTANTS } from "../constants/devcore-api.constants.js"
 import type {
   CreateApplicationPayload,
   ListApplicationsInput,
   RejectApplicationInput,
 } from "../schemas/application.schema.js"
 import { SessionData } from "../types/session.types.js"
-import { createAuthedClient } from "../utils/hrp-client.js"
+import { createAuthedClient } from "../utils/devcore-client.js"
 
 export class ApplicationService {
   private client(session: SessionData) {
@@ -24,7 +24,7 @@ export class ApplicationService {
   async createApplication(session: SessionData, data: CreateApplicationPayload) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.APPLICATION.BASE,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.APPLICATION.BASE,
         data,
       )
       return res.data
@@ -35,7 +35,7 @@ export class ApplicationService {
 
   async getMyApplications(session: SessionData, params?: ListApplicationsInput) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.APPLICATION.ME, {
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.APPLICATION.ME, {
         params,
       })
       return res.data
@@ -46,7 +46,7 @@ export class ApplicationService {
 
   async getApplication(session: SessionData, id: string) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.APPLICATION.BY_ID(id))
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.APPLICATION.BY_ID(id))
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to fetch application")
@@ -56,7 +56,7 @@ export class ApplicationService {
   async cancelApplication(session: SessionData, id: string, reason?: string) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.APPLICATION.CANCEL(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.APPLICATION.CANCEL(id),
         {
           reason,
         },
@@ -69,7 +69,7 @@ export class ApplicationService {
 
   async listAllApplications(session: SessionData, params?: ListApplicationsInput) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.APPLICATION.BASE, {
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.APPLICATION.BASE, {
         params,
       })
       return res.data
@@ -85,7 +85,7 @@ export class ApplicationService {
   ) {
     try {
       const res = await this.client(session).get(
-        HRP_API_CONSTANTS.ENDPOINTS.APPLICATION.BY_EMPLOYEE(employeeId),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.APPLICATION.BY_EMPLOYEE(employeeId),
         { params },
       )
       return res.data
@@ -97,7 +97,7 @@ export class ApplicationService {
   async approveApplication(session: SessionData, id: string) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.APPLICATION.APPROVE(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.APPLICATION.APPROVE(id),
         { status: "approved" },
       )
       return res.data
@@ -109,7 +109,7 @@ export class ApplicationService {
   async rejectApplication(session: SessionData, id: string, reason: string) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.APPLICATION.REJECT(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.APPLICATION.REJECT(id),
         {
           rejectReason: reason,
         },

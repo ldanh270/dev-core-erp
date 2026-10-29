@@ -397,9 +397,9 @@ Minimum environment preparation:
 
 | Service | Endpoint | Expected response |
 |---|---|---|
-| Backend | `/health` | `{ status: "ok", service: "hrp-backend" }` |
-| MCP | `/health` | `{ status: "ok", service: "hrp-mcp" }` |
-| Gateway | `/health` | `{ status: "ok", service: "hrp-agent-gateway", ... }` |
+| Backend | `/health` | `{ status: "ok", service: "devcore-backend" }` |
+| MCP | `/health` | `{ status: "ok", service: "devcore-mcp" }` |
+| Gateway | `/health` | `{ status: "ok", service: "devcore-agent-gateway", ... }` |
 | Edge | `/health` | HTTP 200 from Caddy |
 
 ### 12.4 CI/CD and rollback

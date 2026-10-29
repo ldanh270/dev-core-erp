@@ -54,9 +54,9 @@ const mountAuthRoutes = (app: any) => {
       }
 
       try {
-        // Call HRP backend to authenticate
+        // Call DevCore backend to authenticate
         const { data, cookies } = await authService.login({ username, password })
-        logger.debug("HRP API Login Result:", data)
+        logger.debug("DevCore API Login Result:", data)
 
         // Extract token properly based on actual backend response structure.
         // Sometimes backends return `accessToken` instead of `token`.
@@ -67,7 +67,7 @@ const mountAuthRoutes = (app: any) => {
           (data as any).accessToken
 
         if (!token && (!cookies || cookies.length === 0)) {
-          logger.error("Token and cookies are missing in the HRP API response!", data)
+          logger.error("Token and cookies are missing in the DevCore API response!", data)
         }
 
         // Save session
@@ -163,7 +163,7 @@ const startSSEServer = () => {
   app.use("/mcp", apiRouter)
 
   app.listen(PORT, () => {
-    logger.info(`HRP MCP Server running on port ${PORT}`)
+    logger.info(`DevCore ERP MCP Server running on port ${PORT}`)
     logger.info(`SSE endpoint : http://localhost:${PORT}/mcp/sse`)
     logger.info(`Message endpoint: http://localhost:${PORT}/mcp/message`)
     logger.info(`STDIO mode   : pass --stdio flag`)
@@ -192,7 +192,7 @@ const startStdioServer = async () => {
   await mcpServer.server.connect(transport)
   // In STDIO mode, ALL LOGS must use console.error to avoid breaking the JSON-RPC stream in stdout
   // logger automatically handles this when --stdio is present
-  logger.info("HRP MCP Server running in STDIO mode")
+  logger.info("DevCore ERP MCP Server running in STDIO mode")
 }
 
 // Check if running in STDIO mode

@@ -1,4 +1,4 @@
-import { HRP_API_CONSTANTS } from "../constants/hrp-api.constants.js"
+import { DEVCORE_API_CONSTANTS } from "../constants/devcore-api.constants.js"
 import type {
   AssignScheduleInput,
   CreateShiftInput,
@@ -9,7 +9,7 @@ import type {
   UpdateShiftInput,
 } from "../schemas/attendance.schema.js"
 import { SessionData } from "../types/session.types.js"
-import { createAuthedClient } from "../utils/hrp-client.js"
+import { createAuthedClient } from "../utils/devcore-client.js"
 
 export class AttendanceService {
   private client(session: SessionData) {
@@ -30,7 +30,7 @@ export class AttendanceService {
   /** POST /api/attendance/check-in */
   async checkIn(session: SessionData, location: LocationInput) {
     try {
-      const res = await this.client(session).post(HRP_API_CONSTANTS.ENDPOINTS.ATTENDANCE.CHECK_IN, {
+      const res = await this.client(session).post(DEVCORE_API_CONSTANTS.ENDPOINTS.ATTENDANCE.CHECK_IN, {
         location,
       })
       return res.data
@@ -43,7 +43,7 @@ export class AttendanceService {
   async checkOut(session: SessionData, location: LocationInput) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.ATTENDANCE.CHECK_OUT,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.ATTENDANCE.CHECK_OUT,
         {
           location,
         },
@@ -57,7 +57,7 @@ export class AttendanceService {
   /** POST /api/attendance/scan — smart scan (auto check-in or check-out) */
   async scan(session: SessionData, location: LocationInput) {
     try {
-      const res = await this.client(session).post(HRP_API_CONSTANTS.ENDPOINTS.ATTENDANCE.SCAN, {
+      const res = await this.client(session).post(DEVCORE_API_CONSTANTS.ENDPOINTS.ATTENDANCE.SCAN, {
         location,
       })
       return res.data
@@ -69,7 +69,7 @@ export class AttendanceService {
   /** GET /api/attendance — history with optional filters */
   async getHistory(session: SessionData, params?: GetAttendanceInput) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.ATTENDANCE.BASE, {
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.ATTENDANCE.BASE, {
         params,
       })
       return res.data
@@ -83,7 +83,7 @@ export class AttendanceService {
   /** GET /api/shifts */
   async listShifts(session: SessionData) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.BASE)
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.BASE)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to fetch shifts")
@@ -93,7 +93,7 @@ export class AttendanceService {
   /** GET /api/shifts/:id */
   async getShift(session: SessionData, id: string) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.BY_ID(id))
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.BY_ID(id))
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to fetch shift")
@@ -103,7 +103,7 @@ export class AttendanceService {
   /** POST /api/shifts */
   async createShift(session: SessionData, data: CreateShiftInput) {
     try {
-      const res = await this.client(session).post(HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.BASE, data)
+      const res = await this.client(session).post(DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.BASE, data)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to create shift")
@@ -114,7 +114,7 @@ export class AttendanceService {
   async updateShift(session: SessionData, id: string, data: UpdateShiftInput) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.BY_ID(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.BY_ID(id),
         data,
       )
       return res.data
@@ -128,7 +128,7 @@ export class AttendanceService {
   /** GET /api/schedules/my */
   async getMySchedule(session: SessionData) {
     try {
-      const res = await this.client(session).get(HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_MY)
+      const res = await this.client(session).get(DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_MY)
       return res.data
     } catch (e: any) {
       this.handleError(e, "Failed to fetch current schedule")
@@ -139,7 +139,7 @@ export class AttendanceService {
   async getMyScheduleHistory(session: SessionData) {
     try {
       const res = await this.client(session).get(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_MY_ALL,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_MY_ALL,
       )
       return res.data
     } catch (e: any) {
@@ -151,7 +151,7 @@ export class AttendanceService {
   async assignSchedule(session: SessionData, data: AssignScheduleInput) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_ASSIGN,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_ASSIGN,
         data,
       )
       return res.data
@@ -164,7 +164,7 @@ export class AttendanceService {
   async overrideSchedule(session: SessionData, data: OverrideScheduleInput) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_OVERRIDE,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SCHEDULES_OVERRIDE,
         data,
       )
       return res.data
@@ -179,7 +179,7 @@ export class AttendanceService {
   async getMyShiftChangeRequests(session: SessionData) {
     try {
       const res = await this.client(session).get(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_MINE,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_MINE,
       )
       return res.data
     } catch (e: any) {
@@ -191,7 +191,7 @@ export class AttendanceService {
   async submitShiftChangeRequest(session: SessionData, data: SubmitShiftChangeInput) {
     try {
       const res = await this.client(session).post(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_REQUESTS,
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_REQUESTS,
         data,
       )
       return res.data
@@ -204,7 +204,7 @@ export class AttendanceService {
   async approveShiftChangeRequest(session: SessionData, id: string) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_APPROVE(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_APPROVE(id),
         { status: "approved" },
       )
       return res.data
@@ -217,7 +217,7 @@ export class AttendanceService {
   async rejectShiftChangeRequest(session: SessionData, id: string, rejectReason: string) {
     try {
       const res = await this.client(session).patch(
-        HRP_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_REJECT(id),
+        DEVCORE_API_CONSTANTS.ENDPOINTS.SHIFTS.SHIFT_CHANGE_REJECT(id),
         { rejectReason },
       )
       return res.data

@@ -1,5 +1,8 @@
-export const HRP_API_CONSTANTS = {
-  BASE_URL: process.env.HRP_API_BASE_URL || "http://localhost:5000",
+export const DEVCORE_API_CONSTANTS = {
+  BASE_URL:
+    process.env.DEVCORE_API_BASE_URL ||
+    process.env.HRP_API_BASE_URL ||
+    "http://localhost:5000",
   ENDPOINTS: {
     AUTH: {
       LOGIN: "/api/auth/login",
@@ -127,3 +130,5 @@ export const HRP_API_CONSTANTS = {
     },
   },
 }
+
+export const HRP_API_CONSTANTS = DEVCORE_API_CONSTANTS

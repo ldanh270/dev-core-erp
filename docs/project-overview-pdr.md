@@ -13,9 +13,9 @@
 
 ## Purpose
 
-**DevCore ERP** là hệ thống hoạch định nguồn lực doanh nghiệp (ERP) dựa trên nền tảng web, được thiết kế chuyên biệt cho các công ty IT Outsourcing, Software House và Marketing Agency. Hệ thống tích hợp toàn diện quản lý nhân sự (HR), theo dõi dự án & công việc, tính lương, chấm công, tuyển dụng, phân quyền động và trợ lý AI nội bộ — giúp doanh nghiệp vận hành hiệu quả toàn bộ vòng đời nhân sự và bàn giao dự án trên một nền tảng thống nhất.
+**DevCore ERP** is a web-based Enterprise Resource Planning (ERP) platform designed specifically for IT outsourcing firms, software development houses, and digital marketing agencies. The system unifies human resources management, project & task tracking, payroll processing, attendance and scheduling, recruitment pipelines, dynamic role-based access control, and an internal AI assistant — enabling organizations to manage the complete employee lifecycle and project delivery workflow on a single unified platform.
 
-Cấu trúc: fullstack monorepo với workspace `backend/` (REST API) và `frontend/` (SPA) tách biệt, giao tiếp qua HTTP.
+**Architecture:** Fullstack TypeScript monorepo with decoupled `backend/` (REST API) and `frontend/` (SPA) workspaces communicating over HTTP.
 
 ---
 

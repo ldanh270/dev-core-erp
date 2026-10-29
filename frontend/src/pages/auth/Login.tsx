@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button.tsx"
 import { Input } from "@/components/ui/input.tsx"
 import { Label } from "@/components/ui/label.tsx"
+import { BRANDING_CONFIG } from "@/config/branding.config"
 import { useLogin } from "@/hooks/auth/useLogin"
 import MockSpreadsheetCard from "@/pages/auth/mock-spreadsheet"
 
@@ -27,8 +28,8 @@ const GeometricBackground = () => (
 
 const BrandLogo = () => (
   <img
-    src="/logo.jpg"
-    alt="DevCore ERP"
+    src={BRANDING_CONFIG.LOGO_URL}
+    alt={BRANDING_CONFIG.LOGO_ALT}
     className="size-14 rounded-lg object-cover shadow-lg transition-transform hover:scale-105"
   />
 )
@@ -66,7 +67,7 @@ export default function Login() {
         {/* Brand Header */}
         <div className="relative z-10 flex items-center gap-3">
           <BrandLogo />
-          <span className="text-xl font-bold tracking-wide">DevCore ERP</span>
+          <span className="text-xl font-bold tracking-wide">{BRANDING_CONFIG.APP_NAME}</span>
         </div>
 
         {/* Feature Teaser */}
@@ -134,7 +135,9 @@ export default function Login() {
                 />
                 <button
                   type="button"
-                  onClick={() => { setShowPassword((prev) => !prev); }}
+                  onClick={() => {
+                    setShowPassword((prev) => !prev)
+                  }}
                   className="absolute right-4 text-muted-foreground hover:text-foreground transition-colors focus:outline-none"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   tabIndex={-1}
@@ -173,7 +176,9 @@ export default function Login() {
           <Button
             type="button"
             variant="outline"
-            onClick={() => { setShowForgotModal(true); }}
+            onClick={() => {
+              setShowForgotModal(true)
+            }}
             className="w-full h-12 text-sm font-semibold flex items-center justify-center gap-2 border-border shadow-sm hover:bg-secondary/40"
           >
             <KeyRound size={16} />
@@ -206,7 +211,9 @@ export default function Login() {
                 placeholder="Nhập email của bạn..."
                 required
                 value={forgotEmail}
-                onChange={(e) => { setForgotEmail(e.target.value); }}
+                onChange={(e) => {
+                  setForgotEmail(e.target.value)
+                }}
                 className="w-full"
               />
             </div>

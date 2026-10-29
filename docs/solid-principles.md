@@ -16,16 +16,16 @@ Split if you need "and" to describe what a class does.
 ### Enforcement
 
 ```
-✅ AuthController   → handles HTTP only
-✅ AuthService      → business logic only
-✅ AuthRepository   → DB queries only
-✅ AppError         → typed error only
-✅ JwtUtil          → token sign/verify only
+- AuthController: handles HTTP only
+- uthService      → business logic only
+- AuthRepository: DB queries only
+- ppError         → typed error only
+- JwtUtil: token sign/verify only
 
-❌ AuthService that also sends emails         → extract EmailService
-❌ Controller that queries DB directly        → extract repository
-❌ Middleware that contains business rules    → push to service
-❌ Repository that hashes passwords           → push to util/service
+- Anti-pattern: AuthService that also sends emails → extract EmailService
+- Anti-pattern: ontroller that queries DB directly        → extract repository
+- Anti-pattern: Middleware that contains business rules → push to service
+- Anti-pattern: epository that hashes passwords           → push to util/service
 ```
 
 ### File-level SRP
@@ -38,7 +38,7 @@ If file needs "and" in its description → split it.
 ### Examples in this codebase
 
 ```ts
-// ✅ CORRECT — controller does HTTP only
+// CORRECT — controller does HTTP only
 export class AuthController {
   signup = async (req: Request<{}, {}, SignupDto>, res: Response) => {
     const result = await this.service.signup(req.body)
@@ -46,7 +46,7 @@ export class AuthController {
   }
 }
 
-// ❌ WRONG — controller doing hashing (not its job)
+// INCORRECT — controller doing hashing (not its job)
 export class AuthController {
   signup = async (req, res) => {
     const hash = await bcrypt.hash(req.body.password, 10) // ← belongs in service/util
@@ -68,20 +68,20 @@ Add behavior via composition, config, or strategy — never by editing core logi
 ### Enforcement
 
 ```
-✅ Add new payment method → new class implements IPaymentStrategy
-✅ Add new auth method → new class implements IAuthStrategy
-✅ Add new export format → new class implements IExporter
-✅ Feature flags to branch behavior → never if/else in core
+- Add new payment method → new class implements IPaymentStrategy
+- dd new auth method → new class implements IAuthStrategy
+- Add new export format → new class implements IExporter
+- eature flags to branch behavior → never if/else in core
 
-❌ Edit AuthService.login() to add new login type
-❌ Add if/else chains in service methods for variants
-❌ Modify working middleware to support new case inline
+- Anti-pattern: Edit AuthService.login() to add new login type
+- Anti-pattern: dd if/else chains in service methods for variants
+- Anti-pattern: Modify working middleware to support new case inline
 ```
 
 ### Pattern: Strategy Injection
 
 ```ts
-// ✅ OCP — extend without modifying
+// OCP — extend without modifying
 interface INotificationStrategy {
   send(to: string, message: string): Promise<void>
 }
@@ -98,7 +98,7 @@ class NotificationService {
 ### Pattern: Config Objects
 
 ```ts
-// ✅ OCP — new roles don't touch core
+// OCP — new roles do not touch core
 const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   admin: ["read", "write", "delete"],
   staff: ["read", "write"],
@@ -120,13 +120,13 @@ If subclass overrides a method and throws "not implemented" → hierarchy is wro
 ### Enforcement
 
 ```
-✅ Every class implementing IAuthRepository must fully implement all methods
-✅ Mock/stub implementations for tests must honor the same contract
-✅ Overrides must not narrow accepted input or widen thrown errors
+- Every class implementing IAuthRepository must fully implement all methods
+- ock/stub implementations for tests must honor the same contract
+- Overrides must not narrow accepted input or widen thrown errors
 
-❌ class FakeRepo implements IAuthRepository { findByEmail() { throw new Error("not implemented") } }
-❌ Subclass that ignores required interface method
-❌ Override that returns undefined where interface promises T
+- Anti-pattern: class FakeRepo implements IAuthRepository { findByEmail() { throw new Error("not implemented") } }
+- Anti-pattern: ubclass that ignores required interface method
+- Anti-pattern: Override that returns undefined where interface promises T
 ```
 
 ### Example
@@ -137,7 +137,7 @@ interface IAuthRepository {
   createUser(data: CreateUserDto): Promise<User>
 }
 
-// ✅ LSP satisfied — both implementations are fully substitutable
+// LSP satisfied — both implementations are fully substitutable
 class PgAuthRepository implements IAuthRepository { ... }
 class MockAuthRepository implements IAuthRepository { ... } // for tests
 ```
@@ -155,19 +155,19 @@ Narrow, purpose-built interfaces > fat interfaces.
 ### Enforcement
 
 ```
-✅ IUserReader { findById, findByEmail }
-✅ IUserWriter { create, update, delete }
-✅ Controllers only import the interface methods they call
+- IUserReader { findById, findByEmail }
+- UserWriter { create, update, delete }
+- Controllers only import the interface methods they call
 
-❌ IUserRepository with 15 methods when controller calls 2
-❌ One mega-interface imported everywhere
-❌ Passing full service to a utility that needs one method
+- Anti-pattern: IUserRepository with 15 methods when controller calls 2
+- Anti-pattern: ne mega-interface imported everywhere
+- Anti-pattern: Passing full service to a utility that needs one method
 ```
 
 ### Split Pattern
 
 ```ts
-// ❌ FAT — forces all implementors to define everything
+// Anti-pattern: Fat interface forces all implementors to define everything
 interface IAuthRepository {
   findByEmail(email: string): Promise<User | null>
   createUser(data: CreateUserDto): Promise<User>
@@ -177,7 +177,7 @@ interface IAuthRepository {
   deleteUser(id: string): Promise<void> // admin only — unrelated to auth flow
 }
 
-// ✅ SPLIT — callers import only what they need
+// PREFERRED: Segregated interfaces — callers import only what they need
 interface IAuthReader {
   findByEmail(email: string): Promise<User | null>
 }
@@ -210,14 +210,14 @@ Inject dependencies. Never `new ConcreteClass()` inside a class body.
 ### Enforcement
 
 ```
-✅ Controller takes IAuthService in constructor
-✅ Service takes IAuthRepository in constructor
-✅ Route file does the concrete wiring
-✅ Tests inject mock implementations
+- Controller takes IAuthService in constructor
+- ervice takes IAuthRepository in constructor
+- Route file does the concrete wiring
+- ests inject mock implementations
 
-❌ class AuthService { private repo = new PgAuthRepository() }
-❌ class AuthController { private service = new AuthService() }
-❌ Importing a class and instantiating it inside another class
+- Anti-pattern: class AuthService { private repo = new PgAuthRepository() }
+- Anti-pattern: lass AuthController { private service = new AuthService() }
+- Anti-pattern: Importing a class and instantiating it inside another class
 ```
 
 ### Wiring Pattern (this codebase)
@@ -234,7 +234,7 @@ router.post("/signup", validate(signupSchema), controller.signup)
 ```ts
 // service/auth.service.ts — depends on abstraction only
 export class AuthService {
-  constructor(private repo: IAuthRepository) {} // abstraction ✅
+  constructor(private repo: IAuthRepository) {} // abstraction
 }
 
 // repository/auth.repository.ts — implements abstraction

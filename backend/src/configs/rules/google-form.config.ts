@@ -15,7 +15,7 @@ export interface GoogleFormFieldDefinition {
   required: boolean
 }
 
-export const GOOGLE_FORM_QUESTION_PREFIX = "hrp_"
+export const GOOGLE_FORM_QUESTION_PREFIX = "devcore_"
 export const GOOGLE_FORM_SOURCE_CODE_PREFIX = "GFORM"
 
 export const GOOGLE_FORM_DEFAULT_FIELDS: readonly GoogleFormFieldDefinition[] = [

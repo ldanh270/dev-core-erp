@@ -38,7 +38,7 @@ jobs:
         run: |
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << ENDSSH
             set -e
-            cd ~/hrp
+            cd ~/devcore-erp
 
             echo "⏮️ Rolling back to ${{ inputs.commit_sha }}..."
 
