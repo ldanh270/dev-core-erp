@@ -2,126 +2,118 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
-import { useEffect, useRef, useState } from "react"
-import type { KeyboardEvent } from "react"
+import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react"
+
 import { Search, X } from "lucide-react"
 
 export interface SearchInputProps {
-  /** Initial or controlled search value from parent. */
   value?: string
-  /** Callback fired after debounce timer expires, on Enter press, or on clear. */
-  onSearch: (keyword: string) => void
-  /** Debounce delay in milliseconds. Defaults to 400ms. */
-  debounceMs?: number
-  /** Input placeholder string. Defaults to "Tìm kiếm...". */
+  defaultValue?: string
   placeholder?: string
-  /** Additional custom class names for the outer container. */
+  debounceMs?: number
+  onSearch: (value: string) => void
+  onClear?: () => void
   className?: string
-  /** Accessible label for the input element. */
-  ariaLabel?: string
-  /** Disabled state for loading queries. */
   disabled?: boolean
+  autoFocus?: boolean
+  ariaLabel?: string
 }
 
 /**
- * Standardized search input with 400ms debouncing, instant visual 60fps typing,
- * Enter-key fast-path, and instantaneous clear.
- * Prevents server API flooding and eliminates repetitive debounce boilerplate.
+ * Enterprise debounced search input component.
+ * Provides instant 60fps local state response while debouncing server callbacks by 400ms (default).
+ * Supports manual Enter key trigger and instant Clear button.
+ * Aligned to 40px standard control height (h-10 rounded-full).
  */
 export function SearchInput({
-  value: controlledValue = "",
-  onSearch,
-  debounceMs = 400,
+  value: controlledValue,
+  defaultValue = "",
   placeholder = "Tìm kiếm...",
+  debounceMs = 400,
+  onSearch,
+  onClear,
   className,
-  ariaLabel = "Tìm kiếm",
   disabled = false,
+  autoFocus = false,
+  ariaLabel = "Tìm kiếm",
 }: SearchInputProps) {
-  const [searchTerm, setSearchTerm] = useState(controlledValue)
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isControlled = controlledValue !== undefined
+  const [searchTerm, setSearchTerm] = useState(isControlled ? controlledValue : defaultValue)
   const isFirstRender = useRef(true)
 
-  // Sync with controlled value changes from outside (e.g. tab switches or resets)
+  // Keep local state in sync when controlled value changes externally
   useEffect(() => {
-    setSearchTerm(controlledValue)
-  }, [controlledValue])
+    if (isControlled && controlledValue !== searchTerm) {
+      setSearchTerm(controlledValue)
+    }
+  }, [controlledValue, isControlled])
 
-  // Handle auto-debounce after user stops typing
+  // Debounced callback execution on term change
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false
       return
     }
 
-    if (timerRef.current) {
-      clearTimeout(timerRef.current)
-    }
-
-    timerRef.current = setTimeout(() => {
+    const timer = setTimeout(() => {
       onSearch(searchTerm.trim())
     }, debounceMs)
 
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current)
-      }
+      clearTimeout(timer)
     }
   }, [searchTerm, debounceMs, onSearch])
 
-  // Fast-path: Fire immediately on Enter key
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault()
-      if (timerRef.current) {
-        clearTimeout(timerRef.current)
-      }
-      onSearch(searchTerm.trim())
-    }
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
   }
 
-  // Instant reset on clear button click
   const handleClear = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current)
-    }
     setSearchTerm("")
     onSearch("")
+    if (onClear) {
+      onClear()
+    }
   }
 
-  // Fast-path: Fire immediately on search icon button click
-  const handleTriggerSearch = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current)
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      onSearch(searchTerm.trim())
+    } else if (e.key === "Escape") {
+      e.preventDefault()
+      handleClear()
     }
+  }
+
+  const handleTriggerSearch = () => {
     onSearch(searchTerm.trim())
   }
 
   return (
-    <div className={cn("relative flex items-center min-w-[220px]", className)}>
+    <div className={cn("relative flex items-center min-w-[200px]", className)}>
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        tabIndex={-1}
         onClick={handleTriggerSearch}
         disabled={disabled}
         aria-label="Kích hoạt tìm kiếm"
-        className="absolute left-1 size-7 rounded-full text-muted-foreground hover:text-foreground"
+        className="absolute left-1 size-8 rounded-full text-muted-foreground hover:text-foreground"
       >
-        <Search className="size-3.5" />
+        <Search className="size-4" />
       </Button>
 
       <Input
         type="text"
         value={searchTerm}
-        onChange={(e) => {
-          setSearchTerm(e.target.value)
-        }}
+        onChange={handleChange}
         onKeyDown={handleKeyDown}
+        autoFocus={autoFocus}
         placeholder={placeholder}
         aria-label={ariaLabel}
         disabled={disabled}
-        className="h-9 rounded-full bg-background border-border/80 pl-9 pr-8 text-xs text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary shadow-none"
+        className="h-10 rounded-full bg-background border-border/80 pl-10 pr-9 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary shadow-none"
       />
 
       {searchTerm && (
@@ -132,9 +124,9 @@ export function SearchInput({
           onClick={handleClear}
           disabled={disabled}
           aria-label="Xóa nội dung tìm kiếm"
-          className="absolute right-1 size-6 rounded-full text-muted-foreground hover:text-foreground"
+          className="absolute right-1 size-8 rounded-full text-muted-foreground hover:text-foreground"
         >
-          <X className="size-3.5" />
+          <X className="size-4" />
         </Button>
       )}
     </div>
