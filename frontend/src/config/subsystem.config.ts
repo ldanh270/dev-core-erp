@@ -16,6 +16,7 @@ import {
   CalendarRange,
   ChartNoAxesColumn,
   CircleDollarSign,
+  Database,
   FilePlus2,
   FileText,
   Settings,
@@ -351,6 +352,12 @@ export const SUBSYSTEMS: SubsystemConfig[] = [
         path: ROUTES.SETTINGS.PERMISSIONS,
         icon: ShieldCheck,
         permissions: ["role.read"],
+      },
+      {
+        name: "Cơ sở dữ liệu (ERD)",
+        path: ROUTES.SETTINGS.DATABASE,
+        icon: Database,
+        
       },
     ],
   },
