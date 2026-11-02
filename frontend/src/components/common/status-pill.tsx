@@ -18,13 +18,13 @@ const variantMap: Record<StatusVariant, string> = {
 
 /**
  * StatusPill — Semantic colored pill badge for status labels.
- * Use instead of raw `rounded-full bg-xxx px-x py-x text-xxx` spans.
+ * Token-aligned: h-6, rounded-full, px-3, text-xs font-semibold.
  */
 export function StatusPill({ label, variant = "neutral", className }: StatusPillProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold leading-none",
+        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold leading-none",
         variantMap[variant],
         className,
       )}

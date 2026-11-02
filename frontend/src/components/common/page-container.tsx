@@ -7,17 +7,18 @@ export const pageContainerVariants = cva("w-full flex flex-col min-w-0", {
   variants: {
     variant: {
       // Standard layout for general dashboard and analytics pages
-      default: "max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 gap-6",
+      default: "max-w-7xl mx-auto px-4 md:px-6 py-6 gap-6",
 
-      // Viewport-locked layout for data tables (sticky header, internal scroll, zero window scrolling)
+      // Viewport-locked layout for data tables (matches attendance matrix pattern)
+      // Locks viewport height on desktop, eliminates window-level scrolling
       table:
-        "max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 h-[calc(100vh-4rem)] gap-4 md:overflow-hidden",
+        "w-full px-4 md:px-6 py-4 md:h-[calc(100vh-4rem)] gap-4 md:overflow-hidden",
 
       // Focused center layout for forms, wizards, and profile detail flows
-      centered: "max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6 gap-6",
+      centered: "max-w-4xl mx-auto px-4 md:px-6 py-6 gap-6",
 
       // Full-width/height canvas for horizontal drag boards (Kanban, Gantt, Timesheet)
-      fluid: "p-4 md:p-6 h-full",
+      fluid: "w-full p-4 md:p-6 h-full",
     },
   },
   defaultVariants: {
@@ -34,9 +35,9 @@ export interface PageContainerProps extends VariantProps<typeof pageContainerVar
 
 /**
  * PageContainer — Single Source of Truth for macro page layout and padding.
- * Enforces CVA architecture to eliminate object-injection vulnerabilities,
- * ensures consistent horizontal alignment with the main Header (px-4 sm:px-6),
- * centers content uniformly (max-w-7xl mx-auto), and locks viewport height on desktop tables.
+ * Ensures consistent horizontal alignment with the main Header (px-4 md:px-6),
+ * locks viewport height on desktop data tables to guarantee internal scrolling,
+ * and maintains token-based spacing across breakpoints.
  */
 export function PageContainer({
   children,

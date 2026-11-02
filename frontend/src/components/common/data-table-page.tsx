@@ -21,6 +21,7 @@ export type {
  * Master Enterprise Data Table Page component.
  * Combines viewport-locked internal scrolling, sticky thead, 400ms debounced search,
  * and pinned pagination into a single reusable Clean Architecture primitive.
+ * Strictly adheres to 4px multiples design tokens (docs/component-sizing-standard.md).
  */
 export function DataTablePage<T>({
   title,
@@ -48,8 +49,17 @@ export function DataTablePage<T>({
   extraContent,
 }: DataTablePageProps<T>) {
   const isCompact = density === "compact"
-  const thHeight = isCompact ? "h-9 px-4 py-2 text-[10px]" : "h-11 px-5 py-3 text-[11px]"
-  const tdPadding = isCompact ? "px-4 py-2 text-xs" : "px-5 py-3 text-[13px]"
+  // Multiples of 4px: Header h-12 (48px) vs compact h-10 (40px)
+  const thClass = isCompact
+    ? "h-10 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+    : "h-12 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+
+  // Multiples of 4px: Fixed cell padding & typography
+  const tdClass = isCompact
+    ? "px-4 text-sm"
+    : "px-6 text-sm"
+
+  const rowHeightClass = isCompact ? "h-12" : "h-16"
 
   const renderPrimaryAction = () => {
     if (!primaryAction) return null
@@ -60,10 +70,9 @@ export function DataTablePage<T>({
           onClick={onClick}
           disabled={disabled}
           variant={btnVariant}
-          size="sm"
-          className="rounded-full gap-1.5 font-semibold shadow-xs"
+          className="h-10 px-4 rounded-full gap-2 text-sm font-semibold shadow-xs"
         >
-          {Icon && <Icon className="size-3.5" />}
+          {Icon && <Icon className="size-4" />}
           <span>{label}</span>
         </Button>
       )
@@ -81,7 +90,7 @@ export function DataTablePage<T>({
         onBack={onBack}
         backLabel={backLabel}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {headerActions}
             {renderPrimaryAction()}
           </div>
@@ -90,10 +99,10 @@ export function DataTablePage<T>({
 
       <PageCard
         padding="none"
-        className="flex-1 min-h-0 flex flex-col overflow-hidden rounded-xl border border-border/80 bg-card shadow-xs"
+        className="flex-1 min-h-0 flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-xs"
       >
         {tabs && (
-          <nav className="flex items-center gap-1 border-b border-border bg-card px-4 pt-1.5 overflow-x-auto shrink-0">
+          <nav className="flex items-center gap-1 border-b border-border bg-card px-6 h-11 overflow-x-auto shrink-0 relative">
             {tabs.items.map((tab) => {
               const isActive = tabs.activeTab === tab.id
               const TabIcon = tab.icon
@@ -105,16 +114,16 @@ export function DataTablePage<T>({
                     tabs.onTabChange(tab.id)
                   }}
                   className={cn(
-                    "relative flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-t-lg transition-colors whitespace-nowrap",
+                    "relative flex items-center gap-2 px-3.5 h-11 text-sm font-medium transition-colors whitespace-nowrap cursor-pointer",
                     isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  {TabIcon && <TabIcon className="size-3.5" />}
+                  {TabIcon && <TabIcon className="size-4" />}
                   <span>{tab.label}</span>
                   {tab.count !== undefined && (
                     <span
                       className={cn(
-                        "rounded-full px-1.5 py-0.2 text-[10px] font-semibold border",
+                        "rounded-full h-5 min-w-5 px-2 flex items-center justify-center text-xs font-semibold border",
                         isActive
                           ? "bg-primary text-primary-foreground border-primary"
                           : "bg-muted text-muted-foreground border-border",
@@ -123,7 +132,7 @@ export function DataTablePage<T>({
                       {tab.count}
                     </span>
                   )}
-                  {isActive && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+                  {isActive && <div className="absolute -bottom-px left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
                 </button>
               )
             })}
@@ -131,8 +140,8 @@ export function DataTablePage<T>({
         )}
 
         {(search || filters || toolbarActions) && (
-          <div className="flex flex-col gap-3 border-b border-border p-3.5 sm:p-4 lg:flex-row lg:items-center justify-between bg-muted/15 shrink-0">
-            <div className="flex flex-1 flex-wrap items-center gap-2 sm:gap-3">
+          <div className="flex flex-col gap-3 border-b border-border px-6 py-3 lg:flex-row lg:items-center justify-between bg-muted/15 shrink-0">
+            <div className="flex flex-1 flex-wrap items-center gap-3">
               {search && (
                 <SearchInput
                   placeholder={search.placeholder}
@@ -148,16 +157,16 @@ export function DataTablePage<T>({
           </div>
         )}
 
-        <div className="flex-1 min-h-[350px] md:min-h-0 overflow-auto overscroll-contain">
+        <div className="flex-1 min-h-0 overflow-auto overscroll-contain">
           <table className="w-full border-collapse text-left">
             <thead className="sticky top-0 z-10 bg-card border-b border-border shadow-xs">
-              <tr>
+              <tr className={isCompact ? "h-10" : "h-12"}>
                 {columns.map((col) => (
                   <th
                     key={col.id}
                     className={cn(
-                      "font-semibold text-muted-foreground whitespace-nowrap select-none",
-                      thHeight,
+                      thClass,
+                      "whitespace-nowrap select-none",
                       col.align === "center" && "text-center",
                       col.align === "right" && "text-right",
                       col.headerClassName,
@@ -172,9 +181,9 @@ export function DataTablePage<T>({
             <tbody className="divide-y divide-border">
               {isLoading ? (
                 Array.from({ length: loadingRowsCount }).map((_, rIdx) => (
-                  <tr key={`loading-row-${rIdx}`}>
+                  <tr key={`loading-row-${rIdx}`} className={rowHeightClass}>
                     {columns.map((col) => (
-                      <td key={`loading-col-${col.id}`} className={tdPadding}>
+                      <td key={`loading-col-${col.id}`} className={tdClass}>
                         <Skeleton className="h-4 w-4/5 rounded-md" />
                       </td>
                     ))}
@@ -197,13 +206,16 @@ export function DataTablePage<T>({
                 data.map((item, idx) => (
                   <tr
                     key={keyExtractor ? keyExtractor(item, idx) : idx}
-                    className="border-b border-border last:border-0 hover:bg-muted/25 transition-colors duration-100"
+                    className={cn(
+                      "hover:bg-muted/25 transition-colors duration-100",
+                      rowHeightClass,
+                    )}
                   >
                     {columns.map((col) => (
                       <td
                         key={col.id}
                         className={cn(
-                          tdPadding,
+                          tdClass,
                           col.align === "center" && "text-center",
                           col.align === "right" && "text-right",
                           col.className,
@@ -220,7 +232,7 @@ export function DataTablePage<T>({
         </div>
 
         {pagination && (
-          <div className="shrink-0 bg-card">
+          <div className="shrink-0 bg-card border-t border-border">
             <AppPagination
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}
