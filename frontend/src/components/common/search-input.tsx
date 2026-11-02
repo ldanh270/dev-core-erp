@@ -114,7 +114,9 @@ export function SearchInput({
       <Input
         type="text"
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={(e) => {
+          setSearchTerm(e.target.value)
+        }}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         aria-label={ariaLabel}
