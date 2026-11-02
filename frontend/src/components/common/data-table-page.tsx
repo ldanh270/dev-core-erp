@@ -101,7 +101,9 @@ export function DataTablePage<T>({
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => tabs.onTabChange(tab.id)}
+                  onClick={() => {
+                    tabs.onTabChange(tab.id)
+                  }}
                   className={cn(
                     "relative flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-t-lg transition-colors whitespace-nowrap",
                     isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground",
