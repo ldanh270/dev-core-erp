@@ -658,10 +658,10 @@ export default function DatabaseReference() {
                                   <TableCell className="font-mono text-xs font-semibold">
                                     <div className="flex items-center gap-1.5">
                                       {col.isPk && (
-                                        <Key className="size-3.5 text-amber-500 shrink-0" title="Primary Key" />
+                                        <span title="Primary Key"><Key className="size-3.5 text-amber-500 shrink-0" /></span>
                                       )}
                                       {col.isFk && (
-                                        <Link2 className="size-3.5 text-sky-500 shrink-0" title="Foreign Key" />
+                                        <span title="Foreign Key"><Link2 className="size-3.5 text-sky-500 shrink-0" /></span>
                                       )}
                                       <span className={col.isPk ? "text-amber-600 dark:text-amber-400 font-bold" : ""}>
                                         {col.name}
