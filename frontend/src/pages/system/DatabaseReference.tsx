@@ -124,6 +124,7 @@ interface DbSchemaData {
 }
 
 const dbSchema = dbSchemaRaw as unknown as DbSchemaData
+const allTables = Object.values(dbSchema.tables)
 
 // Module theme map using semantic utility classes (Strictly token-only, 0 raw hex)
 const MODULE_THEMES: Record<
@@ -187,8 +188,10 @@ const MODULE_THEMES: Record<
   },
 }
 
+const MODULE_THEME_MAP = new Map(Object.entries(MODULE_THEMES))
+
 function getTheme(moduleId: string) {
-  return MODULE_THEMES[moduleId] ?? MODULE_THEMES.SYSTEM
+  return MODULE_THEME_MAP.get(moduleId) ?? MODULE_THEMES.SYSTEM
 }
 
 // Helper icon resolver
@@ -228,13 +231,14 @@ export default function DatabaseReference() {
   const copyToClipboard = (text: string, key: string) => {
     void navigator.clipboard.writeText(text)
     setCopiedKey(key)
-    setTimeout(() => setCopiedKey(null), 2000)
+    setTimeout(() => {
+      setCopiedKey(null)
+    }, 2000)
   }
 
   // Filtered table list
   const filteredTables = useMemo(() => {
-    const list = Object.values(dbSchema.tables)
-    return list.filter((table) => {
+    return allTables.filter((table) => {
       const matchModule = selectedModule === "ALL" || table.module === selectedModule
       if (!matchModule) return false
 
@@ -252,7 +256,7 @@ export default function DatabaseReference() {
 
   // Active selected table object
   const currentTable: TableDef | undefined =
-    dbSchema.tables[selectedTableName] ?? filteredTables[0]
+    allTables.find((table) => table.name === selectedTableName) ?? filteredTables.at(0)
 
   // Filtered enums list
   const filteredEnums = useMemo(() => {
@@ -279,16 +283,16 @@ export default function DatabaseReference() {
     const gapX = 120
     const gapY = 80
 
-    const positions: Record<string, { x: number; y: number }> = {}
+    const positions = new Map<string, { x: number; y: number }>()
 
     tablesToRender.forEach((table, idx) => {
       const r = Math.floor(idx / cols)
       const c = idx % cols
       const offsetY = c % 2 === 1 ? 30 : 0
-      positions[table.name] = {
+      positions.set(table.name, {
         x: 60 + c * (nodeWidth + gapX),
         y: 60 + r * (nodeHeight + gapY) + offsetY,
-      }
+      })
     })
 
     // Edges between rendered nodes
@@ -305,14 +309,16 @@ export default function DatabaseReference() {
 
     tablesToRender.forEach((tbl) => {
       tbl.outgoingRelations.forEach((rel) => {
-        if (positions[tbl.name] && positions[rel.targetTable]) {
+        const fromTablePosition = positions.get(tbl.name)
+        const toTablePosition = positions.get(rel.targetTable)
+        if (fromTablePosition && toTablePosition) {
           const fromPos = {
-            x: positions[tbl.name].x + nodeWidth,
-            y: positions[tbl.name].y + 40,
+            x: fromTablePosition.x + nodeWidth,
+            y: fromTablePosition.y + 40,
           }
           const toPos = {
-            x: positions[rel.targetTable].x,
-            y: positions[rel.targetTable].y + 40,
+            x: toTablePosition.x,
+            y: toTablePosition.y + 40,
           }
           const isHighlighted =
             tbl.name === selectedTableName || rel.targetTable === selectedTableName
@@ -434,7 +440,9 @@ export default function DatabaseReference() {
           {/* Main Navigation Tabs */}
           <Tabs
             value={activeTab}
-            onValueChange={(val) => setActiveTab(val as "tables" | "diagram" | "enums")}
+            onValueChange={(val) => {
+              setActiveTab(val as "tables" | "diagram" | "enums")
+            }}
           >
             <TabsList className="bg-muted p-1">
               <TabsTrigger value="tables" className="gap-1.5 text-xs">
@@ -457,7 +465,9 @@ export default function DatabaseReference() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+              }}
               placeholder="Tìm bảng, cột hoặc nghiệp vụ..."
               className="pl-9 pr-4 h-9 text-xs rounded-full bg-background"
             />
@@ -469,7 +479,9 @@ export default function DatabaseReference() {
           <Button
             size="xs"
             variant={selectedModule === "ALL" ? "default" : "outline"}
-            onClick={() => setSelectedModule("ALL")}
+            onClick={() => {
+              setSelectedModule("ALL")
+            }}
             className="rounded-full text-xs"
           >
             Tất cả ({dbSchema.metadata.totalTables})
@@ -483,7 +495,9 @@ export default function DatabaseReference() {
                 key={m.id}
                 size="xs"
                 variant={isSelected ? "default" : "outline"}
-                onClick={() => setSelectedModule(m.id)}
+                onClick={() => {
+                  setSelectedModule(m.id)
+                }}
                 className={`rounded-full text-xs gap-1.5 ${
                   isSelected ? "bg-primary text-primary-foreground" : theme.badge
                 }`}
@@ -529,7 +543,9 @@ export default function DatabaseReference() {
                           <button
                             key={table.name}
                             type="button"
-                            onClick={() => setSelectedTableName(table.name)}
+                            onClick={() => {
+                              setSelectedTableName(table.name)
+                            }}
                             className={`w-full text-left px-3 py-2.5 rounded-lg transition-all flex flex-col gap-1 border cursor-pointer ${
                               isSelected
                                 ? "bg-primary/10 border-primary/40 text-foreground shadow-xs"
@@ -623,9 +639,9 @@ export default function DatabaseReference() {
                             size="sm"
                             variant="ghost"
                             className="rounded-full text-xs gap-1.5"
-                            onClick={() =>
+                            onClick={() => {
                               copyToClipboard(formatTableSummary(currentTable), "model-copy")
-                            }
+                            }}
                           >
                             {copiedKey === "model-copy" ? (
                               <Check className="size-3.5 text-emerald-500" />
@@ -701,7 +717,9 @@ export default function DatabaseReference() {
                                       {col.isFk && col.fkTargetTable && (
                                         <button
                                           type="button"
-                                          onClick={() => setSelectedTableName(col.fkTargetTable ?? "")}
+                                          onClick={() => {
+                                            setSelectedTableName(col.fkTargetTable ?? "")
+                                          }}
                                           className="inline-flex items-center gap-1 px-1.5 py-0 rounded-full text-[10px] font-mono bg-sky-500/10 text-sky-600 dark:text-sky-400 hover:bg-sky-500/20 border border-sky-500/20 transition-all cursor-pointer"
                                           title={`Trỏ tới bảng ${col.fkTargetTable}.${col.fkTargetField}`}
                                         >
@@ -764,7 +782,9 @@ export default function DatabaseReference() {
                                   <CornerDownRight className="size-3 text-muted-foreground" />
                                   <button
                                     type="button"
-                                    onClick={() => setSelectedTableName(rel.targetTable)}
+                                    onClick={() => {
+                                      setSelectedTableName(rel.targetTable)
+                                    }}
                                     className="text-primary hover:underline font-bold flex items-center gap-1 cursor-pointer"
                                   >
                                     {rel.targetTable}.{rel.targetColumn}
@@ -806,7 +826,9 @@ export default function DatabaseReference() {
                                 <div className="flex items-center gap-2 font-mono">
                                   <button
                                     type="button"
-                                    onClick={() => setSelectedTableName(rel.sourceTable)}
+                                    onClick={() => {
+                                      setSelectedTableName(rel.sourceTable)
+                                    }}
                                     className="text-emerald-600 dark:text-emerald-400 hover:underline font-bold flex items-center gap-1 cursor-pointer"
                                   >
                                     {rel.sourceTable}
@@ -844,7 +866,9 @@ export default function DatabaseReference() {
               <Button
                 size="icon-xs"
                 variant="ghost"
-                onClick={() => setDiagramScale((s) => Math.min(2, s + 0.15))}
+                onClick={() => {
+                  setDiagramScale((s) => Math.min(2, s + 0.15))
+                }}
                 title="Phóng to (Zoom In)"
               >
                 <ZoomIn className="size-3.5" />
@@ -852,7 +876,9 @@ export default function DatabaseReference() {
               <Button
                 size="icon-xs"
                 variant="ghost"
-                onClick={() => setDiagramScale((s) => Math.max(0.3, s - 0.15))}
+                onClick={() => {
+                  setDiagramScale((s) => Math.max(0.3, s - 0.15))
+                }}
                 title="Thu nhỏ (Zoom Out)"
               >
                 <ZoomOut className="size-3.5" />
@@ -955,7 +981,7 @@ export default function DatabaseReference() {
 
                 {/* Table Nodes Layer */}
                 {erdGraphData.nodes.map((table) => {
-                  const pos = erdGraphData.positions[table.name]
+                  const pos = erdGraphData.positions.get(table.name)
                   if (!pos) return null
 
                   const isSelected = table.name === selectedTableName
@@ -1110,7 +1136,11 @@ export default function DatabaseReference() {
       {/* Table Detail Dialog (When clicking node on ERD canvas) */}
       <Dialog
         open={tableDetailModal !== null}
-        onOpenChange={(open) => !open && setTableDetailModal(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setTableDetailModal(null)
+          }
+        }}
       >
         <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0 rounded-xl overflow-hidden">
           {tableDetailModal && (
