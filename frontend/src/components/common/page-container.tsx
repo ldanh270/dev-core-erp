@@ -4,30 +4,31 @@ import type { ReactNode } from "react"
 
 export type PageContainerVariant = "default" | "table" | "centered" | "fluid"
 
-interface PageContainerProps {
+export interface PageContainerProps {
   children: ReactNode
   variant?: PageContainerVariant
   className?: string
 }
 
 const variantStyles: Record<PageContainerVariant, string> = {
-  // Standard layout for general dashboard pages
-  default: "w-full px-4 md:px-6 py-6 flex flex-col gap-6 min-w-0",
+  // Standard layout for general dashboard and analytics pages
+  default: "w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col gap-6 min-w-0",
 
-  // Viewport-locked layout for tables (sticky header, internal scroll, zero window scrolling)
-  table: "w-full px-4 md:px-6 py-6 h-[calc(100vh-4rem)] flex flex-col gap-6 min-w-0 overflow-hidden",
+  // Viewport-locked layout for data tables (sticky header, internal scroll, zero window scrolling)
+  table:
+    "w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 h-[calc(100vh-4rem)] flex flex-col gap-4 min-w-0 md:overflow-hidden",
 
-  // Focused center layout for entity forms and detail flows (max 1024px)
-  centered: "w-full max-w-5xl mx-auto px-4 md:px-6 py-6 flex flex-col gap-6 min-w-0",
+  // Focused center layout for forms, wizards, and profile detail flows
+  centered: "w-full max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col gap-6 min-w-0",
 
-  // Full-width/height canvas for horizontal drag boards (Kanban, Timesheet)
+  // Full-width/height canvas for horizontal drag boards (Kanban, Gantt, Timesheet)
   fluid: "w-full p-4 md:p-6 h-full flex flex-col min-w-0",
 }
 
 /**
  * PageContainer — Single Source of Truth for macro page layout and padding.
- * Ensures consistent horizontal alignment with the main Header (px-4 md:px-6),
- * locks viewport height for data tables, and eliminates double-padding across transitions.
+ * Ensures consistent horizontal alignment with the main Header (px-4 sm:px-6),
+ * centers content uniformly (max-w-7xl mx-auto), and locks viewport height on desktop tables.
  */
 export function PageContainer({
   children,
