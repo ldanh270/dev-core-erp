@@ -95,10 +95,12 @@ export default function EmployeeList() {
     isAdminOrManager,
   } = useEmployeeMaster()
 
+  // 1. Pagination & URL Query State
   const currentPage = query.page ?? 1
   const pageSize = query.limit ?? 20
   const totalPages = data?.meta.totalPages ?? 0
 
+  // 2. Debounced Search Callback (useCallback ensures stable reference across re-renders)
   const handleSearch = useCallback(
     (keyword: string) => {
       setQuery((prev) => ({ ...prev, search: keyword, page: 1 }))
@@ -106,6 +108,7 @@ export default function EmployeeList() {
     [setQuery],
   )
 
+  // 3. Tab Counter Helper: maps tab IDs to stats counts
   const getTabCount = (tabId: ActiveTab) => {
     if (!data?.stats) return 0
     const stats = data.stats
@@ -121,6 +124,7 @@ export default function EmployeeList() {
     }
   }
 
+  // 4. Data Table Column Specifications (Sticky Left Columns + Custom Cell Renderers)
   const columns: DataTableColumn<Employee>[] = useMemo(
     () => [
       {
@@ -330,6 +334,7 @@ export default function EmployeeList() {
     <DataTablePage
       title="Nhân sự"
       description="Quản lý hồ sơ toàn bộ nhân sự công ty."
+      /* Primary Header Action: Create employee navigation button (40px) */
       primaryAction={
         isAdminOrManager
           ? {
@@ -341,6 +346,7 @@ export default function EmployeeList() {
             }
           : undefined
       }
+      /* Toolbar Action: Secondary Export button (40px) */
       toolbarActions={
         <Button
           type="button"
@@ -351,6 +357,7 @@ export default function EmployeeList() {
           Xuất Excel
         </Button>
       }
+      /* Category Tabs: Employee status and schedule filters with live counters */
       tabs={{
         items: TAB_DEFINITIONS.map((tab) => ({
           id: tab.id,
@@ -362,6 +369,7 @@ export default function EmployeeList() {
           handleTabChange(id as ActiveTab)
         },
       }}
+      /* Search Configuration: 400ms debounced search bar */
       search={{
         placeholder: "Tìm kiếm họ tên, email...",
         value: query.search || "",
@@ -375,6 +383,7 @@ export default function EmployeeList() {
         title: "Không tìm thấy nhân sự",
         description: "Không có nhân sự nào phù hợp với bộ lọc hoặc từ khóa tìm kiếm hiện tại.",
       }}
+      /* Bottom Pagination Footer: 32px pagination controls */
       pagination={
         data && data.data.length > 0
           ? {
@@ -392,6 +401,7 @@ export default function EmployeeList() {
             }
           : undefined
       }
+      /* Drawer & Modal Overlays: Create Modal, Edit Drawer, Details Drawer */
       extraContent={
         <>
           <EmployeeCreateModal

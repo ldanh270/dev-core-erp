@@ -38,6 +38,7 @@ export function PageHeader({
       className={cn("flex flex-wrap items-start justify-between gap-4 shrink-0", className)}
       {...props}
     >
+      {/* Left: Optional BackButton + Title and Subtitle */}
       <div className="flex items-start gap-3">
         {showBackButton && (
           <div className="pt-0.5">
@@ -57,6 +58,8 @@ export function PageHeader({
           )}
         </div>
       </div>
+
+      {/* Right: Slot for Header Action Buttons */}
       {actions && <div className="flex items-center gap-3 shrink-0">{actions}</div>}
     </div>
   )
