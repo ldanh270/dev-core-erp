@@ -108,6 +108,7 @@ export function SearchInput({
 
   return (
     <div className={cn("relative flex items-center min-w-[200px]", className)}>
+      {/* 1. Leading Search Icon Button (triggers immediate search on click) */}
       <Button
         type="button"
         variant="ghost"
@@ -120,6 +121,7 @@ export function SearchInput({
         <Search className="size-4" />
       </Button>
 
+      {/* 2. Core Text Input: 40px standard control height (h-10) with The Pill Rule (rounded-full) */}
       <Input
         type="text"
         value={searchTerm}
@@ -132,6 +134,7 @@ export function SearchInput({
         className="h-10 rounded-full bg-background border-border/80 pl-10 pr-9 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary shadow-none"
       />
 
+      {/* 3. Trailing Quick Clear Button (visible only when search keyword exists) */}
       {searchTerm && (
         <Button
           type="button"
