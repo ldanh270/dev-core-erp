@@ -40,10 +40,18 @@ export function SearchInput({
   const isControlled = controlledValue !== undefined
   const [searchTerm, setSearchTerm] = useState(isControlled ? controlledValue : defaultValue)
   const isFirstRender = useRef(true)
+  const prevSearchTermRef = useRef(searchTerm)
+  const onSearchRef = useRef(onSearch)
+
+  // Keep latest onSearch callback in ref to prevent re-triggering debounce on parent re-renders
+  useEffect(() => {
+    onSearchRef.current = onSearch
+  }, [onSearch])
 
   // Keep local state in sync when controlled value changes externally
   useEffect(() => {
     if (isControlled && controlledValue !== searchTerm) {
+      prevSearchTermRef.current = controlledValue
       setSearchTerm(controlledValue)
     }
   }, [controlledValue, isControlled])
@@ -55,14 +63,20 @@ export function SearchInput({
       return
     }
 
+    if (prevSearchTermRef.current === searchTerm) {
+      return
+    }
+
+    prevSearchTermRef.current = searchTerm
+
     const timer = setTimeout(() => {
-      onSearch(searchTerm.trim())
+      onSearchRef.current(searchTerm.trim())
     }, debounceMs)
 
     return () => {
       clearTimeout(timer)
     }
-  }, [searchTerm, debounceMs, onSearch])
+  }, [searchTerm, debounceMs])
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
@@ -70,7 +84,8 @@ export function SearchInput({
 
   const handleClear = () => {
     setSearchTerm("")
-    onSearch("")
+    prevSearchTermRef.current = ""
+    onSearchRef.current("")
     if (onClear) {
       onClear()
     }
@@ -79,7 +94,7 @@ export function SearchInput({
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault()
-      onSearch(searchTerm.trim())
+      onSearchRef.current(searchTerm.trim())
     } else if (e.key === "Escape") {
       e.preventDefault()
       handleClear()
@@ -87,7 +102,8 @@ export function SearchInput({
   }
 
   const handleTriggerSearch = () => {
-    onSearch(searchTerm.trim())
+    prevSearchTermRef.current = searchTerm
+    onSearchRef.current(searchTerm.trim())
   }
 
   return (

@@ -97,7 +97,7 @@ export function getStickyCellProps<T>(
   if (!isSticky) {
     if (isHeader) {
       return {
-        className: "bg-card",
+        className: "sticky top-0 z-20 bg-card",
         style: {
           width: col.width,
           minWidth: col.minWidth || col.width,
@@ -114,15 +114,15 @@ export function getStickyCellProps<T>(
 
   const isLast = col.id === layout.lastStickyId
 
-  // Header cells stick horizontally from md: breakpoint (vertical stickiness is handled by thead sticky top-0).
-  // Do NOT add top-0 or style.top to th, as nesting sticky top inside sticky thead causes Chromium to displace th by half its height.
+  // Header cells stick vertically (top: 0) and horizontally (left: offset) with highest z-index (z-30).
+  // Body cells stick horizontally (left: offset) with z-10.
   const baseClass = isHeader
-    ? "md:sticky md:z-30 bg-card"
-    : "md:sticky md:z-10 bg-card group-hover:bg-muted"
+    ? "sticky top-0 z-30 bg-card"
+    : "sticky z-10 bg-card group-hover:bg-muted"
 
   // Separator border and subtle drop shadow on the right edge of the last pinned column.
   const shadowClass = isLast
-    ? "md:border-r md:border-border md:shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)] dark:md:shadow-[4px_0_6px_-4px_rgba(0,0,0,0.5)]"
+    ? "border-r border-border shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)] dark:shadow-[4px_0_6px_-4px_rgba(0,0,0,0.5)]"
     : ""
 
   return {
