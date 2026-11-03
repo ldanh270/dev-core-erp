@@ -10,6 +10,15 @@ export interface DataTableColumn<T> {
   cell?: (item: T, index: number) => ReactNode
   align?: "left" | "center" | "right"
   width?: string
+  minWidth?: string
+  /** Enables sticky column positioning from tablet breakpoint (>= 768px). Offset is automatically computed based on preceding sticky columns. */
+  sticky?: boolean
+  /** Backward-compatible alias for sticky */
+  stickyLeft?: boolean
+  /** Optional manual left offset override. If omitted, offset is automatically calculated. */
+  stickyLeftOffset?: string
+  /** Hides column below specified breakpoint (if applicable). */
+  hideBelow?: "md" | "lg" | "xl"
 }
 
 export interface DataTableTabItem {
