@@ -59,6 +59,17 @@ const TAB_DEFINITIONS: TabDefinition[] = [
   { id: EMPLOYEE_STATUS.TERMINATED, label: "Đã nghỉ việc" },
 ]
 
+const COL_WIDTH = {
+  employee: 220,
+  code: 100,
+  position: 160,
+  contact: 220,
+  startDate: 130,
+  contract: 160,
+  status: 140,
+  actions: 80,
+} as const
+
 /**
  * Standardized Employee List view powered by DataTablePage master component.
  * Integrates viewport-locked internal scrolling, 400ms search debouncing, and tabs.
@@ -108,23 +119,25 @@ export default function EmployeeList() {
       {
         id: "employee",
         header: "Nhân sự",
-        width: "240px",
+        width: `${COL_WIDTH.employee}px`,
+        minWidth: `${COL_WIDTH.employee}px`,
+        sticky: true,
         cell: (employee) => (
           <div className="flex items-center gap-3 min-w-0">
             <div className="size-9 rounded-full bg-muted flex items-center justify-center shrink-0 border border-border">
               <User className="size-4 text-muted-foreground" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p
                 onClick={() => {
                   setViewingEmployeeId(employee.id)
                 }}
-                className="font-medium text-sm text-foreground hover:text-primary transition-colors cursor-pointer truncate max-w-[180px]"
+                className="font-medium text-sm text-foreground hover:text-primary transition-colors cursor-pointer truncate"
                 title={employee.fullName}
               >
                 {employee.fullName}
               </p>
-              <p className="text-xs text-muted-foreground truncate max-w-[180px]" title={employee.username}>
+              <p className="text-xs text-muted-foreground truncate" title={employee.username}>
                 {employee.username}
               </p>
             </div>
@@ -134,9 +147,14 @@ export default function EmployeeList() {
       {
         id: "code",
         header: "Mã NV",
-        width: "110px",
+        width: `${COL_WIDTH.code}px`,
+        minWidth: `${COL_WIDTH.code}px`,
+        sticky: true,
         cell: (employee) => (
-          <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">
+          <span
+            className="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-muted text-muted-foreground inline-block truncate"
+            title={employee.id ? employee.id.slice(-6).toUpperCase() : "—"}
+          >
             {employee.id ? employee.id.slice(-6).toUpperCase() : "—"}
           </span>
         ),
@@ -144,13 +162,15 @@ export default function EmployeeList() {
       {
         id: "position",
         header: "Vị trí",
-        width: "180px",
+        width: `${COL_WIDTH.position}px`,
+        minWidth: `${COL_WIDTH.position}px`,
+        sticky: true,
         cell: (employee) => (
           <div className="min-w-0">
-            <p className="text-sm font-medium text-foreground truncate max-w-[170px]" title={employee.position || ""}>
+            <p className="text-sm font-medium text-foreground truncate" title={employee.position || ""}>
               {employee.position || "—"}
             </p>
-            <p className="text-xs text-muted-foreground truncate max-w-[170px]" title={employee.role || ""}>
+            <p className="text-xs text-muted-foreground truncate" title={employee.role || ""}>
               {employee.role || "—"}
             </p>
           </div>
@@ -159,11 +179,14 @@ export default function EmployeeList() {
       {
         id: "contact",
         header: "Liên hệ",
-        width: "200px",
+        width: `${COL_WIDTH.contact}px`,
+        minWidth: `${COL_WIDTH.contact}px`,
         cell: (employee) => (
           <div className="min-w-0">
-            <p className="text-sm font-medium text-foreground">{employee.phone || "—"}</p>
-            <p className="text-xs text-muted-foreground truncate max-w-[190px]" title={employee.email}>
+            <p className="text-sm font-medium text-foreground truncate" title={employee.phone || "—"}>
+              {employee.phone || "—"}
+            </p>
+            <p className="text-xs text-muted-foreground truncate" title={employee.email}>
               {employee.email}
             </p>
           </div>
@@ -172,32 +195,42 @@ export default function EmployeeList() {
       {
         id: "startDate",
         header: "Ngày vào làm",
-        width: "130px",
-        cell: (employee) => (
-          <span className="text-sm text-muted-foreground font-medium">
-            {employee.startDate ? new Date(employee.startDate).toLocaleDateString("vi-VN") : "—"}
-          </span>
-        ),
+        width: `${COL_WIDTH.startDate}px`,
+        minWidth: `${COL_WIDTH.startDate}px`,
+        cell: (employee) => {
+          const dateStr = employee.startDate ? new Date(employee.startDate).toLocaleDateString("vi-VN") : "—"
+          return (
+            <span className="text-sm text-muted-foreground font-medium whitespace-nowrap" title={dateStr}>
+              {dateStr}
+            </span>
+          )
+        },
       },
       {
         id: "contract",
         header: "Hợp đồng",
-        width: "160px",
-        cell: (employee) => (
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-foreground truncate max-w-[150px]">
-              {getEmployeeTypeLabel(employee.employeeType)}
-            </p>
-            <p className="text-xs text-muted-foreground truncate max-w-[150px]">
-              {getWorkScheduleTypeLabel(employee.workScheduleType)}
-            </p>
-          </div>
-        ),
+        width: `${COL_WIDTH.contract}px`,
+        minWidth: `${COL_WIDTH.contract}px`,
+        cell: (employee) => {
+          const typeLabel = getEmployeeTypeLabel(employee.employeeType)
+          const scheduleLabel = getWorkScheduleTypeLabel(employee.workScheduleType)
+          return (
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-foreground truncate" title={typeLabel}>
+                {typeLabel}
+              </p>
+              <p className="text-xs text-muted-foreground truncate" title={scheduleLabel}>
+                {scheduleLabel}
+              </p>
+            </div>
+          )
+        },
       },
       {
         id: "status",
         header: "Trạng thái",
-        width: "140px",
+        width: `${COL_WIDTH.status}px`,
+        minWidth: `${COL_WIDTH.status}px`,
         cell: (employee) => (
           <StatusPill
             label={getEmployeeStatusLabel(employee.status)}
@@ -209,7 +242,8 @@ export default function EmployeeList() {
         id: "actions",
         header: "Thao tác",
         align: "center",
-        width: "80px",
+        width: `${COL_WIDTH.actions}px`,
+        minWidth: `${COL_WIDTH.actions}px`,
         cell: (employee) => (
           <div className="flex justify-center">
             <DropdownMenu>

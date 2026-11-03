@@ -17,10 +17,15 @@ import { resolveSubsystemDestination } from "@/utils/navigation/resolve-subsyste
 import { ChevronsUpDown } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
-export default function SubsystemDropdown() {
+interface SubsystemDropdownProps {
+  collapsed?: boolean
+}
+
+export default function SubsystemDropdown({ collapsed }: SubsystemDropdownProps = {}) {
   const navigate = useNavigate()
   const { activeSubsystem, setActiveSubsystem, getActiveSubsystemConfig } = useSubsystemStore()
-  const { isCollapsed } = useSidebarStore()
+  const { isCollapsed: storeCollapsed } = useSidebarStore()
+  const isCollapsed = collapsed !== undefined ? collapsed : storeCollapsed
   const user = useAuthStore((state) => state.user)
   const { data: profile } = useProfile()
 
@@ -93,7 +98,7 @@ export default function SubsystemDropdown() {
         align={isCollapsed ? "center" : "end"}
         side="right"
         sideOffset={8}
-        className="w-60 rounded-xl p-1 shadow-md mt-2 ml-3"
+        className="w-[var(--sidebar-width)] min-w-[216px] rounded-xl p-1 shadow-md mt-2 ml-3"
       >
         <div className="max-h-[60vh] overflow-y-auto">
           {navSubsystems.map((subsystem) => {

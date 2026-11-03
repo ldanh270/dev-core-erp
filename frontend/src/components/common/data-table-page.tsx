@@ -54,13 +54,13 @@ export function DataTablePage<T>({
   const isCompact = density === "compact"
   // Multiples of 4px: Header h-12 (48px) vs compact h-10 (40px)
   const thClass = isCompact
-    ? "h-10 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
-    : "h-12 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+    ? "h-10 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+    : "h-11 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
 
   // Multiples of 4px: Fixed cell padding & typography
   const tdClass = isCompact
-    ? "px-4 text-sm"
-    : "px-6 text-sm"
+    ? "px-3 text-sm"
+    : "px-4 text-sm"
 
   const rowHeightClass = isCompact ? "h-12" : "h-16"
 
@@ -159,7 +159,7 @@ export function DataTablePage<T>({
         )}
 
         {(search || filters || toolbarActions) && (
-          <div className="flex flex-col gap-3 border-b border-border px-6 py-3 sm:flex-row sm:items-center justify-between bg-card shrink-0">
+          <div className="relative z-30 flex flex-col gap-3 border-b border-border px-6 py-3 sm:flex-row sm:items-center justify-between bg-card shrink-0">
             <div className="flex flex-1 flex-wrap items-center gap-3">
               {search && (
                 <SearchInput
@@ -176,7 +176,7 @@ export function DataTablePage<T>({
           </div>
         )}
 
-        <div className="flex-1 min-h-0 overflow-auto overscroll-contain">
+        <div className="relative flex-1 min-h-0 overflow-auto overscroll-contain app-scrollbar">
           <table
             className={cn(
               "w-full border-separate border-spacing-0 text-left",
@@ -191,14 +191,14 @@ export function DataTablePage<T>({
                   return (
                     <col
                       key={`col-${col.id}`}
-                      style={isSticky ? { width: col.width, minWidth: col.width } : undefined}
+                      style={isSticky && col.width ? { width: col.width } : undefined}
                     />
                   )
                 })}
               </colgroup>
             )}
-            <thead className="sticky top-0 z-20 bg-card border-b border-border shadow-xs">
-              <tr className={isCompact ? "h-10" : "h-12"}>
+            <thead className="sticky top-0 z-20 bg-card">
+              <tr className={isCompact ? "h-10" : "h-11"}>
                 {columns.map((col) => {
                   const stickyProps = getStickyCellProps(col, stickyLayout, { isHeader: true })
                   return (
@@ -262,7 +262,7 @@ export function DataTablePage<T>({
                   <tr
                     key={keyExtractor ? keyExtractor(item, idx) : idx}
                     className={cn(
-                      "group hover:bg-muted/25 transition-colors duration-100",
+                      "group hover:bg-muted/25",
                       rowHeightClass,
                     )}
                   >
@@ -273,7 +273,7 @@ export function DataTablePage<T>({
                           key={col.id}
                           className={cn(
                             tdClass,
-                            "border-b border-border bg-card group-hover:bg-muted transition-colors duration-100",
+                            "border-b border-border bg-card group-hover:bg-muted",
                             col.align === "center" && "text-center",
                             col.align === "right" && "text-right",
                             hideClass(col),
