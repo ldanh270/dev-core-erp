@@ -33,12 +33,11 @@ export function AppPagination({
   totalItems,
   itemsPerPage = 10,
   onItemsPerPageChange,
-  pageSizeOptions = [5, 10, 20, 50],
+  pageSizeOptions = [10, 20, 50, 100],
 }: AppPaginationProps) {
   if (totalPages <= 1 && !totalItems) return null
 
-  // Xây dựng mảng hiển thị số trang
-  // Logic đơn giản: Hiển thị tối đa 5 trang xung quanh trang hiện tại
+  // Build page number array (maximum 5 pages around the current page)
   const getPageNumbers = () => {
     const pages: (number | "ellipsis")[] = []
 
@@ -49,7 +48,6 @@ export function AppPagination({
       return pages
     }
 
-    // Luôn có trang 1
     pages.push(1)
 
     if (currentPage > 3) {
@@ -67,7 +65,6 @@ export function AppPagination({
       pages.push("ellipsis")
     }
 
-    // Luôn có trang cuối
     if (totalPages > 1) {
       pages.push(totalPages)
     }
@@ -79,11 +76,12 @@ export function AppPagination({
   const endItemIndex = totalItems ? Math.min(currentPage * itemsPerPage, totalItems) : 0
 
   const effectivePageSizeOptions = Array.from(
-    new Set([...pageSizeOptions, itemsPerPage])
+    new Set([...pageSizeOptions, itemsPerPage]),
   ).sort((a, b) => a - b)
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-2.5 border-t border-border text-xs">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-3 border-t border-border text-sm">
+      {/* Page size selector & total items counter */}
       <div className="flex flex-col sm:flex-row items-center gap-3 text-muted-foreground">
         {onItemsPerPageChange && (
           <div className="flex items-center gap-2">
@@ -94,7 +92,7 @@ export function AppPagination({
                 onItemsPerPageChange(Number(val))
               }}
             >
-              <SelectTrigger size="sm" className="w-16 h-7.5 bg-background rounded-full text-xs font-medium px-2.5 shadow-none border-border">
+              <SelectTrigger size="sm" className="w-20 h-8 bg-background rounded-full text-xs font-medium px-3 shadow-none border-border">
                 <SelectValue placeholder={itemsPerPage.toString()} />
               </SelectTrigger>
               <SelectContent>
@@ -110,15 +108,16 @@ export function AppPagination({
 
         {totalItems !== undefined && (
           <div className="text-center sm:text-left">
-            Đang xem {totalItems === 0 ? 0 : startItemIndex} – {endItemIndex} trong số{" "}
-            <span className="font-semibold text-foreground">{totalItems}</span> bản ghi
+            {totalItems === 0 ? "0" : `${startItemIndex}-${endItemIndex}`} trên{" "}
+            <span className="font-semibold text-foreground">{totalItems}</span>
           </div>
         )}
       </div>
 
+      {/* Page navigation controls */}
       <div className={totalPages <= 1 ? "hidden sm:block opacity-0 pointer-events-none" : ""}>
         <Pagination className="justify-end">
-          <PaginationContent>
+          <PaginationContent className="gap-1">
             <PaginationItem>
               <PaginationPrevious
                 href="#"
@@ -128,7 +127,7 @@ export function AppPagination({
                   e.preventDefault()
                   if (currentPage > 1) onPageChange(currentPage - 1)
                 }}
-                className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                className={`h-8 rounded-full px-3 text-xs ${currentPage <= 1 ? "pointer-events-none opacity-50" : ""}`}
                 title="Trang trước"
               />
             </PaginationItem>
@@ -143,14 +142,20 @@ export function AppPagination({
               }
 
               return (
-                <PaginationItem key={page}>
+                <PaginationItem key={`page-${page}`}>
                   <PaginationLink
                     href="#"
+                    isActive={page === currentPage}
+                    size="icon"
                     onClick={(e) => {
                       e.preventDefault()
-                      onPageChange(page as number)
+                      onPageChange(page)
                     }}
-                    isActive={currentPage === page}
+                    className={`size-8 rounded-full text-xs font-semibold ${
+                      page === currentPage
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                        : "hover:bg-muted"
+                    }`}
                   >
                     {page}
                   </PaginationLink>
@@ -167,8 +172,8 @@ export function AppPagination({
                   e.preventDefault()
                   if (currentPage < totalPages) onPageChange(currentPage + 1)
                 }}
-                className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
-                title="Trang tiếp theo"
+                className={`h-8 rounded-full px-3 text-xs ${currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}`}
+                title="Trang sau"
               />
             </PaginationItem>
           </PaginationContent>
