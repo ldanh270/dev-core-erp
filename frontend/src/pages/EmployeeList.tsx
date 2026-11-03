@@ -20,6 +20,7 @@ import {
   getWorkScheduleTypeLabel,
 } from "@/config/entities/employee.config"
 import { ROUTES } from "@/config/routes.config"
+import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useEmployeeMaster } from "@/hooks/employees/useEmployeeMaster"
 import { routerNavigate } from "@/lib/router-navigator"
 import type { Employee, EmployeeType } from "@/types/employee.types"
@@ -97,7 +98,7 @@ export default function EmployeeList() {
 
   // 1. Pagination & URL Query State
   const currentPage = query.page ?? 1
-  const pageSize = query.limit ?? 20
+  const pageSize = query.limit ?? SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT
   const totalPages = data?.meta.totalPages ?? 0
 
   // 2. Debounced Search Callback (useCallback ensures stable reference across re-renders)
