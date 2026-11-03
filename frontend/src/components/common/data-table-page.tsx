@@ -121,7 +121,7 @@ export function DataTablePage<T>({
         className="flex-1 min-h-0 flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-xs"
       >
         {tabs && (
-          <nav className="flex items-center gap-1 border-b border-border bg-card px-6 h-11 overflow-x-auto shrink-0 relative">
+          <nav className="flex items-center gap-1 border-b border-border bg-card px-6 h-11 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink-0 relative">
             {tabs.items.map((tab) => {
               const isActive = tabs.activeTab === tab.id
               const TabIcon = tab.icon
@@ -151,7 +151,7 @@ export function DataTablePage<T>({
                       {tab.count}
                     </span>
                   )}
-                  {isActive && <div className="absolute -bottom-px left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+                  {isActive && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
                 </button>
               )
             })}
@@ -186,18 +186,15 @@ export function DataTablePage<T>({
           >
             {stickyLayout.totalMinWidth && (
               <colgroup>
-                {columns.map((col) => {
-                  const isSticky = stickyLayout.stickyColIds.has(col.id)
-                  return (
-                    <col
-                      key={`col-${col.id}`}
-                      style={isSticky && col.width ? { width: col.width } : undefined}
-                    />
-                  )
-                })}
+                {columns.map((col) => (
+                  <col
+                    key={`col-${col.id}`}
+                    style={col.width ? { width: col.width } : undefined}
+                  />
+                ))}
               </colgroup>
             )}
-            <thead className="sticky top-0 z-20 bg-card">
+            <thead className="bg-card">
               <tr className={isCompact ? "h-10" : "h-11"}>
                 {columns.map((col) => {
                   const stickyProps = getStickyCellProps(col, stickyLayout, { isHeader: true })

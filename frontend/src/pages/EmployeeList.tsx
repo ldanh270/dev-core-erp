@@ -24,7 +24,7 @@ import { useEmployeeMaster } from "@/hooks/employees/useEmployeeMaster"
 import { routerNavigate } from "@/lib/router-navigator"
 import type { Employee, EmployeeType } from "@/types/employee.types"
 
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import {
   Edit,
   FileDown,
@@ -67,7 +67,7 @@ const COL_WIDTH = {
   startDate: 130,
   contract: 160,
   status: 140,
-  actions: 80,
+  actions: 100,
 } as const
 
 /**
@@ -98,6 +98,13 @@ export default function EmployeeList() {
   const currentPage = query.page ?? 1
   const pageSize = query.limit ?? 20
   const totalPages = data?.meta.totalPages ?? 0
+
+  const handleSearch = useCallback(
+    (keyword: string) => {
+      setQuery((prev) => ({ ...prev, search: keyword, page: 1 }))
+    },
+    [setQuery],
+  )
 
   const getTabCount = (tabId: ActiveTab) => {
     if (!data?.stats) return 0
@@ -358,9 +365,7 @@ export default function EmployeeList() {
       search={{
         placeholder: "Tìm kiếm họ tên, email...",
         value: query.search || "",
-        onSearch: (keyword) => {
-          setQuery((prev) => ({ ...prev, search: keyword, page: 1 }))
-        },
+        onSearch: handleSearch,
       }}
       columns={columns}
       data={data?.data || []}
