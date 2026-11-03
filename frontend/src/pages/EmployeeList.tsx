@@ -96,12 +96,12 @@ export default function EmployeeList() {
     isAdminOrManager,
   } = useEmployeeMaster()
 
-  // 1. Pagination & URL Query State
+  // Pagination & URL query state
   const currentPage = query.page ?? 1
   const pageSize = query.limit ?? SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT
   const totalPages = data?.meta.totalPages ?? 0
 
-  // 2. Debounced Search Callback (useCallback ensures stable reference across re-renders)
+  // Debounced search callback
   const handleSearch = useCallback(
     (keyword: string) => {
       setQuery((prev) => ({ ...prev, search: keyword, page: 1 }))
@@ -109,7 +109,7 @@ export default function EmployeeList() {
     [setQuery],
   )
 
-  // 3. Tab Counter Helper: maps tab IDs to stats counts
+  // Tab counter helper
   const getTabCount = (tabId: ActiveTab) => {
     if (!data?.stats) return 0
     const stats = data.stats
@@ -125,7 +125,7 @@ export default function EmployeeList() {
     }
   }
 
-  // 4. Data Table Column Specifications (Sticky Left Columns + Custom Cell Renderers)
+  // Data table column definitions
   const columns: DataTableColumn<Employee>[] = useMemo(
     () => [
       {

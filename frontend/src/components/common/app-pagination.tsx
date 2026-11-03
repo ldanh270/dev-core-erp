@@ -81,7 +81,7 @@ export function AppPagination({
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-3 border-t border-border text-sm">
-      {/* 1. Left Controls: Page size selector (32px h-8) & total items counter */}
+      {/* Page size selector & total items counter */}
       <div className="flex flex-col sm:flex-row items-center gap-3 text-muted-foreground">
         {onItemsPerPageChange && (
           <div className="flex items-center gap-2">
@@ -114,7 +114,7 @@ export function AppPagination({
         )}
       </div>
 
-      {/* 2. Right Controls: Page navigation pills and numeric buttons (32px size-8/h-8) */}
+      {/* Page navigation controls */}
       <div className={totalPages <= 1 ? "hidden sm:block opacity-0 pointer-events-none" : ""}>
         <Pagination className="justify-end">
           <PaginationContent className="gap-1">
