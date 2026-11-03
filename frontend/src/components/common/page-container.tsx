@@ -12,7 +12,7 @@ export const pageContainerVariants = cva("w-full flex flex-col min-w-0", {
       // Viewport-locked layout for data tables (matches attendance matrix pattern)
       // Locks viewport height on desktop, eliminates window-level scrolling
       table:
-        "w-full px-4 md:px-6 py-4 md:h-[calc(100vh-4rem)] gap-4 md:overflow-hidden",
+        "w-full px-4 md:px-6 py-4 h-full min-h-0 flex flex-col overflow-hidden gap-4",
 
       // Focused center layout for forms, wizards, and profile detail flows
       centered: "max-w-4xl mx-auto px-4 md:px-6 py-6 gap-6",

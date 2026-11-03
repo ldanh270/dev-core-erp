@@ -198,6 +198,9 @@
   --sidebar-accent-foreground: #0f172a;
   --sidebar-border: #e2e8f0;
   --sidebar-ring: #2563eb;
+  --sidebar-width: clamp(216px, 17vw, 300px);
+  --sidebar-width: clamp(216px, round(nearest, 17vw, 1px), 300px);
+  --sidebar-width-collapsed: 4rem;
 
   --login-grad-start: #1e40af;
   --login-grad-mid: #3b82f6;
@@ -260,5 +263,31 @@
   }
   50% {
     transform: translateY(-12px);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --sidebar-width: clamp(216px, 24vw, 260px);
+    --sidebar-width: clamp(216px, round(nearest, 24vw, 1px), 260px);
+  }
+}
+
+.app-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+@supports not (scrollbar-width: thin) {
+  .app-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .app-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .app-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 9999px;
   }
 }

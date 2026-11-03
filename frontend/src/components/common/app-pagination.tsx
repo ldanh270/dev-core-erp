@@ -37,7 +37,7 @@ export function AppPagination({
 }: AppPaginationProps) {
   if (totalPages <= 1 && !totalItems) return null
 
-  // Xây dựng mảng hiển thị số trang (tối đa 5 trang xung quanh trang hiện tại)
+  // Build page number array (maximum 5 pages around the current page)
   const getPageNumbers = () => {
     const pages: (number | "ellipsis")[] = []
 
@@ -107,8 +107,8 @@ export function AppPagination({
 
         {totalItems !== undefined && (
           <div className="text-center sm:text-left">
-            Đang xem {totalItems === 0 ? 0 : startItemIndex} – {endItemIndex} trong số{" "}
-            <span className="font-semibold text-foreground">{totalItems}</span> bản ghi
+            {totalItems === 0 ? "0" : `${startItemIndex}-${endItemIndex}`} trên{" "}
+            <span className="font-semibold text-foreground">{totalItems}</span>
           </div>
         )}
       </div>

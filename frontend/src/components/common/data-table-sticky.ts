@@ -92,7 +92,18 @@ export function getStickyCellProps<T>(
   options?: { isHeader?: boolean },
 ): { className?: string; style?: CSSProperties } {
   const isSticky = layout.stickyColIds.has(col.id)
+  const isHeader = options?.isHeader ?? false
+
   if (!isSticky) {
+    if (isHeader) {
+      return {
+        className: "bg-card",
+        style: {
+          width: col.width,
+          minWidth: col.minWidth || col.width,
+        },
+      }
+    }
     return {
       style: {
         width: col.width,
@@ -101,13 +112,15 @@ export function getStickyCellProps<T>(
     }
   }
 
-  const isHeader = options?.isHeader ?? false
   const isLast = col.id === layout.lastStickyId
 
+  // Header cells stick horizontally from md: breakpoint (vertical stickiness is handled by thead sticky top-0).
+  // Do NOT add top-0 or style.top to th, as nesting sticky top inside sticky thead causes Chromium to displace th by half its height.
   const baseClass = isHeader
     ? "md:sticky md:z-30 bg-card"
     : "md:sticky md:z-10 bg-card group-hover:bg-muted"
 
+  // Separator border and subtle drop shadow on the right edge of the last pinned column.
   const shadowClass = isLast
     ? "md:border-r md:border-border md:shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)] dark:md:shadow-[4px_0_6px_-4px_rgba(0,0,0,0.5)]"
     : ""
@@ -117,8 +130,8 @@ export function getStickyCellProps<T>(
     style: {
       width: col.width,
       minWidth: col.minWidth || col.width,
+      maxWidth: col.width,
       left: `${layout.offsets[col.id] ?? 0}px`,
-      ...(isHeader ? { top: 0 } : {}),
     },
   }
 }

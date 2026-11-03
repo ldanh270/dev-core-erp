@@ -22,11 +22,16 @@ const USER_MENU_ITEMS = [
 /**
  * UserMenu — Displays user avatar and profile dropdown in the Sidebar Footer.
  */
-export default function UserMenu() {
+interface UserMenuProps {
+  collapsed?: boolean
+}
+
+export default function UserMenu({ collapsed }: UserMenuProps = {}) {
   const navigate = useNavigate()
   const { logout, isLoggingOut } = useAuth()
   const { user } = useAuthStore()
-  const { isCollapsed } = useSidebarStore()
+  const { isCollapsed: storeCollapsed } = useSidebarStore()
+  const isCollapsed = collapsed !== undefined ? collapsed : storeCollapsed
 
   const handleLogout = async () => {
     try {
