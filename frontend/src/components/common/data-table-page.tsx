@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
-import type { DataTablePageProps } from "./data-table.types"
+import { useMemo } from "react"
+
+import { computeStickyLayout, getStickyCellProps } from "./data-table-sticky"
+import type { DataTableColumn, DataTablePageProps } from "./data-table.types"
 
 export type {
   DataTableColumn,
@@ -19,8 +22,8 @@ export type {
 
 /**
  * Master Enterprise Data Table Page component.
- * Combines viewport-locked internal scrolling, sticky thead, 400ms debounced search,
- * and pinned pagination into a single reusable Clean Architecture primitive.
+ * Combines viewport-locked internal scrolling, sticky thead, sticky left columns (>= md),
+ * 400ms debounced search, and pinned pagination into a single reusable Clean Architecture primitive.
  * Strictly adheres to 4px multiples design tokens (docs/component-sizing-standard.md).
  */
 export function DataTablePage<T>({
@@ -60,6 +63,22 @@ export function DataTablePage<T>({
     : "px-6 text-sm"
 
   const rowHeightClass = isCompact ? "h-12" : "h-16"
+
+  // Compute sticky offsets and table minWidth using pure utility
+  const stickyLayout = useMemo(() => computeStickyLayout(columns), [columns])
+
+  const hideClass = (col: DataTableColumn<T>) => {
+    switch (col.hideBelow) {
+      case "xl":
+        return "hidden xl:table-cell"
+      case "lg":
+        return "hidden lg:table-cell"
+      case "md":
+        return "hidden md:table-cell"
+      default:
+        return undefined
+    }
+  }
 
   const renderPrimaryAction = () => {
     if (!primaryAction) return null
@@ -140,7 +159,7 @@ export function DataTablePage<T>({
         )}
 
         {(search || filters || toolbarActions) && (
-          <div className="flex flex-col gap-3 border-b border-border px-6 py-3 lg:flex-row lg:items-center justify-between bg-muted/15 shrink-0">
+          <div className="flex flex-col gap-3 border-b border-border px-6 py-3 sm:flex-row sm:items-center justify-between bg-card shrink-0">
             <div className="flex flex-1 flex-wrap items-center gap-3">
               {search && (
                 <SearchInput
@@ -158,35 +177,71 @@ export function DataTablePage<T>({
         )}
 
         <div className="flex-1 min-h-0 overflow-auto overscroll-contain">
-          <table className="w-full border-collapse text-left">
-            <thead className="sticky top-0 z-10 bg-card border-b border-border shadow-xs">
+          <table
+            className={cn(
+              "w-full border-separate border-spacing-0 text-left",
+              stickyLayout.totalMinWidth && "table-fixed",
+            )}
+            style={stickyLayout.totalMinWidth ? { minWidth: `${stickyLayout.totalMinWidth}px` } : undefined}
+          >
+            {stickyLayout.totalMinWidth && (
+              <colgroup>
+                {columns.map((col) => {
+                  const isSticky = stickyLayout.stickyColIds.has(col.id)
+                  return (
+                    <col
+                      key={`col-${col.id}`}
+                      style={isSticky ? { width: col.width, minWidth: col.width } : undefined}
+                    />
+                  )
+                })}
+              </colgroup>
+            )}
+            <thead className="sticky top-0 z-20 bg-card border-b border-border shadow-xs">
               <tr className={isCompact ? "h-10" : "h-12"}>
-                {columns.map((col) => (
-                  <th
-                    key={col.id}
-                    className={cn(
-                      thClass,
-                      "whitespace-nowrap select-none",
-                      col.align === "center" && "text-center",
-                      col.align === "right" && "text-right",
-                      col.headerClassName,
-                    )}
-                    style={{ width: col.width }}
-                  >
-                    {col.header}
-                  </th>
-                ))}
+                {columns.map((col) => {
+                  const stickyProps = getStickyCellProps(col, stickyLayout, { isHeader: true })
+                  return (
+                    <th
+                      key={col.id}
+                      className={cn(
+                        thClass,
+                        "border-b border-border bg-card whitespace-nowrap select-none",
+                        col.align === "center" && "text-center",
+                        col.align === "right" && "text-right",
+                        hideClass(col),
+                        stickyProps.className,
+                        col.headerClassName,
+                      )}
+                      style={stickyProps.style}
+                    >
+                      {col.header}
+                    </th>
+                  )
+                })}
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {isLoading ? (
                 Array.from({ length: loadingRowsCount }).map((_, rIdx) => (
                   <tr key={`loading-row-${rIdx}`} className={rowHeightClass}>
-                    {columns.map((col) => (
-                      <td key={`loading-col-${col.id}`} className={tdClass}>
-                        <Skeleton className="h-4 w-4/5 rounded-md" />
-                      </td>
-                    ))}
+                    {columns.map((col) => {
+                      const stickyProps = getStickyCellProps(col, stickyLayout)
+                      return (
+                        <td
+                          key={`loading-col-${col.id}`}
+                          className={cn(
+                            tdClass,
+                            "border-b border-border bg-card",
+                            hideClass(col),
+                            stickyProps.className,
+                          )}
+                          style={stickyProps.style}
+                        >
+                          <Skeleton className="h-4 w-4/5 rounded-md" />
+                        </td>
+                      )
+                    })}
                   </tr>
                 ))
               ) : data.length === 0 ? (
@@ -207,23 +262,30 @@ export function DataTablePage<T>({
                   <tr
                     key={keyExtractor ? keyExtractor(item, idx) : idx}
                     className={cn(
-                      "hover:bg-muted/25 transition-colors duration-100",
+                      "group hover:bg-muted/25 transition-colors duration-100",
                       rowHeightClass,
                     )}
                   >
-                    {columns.map((col) => (
-                      <td
-                        key={col.id}
-                        className={cn(
-                          tdClass,
-                          col.align === "center" && "text-center",
-                          col.align === "right" && "text-right",
-                          col.className,
-                        )}
-                      >
-                        {col.cell ? col.cell(item, idx) : col.accessor ? col.accessor(item) : null}
-                      </td>
-                    ))}
+                    {columns.map((col) => {
+                      const stickyProps = getStickyCellProps(col, stickyLayout)
+                      return (
+                        <td
+                          key={col.id}
+                          className={cn(
+                            tdClass,
+                            "border-b border-border bg-card group-hover:bg-muted transition-colors duration-100",
+                            col.align === "center" && "text-center",
+                            col.align === "right" && "text-right",
+                            hideClass(col),
+                            stickyProps.className,
+                            col.className,
+                          )}
+                          style={stickyProps.style}
+                        >
+                          {col.cell ? col.cell(item, idx) : col.accessor ? col.accessor(item) : null}
+                        </td>
+                      )
+                    })}
                   </tr>
                 ))
               )}
