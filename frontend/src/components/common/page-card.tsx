@@ -1,35 +1,48 @@
 import { cn } from "@/lib/utils"
 
-interface PageCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode
-  padding?: "sm" | "md" | "lg"
-  noBorder?: boolean
-}
+import { cva, type VariantProps } from "class-variance-authority"
+import type { HTMLAttributes, ReactNode } from "react"
 
-const paddingMap = {
-  sm: "p-3",
-  md: "p-4",
-  lg: "p-5",
+export const pageCardVariants = cva("rounded-xl bg-card", {
+  variants: {
+    padding: {
+      none: "p-0",
+      sm: "p-4",
+      md: "p-6",
+      lg: "p-8",
+    },
+    noBorder: {
+      true: "",
+      false: "border border-border/80",
+    },
+  },
+  defaultVariants: {
+    padding: "md",
+    noBorder: false,
+  },
+})
+
+export interface PageCardProps
+  extends HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof pageCardVariants> {
+  children: ReactNode
 }
 
 /**
  * PageCard — Standard card container used across all pages.
+ * Enforces rounded-xl (12px), bg-card, and standardized concentric border.
+ * Uses CVA to prevent object injection sink vulnerabilities.
  */
 export function PageCard({
   children,
   className,
-  padding = "md",
-  noBorder = false,
+  padding,
+  noBorder,
   ...props
 }: PageCardProps) {
   return (
     <div
-      className={cn(
-        "rounded-xl bg-card",
-        !noBorder && "border border-border",
-        paddingMap[padding],
-        className,
-      )}
+      className={cn(pageCardVariants({ padding, noBorder }), className)}
       {...props}
     >
       {children}

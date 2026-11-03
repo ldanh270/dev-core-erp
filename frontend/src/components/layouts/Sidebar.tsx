@@ -2,6 +2,7 @@ import SubsystemDropdown from "@/components/layouts/SubsystemDropdown"
 import UserMenu from "@/components/layouts/user-menu"
 import type { NavItem } from "@/config/subsystem.config"
 import { useProfile } from "@/hooks/use-profile"
+import { useMediaQuery } from "@/hooks/use-media-query"
 import { useAuthStore } from "@/store/auth-store"
 import { useSidebarStore } from "@/store/sidebar-store"
 import { useSubsystemStore } from "@/store/subsystem-store"
@@ -37,18 +38,24 @@ export default function Sidebar({ className, isMobile, onNavClick }: SidebarProp
   )
 
   // Mobile mode effectively ignores 'isCollapsed' for layout purposes since it's a drawer
-  const effectiveCollapsed = !isMobile && isCollapsed
+  // Tablet displays in icon-collapsed mode automatically without persisting to localStorage
+  const isTablet = useMediaQuery("(min-width: 768px) and (max-width: 1023px)")
+  const effectiveCollapsed = !isMobile && (isCollapsed || isTablet)
   const dashboardPath = activeSubsystemConfig?.sidebarItems[0]?.path?.split("?")[0]
 
   return (
     <aside
-      className={`relative flex flex-col bg-background text-foreground border-r border-border transition-all duration-300 ${
-        isMobile ? "w-full" : effectiveCollapsed ? "w-16" : "w-64"
+      className={`relative flex flex-col bg-background text-foreground border-r border-border transition-[width] duration-300 ${
+        isMobile
+          ? "w-full"
+          : effectiveCollapsed
+            ? "w-[var(--sidebar-width-collapsed)]"
+            : "w-[var(--sidebar-width)]"
       } ${className || ""}`}
     >
       {/* Sidebar Header (Team Switcher / Logo) */}
       <div className="flex h-16 items-center px-3 border-b border-border">
-        <SubsystemDropdown />
+        <SubsystemDropdown collapsed={effectiveCollapsed} />
       </div>
 
       {/* Sidebar Content (Navigation) */}
@@ -121,7 +128,7 @@ export default function Sidebar({ className, isMobile, onNavClick }: SidebarProp
 
       {/* Sidebar Footer (User Menu) */}
       <div className="border-t border-border p-4">
-        <UserMenu />
+        <UserMenu collapsed={effectiveCollapsed} />
       </div>
     </aside>
   )
