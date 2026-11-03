@@ -116,12 +116,12 @@ export function DataTablePage<T>({
         }
       />
 
-      {/* Main Viewport Card: locked height, internal scrolling container */}
+      {/* Table container */}
       <PageCard
         padding="none"
         className="flex-1 min-h-0 flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-xs"
       >
-        {/* Section 1: Navigation Tabs Bar (44px height, Pill count badges, bottom-0 active indicator) */}
+        {/* Tab navigation */}
         {tabs && (
           <nav className="flex items-center gap-1 border-b border-border bg-card px-6 h-11 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink-0 relative">
             {tabs.items.map((tab) => {
@@ -160,7 +160,7 @@ export function DataTablePage<T>({
           </nav>
         )}
 
-        {/* Section 2: Toolbar & Filter Bar (Debounced SearchInput 40px + Filter Selects + Toolbar Actions 40px) */}
+        {/* Toolbar & filters */}
         {(search || filters || toolbarActions) && (
           <div className="relative z-30 flex flex-col gap-3 border-b border-border px-6 py-3 sm:flex-row sm:items-center justify-between bg-card shrink-0">
             <div className="flex flex-1 flex-wrap items-center gap-3">
@@ -179,7 +179,7 @@ export function DataTablePage<T>({
           </div>
         )}
 
-        {/* Section 3: Scrollable Data Table Viewport (internal overflow-auto with custom app-scrollbar) */}
+        {/* Table viewport */}
         <div className="relative flex-1 min-h-0 overflow-auto overscroll-contain app-scrollbar">
           <table
             className={cn(
@@ -188,7 +188,7 @@ export function DataTablePage<T>({
             )}
             style={stickyLayout.totalMinWidth ? { minWidth: `${stickyLayout.totalMinWidth}px` } : undefined}
           >
-            {/* 3.1 Colgroup Width Synchronization: guarantees exact pixel widths matching computeStickyLayout */}
+            {/* Column width synchronization */}
             {stickyLayout.totalMinWidth && (
               <colgroup>
                 {columns.map((col) => (
@@ -199,7 +199,7 @@ export function DataTablePage<T>({
                 ))}
               </colgroup>
             )}
-            {/* 3.2 Sticky Table Header: pure sticky top-0 with z-20 (regular) and z-30 (sticky left columns) */}
+            {/* Table header */}
             <thead className="bg-card">
               <tr className={isCompact ? "h-10" : "h-11"}>
                 {columns.map((col) => {
@@ -224,10 +224,10 @@ export function DataTablePage<T>({
                 })}
               </tr>
             </thead>
-            {/* 3.3 Table Body: loading skeletons, empty state fallback, or data rows */}
+            {/* Table body */}
             <tbody className="divide-y divide-border">
               {isLoading ? (
-                /* Loading Skeleton Rows */
+                /* Loading skeleton */
                 Array.from({ length: loadingRowsCount }).map((_, rIdx) => (
                   <tr key={`loading-row-${rIdx}`} className={rowHeightClass}>
                     {columns.map((col) => {
@@ -250,7 +250,7 @@ export function DataTablePage<T>({
                   </tr>
                 ))
               ) : data.length === 0 ? (
-                /* Empty State View */
+                /* Empty state */
                 <tr>
                   <td colSpan={columns.length} className="p-8">
                     <EmptyState
@@ -262,10 +262,10 @@ export function DataTablePage<T>({
                   </td>
                 </tr>
               ) : renderRows ? (
-                /* Custom Row Renderer */
+                /* Custom row renderer */
                 renderRows()
               ) : (
-                /* Standard Data Rows */
+                /* Data rows */
                 data.map((item, idx) => (
                   <tr
                     key={keyExtractor ? keyExtractor(item, idx) : idx}
@@ -301,7 +301,7 @@ export function DataTablePage<T>({
           </table>
         </div>
 
-        {/* Section 4: Pinned Pagination Footer (32px controls, pinned at bottom of card) */}
+        {/* Pagination */}
         {pagination && (
           <div className="shrink-0 bg-card border-t border-border">
             <AppPagination
