@@ -7,7 +7,7 @@ import { SUBSYSTEMS } from "@/config/subsystem.config"
 import type { SubsystemConfig } from "@/config/subsystem.config"
 import apiClient from "@/lib/api-client"
 import { setNavigate } from "@/lib/router-navigator"
-import { type RouteConfig, privateRoutes, publicRoutes } from "@/routes"
+import { type RouteConfig, openRoutes, privateRoutes, publicRoutes } from "@/routes"
 import { useAuthStore } from "@/store/auth-store.ts"
 import { resolveSubsystemDestination } from "@/utils/navigation/resolve-subsystem-destination"
 
@@ -249,6 +249,23 @@ const App = () => {
           }
         >
           <Routes>
+                        {openRoutes.map((route, index) => {
+              const Page = route.component
+              const Layout = route.layout || Fragment
+
+              return (
+                <Route
+                  key={`open-${index}`}
+                  path={route.path}
+                  element={
+                    <Layout>
+                      {Page ? <Page /> : null}
+                    </Layout>
+                  }
+                />
+              )
+            })}
+
             {publicRoutes.map((route, index) => {
               const Page = route.component
               const Layout = route.layout || Fragment

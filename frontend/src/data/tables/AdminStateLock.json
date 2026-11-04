@@ -1,0 +1,37 @@
+{
+  "name": "AdminStateLock",
+  "dbName": "admin_state_lock",
+  "module": "SECURITY",
+  "description": "Bảng dữ liệu AdminStateLock trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "id",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "1",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(1)"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "PK_admin_state_lock",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [],
+  "outgoingRelations": [],
+  "incomingRelations": []
+}

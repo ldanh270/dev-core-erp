@@ -5,7 +5,8 @@ import { BRANDING_CONFIG } from "@/config/branding.config"
 import { useLogin } from "@/hooks/auth/useLogin"
 import MockSpreadsheetCard from "@/pages/auth/mock-spreadsheet"
 
-import { Eye, EyeOff, KeyRound } from "lucide-react"
+import { Database, Eye, EyeOff, KeyRound } from "lucide-react"
+import { Link } from "react-router-dom"
 
 const GeometricBackground = () => (
   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-35">
@@ -184,6 +185,17 @@ export default function Login() {
             <KeyRound size={16} />
             <span>Reset Password</span>
           </Button>
+
+          {/* Public Data Architecture Reference Link */}
+          <div className="pt-2 text-center">
+            <Link
+              to="/database"
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors py-1 px-3 rounded-full hover:bg-muted/60"
+            >
+              <Database size={13} className="text-primary" />
+              <span>Xem Kiến trúc Dữ liệu & Sơ đồ ERD (75 Tables) &#8594;</span>
+            </Link>
+          </div>
         </div>
       </div>
 

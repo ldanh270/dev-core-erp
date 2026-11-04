@@ -1,0 +1,1157 @@
+{
+  "name": "Employee",
+  "dbName": "Employee",
+  "module": "HRM",
+  "description": "Hồ sơ nhân viên trung tâm, lưu thông tin định danh, chức danh, phân loại và trạng thái công tác",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "fullName",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu fullName",
+      "rawAttributes": ""
+    },
+    {
+      "name": "username",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu username",
+      "rawAttributes": ""
+    },
+    {
+      "name": "passwordHash",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu passwordHash",
+      "rawAttributes": ""
+    },
+    {
+      "name": "email",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Địa chỉ email liên hệ",
+      "rawAttributes": ""
+    },
+    {
+      "name": "phone",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Số điện thoại liên lạc",
+      "rawAttributes": ""
+    },
+    {
+      "name": "dateOfBirth",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "nationalId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng national",
+      "rawAttributes": ""
+    },
+    {
+      "name": "address",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Địa chỉ liên hệ",
+      "rawAttributes": ""
+    },
+    {
+      "name": "avatarUrl",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "avatarId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng avatar",
+      "rawAttributes": ""
+    },
+    {
+      "name": "position",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu position",
+      "rawAttributes": ""
+    },
+    {
+      "name": "positionId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Position",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết vị trí chuyên môn",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "employeeType",
+      "type": "EmployeeType",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "full_time",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu employeeType",
+      "rawAttributes": "@default(full_time)"
+    },
+    {
+      "name": "workScheduleType",
+      "type": "WorkScheduleType",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "full_time",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu workScheduleType",
+      "rawAttributes": "@default(full_time) // PT payroll, availability, attendance branching"
+    },
+    {
+      "name": "status",
+      "type": "EmployeeStatus",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "active",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trạng thái nghiệp vụ hiện tại",
+      "rawAttributes": "@default(active)"
+    },
+    {
+      "name": "failedLoginCount",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "0",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Chỉ số số lượng / Tổng số",
+      "rawAttributes": "@default(0)"
+    },
+    {
+      "name": "lockedUntil",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu lockedUntil",
+      "rawAttributes": ""
+    },
+    {
+      "name": "startDate",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Ngày bắt đầu có hiệu lực",
+      "rawAttributes": "@db.Date"
+    },
+    {
+      "name": "endDate",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Ngày kết thúc hiệu lực",
+      "rawAttributes": "@db.Date"
+    },
+    {
+      "name": "lastLoginAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "personalEmployeeId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng personalEmployee",
+      "rawAttributes": "",
+      "relationName": "PersonalEmployeeLink"
+    },
+    {
+      "name": "createdAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm tạo bản ghi",
+      "rawAttributes": "@default(now())"
+    },
+    {
+      "name": "updatedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm cập nhật bản ghi gần nhất",
+      "rawAttributes": "@updatedAt"
+    },
+    {
+      "name": "deletedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm xóa mềm (soft delete)",
+      "rawAttributes": "// For soft deletes"
+    },
+    {
+      "name": "version",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "1",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Phiên bản dữ liệu (hỗ trợ versioning)",
+      "rawAttributes": "@default(1)"
+    },
+    {
+      "name": "authorizationVersion",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "1",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": "@default(1)"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_Employee_deletedAt",
+      "columns": [
+        "deletedAt"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Employee_email",
+      "columns": [
+        "email"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Employee_failedLoginCount",
+      "columns": [
+        "failedLoginCount"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Employee_lockedUntil",
+      "columns": [
+        "lockedUntil"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Employee_status_deletedAt",
+      "columns": [
+        "status",
+        "deletedAt"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Employee_status_employeeType",
+      "columns": [
+        "status",
+        "employeeType"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Employee_username",
+      "columns": [
+        "username"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_Employee",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "positionRel",
+      "targetModel": "Position",
+      "relationName": null,
+      "foreignKeyFields": [
+        "positionId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "personalEmployee",
+      "targetModel": "Employee",
+      "relationName": "PersonalEmployeeLink",
+      "foreignKeyFields": [
+        "personalEmployeeId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "personalEmployeeLinks",
+      "targetModel": "Employee",
+      "relationName": "PersonalEmployeeLink",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "auditLogsActed",
+      "targetModel": "AuthorizationAuditLog",
+      "relationName": "AuditLogActor",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "auditLogsTargeted",
+      "targetModel": "AuthorizationAuditLog",
+      "relationName": "AuditLogTarget",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "employeeShifts",
+      "targetModel": "EmployeeShift",
+      "relationName": "EmployeeShiftEmployee",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "employeeShiftsCreated",
+      "targetModel": "EmployeeShift",
+      "relationName": "EmployeeShiftCreator",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "applications",
+      "targetModel": "Application",
+      "relationName": "ApplicationEmployee",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "applicationsApproved",
+      "targetModel": "Application",
+      "relationName": "ApplicationApprover",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "applicationsAssigned",
+      "targetModel": "Application",
+      "relationName": "ApplicationAssignedTo",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "applicationsPartnerApproved",
+      "targetModel": "Application",
+      "relationName": "ApplicationPartnerApprover",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "swapApplicationsAsPartner",
+      "targetModel": "ApplicationShiftSwapDetail",
+      "relationName": "ApplicationSwapWith",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "shiftSchedules",
+      "targetModel": "ShiftSchedule",
+      "relationName": "ShiftScheduleEmployee",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "shiftSchedulesCreated",
+      "targetModel": "ShiftSchedule",
+      "relationName": "ShiftScheduleCreator",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "weeklyScheduleTemplatesCreated",
+      "targetModel": "WeeklyScheduleTemplate",
+      "relationName": "WeeklyScheduleTemplateCreator",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "salaryConfigsCreated",
+      "targetModel": "EmployeeSalaryConfig",
+      "relationName": "SalaryConfigCreator",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "projectsLead",
+      "targetModel": "Project",
+      "relationName": "ProjectTeamLeader",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "projectsCreated",
+      "targetModel": "Project",
+      "relationName": "ProjectCreator",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "tasksAssigned",
+      "targetModel": "Task",
+      "relationName": "TaskAssignee",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "tasksCreated",
+      "targetModel": "Task",
+      "relationName": "TaskCreator",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "passwordResetRequests",
+      "targetModel": "PasswordResetRequest",
+      "relationName": "PasswordResetRequestEmployee",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "passwordResetRequestsApprd",
+      "targetModel": "PasswordResetRequest",
+      "relationName": "PasswordResetRequestApprover",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "spentTimes",
+      "targetModel": "SpentTime",
+      "relationName": "EmployeeSpentTimes",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "spentTimesApproved",
+      "targetModel": "SpentTime",
+      "relationName": "SpentTimeApprover",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "partTimeWeeklyAvailabilities",
+      "targetModel": "PartTimeWeeklyAvailability",
+      "relationName": "PartTimeAvailabilityEmployee",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "partTimeAvailabilitiesReviewed",
+      "targetModel": "PartTimeWeeklyAvailability",
+      "relationName": "PartTimeAvailabilityReviewer",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "contracts",
+      "targetModel": "EmployeeContract",
+      "relationName": "EmployeeContracts",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "contractsCreated",
+      "targetModel": "EmployeeContract",
+      "relationName": "ContractCreator",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "contractsUpdated",
+      "targetModel": "EmployeeContract",
+      "relationName": "ContractUpdater",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "requisitionsRequested",
+      "targetModel": "JobRequisition",
+      "relationName": "RequisitionRequester",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "requisitionsAssignedToApprove",
+      "targetModel": "JobRequisition",
+      "relationName": "RequisitionDesignatedApprover",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "requisitionsApproved",
+      "targetModel": "JobRequisition",
+      "relationName": "RequisitionApprover",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "recruitmentAppsAssigned",
+      "targetModel": "RecruitmentApplication",
+      "relationName": "RecruitmentAppRecruiter",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "scorecardsEvaluated",
+      "targetModel": "Scorecard",
+      "relationName": "ScorecardEvaluator",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "offersCreated",
+      "targetModel": "RecruitmentOffer",
+      "relationName": "OfferCreator",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "bgcChecked",
+      "targetModel": "BackgroundCheck",
+      "relationName": "BgcChecker",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "recruitmentNotesCreated",
+      "targetModel": "ApplicationNote",
+      "relationName": "RecruitmentNoteCreator",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "recruitmentPostingActivities",
+      "targetModel": "RecruitmentPostingActivity",
+      "relationName": "RecruitmentPostingActivityActor",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "archivedRecruitmentPostings",
+      "targetModel": "JobPosting",
+      "relationName": "RecruitmentPostingArchiver",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "positionId",
+      "targetTable": "Position",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "personalEmployeeId",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "PersonalEmployeeLink"
+    }
+  ],
+  "incomingRelations": [
+    {
+      "sourceTable": "EmployeeContract",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": "EmployeeContracts"
+    },
+    {
+      "sourceTable": "EmployeeContract",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": "ContractCreator"
+    },
+    {
+      "sourceTable": "EmployeeContract",
+      "sourceColumn": "updatedById",
+      "targetColumn": "id",
+      "relationName": "ContractUpdater"
+    },
+    {
+      "sourceTable": "Employee",
+      "sourceColumn": "personalEmployeeId",
+      "targetColumn": "id",
+      "relationName": "PersonalEmployeeLink"
+    },
+    {
+      "sourceTable": "WorkingShift",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "WeeklyScheduleTemplate",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": "WeeklyScheduleTemplateCreator"
+    },
+    {
+      "sourceTable": "ShiftSchedule",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": "ShiftScheduleEmployee"
+    },
+    {
+      "sourceTable": "ShiftSchedule",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": "ShiftScheduleCreator"
+    },
+    {
+      "sourceTable": "EmployeeShift",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": "EmployeeShiftEmployee"
+    },
+    {
+      "sourceTable": "EmployeeShift",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": "EmployeeShiftCreator"
+    },
+    {
+      "sourceTable": "AttendanceRecord",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "RealShift",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "Application",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": "ApplicationEmployee"
+    },
+    {
+      "sourceTable": "Application",
+      "sourceColumn": "approvedById",
+      "targetColumn": "id",
+      "relationName": "ApplicationApprover"
+    },
+    {
+      "sourceTable": "Application",
+      "sourceColumn": "partnerApprovedById",
+      "targetColumn": "id",
+      "relationName": "ApplicationPartnerApprover"
+    },
+    {
+      "sourceTable": "Application",
+      "sourceColumn": "assignedToId",
+      "targetColumn": "id",
+      "relationName": "ApplicationAssignedTo"
+    },
+    {
+      "sourceTable": "ApplicationShiftSwapDetail",
+      "sourceColumn": "swapWithEmployeeId",
+      "targetColumn": "id",
+      "relationName": "ApplicationSwapWith"
+    },
+    {
+      "sourceTable": "RegimeCategory",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "HolidayCalendar",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "HolidayCalendarAssignee",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "SalaryComponent",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "PayslipTemplate",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "EmployeeSalaryConfig",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "EmployeeSalaryConfig",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": "SalaryConfigCreator"
+    },
+    {
+      "sourceTable": "SalaryVariable",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "PayrollSettings",
+      "sourceColumn": "updatedById",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "WeeklyScheduleSettings",
+      "sourceColumn": "updatedById",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "PartTimeWeeklyAvailability",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": "PartTimeAvailabilityEmployee"
+    },
+    {
+      "sourceTable": "PartTimeWeeklyAvailability",
+      "sourceColumn": "reviewedById",
+      "targetColumn": "id",
+      "relationName": "PartTimeAvailabilityReviewer"
+    },
+    {
+      "sourceTable": "Payroll",
+      "sourceColumn": "approvedById",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "Payslip",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "Project",
+      "sourceColumn": "teamLeaderId",
+      "targetColumn": "id",
+      "relationName": "ProjectTeamLeader"
+    },
+    {
+      "sourceTable": "Project",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": "ProjectCreator"
+    },
+    {
+      "sourceTable": "ProjectMember",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "Task",
+      "sourceColumn": "assigneeId",
+      "targetColumn": "id",
+      "relationName": "TaskAssignee"
+    },
+    {
+      "sourceTable": "Task",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": "TaskCreator"
+    },
+    {
+      "sourceTable": "ActivityLog",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "PasswordResetRequest",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": "PasswordResetRequestEmployee"
+    },
+    {
+      "sourceTable": "PasswordResetRequest",
+      "sourceColumn": "approvedById",
+      "targetColumn": "id",
+      "relationName": "PasswordResetRequestApprover"
+    },
+    {
+      "sourceTable": "RefreshToken",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "SpentTime",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": "EmployeeSpentTimes"
+    },
+    {
+      "sourceTable": "SpentTime",
+      "sourceColumn": "approvedById",
+      "targetColumn": "id",
+      "relationName": "SpentTimeApprover"
+    },
+    {
+      "sourceTable": "EmployeeRole",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "AuthorizationAuditLog",
+      "sourceColumn": "actorId",
+      "targetColumn": "id",
+      "relationName": "AuditLogActor"
+    },
+    {
+      "sourceTable": "AuthorizationAuditLog",
+      "sourceColumn": "targetEmployeeId",
+      "targetColumn": "id",
+      "relationName": "AuditLogTarget"
+    },
+    {
+      "sourceTable": "CustomQuery",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "EmployeeLeaveBalance",
+      "sourceColumn": "employeeId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "JobRequisition",
+      "sourceColumn": "requestedById",
+      "targetColumn": "id",
+      "relationName": "RequisitionRequester"
+    },
+    {
+      "sourceTable": "JobRequisition",
+      "sourceColumn": "approverId",
+      "targetColumn": "id",
+      "relationName": "RequisitionDesignatedApprover"
+    },
+    {
+      "sourceTable": "JobRequisition",
+      "sourceColumn": "approvedById",
+      "targetColumn": "id",
+      "relationName": "RequisitionApprover"
+    },
+    {
+      "sourceTable": "JobPosting",
+      "sourceColumn": "archivedById",
+      "targetColumn": "id",
+      "relationName": "RecruitmentPostingArchiver"
+    },
+    {
+      "sourceTable": "RecruitmentOAuthAccount",
+      "sourceColumn": "userId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "RecruitmentApplication",
+      "sourceColumn": "assignedToId",
+      "targetColumn": "id",
+      "relationName": "RecruitmentAppRecruiter"
+    },
+    {
+      "sourceTable": "RecruitmentPostingActivity",
+      "sourceColumn": "actorId",
+      "targetColumn": "id",
+      "relationName": "RecruitmentPostingActivityActor"
+    },
+    {
+      "sourceTable": "ApplicationNote",
+      "sourceColumn": "addedById",
+      "targetColumn": "id",
+      "relationName": "RecruitmentNoteCreator"
+    },
+    {
+      "sourceTable": "Scorecard",
+      "sourceColumn": "evaluatorId",
+      "targetColumn": "id",
+      "relationName": "ScorecardEvaluator"
+    },
+    {
+      "sourceTable": "RecruitmentOffer",
+      "sourceColumn": "createdById",
+      "targetColumn": "id",
+      "relationName": "OfferCreator"
+    },
+    {
+      "sourceTable": "BackgroundCheck",
+      "sourceColumn": "checkedById",
+      "targetColumn": "id",
+      "relationName": "BgcChecker"
+    }
+  ]
+}
