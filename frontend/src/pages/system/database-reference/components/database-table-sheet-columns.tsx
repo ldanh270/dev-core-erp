@@ -17,6 +17,7 @@ import {
   ColumnConstraintsCell,
   ColumnIncomingCell,
 } from "./database-table-sheet-column-cells"
+import { useTableSheetColumns } from "../hooks/use-table-sheet-columns"
 import { KeyRound, Link2 } from "lucide-react"
 
 interface TableSheetColumnsProps {
@@ -31,6 +32,7 @@ interface TableSheetColumnsProps {
  * Renders the table's physical database columns with constraints, default values,
  * outgoing foreign key links (replacing standalone outgoing section),
  * and incoming references from other tables.
+ * Presentation component powered by `useTableSheetColumns` hook.
  */
 export function TableSheetColumns({
   columns,
@@ -39,21 +41,10 @@ export function TableSheetColumns({
   enumDefinitions,
   onSelectTable,
 }: TableSheetColumnsProps) {
-  // Map incoming relations by target column name for fast lookup per table row.
-  const incomingByTargetCol = new Map<string, IncomingRelation[]>()
-  for (const rel of incomingRelations) {
-    const list = incomingByTargetCol.get(rel.targetColumn) ?? []
-    list.push(rel)
-    incomingByTargetCol.set(rel.targetColumn, list)
-  }
-
-  // Map outgoing relations by source column name for fast lookup per table row.
-  const outgoingBySourceCol = new Map<string, OutgoingRelation[]>()
-  for (const rel of outgoingRelations) {
-    const list = outgoingBySourceCol.get(rel.sourceColumn) ?? []
-    list.push(rel)
-    outgoingBySourceCol.set(rel.sourceColumn, list)
-  }
+  const { incomingByTargetCol, outgoingBySourceCol } = useTableSheetColumns({
+    incomingRelations,
+    outgoingRelations,
+  })
 
   return (
     <section className="space-y-3">
@@ -79,73 +70,75 @@ export function TableSheetColumns({
           <TableBody>
             {columns.map((column) => {
               const enumDef = column.isEnum ? enumDefinitions.get(column.type) : undefined
-              const columnIncoming = incomingByTargetCol.get(column.name) ?? []
-              const columnOutgoing = outgoingBySourceCol.get(column.name) ?? []
+              const isFk = column.isFk || Boolean(column.fkTargetTable)
+              const colIncoming = incomingByTargetCol.get(column.name) ?? []
+              const colOutgoing = outgoingBySourceCol.get(column.name) ?? []
 
               return (
-                <TableRow key={column.name} className="align-top">
-                  {/* Column name with PK / FK indicators */}
-                  <TableCell className="font-mono text-xs font-semibold">
+                <TableRow key={column.name} className="hover:bg-muted/50">
+                  {/* Column name with primary / foreign key icon indicators */}
+                  <TableCell className="align-top font-mono text-xs font-medium">
                     <div className="flex items-center gap-1.5">
                       {column.isPk && (
-                        <KeyRound className="size-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                        <KeyRound
+                          className="size-3.5 text-amber-600 dark:text-amber-400"
+                          aria-label="Khóa chính (PK)"
+                        />
                       )}
-                      {column.isFk && (
-                        <Link2 className="size-3.5 shrink-0 text-sky-600 dark:text-sky-400" />
+                      {isFk && (
+                        <Link2
+                          className="size-3.5 text-sky-600 dark:text-sky-400"
+                          aria-label="Khóa ngoại (FK)"
+                        />
                       )}
                       <span>{column.name}</span>
                     </div>
                   </TableCell>
 
-                  {/* Data type, array, optionality, virtual relation, and enum values */}
-                  <TableCell className="font-mono text-xs">
-                    {column.type}
-                    {column.isArray ? "[]" : ""}
-                    {column.isOptional ? "?" : ""}
-                    {column.isPrismaVirtual && (
-                      <Badge variant="secondary" className="ml-2 rounded-full text-[10px]">
-                        Relation
-                      </Badge>
-                    )}
-                    {enumDef && (
-                      <div className="mt-2 space-y-1.5">
-                        <Badge variant="secondary" className="rounded-full text-[10px]">
-                          Enum: {column.type}
-                        </Badge>
-                        <div className="flex flex-wrap gap-1">
-                          {enumDef.values.map((value) => (
-                            <Badge
-                              key={value}
-                              variant="outline"
-                              className="rounded-full text-[10px]"
-                            >
-                              {value}
-                            </Badge>
-                          ))}
+                  {/* Data type and optional clickable enum values */}
+                  <TableCell className="align-top font-mono text-xs text-muted-foreground">
+                    <div className="space-y-1">
+                      <span>{column.type}</span>
+                      {enumDef && (
+                        <div className="space-y-1 pt-1">
+                          <span className="block font-sans text-[10px] font-semibold text-foreground">
+                            Enum: {enumDef.name}
+                          </span>
+                          <div className="flex flex-wrap gap-1">
+                            {enumDef.values.map((val) => (
+                              <Badge
+                                key={val}
+                                variant="outline"
+                                className="rounded-full px-1.5 py-0 text-[10px]"
+                              >
+                                {val}
+                              </Badge>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </TableCell>
 
-                  {/* Constraints, Primary Key, Outgoing FK link with relation name, Default value */}
-                  <TableCell>
+                  {/* Column Constraints & Outgoing Relations (replacing bottom section) */}
+                  <TableCell className="align-top">
                     <ColumnConstraintsCell
                       column={column}
-                      outgoingRelations={columnOutgoing}
+                      outgoingRelations={colOutgoing}
                       onSelectTable={onSelectTable}
                     />
                   </TableCell>
 
                   {/* Incoming References from other tables ("Được tham chiếu bởi") */}
-                  <TableCell>
+                  <TableCell className="align-top">
                     <ColumnIncomingCell
-                      incomingRelations={columnIncoming}
+                      incomingRelations={colIncoming}
                       onSelectTable={onSelectTable}
                     />
                   </TableCell>
 
-                  {/* Human-readable business description */}
-                  <TableCell className="text-xs text-muted-foreground">
+                  {/* Business Documentation */}
+                  <TableCell className="align-top text-xs text-muted-foreground">
                     {column.description || "—"}
                   </TableCell>
                 </TableRow>

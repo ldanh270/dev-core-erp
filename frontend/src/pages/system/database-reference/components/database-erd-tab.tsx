@@ -1,9 +1,7 @@
-import { useMemo, useState } from "react"
-
-import { useDatabaseErdViewport } from "../database-erd-viewport"
 import type { ModuleDef, TableDef } from "../database-reference.types"
 import { DatabaseErdCanvas } from "./database-erd-canvas"
 import { DatabaseErdControls } from "./database-erd-controls"
+import { useDatabaseErdTab } from "../hooks/use-database-erd-tab"
 
 // Props for the interactive ERD tab container.
 interface DatabaseErdTabProps {
@@ -17,11 +15,10 @@ interface DatabaseErdTabProps {
   onSelectTable: (table: TableDef) => void
 }
 
-const ZOOM_STEP = 1.15
-const MIN_SCALE = 0.15
-const MAX_SCALE = 3
-
-// Displays a pannable ERD with module filtering and focused cross-module relations.
+/**
+ * Displays a pannable ERD with module filtering and focused cross-module relations.
+ * Pure UI presentation component powered by `useDatabaseErdTab` hook.
+ */
 export function DatabaseErdTab({
   tables,
   allTables,
@@ -32,52 +29,20 @@ export function DatabaseErdTab({
   selectedTableName,
   onSelectTable,
 }: DatabaseErdTabProps) {
-  const [showCrossModuleRelations, setShowCrossModuleRelations] = useState(true)
-  const moduleTableNames = useMemo(() => new Set(tables.map((table) => table.name)), [tables])
-  const tableByName = useMemo(
-    () => new Map(allTables.map((table) => [table.name, table])),
-    [allTables],
-  )
-
-  // Include external cross-module tables when a single module is selected and the cross-module switch is enabled.
-  const graphTables = useMemo(() => {
-    if (selectedModule === "ALL" || !showCrossModuleRelations) return tables
-
-    const externalNames = new Set<string>()
-    for (const table of tables) {
-      for (const relation of table.outgoingRelations) {
-        const target = tableByName.get(relation.targetTable)
-        if (target && target.module !== selectedModule) externalNames.add(target.name)
-      }
-      for (const relation of table.incomingRelations) {
-        const source = tableByName.get(relation.sourceTable)
-        if (source && source.module !== selectedModule) externalNames.add(source.name)
-      }
-    }
-
-    const externalTables = allTables
-      .filter((table) => externalNames.has(table.name))
-      .map((table) => ({
-        ...table,
-        outgoingRelations: table.outgoingRelations.filter((relation) =>
-          moduleTableNames.has(relation.targetTable),
-        ),
-      }))
-
-    return [...tables, ...externalTables]
-  }, [allTables, moduleTableNames, selectedModule, showCrossModuleRelations, tableByName, tables])
-
-  const [fullscreenTarget, setFullscreenTarget] = useState<HTMLElement | null>(null)
-  const viewport = useDatabaseErdViewport(
-    graphTables,
+  const {
+    showCrossModuleRelations,
+    setShowCrossModuleRelations,
+    setFullscreenTarget,
+    viewport,
+    handleZoomIn,
+    handleZoomOut,
+  } = useDatabaseErdTab({
+    tables,
+    allTables,
+    selectedModule,
     selectedTableName,
     limitNodes,
-    fullscreenTarget,
-  )
-  const zoomBy = (factor: number) => {
-    const nextScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, viewport.scale * factor))
-    viewport.zoomBy(nextScale / viewport.scale)
-  }
+  })
 
   return (
     <section
@@ -97,8 +62,8 @@ export function DatabaseErdTab({
         showCrossModuleRelations={showCrossModuleRelations}
         onCrossModuleRelationsChange={setShowCrossModuleRelations}
         scale={viewport.scale}
-        onZoomIn={() => zoomBy(ZOOM_STEP)}
-        onZoomOut={() => zoomBy(1 / ZOOM_STEP)}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
         onFit={viewport.fitGraph}
         onResetLayout={viewport.resetNodePositions}
         isFullscreen={viewport.isFullscreen}

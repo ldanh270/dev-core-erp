@@ -2,8 +2,6 @@ import { PageCard, SearchInput } from "@/components/common"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import schemaSummaryRaw from "@/data/schema-summary.json"
 
-import { useMemo, useState } from "react"
-import { toast } from "sonner"
 import { DatabaseCategoryTabs } from "./database-reference/components/database-category-tabs"
 import { DatabaseErdTab } from "./database-reference/components/database-erd-tab"
 import { DatabaseReferenceHeader } from "./database-reference/components/database-reference-header"
@@ -14,7 +12,7 @@ import type {
   DbSchemaSummary,
   TableDef,
 } from "./database-reference/database-reference.types"
-import { filterTables } from "./database-reference/database-reference.utils"
+import { useDatabaseReference } from "./database-reference/hooks/use-database-reference"
 
 // Load extracted schema summary and individual table metadata JSON records generated from prisma schema.
 const schemaSummary: DbSchemaSummary = schemaSummaryRaw
@@ -31,86 +29,36 @@ const dbSchema: DbSchemaData = {
 }
 const PAGE_SIZE = SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT
 
-type ActiveTab = "tables" | "diagram"
-
 /**
  * Main coordinator page for Database Schema Reference & Interactive ERD Viewer.
- * Orchestrates module filtering, full-text search, pagination, drawer details, and ERD diagram state.
+ * Decouples business logic into `useDatabaseReference` hook and renders clean UI layout.
  */
 export default function DatabaseReference() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("tables")
-  const [selectedModule, setSelectedModule] = useState("ALL")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [selectedTable, setSelectedTable] = useState<TableDef | null>(null)
-  const [copiedTableName, setCopiedTableName] = useState<string | null>(null)
-
-  // Filter tables by current module selection and multi-field keyword search.
-  const filteredTables = useMemo(
-    () => filterTables(allTables, dbSchema.modules, dbSchema.enums, selectedModule, searchQuery),
-    [selectedModule, searchQuery],
-  )
-
-  // Open the detail drawer for a selected table object.
-  const handleSelectTable = (table: TableDef) => {
-    setSelectedTable(table)
-  }
-
-  // Open the detail drawer by resolving table name from relationship badges.
-  const handleSelectTableByName = (tableName: string) => {
-    const table = allTables.find((item) => item.name === tableName)
-    if (table) setSelectedTable(table)
-  }
-
-  // Handle live search input and reset pagination to page 1.
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value)
-    setCurrentPage(1)
-  }
-
-  // Handle module category tab switch and reset pagination.
-  const handleModuleChange = (moduleId: string) => {
-    setSelectedModule(moduleId)
-    setCurrentPage(1)
-  }
-
-  // Switch to the ERD tab and auto-focus the selected table's parent module.
-  const handleViewErd = (moduleId: string) => {
-    setSelectedModule(moduleId)
-    setSelectedTable(null)
-    setActiveTab("diagram")
-  }
-
-  // Copy full table definition JSON to system clipboard with a temporary success badge indicator.
-  const handleCopyMetadata = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopiedTableName(selectedTable?.name ?? null)
-      window.setTimeout(() => setCopiedTableName(null), 2000)
-    } catch {
-      toast.error("Không thể sao chép metadata. Hãy kiểm tra quyền truy cập clipboard.")
-    }
-  }
+  const { state, actions } = useDatabaseReference({
+    allTables,
+    dbSchema,
+    pageSize: PAGE_SIZE,
+  })
 
   return (
     <div className="w-full max-w-none space-y-4 px-3 py-4 sm:space-y-6 sm:px-6 sm:py-6">
       {/* Top statistics and view switcher header */}
       <DatabaseReferenceHeader
-        activeTab={activeTab}
+        activeTab={state.activeTab}
         totalTables={dbSchema.metadata.totalTables}
         totalColumns={dbSchema.metadata.totalColumns}
         totalRelations={dbSchema.metadata.totalRelations}
         totalEnums={dbSchema.metadata.totalEnums}
-        onTabChange={setActiveTab}
+        onTabChange={actions.setActiveTab}
       />
 
       <PageCard className="overflow-hidden p-0" noBorder={false}>
         {/* Module category tabs styled like DataTablePage / EmployeeList */}
         <DatabaseCategoryTabs
           modules={dbSchema.modules}
-          selectedModule={selectedModule}
+          selectedModule={state.selectedModule}
           totalTables={dbSchema.metadata.totalTables}
-          onSelectModule={handleModuleChange}
+          onSelectModule={actions.handleModuleChange}
         />
 
         {/* Search input toolbar */}
@@ -118,35 +66,35 @@ export default function DatabaseReference() {
           <div className="flex flex-1 flex-wrap items-center gap-3">
             <SearchInput
               placeholder="Tìm model, bảng, cột, kiểu dữ liệu hoặc mô tả..."
-              value={searchQuery}
-              onSearch={handleSearchChange}
+              value={state.searchQuery}
+              onSearch={actions.handleSearchChange}
               className="w-full sm:max-w-md"
             />
           </div>
         </div>
 
         {/* Content view: Table list view or Interactive ERD Diagram */}
-        {activeTab === "tables" ? (
+        {state.activeTab === "tables" ? (
           <DatabaseTableList
-            tables={filteredTables}
+            tables={state.filteredTables}
             allTables={allTables}
-            currentPage={currentPage}
+            currentPage={state.currentPage}
             pageSize={PAGE_SIZE}
-            onPageChange={setCurrentPage}
-            onSelectTable={handleSelectTable}
-            onSelectTableByName={handleSelectTableByName}
+            onPageChange={actions.setCurrentPage}
+            onSelectTable={actions.handleSelectTable}
+            onSelectTableByName={actions.handleSelectTableByName}
           />
         ) : (
           <div className="p-3 sm:p-5">
             <DatabaseErdTab
-              tables={filteredTables}
+              tables={state.filteredTables}
               allTables={allTables}
               modules={dbSchema.modules}
-              selectedModule={selectedModule}
-              onModuleChange={handleModuleChange}
-              limitNodes={selectedModule === "ALL"}
-              selectedTableName={selectedTable?.name ?? null}
-              onSelectTable={handleSelectTable}
+              selectedModule={state.selectedModule}
+              onModuleChange={actions.handleModuleChange}
+              limitNodes={state.selectedModule === "ALL"}
+              selectedTableName={state.selectedTable?.name ?? null}
+              onSelectTable={actions.handleSelectTable}
             />
           </div>
         )}
@@ -154,13 +102,13 @@ export default function DatabaseReference() {
 
       {/* Slide-over table inspection drawer */}
       <DatabaseTableSheet
-        table={selectedTable}
+        table={state.selectedTable}
         schema={dbSchema}
-        onClose={() => setSelectedTable(null)}
-        onSelectTable={handleSelectTableByName}
-        onViewErd={handleViewErd}
-        copied={selectedTable !== null && copiedTableName === selectedTable.name}
-        onCopy={handleCopyMetadata}
+        onClose={() => actions.setSelectedTable(null)}
+        onSelectTable={actions.handleSelectTableByName}
+        onViewErd={actions.handleViewErd}
+        copied={state.selectedTable !== null && state.copiedTableName === state.selectedTable.name}
+        onCopy={actions.handleCopyMetadata}
       />
     </div>
   )
