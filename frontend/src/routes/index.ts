@@ -5,6 +5,10 @@ import { type ComponentType, lazy } from "react"
 
 const MainLayout = lazy(() => import("@/layouts/MainLayout.tsx"))
 
+/**
+ * Public routes (guest-only: e.g. login, forgot password).
+ * Authenticated users are redirected away to their dashboard.
+ */
 const publicRoutes = [
   {
     path: ROUTES.AUTH.LOGIN,
@@ -26,6 +30,23 @@ export interface RouteConfig {
   roles?: string[]
   children?: RouteConfig[]
 }
+
+/**
+ * Open routes (unrestricted: anyone can access with zero authentication,
+ * clients/visitors/evaluators can view standalone without login, exactly like an About Us page).
+ */
+const openRoutes: RouteConfig[] = [
+  {
+    path: "/database",
+    component: lazy(() => import("@/pages/system/DatabaseReference.tsx")),
+    layout: null,
+  },
+  {
+    path: "/docs/database",
+    component: lazy(() => import("@/pages/system/DatabaseReference.tsx")),
+    layout: null,
+  },
+]
 
 const privateRoutes: RouteConfig[] = [
   {
@@ -333,4 +354,4 @@ const privateRoutes: RouteConfig[] = [
   },
 ]
 
-export { privateRoutes, publicRoutes }
+export { privateRoutes, publicRoutes, openRoutes }

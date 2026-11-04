@@ -1,0 +1,121 @@
+{
+  "name": "PartTimeAvailabilityDay",
+  "dbName": "PartTimeAvailabilityDay",
+  "module": "ATTENDANCE",
+  "description": "Bảng dữ liệu PartTimeAvailabilityDay trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "availabilityId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "PartTimeWeeklyAvailability",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng availability",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "dayOfWeek",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu dayOfWeek",
+      "rawAttributes": ""
+    },
+    {
+      "name": "isBusyAllDay",
+      "type": "Boolean",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "false",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Cờ đánh dấu logic (isBusyAllDay)",
+      "rawAttributes": "@default(false)"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_PartTimeAvailabilityDay_availabilityId_dayOfWeek",
+      "columns": [
+        "availabilityId",
+        "dayOfWeek"
+      ],
+      "isUnique": true,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_PartTimeAvailabilityDay",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "availability",
+      "targetModel": "PartTimeWeeklyAvailability",
+      "relationName": null,
+      "foreignKeyFields": [
+        "availabilityId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "availabilityId",
+      "targetTable": "PartTimeWeeklyAvailability",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": [
+    {
+      "sourceTable": "PartTimeAvailabilitySlot",
+      "sourceColumn": "dayId",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ]
+}

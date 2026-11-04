@@ -1,0 +1,528 @@
+{
+  "name": "Task",
+  "dbName": "Task",
+  "module": "PROJECT",
+  "description": "Nhiệm vụ / công việc chi tiết trong dự án kèm tiến độ và deadline",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "projectId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Project",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết dự án",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "title",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Tiêu đề / Chức danh",
+      "rawAttributes": ""
+    },
+    {
+      "name": "description",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mô tả chi tiết nghiệp vụ",
+      "rawAttributes": ""
+    },
+    {
+      "name": "tracker",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "feature",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu tracker",
+      "rawAttributes": "@default(\"feature\")"
+    },
+    {
+      "name": "priority",
+      "type": "TaskPriority",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "medium",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Mức độ ưu tiên xử lý",
+      "rawAttributes": "@default(medium)"
+    },
+    {
+      "name": "status",
+      "type": "TaskStatus",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "todo",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trạng thái nghiệp vụ hiện tại",
+      "rawAttributes": "@default(todo)"
+    },
+    {
+      "name": "assigneeId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng assignee",
+      "rawAttributes": "",
+      "relationName": "TaskAssignee"
+    },
+    {
+      "name": "createdById",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng createdBy",
+      "rawAttributes": "",
+      "relationName": "TaskCreator"
+    },
+    {
+      "name": "startDate",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Ngày bắt đầu có hiệu lực",
+      "rawAttributes": "@db.Date"
+    },
+    {
+      "name": "dueDate",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "completedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "estimatedTime",
+      "type": "Float",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "progress",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "0",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu progress",
+      "rawAttributes": "@default(0)"
+    },
+    {
+      "name": "resultUrl",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu resultUrl",
+      "rawAttributes": ""
+    },
+    {
+      "name": "resultNotes",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu resultNotes",
+      "rawAttributes": ""
+    },
+    {
+      "name": "rejectionReason",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu rejectionReason",
+      "rawAttributes": ""
+    },
+    {
+      "name": "parentTaskId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Task",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng parentTask",
+      "rawAttributes": "",
+      "relationName": "TaskSubtasks"
+    },
+    {
+      "name": "statusId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "ProjectTaskStatus",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng status",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "createdAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm tạo bản ghi",
+      "rawAttributes": "@default(now())"
+    },
+    {
+      "name": "updatedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm cập nhật bản ghi gần nhất",
+      "rawAttributes": "@updatedAt"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_Task_assigneeId_status",
+      "columns": [
+        "assigneeId",
+        "status"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Task_createdById",
+      "columns": [
+        "createdById"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Task_dueDate_status",
+      "columns": [
+        "dueDate",
+        "status"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Task_parentTaskId",
+      "columns": [
+        "parentTaskId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Task_projectId_status",
+      "columns": [
+        "projectId",
+        "status"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Task_projectId_statusId",
+      "columns": [
+        "projectId",
+        "statusId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_Task",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "project",
+      "targetModel": "Project",
+      "relationName": null,
+      "foreignKeyFields": [
+        "projectId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "assignee",
+      "targetModel": "Employee",
+      "relationName": "TaskAssignee",
+      "foreignKeyFields": [
+        "assigneeId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "createdBy",
+      "targetModel": "Employee",
+      "relationName": "TaskCreator",
+      "foreignKeyFields": [
+        "createdById"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "parentTask",
+      "targetModel": "Task",
+      "relationName": "TaskSubtasks",
+      "foreignKeyFields": [
+        "parentTaskId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "subtasks",
+      "targetModel": "Task",
+      "relationName": "TaskSubtasks",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "customStatus",
+      "targetModel": "ProjectTaskStatus",
+      "relationName": null,
+      "foreignKeyFields": [
+        "statusId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "spentTimes",
+      "targetModel": "SpentTime",
+      "relationName": "TaskSpentTimes",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "projectId",
+      "targetTable": "Project",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "assigneeId",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "TaskAssignee"
+    },
+    {
+      "sourceColumn": "createdById",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "TaskCreator"
+    },
+    {
+      "sourceColumn": "parentTaskId",
+      "targetTable": "Task",
+      "targetColumn": "id",
+      "relationName": "TaskSubtasks"
+    },
+    {
+      "sourceColumn": "statusId",
+      "targetTable": "ProjectTaskStatus",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": [
+    {
+      "sourceTable": "Task",
+      "sourceColumn": "parentTaskId",
+      "targetColumn": "id",
+      "relationName": "TaskSubtasks"
+    },
+    {
+      "sourceTable": "SpentTime",
+      "sourceColumn": "taskId",
+      "targetColumn": "id",
+      "relationName": "TaskSpentTimes"
+    }
+  ]
+}

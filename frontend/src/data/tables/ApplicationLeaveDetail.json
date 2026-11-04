@@ -1,0 +1,105 @@
+{
+  "name": "ApplicationLeaveDetail",
+  "dbName": "ApplicationLeaveDetail",
+  "module": "ATTENDANCE",
+  "description": "Chi tiết ngày nghỉ và lý do của đơn xin nghỉ phép",
+  "columns": [
+    {
+      "name": "applicationId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Application",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng application",
+      "rawAttributes": "@id",
+      "relationName": null
+    },
+    {
+      "name": "leaveType",
+      "type": "LeaveType",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu leaveType",
+      "rawAttributes": ""
+    },
+    {
+      "name": "regimeType",
+      "type": "RegimeType",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu regimeType",
+      "rawAttributes": ""
+    },
+    {
+      "name": "documentUrl",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu documentUrl",
+      "rawAttributes": ""
+    }
+  ],
+  "indexes": [
+    {
+      "name": "PK_ApplicationLeaveDetail",
+      "columns": [
+        "applicationId"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "application",
+      "targetModel": "Application",
+      "relationName": null,
+      "foreignKeyFields": [
+        "applicationId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "applicationId",
+      "targetTable": "Application",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": []
+}

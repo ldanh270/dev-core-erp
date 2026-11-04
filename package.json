@@ -27,6 +27,7 @@
     "db:seed:incremental": "cd backend && nr seed:incremental",
     "db:seed:admin": "cd backend && nr seed:admin",
     "db:clear": "cd backend && nr clear",
+    "schema:generate": "node scripts/generate-db-schema-data.cjs",
     "hash-password": "cd backend && nr hash-password",
     "test": "jest",
     "lint:codacy": "cd frontend && nr lint && nr lint:styles",

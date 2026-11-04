@@ -1,0 +1,259 @@
+{
+  "name": "AuthorizationAuditLog",
+  "dbName": "authorization_audit_logs",
+  "module": "SECURITY",
+  "description": "Bảng dữ liệu AuthorizationAuditLog trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "uuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(uuid())"
+    },
+    {
+      "name": "actorId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng actor",
+      "rawAttributes": "",
+      "relationName": "AuditLogActor"
+    },
+    {
+      "name": "targetEmployeeId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng targetEmployee",
+      "rawAttributes": "",
+      "relationName": "AuditLogTarget"
+    },
+    {
+      "name": "targetRoleId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng targetRole",
+      "rawAttributes": ""
+    },
+    {
+      "name": "targetPermissionId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng targetPermission",
+      "rawAttributes": ""
+    },
+    {
+      "name": "action",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu action",
+      "rawAttributes": ""
+    },
+    {
+      "name": "oldValue",
+      "type": "Json",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu oldValue",
+      "rawAttributes": ""
+    },
+    {
+      "name": "newValue",
+      "type": "Json",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu newValue",
+      "rawAttributes": ""
+    },
+    {
+      "name": "metadata",
+      "type": "Json",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "createdAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm tạo bản ghi",
+      "rawAttributes": "@default(now())"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_authorization_audit_logs_action",
+      "columns": [
+        "action"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_authorization_audit_logs_actorId",
+      "columns": [
+        "actorId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_authorization_audit_logs_createdAt",
+      "columns": [
+        "createdAt"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_authorization_audit_logs_targetEmployeeId",
+      "columns": [
+        "targetEmployeeId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_authorization_audit_logs_targetRoleId",
+      "columns": [
+        "targetRoleId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_authorization_audit_logs",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "actor",
+      "targetModel": "Employee",
+      "relationName": "AuditLogActor",
+      "foreignKeyFields": [
+        "actorId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "targetEmployee",
+      "targetModel": "Employee",
+      "relationName": "AuditLogTarget",
+      "foreignKeyFields": [
+        "targetEmployeeId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "actorId",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "AuditLogActor"
+    },
+    {
+      "sourceColumn": "targetEmployeeId",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "AuditLogTarget"
+    }
+  ],
+  "incomingRelations": []
+}

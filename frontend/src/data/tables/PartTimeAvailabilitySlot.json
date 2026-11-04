@@ -1,0 +1,129 @@
+{
+  "name": "PartTimeAvailabilitySlot",
+  "dbName": "PartTimeAvailabilitySlot",
+  "module": "ATTENDANCE",
+  "description": "Bảng dữ liệu PartTimeAvailabilitySlot trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "dayId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "PartTimeAvailabilityDay",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng day",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "startTime",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian bắt đầu ca/sự kiện",
+      "rawAttributes": ""
+    },
+    {
+      "name": "endTime",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian kết thúc ca/sự kiện",
+      "rawAttributes": ""
+    },
+    {
+      "name": "sortOrder",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "0",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu sortOrder",
+      "rawAttributes": "@default(0)"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_PartTimeAvailabilitySlot_dayId",
+      "columns": [
+        "dayId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_PartTimeAvailabilitySlot",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "day",
+      "targetModel": "PartTimeAvailabilityDay",
+      "relationName": null,
+      "foreignKeyFields": [
+        "dayId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "dayId",
+      "targetTable": "PartTimeAvailabilityDay",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": []
+}

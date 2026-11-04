@@ -1,0 +1,157 @@
+{
+  "name": "ShiftScheduleDay",
+  "dbName": "ShiftScheduleDay",
+  "module": "ATTENDANCE",
+  "description": "Chi tiết ca làm việc cụ thể theo từng ngày trong lịch phân ca",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "scheduleId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "ShiftSchedule",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng schedule",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "weekIndex",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "0",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu weekIndex",
+      "rawAttributes": "@default(0)"
+    },
+    {
+      "name": "dayOfWeek",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu dayOfWeek",
+      "rawAttributes": "// 0 = Sunday, 1 = Monday, ... 6 = Saturday"
+    },
+    {
+      "name": "shiftId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "WorkingShift",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết ca làm việc",
+      "rawAttributes": "",
+      "relationName": null
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_ShiftScheduleDay_scheduleId_weekIndex_dayOfWeek",
+      "columns": [
+        "scheduleId",
+        "weekIndex",
+        "dayOfWeek"
+      ],
+      "isUnique": true,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_ShiftScheduleDay_shiftId",
+      "columns": [
+        "shiftId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_ShiftScheduleDay",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "schedule",
+      "targetModel": "ShiftSchedule",
+      "relationName": null,
+      "foreignKeyFields": [
+        "scheduleId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "shift",
+      "targetModel": "WorkingShift",
+      "relationName": null,
+      "foreignKeyFields": [
+        "shiftId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "scheduleId",
+      "targetTable": "ShiftSchedule",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "shiftId",
+      "targetTable": "WorkingShift",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": []
+}

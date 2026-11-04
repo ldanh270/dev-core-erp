@@ -1,0 +1,171 @@
+{
+  "name": "PayslipDetail",
+  "dbName": "PayslipDetail",
+  "module": "PAYROLL",
+  "description": "Bảng dữ liệu PayslipDetail trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "payslipId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Payslip",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng payslip",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "componentId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "SalaryComponent",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng component",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "name",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Tên định danh hiển thị",
+      "rawAttributes": ""
+    },
+    {
+      "name": "type",
+      "type": "ComponentType",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu type",
+      "rawAttributes": ""
+    },
+    {
+      "name": "value",
+      "type": "Decimal",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu value",
+      "rawAttributes": "@db.Decimal(15, 2)"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_PayslipDetail_componentId",
+      "columns": [
+        "componentId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_PayslipDetail_payslipId",
+      "columns": [
+        "payslipId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_PayslipDetail",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "payslip",
+      "targetModel": "Payslip",
+      "relationName": null,
+      "foreignKeyFields": [
+        "payslipId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "component",
+      "targetModel": "SalaryComponent",
+      "relationName": null,
+      "foreignKeyFields": [
+        "componentId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "payslipId",
+      "targetTable": "Payslip",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "componentId",
+      "targetTable": "SalaryComponent",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": []
+}

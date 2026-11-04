@@ -1,0 +1,204 @@
+{
+  "name": "RecruitmentConnectorResponse",
+  "dbName": "RecruitmentConnectorResponse",
+  "module": "RECRUITMENT",
+  "description": "Bảng dữ liệu RecruitmentConnectorResponse trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "postingId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "JobPosting",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng posting",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "externalResponseId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng externalResponse",
+      "rawAttributes": ""
+    },
+    {
+      "name": "applicationId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": true,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "RecruitmentApplication",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng application",
+      "rawAttributes": "@unique",
+      "relationName": null
+    },
+    {
+      "name": "errorCode",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu errorCode",
+      "rawAttributes": ""
+    },
+    {
+      "name": "errorMessage",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu errorMessage",
+      "rawAttributes": "@db.Text"
+    },
+    {
+      "name": "responseData",
+      "type": "Json",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "processedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": "@default(now())"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_RecruitmentConnectorResponse_applicationId",
+      "columns": [
+        "applicationId"
+      ],
+      "isUnique": true,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_RecruitmentConnectorResponse_postingId_externalResponseId",
+      "columns": [
+        "postingId",
+        "externalResponseId"
+      ],
+      "isUnique": true,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_RecruitmentConnectorResponse",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "posting",
+      "targetModel": "JobPosting",
+      "relationName": null,
+      "foreignKeyFields": [
+        "postingId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "application",
+      "targetModel": "RecruitmentApplication",
+      "relationName": null,
+      "foreignKeyFields": [
+        "applicationId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "postingId",
+      "targetTable": "JobPosting",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "applicationId",
+      "targetTable": "RecruitmentApplication",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": []
+}

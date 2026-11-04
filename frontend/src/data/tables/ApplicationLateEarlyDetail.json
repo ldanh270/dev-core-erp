@@ -1,0 +1,131 @@
+{
+  "name": "ApplicationLateEarlyDetail",
+  "dbName": "ApplicationLateEarlyDetail",
+  "module": "ATTENDANCE",
+  "description": "Bảng dữ liệu ApplicationLateEarlyDetail trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "applicationId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Application",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng application",
+      "rawAttributes": "@id",
+      "relationName": null
+    },
+    {
+      "name": "employeeShiftId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "EmployeeShift",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng employeeShift",
+      "rawAttributes": "",
+      "relationName": "ApplicationLateEarlyShift"
+    },
+    {
+      "name": "durationMinutes",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "isLate",
+      "type": "Boolean",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Cờ đánh dấu logic (isLate)",
+      "rawAttributes": ""
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_ApplicationLateEarlyDetail_employeeShiftId",
+      "columns": [
+        "employeeShiftId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_ApplicationLateEarlyDetail",
+      "columns": [
+        "applicationId"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "application",
+      "targetModel": "Application",
+      "relationName": null,
+      "foreignKeyFields": [
+        "applicationId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "employeeShift",
+      "targetModel": "EmployeeShift",
+      "relationName": "ApplicationLateEarlyShift",
+      "foreignKeyFields": [
+        "employeeShiftId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "applicationId",
+      "targetTable": "Application",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "employeeShiftId",
+      "targetTable": "EmployeeShift",
+      "targetColumn": "id",
+      "relationName": "ApplicationLateEarlyShift"
+    }
+  ],
+  "incomingRelations": []
+}

@@ -1,0 +1,100 @@
+{
+  "name": "HolidayCalendarAssignee",
+  "dbName": "HolidayCalendarAssignee",
+  "module": "ATTENDANCE",
+  "description": "Bảng dữ liệu HolidayCalendarAssignee trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "holidayId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "HolidayCalendar",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng holiday",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "employeeId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết hồ sơ nhân viên",
+      "rawAttributes": "",
+      "relationName": null
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_HolidayCalendarAssignee_employeeId",
+      "columns": [
+        "employeeId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_HolidayCalendarAssignee",
+      "columns": [
+        "holidayId",
+        "employeeId"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "holiday",
+      "targetModel": "HolidayCalendar",
+      "relationName": null,
+      "foreignKeyFields": [
+        "holidayId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "employee",
+      "targetModel": "Employee",
+      "relationName": null,
+      "foreignKeyFields": [
+        "employeeId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "holidayId",
+      "targetTable": "HolidayCalendar",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "employeeId",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": []
+}

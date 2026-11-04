@@ -1,0 +1,225 @@
+{
+  "name": "ApplicationShiftSwapDetail",
+  "dbName": "ApplicationShiftSwapDetail",
+  "module": "ATTENDANCE",
+  "description": "Chi tiết yêu cầu đổi ca làm việc giữa các nhân viên",
+  "columns": [
+    {
+      "name": "applicationId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Application",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng application",
+      "rawAttributes": "@id",
+      "relationName": null
+    },
+    {
+      "name": "employeeShiftId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "EmployeeShift",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng employeeShift",
+      "rawAttributes": "",
+      "relationName": "ApplicationEmployeeShift"
+    },
+    {
+      "name": "workingShiftId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "WorkingShift",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng workingShift",
+      "rawAttributes": "",
+      "relationName": "ShiftSwapWorkingShift"
+    },
+    {
+      "name": "swapWithEmployeeId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng swapWithEmployee",
+      "rawAttributes": "",
+      "relationName": "ApplicationSwapWith"
+    },
+    {
+      "name": "swapWithShiftId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "EmployeeShift",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng swapWithShift",
+      "rawAttributes": "",
+      "relationName": "ApplicationSwapWithShift"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_ApplicationShiftSwapDetail_employeeShiftId",
+      "columns": [
+        "employeeShiftId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_ApplicationShiftSwapDetail_swapWithEmployeeId",
+      "columns": [
+        "swapWithEmployeeId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_ApplicationShiftSwapDetail_swapWithShiftId",
+      "columns": [
+        "swapWithShiftId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_ApplicationShiftSwapDetail_workingShiftId",
+      "columns": [
+        "workingShiftId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_ApplicationShiftSwapDetail",
+      "columns": [
+        "applicationId"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "application",
+      "targetModel": "Application",
+      "relationName": null,
+      "foreignKeyFields": [
+        "applicationId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "employeeShift",
+      "targetModel": "EmployeeShift",
+      "relationName": "ApplicationEmployeeShift",
+      "foreignKeyFields": [
+        "employeeShiftId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "workingShift",
+      "targetModel": "WorkingShift",
+      "relationName": "ShiftSwapWorkingShift",
+      "foreignKeyFields": [
+        "workingShiftId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "swapWithEmployee",
+      "targetModel": "Employee",
+      "relationName": "ApplicationSwapWith",
+      "foreignKeyFields": [
+        "swapWithEmployeeId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "swapWithShift",
+      "targetModel": "EmployeeShift",
+      "relationName": "ApplicationSwapWithShift",
+      "foreignKeyFields": [
+        "swapWithShiftId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "applicationId",
+      "targetTable": "Application",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "employeeShiftId",
+      "targetTable": "EmployeeShift",
+      "targetColumn": "id",
+      "relationName": "ApplicationEmployeeShift"
+    },
+    {
+      "sourceColumn": "workingShiftId",
+      "targetTable": "WorkingShift",
+      "targetColumn": "id",
+      "relationName": "ShiftSwapWorkingShift"
+    },
+    {
+      "sourceColumn": "swapWithEmployeeId",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "ApplicationSwapWith"
+    },
+    {
+      "sourceColumn": "swapWithShiftId",
+      "targetTable": "EmployeeShift",
+      "targetColumn": "id",
+      "relationName": "ApplicationSwapWithShift"
+    }
+  ],
+  "incomingRelations": []
+}
