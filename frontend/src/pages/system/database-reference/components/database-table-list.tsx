@@ -15,6 +15,9 @@ import { useDatabaseTableList } from "../hooks/use-database-table-list"
 
 import { ArrowUpRight, Database } from "lucide-react"
 
+// Maximum relationship badges to display inline before showing +N overflow indicator.
+const MAX_VISIBLE_RELATION_CHIPS = 8
+
 interface DatabaseTableListProps {
   tables: TableDef[]
   allTables: TableDef[]
@@ -130,7 +133,7 @@ export function DatabaseTableList({
                         <span className="text-xs text-muted-foreground">—</span>
                       ) : (
                         <div className="flex flex-wrap gap-1">
-                          {relations.slice(0, 8).map((rel) => {
+                          {relations.slice(0, MAX_VISIBLE_RELATION_CHIPS).map((rel) => {
                             const relTheme = rel.module ? getModuleTheme(rel.module) : theme
 
                             return (
@@ -151,9 +154,9 @@ export function DatabaseTableList({
                               </button>
                             )
                           })}
-                          {relations.length > 8 && (
+                          {relations.length > MAX_VISIBLE_RELATION_CHIPS && (
                             <span className="self-center font-mono text-[10px] text-muted-foreground">
-                              +{relations.length - 8}
+                              +{relations.length - MAX_VISIBLE_RELATION_CHIPS}
                             </span>
                           )}
                         </div>

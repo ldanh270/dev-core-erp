@@ -24,7 +24,9 @@ interface DatabaseErdCanvasProps {
   onSelectNode: (table: TableDef) => void
 }
 
-// Renders the pannable/zoomable ERD canvas with straight SVG relationship edges and draggable table nodes.
+/**
+ * Renders the pannable/zoomable ERD canvas with straight SVG relationship edges and draggable table nodes.
+ */
 export function DatabaseErdCanvas({
   graph,
   modules,

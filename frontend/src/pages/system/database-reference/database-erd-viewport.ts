@@ -12,9 +12,9 @@ export interface ViewportSize {
   height: number
 }
 
-const MIN_SCALE = 0.15
-const MAX_SCALE = 3
-const ZOOM_STEP = 1.15
+export const MIN_SCALE = 0.15
+export const MAX_SCALE = 3
+export const ZOOM_STEP = 1.15
 const FIT_VIEWPORT_PADDING = 48
 
 // Manages ERD pan, zoom, fullscreen, and unrestricted dragging of table nodes across the canvas.
