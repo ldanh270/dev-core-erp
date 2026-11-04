@@ -54,7 +54,7 @@ export function DatabaseErdNode({
         isSelected
           ? "z-20 border-2 border-primary bg-card opacity-100 shadow-xl ring-2 ring-primary/30"
           : isExternal
-            ? "z-0 border border-dashed border-primary/50 bg-muted/35 opacity-50 shadow-none hover:z-20 hover:bg-card hover:opacity-100 hover:shadow-md"
+            ? "z-0 border-2 border-dashed border-primary/80 bg-card/75 shadow-none hover:z-20 hover:border-primary hover:bg-card hover:shadow-md"
             : isPrimary
               ? `z-10 border-2 ${theme.border} bg-card opacity-100 shadow-lg ring-1 ring-border/60 hover:z-20 hover:shadow-xl`
               : "z-0 border border-border/80 bg-card opacity-100 shadow-xs hover:z-20 hover:border-border hover:shadow-md"
@@ -63,7 +63,11 @@ export function DatabaseErdNode({
       {/* Header bar with model name, primary table badge ("Chính"), and total column count. */}
       <span
         className={`flex items-center justify-between gap-2 border-b border-border/80 px-3 py-2 ${
-          isPrimary ? theme.bgLight : "bg-muted/40"
+          isExternal
+            ? "border-dashed bg-muted/50"
+            : isPrimary
+              ? theme.bgLight
+              : "bg-muted/40"
         }`}
       >
         <span className="min-w-0 break-all font-mono text-xs font-bold text-foreground">
@@ -85,7 +89,11 @@ export function DatabaseErdNode({
       </span>
 
       {/* Body listing all linked PK and FK columns with outgoing target table indicators. */}
-      <span className="block space-y-1 p-2.5 font-mono text-[11px]">
+      <span
+        className={`block space-y-1 p-2.5 font-mono text-[11px] ${
+          isExternal ? "opacity-75 transition-opacity group-hover:opacity-100" : ""
+        }`}
+      >
         {isExternal && (
           <span className="block truncate border-b border-border/50 pb-1 font-sans text-[10px] text-muted-foreground">
             {modules.find((module) => module.id === table.module)?.name ?? table.module}
