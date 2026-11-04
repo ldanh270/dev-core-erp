@@ -7,7 +7,7 @@ import { useDatabaseErdKeyboard } from "./database-erd-keyboard"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 
-interface ViewportSize {
+export interface ViewportSize {
   width: number
   height: number
 }

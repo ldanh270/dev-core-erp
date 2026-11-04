@@ -11,8 +11,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { buildTableRelations, getModuleTheme } from "../database-reference.utils"
 import type { TableDef } from "../database-reference.types"
+import { useDatabaseTableList } from "../hooks/use-database-table-list"
 
-import { useMemo } from "react"
 import { ArrowUpRight, Database } from "lucide-react"
 
 interface DatabaseTableListProps {
@@ -27,6 +27,7 @@ interface DatabaseTableListProps {
 
 /**
  * Shows schema models in a responsive table with linked relation badges and pagination.
+ * Pure UI presentation component powered by `useDatabaseTableList` hook.
  */
 export function DatabaseTableList({
   tables,
@@ -37,15 +38,12 @@ export function DatabaseTableList({
   onSelectTable,
   onSelectTableByName,
 }: DatabaseTableListProps) {
-  // Map table names to their respective modules for fast lookup in relation badges.
-  const moduleByTableName = useMemo(
-    () => new Map(allTables.map((item) => [item.name, item.module])),
-    [allTables],
-  )
-
-  // Compute pagination slices for the current table view.
-  const totalPages = Math.ceil(tables.length / pageSize)
-  const visibleTables = tables.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  const { moduleByTableName, totalPages, visibleTables } = useDatabaseTableList({
+    tables,
+    allTables,
+    currentPage,
+    pageSize,
+  })
 
   return (
     <>
@@ -73,90 +71,91 @@ export function DatabaseTableList({
               </TableRow>
             ) : (
               visibleTables.map((table) => {
+                const theme = getModuleTheme(table.module)
                 const relations = buildTableRelations(table, moduleByTableName)
 
                 return (
                   <TableRow
                     key={table.name}
-                    className="border-b border-border last:border-0 transition-colors hover:bg-muted/25"
+                    className="cursor-pointer transition-colors hover:bg-muted/50"
+                    onClick={() => onSelectTable(table)}
                   >
-                    {/* Model name and physical database table name */}
-                    <TableCell className="px-5 py-3">
-                      <Button
-                        type="button"
-                        variant="link"
-                        onClick={() => onSelectTable(table)}
-                        className="h-auto justify-start p-0 font-mono text-sm font-semibold text-primary"
-                        aria-label={`Xem chi tiết bảng ${table.name}`}
-                      >
-                        {table.name}
-                        <ArrowUpRight className="ml-1 size-3.5" />
-                      </Button>
-                      <div className="mt-1 font-mono text-xs text-muted-foreground">
-                        {table.dbName}
+                    {/* Model name, database table name, and quick inspection action */}
+                    <TableCell className="px-5 py-3 align-top font-mono">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-semibold text-foreground">{table.name}</span>
+                        <span className="text-[11px] text-muted-foreground">{table.dbName}</span>
+                      </div>
+                      <div className="mt-1 flex items-center gap-1.5">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="xs"
+                          className="h-6 rounded-full px-2 text-[11px] text-primary"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onSelectTable(table)
+                          }}
+                          aria-label={`Xem chi tiết bảng ${table.name}`}
+                        >
+                          Chi tiết
+                          <ArrowUpRight className="size-3" />
+                        </Button>
                       </div>
                     </TableCell>
 
-                    {/* Subsystem / Module pill badge */}
-                    <TableCell className="px-4 py-3">
-                      <Badge
-                        variant="outline"
-                        className={`rounded-full text-[10px] ${getModuleTheme(table.module).badge}`}
-                      >
-                        {table.module}
-                      </Badge>
+                    {/* Subsystem module badge and column count */}
+                    <TableCell className="px-4 py-3 align-top">
+                      <div className="flex flex-col items-start gap-1">
+                        <Badge
+                          variant="outline"
+                          className={`rounded-full px-2 py-0 text-[10px] font-medium ${theme.badge}`}
+                        >
+                          {table.module}
+                        </Badge>
+                        <span className="text-[11px] text-muted-foreground">
+                          {table.columns.length} cột
+                        </span>
+                      </div>
                     </TableCell>
 
-                    {/* Business description */}
-                    <TableCell className="max-w-xl px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-                      {table.description}
+                    {/* Business documentation summary */}
+                    <TableCell className="px-4 py-3 align-top text-xs text-muted-foreground">
+                      <p className="line-clamp-2 max-w-xl">{table.description || "—"}</p>
                     </TableCell>
 
-                    {/* Linked relations: -> outgoing foreign key, <- incoming foreign key */}
-                    <TableCell className="px-4 py-3">
+                    {/* Linked entity chips with direction arrow and module coloring */}
+                    <TableCell className="px-4 py-3 align-top">
                       {relations.length === 0 ? (
                         <span className="text-xs text-muted-foreground">—</span>
                       ) : (
-                        <div className="flex max-h-44 flex-col items-start gap-1.5 overflow-y-auto pr-1">
-                          {relations.map((rel) => (
-                            <div
-                              key={rel.id}
-                              title={rel.title}
-                              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-muted/30 px-2.5 py-0.5 text-xs"
-                            >
-                              {/* Arrow icon denoting direction: outgoing (->) or incoming (<-) */}
-                              <span
-                                title={
-                                  rel.type === "out"
-                                    ? "Outgoing FK (References)"
-                                    : "Incoming FK (Referenced by)"
-                                }
-                                className={`shrink-0 text-xs font-extrabold ${
-                                  rel.type === "out"
-                                    ? "text-primary"
-                                    : "text-violet-600 dark:text-violet-400"
-                                }`}
-                              >
-                                {rel.type === "out" ? "\u2192" : "\u2190"}
-                              </span>
+                        <div className="flex flex-wrap gap-1">
+                          {relations.slice(0, 8).map((rel) => {
+                            const relTheme = rel.module ? getModuleTheme(rel.module) : theme
 
-                              {/* Target table button that opens drawer directly */}
+                            return (
                               <button
+                                key={rel.id}
                                 type="button"
-                                onClick={() => onSelectTableByName(rel.targetTableName)}
-                                className="rounded-full font-mono text-xs font-semibold text-primary hover:underline"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  onSelectTableByName(rel.targetTableName)
+                                }}
+                                className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[10px] transition-colors hover:bg-muted ${relTheme.badge}`}
+                                title={rel.title}
                               >
-                                {rel.label}
-                              </button>
-
-                              {/* Cross-module tag if the related table belongs to another subsystem */}
-                              {rel.module && rel.module !== table.module && (
-                                <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                                  {rel.module}
+                                <span className="font-sans font-bold">
+                                  {rel.type === "out" ? "→" : "←"}
                                 </span>
-                              )}
-                            </div>
-                          ))}
+                                <span>{rel.targetTableName}</span>
+                              </button>
+                            )
+                          })}
+                          {relations.length > 8 && (
+                            <span className="self-center font-mono text-[10px] text-muted-foreground">
+                              +{relations.length - 8}
+                            </span>
+                          )}
                         </div>
                       )}
                     </TableCell>
@@ -168,14 +167,16 @@ export function DatabaseTableList({
         </Table>
       </div>
 
-      {/* Pagination bar */}
-      <AppPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalItems={tables.length}
-        itemsPerPage={pageSize}
-        onPageChange={onPageChange}
-      />
+      {/* Pagination footer */}
+      {totalPages > 1 && (
+        <div className="border-t border-border px-6 py-3">
+          <AppPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
+        </div>
+      )}
     </>
   )
 }
