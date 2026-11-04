@@ -69,7 +69,6 @@ export const ROUTES = {
     ROLES: "/settings/roles",
     ROLE_PERMISSIONS: "/settings/role-permissions",
     PERMISSIONS: "/settings/permissions",
-    DATABASE: "/settings/database",
   },
   PROJECT: {
     BASE: "/project",
