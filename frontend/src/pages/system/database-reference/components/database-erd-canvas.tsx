@@ -1,16 +1,12 @@
 import type { ModuleDef, TableDef } from "../database-reference.types"
-import type { ErdLayout } from "../database-erd-layout"
+import type { ErdLayout, ErdPoint } from "../database-erd-layout"
+import { getErdEdgeClassName } from "../database-erd-edges"
 import { DatabaseErdNode } from "./database-erd-node"
 
 import type { PointerEvent, RefObject } from "react"
 
 // Spacing of the radial dot grid background inside the interactive ERD viewport.
 const ERD_GRID_SIZE = "22px 22px"
-
-interface Point {
-  x: number
-  y: number
-}
 
 // Props required to render the interactive ERD canvas, SVG relationship lines, and node cards.
 interface DatabaseErdCanvasProps {
@@ -19,7 +15,7 @@ interface DatabaseErdCanvasProps {
   selectedModule: string
   selectedTableName: string | null
   scale: number
-  pan: Point
+  pan: ErdPoint
   isPanning: boolean
   viewportRef: RefObject<HTMLDivElement | null>
   onPointerDown: (event: PointerEvent<HTMLDivElement>) => void
@@ -124,7 +120,7 @@ export function DatabaseErdCanvas({
                   fill="none"
                   data-cross-module={edge.crossModule}
                   data-highlighted={edge.highlighted}
-                  className={getRelationClassName(edge)}
+                  className={getErdEdgeClassName(edge)}
                   markerEnd={
                     edge.highlighted
                       ? "url(#database-arrow-active)"
@@ -153,13 +149,4 @@ export function DatabaseErdCanvas({
       )}
     </div>
   )
-}
-
-// Return semantic stroke classes for active, cross-module dashed, or standard relationship lines.
-function getRelationClassName(edge: ErdLayout["edges"][number]) {
-  if (edge.highlighted) return "stroke-primary stroke-[2.5] opacity-100"
-  if (edge.crossModule) {
-    return "stroke-primary/75 stroke-2 opacity-90 [stroke-dasharray:7_4]"
-  }
-  return "stroke-muted-foreground/65 stroke-[1.75] opacity-80"
 }

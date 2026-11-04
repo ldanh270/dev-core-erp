@@ -3,13 +3,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Link } from "react-router-dom"
-import {
-  ArrowLeft,
-  Code2,
-  Layers,
-  Network,
-  Table2,
-} from "lucide-react"
+import { useDatabaseReferenceHeader } from "../hooks/use-database-reference-header"
+import { ArrowLeft, Network, Table2 } from "lucide-react"
 
 interface DatabaseReferenceHeaderProps {
   activeTab: "tables" | "diagram"
@@ -22,7 +17,8 @@ interface DatabaseReferenceHeaderProps {
 
 /**
  * Top PageHeader for Database Schema Reference:
- * View switcher (Table List / ERD), schema statistics badges, and ERP return navigation.
+ * View switcher, schema statistics badges, and ERP return navigation.
+ * Pure UI presentation component powered by `useDatabaseReferenceHeader` hook.
  */
 export function DatabaseReferenceHeader({
   activeTab,
@@ -32,6 +28,14 @@ export function DatabaseReferenceHeader({
   totalEnums,
   onTabChange,
 }: DatabaseReferenceHeaderProps) {
+  const { metricItems, handleTabChange } = useDatabaseReferenceHeader({
+    totalTables,
+    totalColumns,
+    totalRelations,
+    totalEnums,
+    onTabChange,
+  })
+
   return (
     <PageHeader
       title="Database Schema Reference"
@@ -41,12 +45,7 @@ export function DatabaseReferenceHeader({
           className="flex flex-wrap items-center gap-2 sm:gap-3"
         >
           {/* View switcher tabs: h-9 container with separated pill triggers */}
-          <Tabs
-            value={activeTab}
-            onValueChange={(value) => {
-              if (value === "tables" || value === "diagram") onTabChange(value)
-            }}
-          >
+          <Tabs value={activeTab} onValueChange={handleTabChange}>
             <TabsList className="h-9 gap-1 rounded-full p-1">
               <TabsTrigger
                 value="tables"
@@ -67,10 +66,17 @@ export function DatabaseReferenceHeader({
 
           {/* Schema metric counters: unified h-9 height equal to Tabs and Vào ERP button */}
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            <MetadataBadge icon={Table2} label="Bảng" value={totalTables} />
-            <MetadataBadge icon={Layers} label="Cột" value={totalColumns} />
-            <MetadataBadge icon={Network} label="Quan hệ" value={totalRelations} />
-            <MetadataBadge icon={Code2} label="Enums" value={totalEnums} />
+            {metricItems.map(({ icon: Icon, label, value }) => (
+              <Badge
+                key={label}
+                variant="outline"
+                className="h-9 gap-1.5 rounded-full px-3.5 text-xs font-medium"
+              >
+                <Icon className="size-3.5 text-primary" />
+                <span>{label}</span>
+                <span className="font-semibold text-foreground">{value}</span>
+              </Badge>
+            ))}
           </div>
 
           {/* ERP navigation button with unified h-9 height */}
@@ -83,27 +89,5 @@ export function DatabaseReferenceHeader({
         </div>
       }
     />
-  )
-}
-
-// Single metric pill badge with h-9 height to match TabsList and Button exactly.
-function MetadataBadge({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof Table2
-  label: string
-  value: number
-}) {
-  return (
-    <Badge
-      variant="outline"
-      className="h-9 gap-1.5 rounded-full px-3.5 text-xs font-medium"
-    >
-      <Icon className="size-3.5 text-primary" />
-      <span>{label}</span>
-      <span className="font-semibold text-foreground">{value}</span>
-    </Badge>
   )
 }

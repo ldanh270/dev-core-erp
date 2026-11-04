@@ -100,3 +100,11 @@ export function createEdges(
     }
   })
 }
+// Return semantic stroke classes for active, cross-module dashed, or standard relationship lines.
+export function getErdEdgeClassName(edge: Pick<ErdEdge, 'highlighted' | 'crossModule'>): string {
+  if (edge.highlighted) return 'stroke-primary stroke-[2.5] opacity-100'
+  if (edge.crossModule) {
+    return 'stroke-primary/75 stroke-2 opacity-90 [stroke-dasharray:7_4]'
+  }
+  return 'stroke-muted-foreground/65 stroke-[1.75] opacity-80'
+}
