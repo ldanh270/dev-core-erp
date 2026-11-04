@@ -7,13 +7,11 @@ const path = require("path");
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const PRISMA_PATH = path.join(ROOT_DIR, "backend/prisma/schema.prisma");
-const OUTPUT_PATH = path.join(ROOT_DIR, "frontend/src/data/db-schema-data.json");
+const DATA_DIR = path.join(ROOT_DIR, "frontend/src/data");
+const SUMMARY_PATH = path.join(DATA_DIR, "schema-summary.json");
+const TABLES_DIR = path.join(DATA_DIR, "tables");
 
-// Ensure output directory exists
-const outputDir = path.dirname(OUTPUT_PATH);
-if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir, { recursive: true });
-}
+fs.mkdirSync(TABLES_DIR, { recursive: true });
 
 // 1. Module Definition & Color Palette
 const MODULE_CONFIG = {
@@ -274,6 +272,13 @@ function getFieldDescription(fieldName, modelName) {
   return `Trường dữ liệu ${fieldName}`;
 }
 
+function parseIndexColumns(rawList) {
+  return rawList
+    .split(",")
+    .map((item) => item.replace(/\(.*\)/, "").trim())
+    .filter(Boolean);
+}
+
 // 3. Parser Implementation
 function parsePrismaSchema(content) {
   // Parse Enums
@@ -314,11 +319,31 @@ function parsePrismaSchema(content) {
 
     const columns = [];
     const relationFields = []; // virtual relation fields in Prisma
+    const modelUniqueIndexes = [];
+    const modelStandardIndexes = [];
+    let compositePkCols = [];
 
     const lines = body.split("\n");
     for (const rawLine of lines) {
       const line = rawLine.trim();
-      if (!line || line.startsWith("//") || line.startsWith("@@")) continue;
+      if (!line || line.startsWith("//")) continue;
+      if (line.startsWith("@@")) {
+        const idMatch = line.match(/^@@id\(\[([^\]]+)\]/);
+        if (idMatch) {
+          compositePkCols = parseIndexColumns(idMatch[1]);
+        }
+        const uniqMatch = line.match(/^@@unique\(\[([^\]]+)\]/);
+        if (uniqMatch) {
+          const cols = parseIndexColumns(uniqMatch[1]);
+          if (cols.length > 0) modelUniqueIndexes.push(cols);
+        }
+        const idxMatch = line.match(/^@@index\(\[([^\]]+)\]/);
+        if (idxMatch) {
+          const cols = parseIndexColumns(idxMatch[1]);
+          if (cols.length > 0) modelStandardIndexes.push(cols);
+        }
+        continue;
+      }
 
       // Extract: name type ? [] attrs
       const fieldMatch = line.match(/^(\w+)\s+([A-Za-z0-9_]+)(\[\]|\?)?(.*)$/);
@@ -377,6 +402,14 @@ function parsePrismaSchema(content) {
       });
     }
 
+    // Mark composite @@id columns as primary keys
+    if (compositePkCols.length > 0) {
+      for (const pkColName of compositePkCols) {
+        const col = columns.find((c) => c.name === pkColName);
+        if (col) col.isPk = true;
+      }
+    }
+
     // Now enrich real DB columns with FK information from relation definitions
     for (const rel of relationFields) {
       if (rel.foreignKeyFields && rel.foreignKeyFields.length > 0) {
@@ -397,12 +430,53 @@ function parsePrismaSchema(content) {
     // Filter out virtual relation fields so DB columns table shows real physical columns
     const dbColumns = columns.filter((c) => !c.isPrismaVirtual);
 
+    // Build table indexes (Primary, Unique, Standard) matching reference schema format
+    const indexMap = new Map();
+    const addIndex = (name, idxColumns, isUnique, isPrimary) => {
+      const existing = indexMap.get(name);
+      if (existing) {
+        existing.isPrimary = existing.isPrimary || isPrimary;
+        existing.isUnique = existing.isUnique || isUnique;
+        return;
+      }
+      indexMap.set(name, {
+        name,
+        columns: idxColumns,
+        isUnique,
+        isPrimary,
+      });
+    };
+
+    for (const col of dbColumns) {
+      if (col.isUnique) {
+        addIndex(`IX_${dbName}_${col.name}`, [col.name], true, false);
+      }
+    }
+    for (const cols of modelUniqueIndexes) {
+      addIndex(`IX_${dbName}_${cols.join("_")}`, cols, true, false);
+    }
+    for (const cols of modelStandardIndexes) {
+      addIndex(`IX_${dbName}_${cols.join("_")}`, cols, false, false);
+    }
+    const pkColumns =
+      compositePkCols.length > 0
+        ? compositePkCols
+        : dbColumns.filter((c) => c.isPk).map((c) => c.name);
+    if (pkColumns.length > 0) {
+      addIndex(`PK_${dbName}`, pkColumns, true, true);
+    }
+
+    const indexes = Array.from(indexMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
+
     models[modelName] = {
       name: modelName,
       dbName,
       module: moduleKey,
       description: TABLE_DESCRIPTIONS[modelName] || `Bảng dữ liệu ${modelName} trong hệ thống ERP`,
       columns: dbColumns,
+      indexes,
       virtualRelations: relationFields,
       outgoingRelations: [],
       incomingRelations: [],
@@ -484,11 +558,41 @@ try {
   console.log("Reading Prisma Schema from:", PRISMA_PATH);
   const content = fs.readFileSync(PRISMA_PATH, "utf8");
   const schemaData = parsePrismaSchema(content);
+  const { tables, ...summaryData } = schemaData;
+  const tableList = Object.values(tables);
+  const summary = {
+    ...summaryData,
+    tables: tableList.map((table) => ({
+      name: table.name,
+      dbName: table.dbName,
+      module: table.module,
+      description: table.description,
+      columnCount: table.columns.length,
+      indexCount: table.indexes.length,
+      outgoingRelationCount: table.outgoingRelations.length,
+      incomingRelationCount: table.incomingRelations.length,
+    })),
+  };
+  const currentTableFiles = new Set(tableList.map((table) => `${table.name}.json`));
 
-  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(schemaData, null, 2), "utf8");
+  for (const fileName of fs.readdirSync(TABLES_DIR)) {
+    if (fileName.endsWith(".json") && !currentTableFiles.has(fileName)) {
+      fs.unlinkSync(path.join(TABLES_DIR, fileName));
+    }
+  }
+
+  fs.writeFileSync(SUMMARY_PATH, JSON.stringify(summary, null, 2), "utf8");
+  for (const table of tableList) {
+    fs.writeFileSync(
+      path.join(TABLES_DIR, `${table.name}.json`),
+      JSON.stringify(table, null, 2),
+      "utf8",
+    );
+  }
 
   console.log("SUCCESS! Generated database schema metadata at:");
-  console.log("->", OUTPUT_PATH);
+  console.log("->", SUMMARY_PATH);
+  console.log("->", TABLES_DIR);
   console.log(`- Total Tables: ${schemaData.metadata.totalTables}`);
   console.log(`- Total Columns: ${schemaData.metadata.totalColumns}`);
   console.log(`- Total Relations: ${schemaData.metadata.totalRelations}`);
