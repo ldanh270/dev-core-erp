@@ -1,18 +1,20 @@
-import { PageCard, SearchInput } from "@/components/common"
+import { DataTablePage, PageContainer, PageHeader } from "@/components/common"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import schemaSummaryRaw from "@/data/schema-summary.json"
+import { Database } from "lucide-react"
+import { useMemo } from "react"
 
-import { DatabaseCategoryTabs } from "./database-reference/components/database-category-tabs"
 import { DatabaseErdTab } from "./database-reference/components/database-erd-tab"
-import { DatabaseReferenceHeader } from "./database-reference/components/database-reference-header"
-import { DatabaseTableList } from "./database-reference/components/database-table-list"
+import { DatabaseReferenceHeaderActions } from "./database-reference/components/database-reference-header-actions"
 import { DatabaseTableSheet } from "./database-reference/components/database-table-sheet"
 import type {
   DbSchemaData,
   DbSchemaSummary,
   TableDef,
 } from "./database-reference/database-reference.types"
+import { useDatabaseCategoryTabs } from "./database-reference/hooks/use-database-category-tabs"
 import { useDatabaseReference } from "./database-reference/hooks/use-database-reference"
+import { useDatabaseTableColumns } from "./database-reference/hooks/use-database-table-columns"
 
 // Load extracted schema summary and individual table metadata JSON records generated from prisma schema.
 const schemaSummary: DbSchemaSummary = schemaSummaryRaw
@@ -31,7 +33,7 @@ const PAGE_SIZE = SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT
 
 /**
  * Main coordinator page for Database Schema Reference & Interactive ERD Viewer.
- * Decouples business logic into `useDatabaseReference` hook and renders clean UI layout.
+ * Powered by DataTablePage master component for unified ERP tables layout.
  */
 export default function DatabaseReference() {
   const { state, actions } = useDatabaseReference({
@@ -40,76 +42,102 @@ export default function DatabaseReference() {
     pageSize: PAGE_SIZE,
   })
 
-  return (
-    <div className="w-full max-w-none space-y-4 px-3 py-4 sm:space-y-6 sm:px-6 sm:py-6">
-      {/* Top statistics and view switcher header */}
-      <DatabaseReferenceHeader
-        activeTab={state.activeTab}
-        totalTables={dbSchema.metadata.totalTables}
-        totalColumns={dbSchema.metadata.totalColumns}
-        totalRelations={dbSchema.metadata.totalRelations}
-        totalEnums={dbSchema.metadata.totalEnums}
-        onTabChange={actions.setActiveTab}
-      />
+  const categoryTabs = useDatabaseCategoryTabs({
+    modules: dbSchema.modules,
+    totalTables: dbSchema.metadata.totalTables,
+  })
 
-      <PageCard className="overflow-hidden p-0" noBorder={false}>
-        {/* Module category tabs styled like DataTablePage / EmployeeList */}
-        <DatabaseCategoryTabs
-          modules={dbSchema.modules}
-          selectedModule={state.selectedModule}
-          totalTables={dbSchema.metadata.totalTables}
-          onSelectModule={actions.handleModuleChange}
+  const { columns } = useDatabaseTableColumns({
+    allTables,
+    onSelectTable: actions.handleSelectTable,
+    onSelectTableByName: actions.handleSelectTableByName,
+  })
+
+  const totalPages = Math.ceil(state.filteredTables.length / PAGE_SIZE)
+  const visibleTables = useMemo(
+    () => state.filteredTables.slice((state.currentPage - 1) * PAGE_SIZE, state.currentPage * PAGE_SIZE),
+    [state.filteredTables, state.currentPage],
+  )
+
+  const headerActions = (
+    <DatabaseReferenceHeaderActions
+      activeTab={state.activeTab}
+      totalTables={dbSchema.metadata.totalTables}
+      totalColumns={dbSchema.metadata.totalColumns}
+      totalRelations={dbSchema.metadata.totalRelations}
+      totalEnums={dbSchema.metadata.totalEnums}
+      onTabChange={actions.setActiveTab}
+    />
+  )
+
+  const detailSheet = (
+    <DatabaseTableSheet
+      table={state.selectedTable}
+      schema={dbSchema}
+      onClose={() => actions.setSelectedTable(null)}
+      onSelectTable={actions.handleSelectTableByName}
+      onViewErd={actions.handleViewErd}
+      copied={state.selectedTable !== null && state.copiedTableName === state.selectedTable.name}
+      onCopy={actions.handleCopyMetadata}
+    />
+  )
+
+  if (state.activeTab === "diagram") {
+    return (
+      <PageContainer variant="table">
+        <PageHeader
+          title="Database Schema Reference"
+          description="Tra cứu lược đồ cơ sở dữ liệu và sơ đồ quan hệ thực thể (ERD)."
+          actions={headerActions}
         />
-
-        {/* Search input toolbar */}
-        <div className="relative z-30 flex flex-col gap-3 border-b border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div className="flex flex-1 flex-wrap items-center gap-3">
-            <SearchInput
-              placeholder="Tìm model, bảng, cột, kiểu dữ liệu hoặc mô tả..."
-              value={state.searchQuery}
-              onSearch={actions.handleSearchChange}
-              className="w-full sm:max-w-md"
-            />
-          </div>
-        </div>
-
-        {/* Content view: Table list view or Interactive ERD Diagram */}
-        {state.activeTab === "tables" ? (
-          <DatabaseTableList
+        <div className="flex-1 min-h-0 flex flex-col">
+          <DatabaseErdTab
             tables={state.filteredTables}
             allTables={allTables}
-            currentPage={state.currentPage}
-            pageSize={PAGE_SIZE}
-            onPageChange={actions.setCurrentPage}
+            modules={dbSchema.modules}
+            selectedModule={state.selectedModule}
+            onModuleChange={actions.handleModuleChange}
+            limitNodes={state.selectedModule === "ALL"}
+            selectedTableName={state.selectedTable?.name ?? null}
             onSelectTable={actions.handleSelectTable}
-            onSelectTableByName={actions.handleSelectTableByName}
           />
-        ) : (
-          <div className="p-3 sm:p-5">
-            <DatabaseErdTab
-              tables={state.filteredTables}
-              allTables={allTables}
-              modules={dbSchema.modules}
-              selectedModule={state.selectedModule}
-              onModuleChange={actions.handleModuleChange}
-              limitNodes={state.selectedModule === "ALL"}
-              selectedTableName={state.selectedTable?.name ?? null}
-              onSelectTable={actions.handleSelectTable}
-            />
-          </div>
-        )}
-      </PageCard>
+        </div>
+        {detailSheet}
+      </PageContainer>
+    )
+  }
 
-      {/* Slide-over table inspection drawer */}
-      <DatabaseTableSheet
-        table={state.selectedTable}
-        schema={dbSchema}
-        onClose={() => actions.setSelectedTable(null)}
-        onSelectTable={actions.handleSelectTableByName}
-        onViewErd={actions.handleViewErd}
-        copied={state.selectedTable !== null && state.copiedTableName === state.selectedTable.name}
-        onCopy={actions.handleCopyMetadata}
-      />
-    </div>
+  return (
+    <DataTablePage<TableDef>
+      title="Database Schema Reference"
+      description="Tra cứu lược đồ cơ sở dữ liệu và sơ đồ quan hệ thực thể (ERD)."
+      headerActions={headerActions}
+      tabs={{
+        items: categoryTabs,
+        activeTab: state.selectedModule,
+        onTabChange: actions.handleModuleChange,
+      }}
+      search={{
+        placeholder: "Tìm model, bảng, cột, kiểu dữ liệu hoặc mô tả...",
+        value: state.searchQuery,
+        onSearch: actions.handleSearchChange,
+      }}
+      columns={columns}
+      data={visibleTables}
+      keyExtractor={(table) => table.name}
+      emptyState={{
+        icon: Database,
+        title: "Không tìm thấy bảng",
+        description: "Thử từ khóa khác hoặc bỏ bộ lọc phân hệ.",
+      }}
+      pagination={{
+        currentPage: state.currentPage,
+        totalPages,
+        totalItems: state.filteredTables.length,
+        itemsPerPage: PAGE_SIZE,
+        onPageChange: actions.setCurrentPage,
+      }}
+      extraContent={detailSheet}
+    />
   )
 }
