@@ -1,14 +1,10 @@
 import { Badge } from "@/components/ui/badge"
-import { ERD_NODE_WIDTH, getLinkedColumns, isPrimaryErdTable } from "../database-erd-layout"
+import { ERD_NODE_WIDTH } from "../database-erd-layout"
+import type { ErdPoint } from "../database-erd-layout"
 import type { ModuleDef, TableDef } from "../database-reference.types"
-import { getModuleTheme } from "../database-reference.utils"
+import { useDatabaseErdNode } from "../hooks/use-database-erd-node"
 
 import { KeyRound, Link2 } from "lucide-react"
-
-interface Point {
-  x: number
-  y: number
-}
 
 // Props required to render a single draggable ERD table node card.
 interface DatabaseErdNodeProps {
@@ -16,11 +12,14 @@ interface DatabaseErdNodeProps {
   modules: ModuleDef[]
   selectedModule: string
   selectedTableName: string | null
-  position: Point
+  position: ErdPoint
   onSelectTable: (table: TableDef) => void
 }
 
-// Renders an ERD table card with fully opaque internal tables, dimmed external cross-module tables, and linked fields.
+/**
+ * Renders an ERD table card with internal tables, dimmed external cross-module tables, and linked fields.
+ * Pure UI presentation component powered by `useDatabaseErdNode` hook.
+ */
 export function DatabaseErdNode({
   table,
   modules,
@@ -29,13 +28,19 @@ export function DatabaseErdNode({
   position,
   onSelectTable,
 }: DatabaseErdNodeProps) {
-  const theme = getModuleTheme(table.module)
-  // Retrieve all PK, FK, and referenced columns without hiding or truncating rows.
-  const linkedColumns = getLinkedColumns(table)
-  const isSelected = table.name === selectedTableName
-  // Identify external cross-module tables vs primary core tables vs foreign-key child tables.
-  const isExternal = selectedModule !== "ALL" && table.module !== selectedModule
-  const isPrimary = !isExternal && isPrimaryErdTable(table)
+  const {
+    theme,
+    linkedColumns,
+    isSelected,
+    isExternal,
+    isPrimary,
+    externalModuleName,
+  } = useDatabaseErdNode({
+    table,
+    modules,
+    selectedModule,
+    selectedTableName,
+  })
 
   return (
     <button
@@ -94,35 +99,33 @@ export function DatabaseErdNode({
           isExternal ? "opacity-75 transition-opacity group-hover:opacity-100" : ""
         }`}
       >
-        {isExternal && (
+        {isExternal && externalModuleName && (
           <span className="block truncate border-b border-border/50 pb-1 font-sans text-[10px] text-muted-foreground">
-            {modules.find((module) => module.id === table.module)?.name ?? table.module}
+            {externalModuleName}
           </span>
         )}
-
-        {linkedColumns.map((column) => (
+        {linkedColumns.map((col) => (
           <span
-            key={column.name}
-            className="flex items-start justify-between gap-2 py-0.5 text-foreground"
+            key={col.name}
+            className="flex items-center justify-between gap-2 text-muted-foreground"
           >
-            <span className="inline-flex min-w-0 items-center gap-1.5">
-              {column.isPk && (
-                <KeyRound className="size-3 shrink-0 text-amber-600 dark:text-amber-400" />
+            <span className="flex min-w-0 items-center gap-1">
+              {col.isPk && (
+                <KeyRound
+                  className="size-3 shrink-0 text-amber-600 dark:text-amber-400"
+                  aria-label="PK"
+                />
               )}
-              {column.isFk && (
-                <Link2 className="size-3 shrink-0 text-sky-600 dark:text-sky-400" />
+              {col.isFk && (
+                <Link2
+                  className="size-3 shrink-0 text-sky-600 dark:text-sky-400"
+                  aria-label="FK"
+                />
               )}
-              <span className="break-all font-medium">{column.name}</span>
+              <span className="truncate text-foreground">{col.name}</span>
             </span>
-            <span className="shrink-0 text-right text-[10px]">
-              {column.isFk && column.fkTargetTable ? (
-                <span className="font-semibold text-primary">
-                  {"\u2192 "}
-                  {column.fkTargetTable}
-                </span>
-              ) : (
-                <span className="text-muted-foreground">{column.type}</span>
-              )}
+            <span className="shrink-0 text-[10px]">
+              {col.fkTargetTable ? `→ ${col.fkTargetTable}` : col.type}
             </span>
           </span>
         ))}
