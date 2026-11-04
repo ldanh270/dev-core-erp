@@ -1,0 +1,132 @@
+{
+  "name": "RolePermission",
+  "dbName": "role_permissions",
+  "module": "SECURITY",
+  "description": "Bảng liên kết phân bổ quyền hạn cho từng vai trò",
+  "columns": [
+    {
+      "name": "roleId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "AppRole",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết vai trò phân quyền",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "permissionId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Permission",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết quyền hạn",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "assignedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": "@default(now())"
+    },
+    {
+      "name": "assignedBy",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu assignedBy",
+      "rawAttributes": ""
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_role_permissions_permissionId",
+      "columns": [
+        "permissionId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_role_permissions",
+      "columns": [
+        "roleId",
+        "permissionId"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "role",
+      "targetModel": "AppRole",
+      "relationName": null,
+      "foreignKeyFields": [
+        "roleId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "permission",
+      "targetModel": "Permission",
+      "relationName": null,
+      "foreignKeyFields": [
+        "permissionId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "roleId",
+      "targetTable": "AppRole",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "permissionId",
+      "targetTable": "Permission",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": []
+}

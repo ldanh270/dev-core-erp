@@ -1,0 +1,105 @@
+{
+  "name": "WeeklyScheduleTemplateWeek",
+  "dbName": "WeeklyScheduleTemplateWeek",
+  "module": "ATTENDANCE",
+  "description": "Cấu hình tuần trong mẫu lịch làm việc",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "templateId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "WeeklyScheduleTemplate",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng template",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "weekIndex",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu weekIndex",
+      "rawAttributes": ""
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_WeeklyScheduleTemplateWeek_templateId_weekIndex",
+      "columns": [
+        "templateId",
+        "weekIndex"
+      ],
+      "isUnique": true,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_WeeklyScheduleTemplateWeek",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "template",
+      "targetModel": "WeeklyScheduleTemplate",
+      "relationName": null,
+      "foreignKeyFields": [
+        "templateId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "templateId",
+      "targetTable": "WeeklyScheduleTemplate",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": [
+    {
+      "sourceTable": "WeeklyScheduleTemplateDay",
+      "sourceColumn": "weekId",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ]
+}

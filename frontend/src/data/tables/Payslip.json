@@ -1,0 +1,302 @@
+{
+  "name": "Payslip",
+  "dbName": "Payslip",
+  "module": "PAYROLL",
+  "description": "Bảng dữ liệu Payslip trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "payrollId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Payroll",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết bảng lương chu kỳ",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "employeeId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết hồ sơ nhân viên",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "salaryConfigId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "EmployeeSalaryConfig",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng salaryConfig",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "totalAdditions",
+      "type": "Decimal",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "0",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Chỉ số số lượng / Tổng số",
+      "rawAttributes": "@default(0) @db.Decimal(15, 2)"
+    },
+    {
+      "name": "totalDeductions",
+      "type": "Decimal",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "0",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Chỉ số số lượng / Tổng số",
+      "rawAttributes": "@default(0) @db.Decimal(15, 2)"
+    },
+    {
+      "name": "netSalary",
+      "type": "Decimal",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu netSalary",
+      "rawAttributes": "@db.Decimal(15, 2)"
+    },
+    {
+      "name": "workingDays",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "0",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu workingDays",
+      "rawAttributes": "@default(0)"
+    },
+    {
+      "name": "absentDays",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "0",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu absentDays",
+      "rawAttributes": "@default(0)"
+    },
+    {
+      "name": "overtimeMinutes",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "0",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu overtimeMinutes",
+      "rawAttributes": "@default(0)"
+    },
+    {
+      "name": "createdAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm tạo bản ghi",
+      "rawAttributes": "@default(now())"
+    },
+    {
+      "name": "updatedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm cập nhật bản ghi gần nhất",
+      "rawAttributes": "@updatedAt"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_Payslip_employeeId_payrollId",
+      "columns": [
+        "employeeId",
+        "payrollId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Payslip_payrollId_employeeId",
+      "columns": [
+        "payrollId",
+        "employeeId"
+      ],
+      "isUnique": true,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Payslip_salaryConfigId",
+      "columns": [
+        "salaryConfigId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_Payslip",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "payroll",
+      "targetModel": "Payroll",
+      "relationName": null,
+      "foreignKeyFields": [
+        "payrollId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "employee",
+      "targetModel": "Employee",
+      "relationName": null,
+      "foreignKeyFields": [
+        "employeeId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "salaryConfig",
+      "targetModel": "EmployeeSalaryConfig",
+      "relationName": null,
+      "foreignKeyFields": [
+        "salaryConfigId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "payrollId",
+      "targetTable": "Payroll",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "employeeId",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "salaryConfigId",
+      "targetTable": "EmployeeSalaryConfig",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": [
+    {
+      "sourceTable": "PayslipDetail",
+      "sourceColumn": "payslipId",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ]
+}

@@ -1,0 +1,622 @@
+{
+  "name": "Application",
+  "dbName": "Application",
+  "module": "ATTENDANCE",
+  "description": "Đơn từ hành chính của nhân viên (xin nghỉ phép, đổi ca làm, đăng ký làm thêm giờ OT)",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "employeeId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết hồ sơ nhân viên",
+      "rawAttributes": "",
+      "relationName": "ApplicationEmployee"
+    },
+    {
+      "name": "type",
+      "type": "ApplicationType",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu type",
+      "rawAttributes": ""
+    },
+    {
+      "name": "status",
+      "type": "ApplicationStatus",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "pending",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trạng thái nghiệp vụ hiện tại",
+      "rawAttributes": "@default(pending)"
+    },
+    {
+      "name": "startDate",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Ngày bắt đầu có hiệu lực",
+      "rawAttributes": ""
+    },
+    {
+      "name": "endDate",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Ngày kết thúc hiệu lực",
+      "rawAttributes": ""
+    },
+    {
+      "name": "reason",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu reason",
+      "rawAttributes": ""
+    },
+    {
+      "name": "note",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Ghi chú nội bộ bổ sung",
+      "rawAttributes": ""
+    },
+    {
+      "name": "approvedById",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng approvedBy",
+      "rawAttributes": "",
+      "relationName": "ApplicationApprover"
+    },
+    {
+      "name": "approvedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "rejectReason",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu rejectReason",
+      "rawAttributes": ""
+    },
+    {
+      "name": "partnerApprovedById",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng partnerApprovedBy",
+      "rawAttributes": "",
+      "relationName": "ApplicationPartnerApprover"
+    },
+    {
+      "name": "partnerApprovedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "partnerRejectReason",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu partnerRejectReason",
+      "rawAttributes": ""
+    },
+    {
+      "name": "assignedToId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng assignedTo",
+      "rawAttributes": "",
+      "relationName": "ApplicationAssignedTo"
+    },
+    {
+      "name": "createdAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm tạo bản ghi",
+      "rawAttributes": "@default(now())"
+    },
+    {
+      "name": "updatedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm cập nhật bản ghi gần nhất",
+      "rawAttributes": "@updatedAt"
+    },
+    {
+      "name": "leaveDetail",
+      "type": "ApplicationLeaveDetail",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu leaveDetail",
+      "rawAttributes": ""
+    },
+    {
+      "name": "shiftSwapDetail",
+      "type": "ApplicationShiftSwapDetail",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu shiftSwapDetail",
+      "rawAttributes": ""
+    },
+    {
+      "name": "overtimeDetail",
+      "type": "ApplicationOvertimeDetail",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu overtimeDetail",
+      "rawAttributes": ""
+    },
+    {
+      "name": "regimeDetail",
+      "type": "ApplicationRegimeDetail",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu regimeDetail",
+      "rawAttributes": ""
+    },
+    {
+      "name": "lateEarlyDetail",
+      "type": "ApplicationLateEarlyDetail",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "businessTripDetail",
+      "type": "ApplicationBusinessTripDetail",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu businessTripDetail",
+      "rawAttributes": ""
+    },
+    {
+      "name": "workFromHomeDetail",
+      "type": "ApplicationWorkFromHomeDetail",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu workFromHomeDetail",
+      "rawAttributes": ""
+    },
+    {
+      "name": "forgotCardDetail",
+      "type": "ApplicationForgotCardDetail",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu forgotCardDetail",
+      "rawAttributes": ""
+    },
+    {
+      "name": "recruitmentDetail",
+      "type": "ApplicationRecruitmentDetail",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu recruitmentDetail",
+      "rawAttributes": ""
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_Application_approvedById",
+      "columns": [
+        "approvedById"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Application_assignedToId",
+      "columns": [
+        "assignedToId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Application_employeeId_startDate",
+      "columns": [
+        "employeeId",
+        "startDate"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Application_employeeId_status",
+      "columns": [
+        "employeeId",
+        "status"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Application_status_type",
+      "columns": [
+        "status",
+        "type"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_Application",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "employee",
+      "targetModel": "Employee",
+      "relationName": "ApplicationEmployee",
+      "foreignKeyFields": [
+        "employeeId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "approvedBy",
+      "targetModel": "Employee",
+      "relationName": "ApplicationApprover",
+      "foreignKeyFields": [
+        "approvedById"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "partnerApprovedBy",
+      "targetModel": "Employee",
+      "relationName": "ApplicationPartnerApprover",
+      "foreignKeyFields": [
+        "partnerApprovedById"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "assignedTo",
+      "targetModel": "Employee",
+      "relationName": "ApplicationAssignedTo",
+      "foreignKeyFields": [
+        "assignedToId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "attendanceRecordCorrection",
+      "targetModel": "AttendanceRecord",
+      "relationName": "AttendanceRecordCorrection",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "employeeId",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "ApplicationEmployee"
+    },
+    {
+      "sourceColumn": "approvedById",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "ApplicationApprover"
+    },
+    {
+      "sourceColumn": "partnerApprovedById",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "ApplicationPartnerApprover"
+    },
+    {
+      "sourceColumn": "assignedToId",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "ApplicationAssignedTo"
+    }
+  ],
+  "incomingRelations": [
+    {
+      "sourceTable": "AttendanceRecord",
+      "sourceColumn": "correctedByApplicationId",
+      "targetColumn": "id",
+      "relationName": "AttendanceRecordCorrection"
+    },
+    {
+      "sourceTable": "ApplicationLeaveDetail",
+      "sourceColumn": "applicationId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "ApplicationShiftSwapDetail",
+      "sourceColumn": "applicationId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "ApplicationOvertimeDetail",
+      "sourceColumn": "applicationId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "ApplicationRegimeDetail",
+      "sourceColumn": "applicationId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "ApplicationLateEarlyDetail",
+      "sourceColumn": "applicationId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "ApplicationBusinessTripDetail",
+      "sourceColumn": "applicationId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "ApplicationWorkFromHomeDetail",
+      "sourceColumn": "applicationId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "ApplicationForgotCardDetail",
+      "sourceColumn": "applicationId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "ApplicationRecruitmentDetail",
+      "sourceColumn": "applicationId",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ]
+}

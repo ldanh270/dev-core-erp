@@ -1,0 +1,467 @@
+{
+  "name": "JobPosting",
+  "dbName": "JobPosting",
+  "module": "RECRUITMENT",
+  "description": "Tin tuyển dụng nhân sự đăng tải ra ngoài hoặc nội bộ",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "requisitionId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "JobRequisition",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng requisition",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "channel",
+      "type": "RecruitmentChannel",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu channel",
+      "rawAttributes": ""
+    },
+    {
+      "name": "source",
+      "type": "RecruitmentSource",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu source",
+      "rawAttributes": ""
+    },
+    {
+      "name": "sourceCode",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": true,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu sourceCode",
+      "rawAttributes": "@unique"
+    },
+    {
+      "name": "formFields",
+      "type": "Json",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu formFields",
+      "rawAttributes": ""
+    },
+    {
+      "name": "status",
+      "type": "PostingStatus",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "draft",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trạng thái nghiệp vụ hiện tại",
+      "rawAttributes": "@default(draft)"
+    },
+    {
+      "name": "postingUrl",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu postingUrl",
+      "rawAttributes": ""
+    },
+    {
+      "name": "externalId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng external",
+      "rawAttributes": ""
+    },
+    {
+      "name": "connectorStatus",
+      "type": "ConnectorStatus",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "not_configured",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": "@default(not_configured)"
+    },
+    {
+      "name": "oauthAccountId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "RecruitmentOAuthAccount",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng oauthAccount",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "publishedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "lastSyncedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "closedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "archivedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "archivedById",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng archivedBy",
+      "rawAttributes": "",
+      "relationName": "RecruitmentPostingArchiver"
+    },
+    {
+      "name": "createdAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm tạo bản ghi",
+      "rawAttributes": "@default(now())"
+    },
+    {
+      "name": "updatedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm cập nhật bản ghi gần nhất",
+      "rawAttributes": "@updatedAt"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_JobPosting_archivedById",
+      "columns": [
+        "archivedById"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_JobPosting_channel",
+      "columns": [
+        "channel"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_JobPosting_id_requisitionId",
+      "columns": [
+        "id",
+        "requisitionId"
+      ],
+      "isUnique": true,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_JobPosting_oauthAccountId",
+      "columns": [
+        "oauthAccountId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_JobPosting_requisitionId",
+      "columns": [
+        "requisitionId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_JobPosting_source",
+      "columns": [
+        "source"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_JobPosting_sourceCode",
+      "columns": [
+        "sourceCode"
+      ],
+      "isUnique": true,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_JobPosting_status",
+      "columns": [
+        "status"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_JobPosting",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "requisition",
+      "targetModel": "JobRequisition",
+      "relationName": null,
+      "foreignKeyFields": [
+        "requisitionId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "oauthAccount",
+      "targetModel": "RecruitmentOAuthAccount",
+      "relationName": null,
+      "foreignKeyFields": [
+        "oauthAccountId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "archivedBy",
+      "targetModel": "Employee",
+      "relationName": "RecruitmentPostingArchiver",
+      "foreignKeyFields": [
+        "archivedById"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "requisitionId",
+      "targetTable": "JobRequisition",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "oauthAccountId",
+      "targetTable": "RecruitmentOAuthAccount",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "archivedById",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "RecruitmentPostingArchiver"
+    }
+  ],
+  "incomingRelations": [
+    {
+      "sourceTable": "PostingFieldSnapshot",
+      "sourceColumn": "postingId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "RecruitmentIntakeRecord",
+      "sourceColumn": "postingId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "RecruitmentApplication",
+      "sourceColumn": "postingId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "RecruitmentPipelineStage",
+      "sourceColumn": "postingId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "RecruitmentPostingActivity",
+      "sourceColumn": "postingId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "RecruitmentConnectorResponse",
+      "sourceColumn": "postingId",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ]
+}
