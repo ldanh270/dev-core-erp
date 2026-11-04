@@ -2,7 +2,8 @@ import { AppDrawer } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { DbSchemaData, TableDef } from "../database-reference.types"
-import { formatTableSummary, getModuleTheme } from "../database-reference.utils"
+import { getModuleTheme } from "../database-reference.utils"
+import { useDatabaseTableSheet } from "../hooks/use-database-table-sheet"
 import { TableSheetColumns } from "./database-table-sheet-columns"
 import { TableSheetIndexes } from "./database-table-sheet-indexes"
 
@@ -19,7 +20,8 @@ interface DatabaseTableSheetProps {
 }
 
 /**
- * Slide-over drawer presenting a selected table's overview, columns (with integrated FKs & incoming references), and indexes.
+ * Slide-over drawer presenting a selected table's overview, columns, and indexes.
+ * Pure UI presentation component powered by `useDatabaseTableSheet` hook.
  */
 export function DatabaseTableSheet({
   table,
@@ -30,9 +32,17 @@ export function DatabaseTableSheet({
   copied,
   onCopy,
 }: DatabaseTableSheetProps) {
-  const module = table && schema.modules.find((item) => item.id === table.module)
-  const enumDefinitions = new Map(Object.entries(schema.enums))
-  const indexes = table?.indexes ?? []
+  const {
+    module,
+    enumDefinitions,
+    indexes,
+    metricCounts,
+    handleCopyMetadata,
+  } = useDatabaseTableSheet({
+    table,
+    schema,
+    onCopy,
+  })
 
   return (
     <AppDrawer
@@ -88,9 +98,7 @@ export function DatabaseTableSheet({
                   size="sm"
                   variant="outline"
                   className="rounded-full"
-                  onClick={() => {
-                    void onCopy(formatTableSummary(table))
-                  }}
+                  onClick={handleCopyMetadata}
                 >
                   {copied ? <Check className="mr-1.5 size-3.5" /> : <Copy className="mr-1.5 size-3.5" />}
                   {copied ? "Đã sao chép" : "Sao chép metadata"}
@@ -100,10 +108,12 @@ export function DatabaseTableSheet({
 
             {/* Metric counters: Columns count, Indexes count, Outgoing and Incoming FKs */}
             <div className="mt-4 grid gap-3 border-t border-border pt-4 grid-cols-2 sm:grid-cols-4">
-              <MetadataCount label="Số cột" value={table.columns.length} />
-              <MetadataCount label="Chỉ mục (Indexes)" value={indexes.length} />
-              <MetadataCount label="Khóa ngoại đi" value={table.outgoingRelations.length} />
-              <MetadataCount label="Bảng tham chiếu đến" value={table.incomingRelations.length} />
+              {metricCounts.map((item) => (
+                <div key={item.label}>
+                  <div className="text-[11px] text-muted-foreground">{item.label}</div>
+                  <div className="mt-1 font-mono text-base font-semibold">{item.value}</div>
+                </div>
+              ))}
             </div>
             {module?.description && (
               <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
@@ -126,15 +136,5 @@ export function DatabaseTableSheet({
         </div>
       )}
     </AppDrawer>
-  )
-}
-
-// Single metric count item in the summary card.
-function MetadataCount({ label, value }: { label: string; value: number }) {
-  return (
-    <div>
-      <div className="text-[11px] text-muted-foreground">{label}</div>
-      <div className="mt-1 font-mono text-base font-semibold">{value}</div>
-    </div>
   )
 }
