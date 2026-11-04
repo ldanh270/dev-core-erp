@@ -46,11 +46,6 @@ const openRoutes: RouteConfig[] = [
     component: lazy(() => import("@/pages/system/DatabaseReference.tsx")),
     layout: null,
   },
-  {
-    path: ROUTES.SETTINGS.DATABASE,
-    component: lazy(() => import("@/pages/system/DatabaseReference.tsx")),
-    layout: null,
-  },
 ]
 
 const privateRoutes: RouteConfig[] = [
