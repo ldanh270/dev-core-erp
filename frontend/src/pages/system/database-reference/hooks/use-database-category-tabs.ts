@@ -1,3 +1,4 @@
+import type { DataTableTabItem } from "@/components/common"
 import type { ModuleDef } from "../database-reference.types"
 import {
   Clock,
@@ -9,7 +10,8 @@ import {
   UserPlus,
   Users,
 } from "lucide-react"
-import { type ElementType, useCallback, useMemo } from "react"
+import type { LucideIcon } from "lucide-react"
+import { useMemo } from "react"
 
 // Friendly Vietnamese short names for modules to replace truncated single words.
 const MODULE_SHORT_NAMES: Record<string, string> = {
@@ -23,7 +25,7 @@ const MODULE_SHORT_NAMES: Record<string, string> = {
 }
 
 // Icon component lookup mapping matching schema generator icon strings.
-const MODULE_ICON_MAP: Record<string, ElementType> = {
+const MODULE_ICON_MAP: Record<string, LucideIcon> = {
   Users,
   Clock,
   BadgeDollarSign: Coins,
@@ -33,65 +35,32 @@ const MODULE_ICON_MAP: Record<string, ElementType> = {
   Sliders,
 }
 
-export interface CategoryTabItem {
-  id: string
-  label: string
-  count: number
-  Icon: ElementType
-  isActive: boolean
-}
-
 export interface UseDatabaseCategoryTabsParams {
   modules: ModuleDef[]
-  selectedModule: string
   totalTables: number
-  onSelectModule: (moduleId: string) => void
-}
-
-export interface UseDatabaseCategoryTabsReturn {
-  tabs: CategoryTabItem[]
-  handleSelectTab: (tabId: string) => void
 }
 
 /**
- * Custom hook encapsulating module category tabs computation and selection logic.
- * Decouples presentation UI from module label resolution, icon mapping, and active state tracking.
+ * Custom hook converting database schema modules into standardized DataTableTabItem array.
  */
 export function useDatabaseCategoryTabs({
   modules,
-  selectedModule,
   totalTables,
-  onSelectModule,
-}: UseDatabaseCategoryTabsParams): UseDatabaseCategoryTabsReturn {
-  // Construct normalized tab definitions with friendly Vietnamese names and icon bindings.
-  const tabs = useMemo<CategoryTabItem[]>(() => {
+}: UseDatabaseCategoryTabsParams): DataTableTabItem[] {
+  return useMemo<DataTableTabItem[]>(() => {
     return [
       {
         id: "ALL",
         label: "Tất cả",
         count: totalTables,
-        Icon: Database,
-        isActive: selectedModule === "ALL",
+        icon: Database,
       },
       ...modules.map((m) => ({
         id: m.id,
         label: MODULE_SHORT_NAMES[m.id] ?? m.name.split(" ")[0],
         count: m.tableCount,
-        Icon: MODULE_ICON_MAP[m.icon] ?? Sliders,
-        isActive: selectedModule === m.id,
+        icon: MODULE_ICON_MAP[m.icon] ?? Sliders,
       })),
     ]
-  }, [modules, selectedModule, totalTables])
-
-  const handleSelectTab = useCallback(
-    (tabId: string) => {
-      onSelectModule(tabId)
-    },
-    [onSelectModule],
-  )
-
-  return {
-    tabs,
-    handleSelectTab,
-  }
+  }, [modules, totalTables])
 }
