@@ -5,6 +5,9 @@ import { filterTables } from "../database-reference.utils"
 
 export type ActiveTab = "tables" | "diagram"
 
+// Duration in milliseconds to display the copy feedback badge.
+const CLIPBOARD_FEEDBACK_DURATION_MS = 2000
+
 export interface UseDatabaseReferenceParams {
   allTables: TableDef[]
   dbSchema: DbSchemaData
@@ -67,7 +70,7 @@ export function useDatabaseReference({
     try {
       await navigator.clipboard.writeText(text)
       setCopiedTableName(selectedTable?.name ?? null)
-      window.setTimeout(() => setCopiedTableName(null), 2000)
+      window.setTimeout(() => setCopiedTableName(null), CLIPBOARD_FEEDBACK_DURATION_MS)
     } catch {
       toast.error("Không thể sao chép metadata. Hãy kiểm tra quyền truy cập clipboard.")
     }

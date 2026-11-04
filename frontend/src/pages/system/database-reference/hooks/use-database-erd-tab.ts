@@ -1,6 +1,11 @@
 import { useMemo, useState } from "react"
 import type { TableDef } from "../database-reference.types"
-import { useDatabaseErdViewport } from "../database-erd-viewport"
+import {
+  MAX_SCALE,
+  MIN_SCALE,
+  useDatabaseErdViewport,
+  ZOOM_STEP,
+} from "../database-erd-viewport"
 
 export type { ViewportSize } from "../database-erd-viewport"
 
@@ -11,10 +16,6 @@ export interface UseDatabaseErdTabParams {
   selectedTableName: string | null
   limitNodes: boolean
 }
-
-const ZOOM_STEP = 1.15
-const MIN_SCALE = 0.15
-const MAX_SCALE = 3
 
 /**
  * Custom hook orchestrating the interactive ERD graph tables calculation, cross-module filtering, and viewport controls.
@@ -70,11 +71,13 @@ export function useDatabaseErdTab({
     fullscreenTarget,
   )
 
+  // Zoom in by the standard geometric step bounded by MAX_SCALE.
   const handleZoomIn = () => {
     const nextScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, viewport.scale * ZOOM_STEP))
     viewport.zoomBy(nextScale / viewport.scale)
   }
 
+  // Zoom out by the standard geometric step bounded by MIN_SCALE.
   const handleZoomOut = () => {
     const nextScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, viewport.scale * (1 / ZOOM_STEP)))
     viewport.zoomBy(nextScale / viewport.scale)
