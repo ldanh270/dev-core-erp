@@ -1,0 +1,437 @@
+{
+  "name": "BackgroundCheck",
+  "dbName": "BackgroundCheck",
+  "module": "RECRUITMENT",
+  "description": "Bảng dữ liệu BackgroundCheck trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "offerId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": true,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "RecruitmentOffer",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng offer",
+      "rawAttributes": "@unique",
+      "relationName": null
+    },
+    {
+      "name": "candidateId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Candidate",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng candidate",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "group",
+      "type": "BgcGroup",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu group",
+      "rawAttributes": ""
+    },
+    {
+      "name": "status",
+      "type": "BgcStatus",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "pending",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trạng thái nghiệp vụ hiện tại",
+      "rawAttributes": "@default(pending)"
+    },
+    {
+      "name": "idVerified",
+      "type": "Boolean",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu idVerified",
+      "rawAttributes": ""
+    },
+    {
+      "name": "addressVerified",
+      "type": "Boolean",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu addressVerified",
+      "rawAttributes": ""
+    },
+    {
+      "name": "criminalRecordCheck",
+      "type": "Boolean",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu criminalRecordCheck",
+      "rawAttributes": ""
+    },
+    {
+      "name": "legalStatusCheck",
+      "type": "Boolean",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "certificationVerified",
+      "type": "Boolean",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "employmentHistoryVerified",
+      "type": "Boolean",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu employmentHistoryVerified",
+      "rawAttributes": ""
+    },
+    {
+      "name": "financialCheckCompleted",
+      "type": "Boolean",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu financialCheckCompleted",
+      "rawAttributes": ""
+    },
+    {
+      "name": "creditScoreCheck",
+      "type": "Boolean",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu creditScoreCheck",
+      "rawAttributes": ""
+    },
+    {
+      "name": "completedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "passedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "failedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "failReason",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu failReason",
+      "rawAttributes": "@db.Text"
+    },
+    {
+      "name": "checkedById",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng checkedBy",
+      "rawAttributes": "",
+      "relationName": "BgcChecker"
+    },
+    {
+      "name": "documents",
+      "type": "Json",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu documents",
+      "rawAttributes": ""
+    },
+    {
+      "name": "createdAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm tạo bản ghi",
+      "rawAttributes": "@default(now())"
+    },
+    {
+      "name": "updatedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm cập nhật bản ghi gần nhất",
+      "rawAttributes": "@updatedAt"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_BackgroundCheck_candidateId",
+      "columns": [
+        "candidateId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_BackgroundCheck_offerId",
+      "columns": [
+        "offerId"
+      ],
+      "isUnique": true,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_BackgroundCheck_status",
+      "columns": [
+        "status"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_BackgroundCheck",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "offer",
+      "targetModel": "RecruitmentOffer",
+      "relationName": null,
+      "foreignKeyFields": [
+        "offerId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "candidate",
+      "targetModel": "Candidate",
+      "relationName": null,
+      "foreignKeyFields": [
+        "candidateId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "checkedBy",
+      "targetModel": "Employee",
+      "relationName": "BgcChecker",
+      "foreignKeyFields": [
+        "checkedById"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "offerId",
+      "targetTable": "RecruitmentOffer",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "candidateId",
+      "targetTable": "Candidate",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "checkedById",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "BgcChecker"
+    }
+  ],
+  "incomingRelations": []
+}

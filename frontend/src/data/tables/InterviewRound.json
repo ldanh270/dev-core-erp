@@ -1,0 +1,296 @@
+{
+  "name": "InterviewRound",
+  "dbName": "InterviewRound",
+  "module": "RECRUITMENT",
+  "description": "Bảng dữ liệu InterviewRound trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "applicationId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "RecruitmentApplication",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng application",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "roundNumber",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Chỉ số số lượng / Tổng số",
+      "rawAttributes": ""
+    },
+    {
+      "name": "title",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Tiêu đề / Chức danh",
+      "rawAttributes": ""
+    },
+    {
+      "name": "format",
+      "type": "InterviewFormat",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "video_call",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": "@default(video_call)"
+    },
+    {
+      "name": "scheduledAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "durationMinutes",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "60",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": "@default(60)"
+    },
+    {
+      "name": "location",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "meetingLink",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu meetingLink",
+      "rawAttributes": ""
+    },
+    {
+      "name": "status",
+      "type": "InterviewRoundStatus",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "scheduled",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trạng thái nghiệp vụ hiện tại",
+      "rawAttributes": "@default(scheduled)"
+    },
+    {
+      "name": "result",
+      "type": "InterviewResult",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "pending",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu result",
+      "rawAttributes": "@default(pending)"
+    },
+    {
+      "name": "feedback",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu feedback",
+      "rawAttributes": "@db.Text"
+    },
+    {
+      "name": "createdAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm tạo bản ghi",
+      "rawAttributes": "@default(now())"
+    },
+    {
+      "name": "updatedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm cập nhật bản ghi gần nhất",
+      "rawAttributes": "@updatedAt"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_InterviewRound_applicationId",
+      "columns": [
+        "applicationId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_InterviewRound_scheduledAt",
+      "columns": [
+        "scheduledAt"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_InterviewRound_status",
+      "columns": [
+        "status"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_InterviewRound",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "application",
+      "targetModel": "RecruitmentApplication",
+      "relationName": null,
+      "foreignKeyFields": [
+        "applicationId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "applicationId",
+      "targetTable": "RecruitmentApplication",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": [
+    {
+      "sourceTable": "Scorecard",
+      "sourceColumn": "interviewId",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ]
+}

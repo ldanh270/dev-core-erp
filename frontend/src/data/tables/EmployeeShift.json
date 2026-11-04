@@ -1,0 +1,393 @@
+{
+  "name": "EmployeeShift",
+  "dbName": "EmployeeShift",
+  "module": "ATTENDANCE",
+  "description": "Phân ca làm việc chi tiết đến từng nhân viên theo ngày",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "employeeId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết hồ sơ nhân viên",
+      "rawAttributes": "",
+      "relationName": "EmployeeShiftEmployee"
+    },
+    {
+      "name": "shiftId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "WorkingShift",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết ca làm việc",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "assignedDate",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": "@db.Date"
+    },
+    {
+      "name": "scheduleId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "ShiftSchedule",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng schedule",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "status",
+      "type": "ShiftStatus",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "scheduled",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trạng thái nghiệp vụ hiện tại",
+      "rawAttributes": "@default(scheduled)"
+    },
+    {
+      "name": "isOverride",
+      "type": "Boolean",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "false",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Cờ đánh dấu logic (isOverride)",
+      "rawAttributes": "@default(false)"
+    },
+    {
+      "name": "createdById",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng createdBy",
+      "rawAttributes": "",
+      "relationName": "EmployeeShiftCreator"
+    },
+    {
+      "name": "createdAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm tạo bản ghi",
+      "rawAttributes": "@default(now())"
+    },
+    {
+      "name": "updatedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm cập nhật bản ghi gần nhất",
+      "rawAttributes": "@updatedAt"
+    },
+    {
+      "name": "attendanceRecord",
+      "type": "AttendanceRecord",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_EmployeeShift_createdById",
+      "columns": [
+        "createdById"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_EmployeeShift_employeeId_assignedDate_shiftId",
+      "columns": [
+        "employeeId",
+        "assignedDate",
+        "shiftId"
+      ],
+      "isUnique": true,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_EmployeeShift_scheduleId",
+      "columns": [
+        "scheduleId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_EmployeeShift_shiftId_assignedDate",
+      "columns": [
+        "shiftId",
+        "assignedDate"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_EmployeeShift_status_assignedDate",
+      "columns": [
+        "status",
+        "assignedDate"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_EmployeeShift",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "employee",
+      "targetModel": "Employee",
+      "relationName": "EmployeeShiftEmployee",
+      "foreignKeyFields": [
+        "employeeId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "shift",
+      "targetModel": "WorkingShift",
+      "relationName": null,
+      "foreignKeyFields": [
+        "shiftId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "schedule",
+      "targetModel": "ShiftSchedule",
+      "relationName": null,
+      "foreignKeyFields": [
+        "scheduleId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "createdBy",
+      "targetModel": "Employee",
+      "relationName": "EmployeeShiftCreator",
+      "foreignKeyFields": [
+        "createdById"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "overtimeDetails",
+      "targetModel": "ApplicationOvertimeDetail",
+      "relationName": "ApplicationOvertimeShift",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "swapDetails",
+      "targetModel": "ApplicationShiftSwapDetail",
+      "relationName": "ApplicationEmployeeShift",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "swapWithDetails",
+      "targetModel": "ApplicationShiftSwapDetail",
+      "relationName": "ApplicationSwapWithShift",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "lateEarlyDetails",
+      "targetModel": "ApplicationLateEarlyDetail",
+      "relationName": "ApplicationLateEarlyShift",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    },
+    {
+      "virtualName": "forgotCardDetails",
+      "targetModel": "ApplicationForgotCardDetail",
+      "relationName": "ApplicationForgotCardShift",
+      "foreignKeyFields": [],
+      "referenceFields": []
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "employeeId",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "EmployeeShiftEmployee"
+    },
+    {
+      "sourceColumn": "shiftId",
+      "targetTable": "WorkingShift",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "scheduleId",
+      "targetTable": "ShiftSchedule",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "createdById",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "EmployeeShiftCreator"
+    }
+  ],
+  "incomingRelations": [
+    {
+      "sourceTable": "AttendanceRecord",
+      "sourceColumn": "employeeShiftId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "ApplicationShiftSwapDetail",
+      "sourceColumn": "employeeShiftId",
+      "targetColumn": "id",
+      "relationName": "ApplicationEmployeeShift"
+    },
+    {
+      "sourceTable": "ApplicationShiftSwapDetail",
+      "sourceColumn": "swapWithShiftId",
+      "targetColumn": "id",
+      "relationName": "ApplicationSwapWithShift"
+    },
+    {
+      "sourceTable": "ApplicationOvertimeDetail",
+      "sourceColumn": "employeeShiftId",
+      "targetColumn": "id",
+      "relationName": "ApplicationOvertimeShift"
+    },
+    {
+      "sourceTable": "ApplicationLateEarlyDetail",
+      "sourceColumn": "employeeShiftId",
+      "targetColumn": "id",
+      "relationName": "ApplicationLateEarlyShift"
+    },
+    {
+      "sourceTable": "ApplicationWorkFromHomeDetail",
+      "sourceColumn": "employeeShiftId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "ApplicationForgotCardDetail",
+      "sourceColumn": "employeeShiftId",
+      "targetColumn": "id",
+      "relationName": "ApplicationForgotCardShift"
+    }
+  ]
+}

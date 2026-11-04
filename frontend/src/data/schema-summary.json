@@ -1,0 +1,1347 @@
+{
+  "metadata": {
+    "generatedAt": "2026-11-03T10:21:18.225Z",
+    "schemaEngine": "Prisma PostgreSQL",
+    "sourceFile": "backend/prisma/schema.prisma",
+    "totalTables": 75,
+    "totalEnums": 41,
+    "totalColumns": 724,
+    "totalRelations": 137,
+    "version": "1.0.0"
+  },
+  "modules": [
+    {
+      "id": "HRM",
+      "name": "Nhân sự & Tổ chức (HRM)",
+      "color": "#0284c7",
+      "icon": "Users",
+      "description": "Quản lý nhân viên, hợp đồng lao động, bảo hiểm, phòng ban, chức vụ và chi nhánh",
+      "tableCount": 4,
+      "tables": [
+        "EmployeeContract",
+        "Employee",
+        "RegimeCategory",
+        "Position"
+      ]
+    },
+    {
+      "id": "ATTENDANCE",
+      "name": "Chấm công & Ca làm (Attendance)",
+      "color": "#16a34a",
+      "icon": "Clock",
+      "description": "Lịch làm việc hàng tuần, phân ca, chấm công thực tế, đơn từ (nghỉ phép, đổi ca, OT)",
+      "tableCount": 26,
+      "tables": [
+        "WorkingShift",
+        "WeeklyScheduleTemplate",
+        "WeeklyScheduleTemplateWeek",
+        "WeeklyScheduleTemplateDay",
+        "ShiftSchedule",
+        "ShiftScheduleDay",
+        "EmployeeShift",
+        "AttendanceRecord",
+        "RealShift",
+        "Application",
+        "ApplicationLeaveDetail",
+        "ApplicationShiftSwapDetail",
+        "ApplicationOvertimeDetail",
+        "ApplicationRegimeDetail",
+        "ApplicationLateEarlyDetail",
+        "ApplicationBusinessTripDetail",
+        "ApplicationWorkFromHomeDetail",
+        "HolidayCalendar",
+        "HolidayCalendarAssignee",
+        "WeeklyScheduleSettings",
+        "PartTimeWeeklyAvailability",
+        "PartTimeAvailabilityDay",
+        "PartTimeAvailabilitySlot",
+        "EmployeeLeaveBalance",
+        "ApplicationForgotCardDetail",
+        "ApplicationNote"
+      ]
+    },
+    {
+      "id": "PAYROLL",
+      "name": "Tiền lương & Đãi ngộ (Payroll)",
+      "color": "#d97706",
+      "icon": "BadgeDollarSign",
+      "description": "Bảng lương theo chu kỳ, công thức tính lương MathJS, phiếu lương và cấu phần lương",
+      "tableCount": 9,
+      "tables": [
+        "SalaryComponent",
+        "PayslipTemplate",
+        "PayslipTemplateComponent",
+        "EmployeeSalaryConfig",
+        "SalaryVariable",
+        "PayrollSettings",
+        "Payroll",
+        "Payslip",
+        "PayslipDetail"
+      ]
+    },
+    {
+      "id": "PROJECT",
+      "name": "Dự án & Nhiệm vụ (Project)",
+      "color": "#7c3aed",
+      "icon": "FolderKanban",
+      "description": "Quản lý dự án, task, thành viên dự án, tracker, chấm thời gian spent-time và capacity board",
+      "tableCount": 6,
+      "tables": [
+        "Project",
+        "ProjectMember",
+        "Task",
+        "SpentTime",
+        "ProjectTaskStatus",
+        "ProjectTracker"
+      ]
+    },
+    {
+      "id": "RECRUITMENT",
+      "name": "Tuyển dụng (Recruitment)",
+      "color": "#ea580c",
+      "icon": "UserPlus",
+      "description": "Đề xuất tuyển dụng (Requisition), tin tuyển dụng, hồ sơ ứng viên và lịch phỏng vấn",
+      "tableCount": 19,
+      "tables": [
+        "ApplicationRecruitmentDetail",
+        "JobRequisition",
+        "JobPosting",
+        "CandidateFieldDefinition",
+        "PostingFieldSnapshot",
+        "RecruitmentIntakeRecord",
+        "RecruitmentOAuthAccount",
+        "RecruitmentOAuthStateNonce",
+        "Candidate",
+        "CandidateMeta",
+        "RecruitmentApplication",
+        "RecruitmentPipelineStage",
+        "RecruitmentPostingActivity",
+        "RecruitmentConnectorResponse",
+        "InterviewRound",
+        "Scorecard",
+        "RecruitmentOffer",
+        "OfferVersion",
+        "BackgroundCheck"
+      ]
+    },
+    {
+      "id": "SECURITY",
+      "name": "Bảo mật & Phân quyền (RBAC)",
+      "color": "#dc2626",
+      "icon": "ShieldCheck",
+      "description": "Tài khoản người dùng, vai trò (Role), quyền hạn (Permission), phiên đăng nhập và bảo mật",
+      "tableCount": 9,
+      "tables": [
+        "PasswordResetRequest",
+        "RefreshToken",
+        "AppRole",
+        "AdminStateLock",
+        "Permission",
+        "RolePermission",
+        "EmployeeRole",
+        "AuthorizationAuditLog",
+        "ProjectRole"
+      ]
+    },
+    {
+      "id": "SYSTEM",
+      "name": "Hệ thống & Quy trình (System)",
+      "color": "#4b5563",
+      "icon": "Sliders",
+      "description": "Nhật ký hệ thống (Audit log), quy trình phê duyệt đa cấp, thông báo và cấu hình",
+      "tableCount": 2,
+      "tables": [
+        "ActivityLog",
+        "CustomQuery"
+      ]
+    }
+  ],
+  "enums": {
+    "EmployeeStatus": {
+      "name": "EmployeeStatus",
+      "values": [
+        "active",
+        "inactive",
+        "on_leave",
+        "terminated"
+      ],
+      "description": "Kiểu danh mục liệt kê EmployeeStatus (4 giá trị)"
+    },
+    "EmployeeType": {
+      "name": "EmployeeType",
+      "values": [
+        "full_time",
+        "part_time // legacy — prefer workScheduleType for schedule logic",
+        "contractor",
+        "intern"
+      ],
+      "description": "Kiểu danh mục liệt kê EmployeeType (4 giá trị)"
+    },
+    "WorkScheduleType": {
+      "name": "WorkScheduleType",
+      "values": [
+        "full_time",
+        "part_time"
+      ],
+      "description": "Kiểu danh mục liệt kê WorkScheduleType (2 giá trị)"
+    },
+    "SpentTimeStatus": {
+      "name": "SpentTimeStatus",
+      "values": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "description": "Kiểu danh mục liệt kê SpentTimeStatus (3 giá trị)"
+    },
+    "ProjectMemberWorkMode": {
+      "name": "ProjectMemberWorkMode",
+      "values": [
+        "remote",
+        "onsite"
+      ],
+      "description": "Kiểu danh mục liệt kê ProjectMemberWorkMode (2 giá trị)"
+    },
+    "AttendanceStatus": {
+      "name": "AttendanceStatus",
+      "values": [
+        "on_time",
+        "late",
+        "early_leave",
+        "absent",
+        "overtime"
+      ],
+      "description": "Kiểu danh mục liệt kê AttendanceStatus (5 giá trị)"
+    },
+    "ShiftStatus": {
+      "name": "ShiftStatus",
+      "values": [
+        "scheduled",
+        "holiday_pending",
+        "confirmed",
+        "cancelled"
+      ],
+      "description": "Kiểu danh mục liệt kê ShiftStatus (4 giá trị)"
+    },
+    "HolidayType": {
+      "name": "HolidayType",
+      "values": [
+        "national",
+        "company"
+      ],
+      "description": "Kiểu danh mục liệt kê HolidayType (2 giá trị)"
+    },
+    "HolidayScope": {
+      "name": "HolidayScope",
+      "values": [
+        "all",
+        "position",
+        "employees"
+      ],
+      "description": "Kiểu danh mục liệt kê HolidayScope (3 giá trị)"
+    },
+    "LeaveType": {
+      "name": "LeaveType",
+      "values": [
+        "annual_leave",
+        "sick_leave",
+        "maternity_leave",
+        "bereavement_leave",
+        "marriage_leave",
+        "unpaid_leave",
+        "other"
+      ],
+      "description": "Kiểu danh mục liệt kê LeaveType (7 giá trị)"
+    },
+    "ApplicationType": {
+      "name": "ApplicationType",
+      "values": [
+        "leave",
+        "overtime",
+        "work_from_home",
+        "shift_swap",
+        "business_trip",
+        "late_early",
+        "regime",
+        "resignation",
+        "forgot_card",
+        "recruitment"
+      ],
+      "description": "Kiểu danh mục liệt kê ApplicationType (10 giá trị)"
+    },
+    "ApplicationStatus": {
+      "name": "ApplicationStatus",
+      "values": [
+        "pending",
+        "partner_pending",
+        "approved",
+        "rejected",
+        "cancelled"
+      ],
+      "description": "Kiểu danh mục liệt kê ApplicationStatus (5 giá trị)"
+    },
+    "RegimeType": {
+      "name": "RegimeType",
+      "values": [
+        "paid",
+        "unpaid"
+      ],
+      "description": "Kiểu danh mục liệt kê RegimeType (2 giá trị)"
+    },
+    "PayrollStatus": {
+      "name": "PayrollStatus",
+      "values": [
+        "draft",
+        "pending_approval",
+        "approved",
+        "rejected",
+        "paid"
+      ],
+      "description": "Kiểu danh mục liệt kê PayrollStatus (5 giá trị)"
+    },
+    "PartTimeAvailabilityStatus": {
+      "name": "PartTimeAvailabilityStatus",
+      "values": [
+        "draft",
+        "submitted",
+        "approved",
+        "rejected"
+      ],
+      "description": "Kiểu danh mục liệt kê PartTimeAvailabilityStatus (4 giá trị)"
+    },
+    "ComponentType": {
+      "name": "ComponentType",
+      "values": [
+        "addition",
+        "deduction"
+      ],
+      "description": "Kiểu danh mục liệt kê ComponentType (2 giá trị)"
+    },
+    "ComponentValueType": {
+      "name": "ComponentValueType",
+      "values": [
+        "currency",
+        "number",
+        "percentage"
+      ],
+      "description": "Kiểu danh mục liệt kê ComponentValueType (3 giá trị)"
+    },
+    "ProjectStatus": {
+      "name": "ProjectStatus",
+      "values": [
+        "planning",
+        "active",
+        "on_hold",
+        "completed",
+        "cancelled"
+      ],
+      "description": "Kiểu danh mục liệt kê ProjectStatus (5 giá trị)"
+    },
+    "TaskCreationPolicy": {
+      "name": "TaskCreationPolicy",
+      "values": [
+        "leader_only",
+        "all_members"
+      ],
+      "description": "Kiểu danh mục liệt kê TaskCreationPolicy (2 giá trị)"
+    },
+    "TaskStatus": {
+      "name": "TaskStatus",
+      "values": [
+        "todo",
+        "in_progress",
+        "in_review",
+        "done",
+        "cancelled",
+        "reopened"
+      ],
+      "description": "Kiểu danh mục liệt kê TaskStatus (6 giá trị)"
+    },
+    "TaskPriority": {
+      "name": "TaskPriority",
+      "values": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "description": "Kiểu danh mục liệt kê TaskPriority (4 giá trị)"
+    },
+    "PasswordResetStatus": {
+      "name": "PasswordResetStatus",
+      "values": [
+        "pending",
+        "approved",
+        "rejected",
+        "used",
+        "expired"
+      ],
+      "description": "Kiểu danh mục liệt kê PasswordResetStatus (5 giá trị)"
+    },
+    "ActivityCategory": {
+      "name": "ActivityCategory",
+      "values": [
+        "auth",
+        "role",
+        "security"
+      ],
+      "description": "Kiểu danh mục liệt kê ActivityCategory (3 giá trị)"
+    },
+    "ActivityAction": {
+      "name": "ActivityAction",
+      "values": [
+        "login",
+        "logout",
+        "failed_login",
+        "role_assigned",
+        "role_revoked",
+        "account_locked",
+        "account_unlocked"
+      ],
+      "description": "Kiểu danh mục liệt kê ActivityAction (7 giá trị)"
+    },
+    "ContractType": {
+      "name": "ContractType",
+      "values": [
+        "trial",
+        "definite",
+        "indefinite",
+        "service"
+      ],
+      "description": "Kiểu danh mục liệt kê ContractType (4 giá trị)"
+    },
+    "ContractStatus": {
+      "name": "ContractStatus",
+      "values": [
+        "draft",
+        "pending_signature",
+        "active",
+        "expired",
+        "terminated",
+        "renewed"
+      ],
+      "description": "Kiểu danh mục liệt kê ContractStatus (6 giá trị)"
+    },
+    "RequisitionStatus": {
+      "name": "RequisitionStatus",
+      "values": [
+        "draft",
+        "pending_approval",
+        "approved",
+        "rejected",
+        "closed",
+        "filled"
+      ],
+      "description": "Kiểu danh mục liệt kê RequisitionStatus (6 giá trị)"
+    },
+    "RequisitionPriority": {
+      "name": "RequisitionPriority",
+      "values": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "description": "Kiểu danh mục liệt kê RequisitionPriority (4 giá trị)"
+    },
+    "PostingStatus": {
+      "name": "PostingStatus",
+      "values": [
+        "draft",
+        "open",
+        "paused",
+        "closed",
+        "archived"
+      ],
+      "description": "Kiểu danh mục liệt kê PostingStatus (5 giá trị)"
+    },
+    "RecruitmentChannel": {
+      "name": "RecruitmentChannel",
+      "values": [
+        "linkedin",
+        "facebook",
+        "google_form",
+        "company_website",
+        "agency",
+        "referral",
+        "other"
+      ],
+      "description": "Kiểu danh mục liệt kê RecruitmentChannel (7 giá trị)"
+    },
+    "ConnectorStatus": {
+      "name": "ConnectorStatus",
+      "values": [
+        "not_configured",
+        "ready",
+        "error"
+      ],
+      "description": "Kiểu danh mục liệt kê ConnectorStatus (3 giá trị)"
+    },
+    "RecruitmentApplicationStatus": {
+      "name": "RecruitmentApplicationStatus",
+      "values": [
+        "new",
+        "reviewing",
+        "shortlisted",
+        "interviewing",
+        "final_review",
+        "offer_sent",
+        "offer_accepted",
+        "offer_declined",
+        "offer_rescinded",
+        "background_check",
+        "pending_onboarding",
+        "hired",
+        "rejected",
+        "candidate_withdrew"
+      ],
+      "description": "Kiểu danh mục liệt kê RecruitmentApplicationStatus (14 giá trị)"
+    },
+    "RecruitmentSource": {
+      "name": "RecruitmentSource",
+      "values": [
+        "website",
+        "linkedin",
+        "referral",
+        "facebook",
+        "recruitment_agency",
+        "google_form",
+        "company_website",
+        "agency",
+        "other"
+      ],
+      "description": "Kiểu danh mục liệt kê RecruitmentSource (9 giá trị)"
+    },
+    "InterviewFormat": {
+      "name": "InterviewFormat",
+      "values": [
+        "in_person",
+        "video_call",
+        "phone"
+      ],
+      "description": "Kiểu danh mục liệt kê InterviewFormat (3 giá trị)"
+    },
+    "InterviewRoundStatus": {
+      "name": "InterviewRoundStatus",
+      "values": [
+        "scheduled",
+        "completed",
+        "cancelled",
+        "no_show"
+      ],
+      "description": "Kiểu danh mục liệt kê InterviewRoundStatus (4 giá trị)"
+    },
+    "InterviewResult": {
+      "name": "InterviewResult",
+      "values": [
+        "pass",
+        "fail",
+        "pending",
+        "no_show"
+      ],
+      "description": "Kiểu danh mục liệt kê InterviewResult (4 giá trị)"
+    },
+    "BgcGroup": {
+      "name": "BgcGroup",
+      "values": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "description": "Kiểu danh mục liệt kê BgcGroup (4 giá trị)"
+    },
+    "BgcStatus": {
+      "name": "BgcStatus",
+      "values": [
+        "pending",
+        "in_progress",
+        "completed",
+        "passed",
+        "failed"
+      ],
+      "description": "Kiểu danh mục liệt kê BgcStatus (5 giá trị)"
+    },
+    "RecruitmentOfferStatus": {
+      "name": "RecruitmentOfferStatus",
+      "values": [
+        "draft",
+        "sent",
+        "accepted",
+        "declined",
+        "rescinded",
+        "expired"
+      ],
+      "description": "Kiểu danh mục liệt kê RecruitmentOfferStatus (6 giá trị)"
+    },
+    "IntakeStatus": {
+      "name": "IntakeStatus",
+      "values": [
+        "received",
+        "processed",
+        "failed"
+      ],
+      "description": "Kiểu danh mục liệt kê IntakeStatus (3 giá trị)"
+    },
+    "RecruitmentFieldType": {
+      "name": "RecruitmentFieldType",
+      "values": [
+        "short_text",
+        "paragraph"
+      ],
+      "description": "Kiểu danh mục liệt kê RecruitmentFieldType (2 giá trị)"
+    }
+  },
+  "tables": [
+    {
+      "name": "EmployeeContract",
+      "dbName": "EmployeeContract",
+      "module": "HRM",
+      "description": "Hợp đồng lao động của nhân viên (loại hợp đồng, mức lương, phụ cấp, ngày ký và thời hạn)",
+      "columnCount": 23,
+      "indexCount": 4,
+      "outgoingRelationCount": 4,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "Employee",
+      "dbName": "Employee",
+      "module": "HRM",
+      "description": "Hồ sơ nhân viên trung tâm, lưu thông tin định danh, chức danh, phân loại và trạng thái công tác",
+      "columnCount": 27,
+      "indexCount": 8,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 58
+    },
+    {
+      "name": "WorkingShift",
+      "dbName": "WorkingShift",
+      "module": "ATTENDANCE",
+      "description": "Khung ca làm việc tiêu chuẩn (giờ bắt đầu, giờ kết thúc, thời gian nghỉ giữa ca)",
+      "columnCount": 14,
+      "indexCount": 3,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 4
+    },
+    {
+      "name": "WeeklyScheduleTemplate",
+      "dbName": "WeeklyScheduleTemplate",
+      "module": "ATTENDANCE",
+      "description": "Mẫu lịch làm việc lặp lại hàng tuần",
+      "columnCount": 8,
+      "indexCount": 3,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 2
+    },
+    {
+      "name": "WeeklyScheduleTemplateWeek",
+      "dbName": "WeeklyScheduleTemplateWeek",
+      "module": "ATTENDANCE",
+      "description": "Cấu hình tuần trong mẫu lịch làm việc",
+      "columnCount": 3,
+      "indexCount": 2,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "WeeklyScheduleTemplateDay",
+      "dbName": "WeeklyScheduleTemplateDay",
+      "module": "ATTENDANCE",
+      "description": "Cấu hình ca làm cho từng ngày thứ trong tuần của mẫu lịch",
+      "columnCount": 4,
+      "indexCount": 3,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "ShiftSchedule",
+      "dbName": "ShiftSchedule",
+      "module": "ATTENDANCE",
+      "description": "Lịch phân ca tuần hoặc tháng cho các nhóm nhân viên",
+      "columnCount": 9,
+      "indexCount": 5,
+      "outgoingRelationCount": 3,
+      "incomingRelationCount": 2
+    },
+    {
+      "name": "ShiftScheduleDay",
+      "dbName": "ShiftScheduleDay",
+      "module": "ATTENDANCE",
+      "description": "Chi tiết ca làm việc cụ thể theo từng ngày trong lịch phân ca",
+      "columnCount": 5,
+      "indexCount": 3,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "EmployeeShift",
+      "dbName": "EmployeeShift",
+      "module": "ATTENDANCE",
+      "description": "Phân ca làm việc chi tiết đến từng nhân viên theo ngày",
+      "columnCount": 11,
+      "indexCount": 6,
+      "outgoingRelationCount": 4,
+      "incomingRelationCount": 7
+    },
+    {
+      "name": "AttendanceRecord",
+      "dbName": "AttendanceRecord",
+      "module": "ATTENDANCE",
+      "description": "Bản ghi chấm công thực tế theo ca hoặc theo ngày (giờ vào, giờ ra, số phút trễ/sớm/OT)",
+      "columnCount": 20,
+      "indexCount": 5,
+      "outgoingRelationCount": 3,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "RealShift",
+      "dbName": "RealShift",
+      "module": "ATTENDANCE",
+      "description": "Ca làm việc thực tế được ghi nhận sau khi nhân viên check-in/check-out",
+      "columnCount": 10,
+      "indexCount": 4,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "Application",
+      "dbName": "Application",
+      "module": "ATTENDANCE",
+      "description": "Đơn từ hành chính của nhân viên (xin nghỉ phép, đổi ca làm, đăng ký làm thêm giờ OT)",
+      "columnCount": 26,
+      "indexCount": 6,
+      "outgoingRelationCount": 4,
+      "incomingRelationCount": 10
+    },
+    {
+      "name": "ApplicationLeaveDetail",
+      "dbName": "ApplicationLeaveDetail",
+      "module": "ATTENDANCE",
+      "description": "Chi tiết ngày nghỉ và lý do của đơn xin nghỉ phép",
+      "columnCount": 4,
+      "indexCount": 1,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "ApplicationShiftSwapDetail",
+      "dbName": "ApplicationShiftSwapDetail",
+      "module": "ATTENDANCE",
+      "description": "Chi tiết yêu cầu đổi ca làm việc giữa các nhân viên",
+      "columnCount": 5,
+      "indexCount": 5,
+      "outgoingRelationCount": 5,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "ApplicationOvertimeDetail",
+      "dbName": "ApplicationOvertimeDetail",
+      "module": "ATTENDANCE",
+      "description": "Chi tiết số giờ và công việc của đơn đăng ký làm thêm giờ (OT)",
+      "columnCount": 2,
+      "indexCount": 2,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "RegimeCategory",
+      "dbName": "RegimeCategory",
+      "module": "HRM",
+      "description": "Bảng dữ liệu RegimeCategory trong hệ thống ERP",
+      "columnCount": 8,
+      "indexCount": 3,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "ApplicationRegimeDetail",
+      "dbName": "ApplicationRegimeDetail",
+      "module": "ATTENDANCE",
+      "description": "Bảng dữ liệu ApplicationRegimeDetail trong hệ thống ERP",
+      "columnCount": 5,
+      "indexCount": 2,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "ApplicationLateEarlyDetail",
+      "dbName": "ApplicationLateEarlyDetail",
+      "module": "ATTENDANCE",
+      "description": "Bảng dữ liệu ApplicationLateEarlyDetail trong hệ thống ERP",
+      "columnCount": 4,
+      "indexCount": 2,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "ApplicationBusinessTripDetail",
+      "dbName": "ApplicationBusinessTripDetail",
+      "module": "ATTENDANCE",
+      "description": "Bảng dữ liệu ApplicationBusinessTripDetail trong hệ thống ERP",
+      "columnCount": 4,
+      "indexCount": 1,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "ApplicationWorkFromHomeDetail",
+      "dbName": "ApplicationWorkFromHomeDetail",
+      "module": "ATTENDANCE",
+      "description": "Bảng dữ liệu ApplicationWorkFromHomeDetail trong hệ thống ERP",
+      "columnCount": 2,
+      "indexCount": 1,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "HolidayCalendar",
+      "dbName": "HolidayCalendar",
+      "module": "ATTENDANCE",
+      "description": "Bảng dữ liệu HolidayCalendar trong hệ thống ERP",
+      "columnCount": 10,
+      "indexCount": 7,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "HolidayCalendarAssignee",
+      "dbName": "HolidayCalendarAssignee",
+      "module": "ATTENDANCE",
+      "description": "Bảng dữ liệu HolidayCalendarAssignee trong hệ thống ERP",
+      "columnCount": 2,
+      "indexCount": 2,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "SalaryComponent",
+      "dbName": "SalaryComponent",
+      "module": "PAYROLL",
+      "description": "Các cấu phần thu nhập và khấu trừ trong lương (lương cơ bản, phụ cấp, thưởng, phạt)",
+      "columnCount": 11,
+      "indexCount": 5,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 2
+    },
+    {
+      "name": "PayslipTemplate",
+      "dbName": "PayslipTemplate",
+      "module": "PAYROLL",
+      "description": "Mẫu giao diện và cấu trúc hiển thị phiếu lương gửi cho nhân viên",
+      "columnCount": 7,
+      "indexCount": 4,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 2
+    },
+    {
+      "name": "PayslipTemplateComponent",
+      "dbName": "PayslipTemplateComponent",
+      "module": "PAYROLL",
+      "description": "Bảng dữ liệu PayslipTemplateComponent trong hệ thống ERP",
+      "columnCount": 3,
+      "indexCount": 2,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "EmployeeSalaryConfig",
+      "dbName": "EmployeeSalaryConfig",
+      "module": "PAYROLL",
+      "description": "Bảng dữ liệu EmployeeSalaryConfig trong hệ thống ERP",
+      "columnCount": 10,
+      "indexCount": 5,
+      "outgoingRelationCount": 3,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "SalaryVariable",
+      "dbName": "SalaryVariable",
+      "module": "PAYROLL",
+      "description": "Bảng dữ liệu SalaryVariable trong hệ thống ERP",
+      "columnCount": 9,
+      "indexCount": 4,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "PayrollSettings",
+      "dbName": "PayrollSettings",
+      "module": "PAYROLL",
+      "description": "Bảng dữ liệu PayrollSettings trong hệ thống ERP",
+      "columnCount": 10,
+      "indexCount": 2,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "WeeklyScheduleSettings",
+      "dbName": "WeeklyScheduleSettings",
+      "module": "ATTENDANCE",
+      "description": "Bảng dữ liệu WeeklyScheduleSettings trong hệ thống ERP",
+      "columnCount": 8,
+      "indexCount": 2,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "PartTimeWeeklyAvailability",
+      "dbName": "PartTimeWeeklyAvailability",
+      "module": "ATTENDANCE",
+      "description": "Bảng dữ liệu PartTimeWeeklyAvailability trong hệ thống ERP",
+      "columnCount": 11,
+      "indexCount": 5,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "PartTimeAvailabilityDay",
+      "dbName": "PartTimeAvailabilityDay",
+      "module": "ATTENDANCE",
+      "description": "Bảng dữ liệu PartTimeAvailabilityDay trong hệ thống ERP",
+      "columnCount": 4,
+      "indexCount": 2,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "PartTimeAvailabilitySlot",
+      "dbName": "PartTimeAvailabilitySlot",
+      "module": "ATTENDANCE",
+      "description": "Bảng dữ liệu PartTimeAvailabilitySlot trong hệ thống ERP",
+      "columnCount": 5,
+      "indexCount": 2,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "Payroll",
+      "dbName": "Payroll",
+      "module": "PAYROLL",
+      "description": "Bảng tính lương tổng hợp theo kỳ/tháng cho toàn bộ công ty",
+      "columnCount": 11,
+      "indexCount": 4,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "Payslip",
+      "dbName": "Payslip",
+      "module": "PAYROLL",
+      "description": "Bảng dữ liệu Payslip trong hệ thống ERP",
+      "columnCount": 12,
+      "indexCount": 4,
+      "outgoingRelationCount": 3,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "PayslipDetail",
+      "dbName": "PayslipDetail",
+      "module": "PAYROLL",
+      "description": "Bảng dữ liệu PayslipDetail trong hệ thống ERP",
+      "columnCount": 6,
+      "indexCount": 3,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "Project",
+      "dbName": "Project",
+      "module": "PROJECT",
+      "description": "Dự án phát triển phần mềm / hợp đồng dịch vụ IT outsourcing",
+      "columnCount": 13,
+      "indexCount": 5,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 6
+    },
+    {
+      "name": "ProjectMember",
+      "dbName": "ProjectMember",
+      "module": "PROJECT",
+      "description": "Thành viên tham gia dự án và vai trò đảm nhiệm",
+      "columnCount": 7,
+      "indexCount": 2,
+      "outgoingRelationCount": 3,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "Task",
+      "dbName": "Task",
+      "module": "PROJECT",
+      "description": "Nhiệm vụ / công việc chi tiết trong dự án kèm tiến độ và deadline",
+      "columnCount": 21,
+      "indexCount": 7,
+      "outgoingRelationCount": 5,
+      "incomingRelationCount": 2
+    },
+    {
+      "name": "ActivityLog",
+      "dbName": "ActivityLog",
+      "module": "SYSTEM",
+      "description": "Bảng dữ liệu ActivityLog trong hệ thống ERP",
+      "columnCount": 8,
+      "indexCount": 5,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "PasswordResetRequest",
+      "dbName": "PasswordResetRequest",
+      "module": "SECURITY",
+      "description": "Bảng dữ liệu PasswordResetRequest trong hệ thống ERP",
+      "columnCount": 9,
+      "indexCount": 5,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "RefreshToken",
+      "dbName": "RefreshToken",
+      "module": "SECURITY",
+      "description": "Bảng dữ liệu RefreshToken trong hệ thống ERP",
+      "columnCount": 6,
+      "indexCount": 4,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "SpentTime",
+      "dbName": "SpentTime",
+      "module": "PROJECT",
+      "description": "Bản ghi chấm giờ làm việc thực tế (log work) vào từng task của dự án",
+      "columnCount": 14,
+      "indexCount": 4,
+      "outgoingRelationCount": 3,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "AppRole",
+      "dbName": "roles",
+      "module": "SECURITY",
+      "description": "Bảng dữ liệu AppRole trong hệ thống ERP",
+      "columnCount": 12,
+      "indexCount": 6,
+      "outgoingRelationCount": 0,
+      "incomingRelationCount": 2
+    },
+    {
+      "name": "AdminStateLock",
+      "dbName": "admin_state_lock",
+      "module": "SECURITY",
+      "description": "Bảng dữ liệu AdminStateLock trong hệ thống ERP",
+      "columnCount": 1,
+      "indexCount": 1,
+      "outgoingRelationCount": 0,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "Permission",
+      "dbName": "permissions",
+      "module": "SECURITY",
+      "description": "Quyền hạn chi tiết cho từng tài nguyên và hành động",
+      "columnCount": 12,
+      "indexCount": 4,
+      "outgoingRelationCount": 0,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "RolePermission",
+      "dbName": "role_permissions",
+      "module": "SECURITY",
+      "description": "Bảng liên kết phân bổ quyền hạn cho từng vai trò",
+      "columnCount": 4,
+      "indexCount": 2,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "EmployeeRole",
+      "dbName": "employee_roles",
+      "module": "SECURITY",
+      "description": "Bảng dữ liệu EmployeeRole trong hệ thống ERP",
+      "columnCount": 4,
+      "indexCount": 2,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "AuthorizationAuditLog",
+      "dbName": "authorization_audit_logs",
+      "module": "SECURITY",
+      "description": "Bảng dữ liệu AuthorizationAuditLog trong hệ thống ERP",
+      "columnCount": 10,
+      "indexCount": 6,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "CustomQuery",
+      "dbName": "CustomQuery",
+      "module": "SYSTEM",
+      "description": "Bảng dữ liệu CustomQuery trong hệ thống ERP",
+      "columnCount": 8,
+      "indexCount": 2,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "ProjectTaskStatus",
+      "dbName": "ProjectTaskStatus",
+      "module": "PROJECT",
+      "description": "Trạng thái tiến độ công việc của dự án (To Do, In Progress, Review, Done...)",
+      "columnCount": 9,
+      "indexCount": 3,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "Position",
+      "dbName": "positions",
+      "module": "HRM",
+      "description": "Vị trí chuyên môn / chức danh công việc của nhân sự",
+      "columnCount": 7,
+      "indexCount": 3,
+      "outgoingRelationCount": 0,
+      "incomingRelationCount": 3
+    },
+    {
+      "name": "ProjectRole",
+      "dbName": "project_roles",
+      "module": "SECURITY",
+      "description": "Vai trò chức năng của thành viên trong dự án (PM, Tech Lead, Dev, QA, UI/UX...)",
+      "columnCount": 6,
+      "indexCount": 3,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "ProjectTracker",
+      "dbName": "project_trackers",
+      "module": "PROJECT",
+      "description": "Phân loại đầu việc dự án (Bug, Feature, Task, Improvement...)",
+      "columnCount": 7,
+      "indexCount": 3,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "EmployeeLeaveBalance",
+      "dbName": "EmployeeLeaveBalance",
+      "module": "ATTENDANCE",
+      "description": "Bảng dữ liệu EmployeeLeaveBalance trong hệ thống ERP",
+      "columnCount": 7,
+      "indexCount": 2,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "ApplicationForgotCardDetail",
+      "dbName": "ApplicationForgotCardDetail",
+      "module": "ATTENDANCE",
+      "description": "Bảng dữ liệu ApplicationForgotCardDetail trong hệ thống ERP",
+      "columnCount": 5,
+      "indexCount": 1,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "ApplicationRecruitmentDetail",
+      "dbName": "ApplicationRecruitmentDetail",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu ApplicationRecruitmentDetail trong hệ thống ERP",
+      "columnCount": 5,
+      "indexCount": 1,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "JobRequisition",
+      "dbName": "JobRequisition",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu JobRequisition trong hệ thống ERP",
+      "columnCount": 28,
+      "indexCount": 7,
+      "outgoingRelationCount": 4,
+      "incomingRelationCount": 4
+    },
+    {
+      "name": "JobPosting",
+      "dbName": "JobPosting",
+      "module": "RECRUITMENT",
+      "description": "Tin tuyển dụng nhân sự đăng tải ra ngoài hoặc nội bộ",
+      "columnCount": 18,
+      "indexCount": 9,
+      "outgoingRelationCount": 3,
+      "incomingRelationCount": 6
+    },
+    {
+      "name": "CandidateFieldDefinition",
+      "dbName": "CandidateFieldDefinition",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu CandidateFieldDefinition trong hệ thống ERP",
+      "columnCount": 9,
+      "indexCount": 4,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "PostingFieldSnapshot",
+      "dbName": "PostingFieldSnapshot",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu PostingFieldSnapshot trong hệ thống ERP",
+      "columnCount": 10,
+      "indexCount": 5,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "RecruitmentIntakeRecord",
+      "dbName": "RecruitmentIntakeRecord",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu RecruitmentIntakeRecord trong hệ thống ERP",
+      "columnCount": 10,
+      "indexCount": 4,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "RecruitmentOAuthAccount",
+      "dbName": "RecruitmentOAuthAccount",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu RecruitmentOAuthAccount trong hệ thống ERP",
+      "columnCount": 9,
+      "indexCount": 3,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "RecruitmentOAuthStateNonce",
+      "dbName": "RecruitmentOAuthStateNonce",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu RecruitmentOAuthStateNonce trong hệ thống ERP",
+      "columnCount": 4,
+      "indexCount": 2,
+      "outgoingRelationCount": 0,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "Candidate",
+      "dbName": "Candidate",
+      "module": "RECRUITMENT",
+      "description": "Hồ sơ ứng viên nộp đơn ứng tuyển",
+      "columnCount": 15,
+      "indexCount": 3,
+      "outgoingRelationCount": 0,
+      "incomingRelationCount": 4
+    },
+    {
+      "name": "CandidateMeta",
+      "dbName": "CandidateMeta",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu CandidateMeta trong hệ thống ERP",
+      "columnCount": 6,
+      "indexCount": 3,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "RecruitmentApplication",
+      "dbName": "RecruitmentApplication",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu RecruitmentApplication trong hệ thống ERP",
+      "columnCount": 16,
+      "indexCount": 11,
+      "outgoingRelationCount": 5,
+      "incomingRelationCount": 5
+    },
+    {
+      "name": "RecruitmentPipelineStage",
+      "dbName": "RecruitmentPipelineStage",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu RecruitmentPipelineStage trong hệ thống ERP",
+      "columnCount": 10,
+      "indexCount": 5,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "RecruitmentPostingActivity",
+      "dbName": "RecruitmentPostingActivity",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu RecruitmentPostingActivity trong hệ thống ERP",
+      "columnCount": 7,
+      "indexCount": 5,
+      "outgoingRelationCount": 3,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "RecruitmentConnectorResponse",
+      "dbName": "RecruitmentConnectorResponse",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu RecruitmentConnectorResponse trong hệ thống ERP",
+      "columnCount": 8,
+      "indexCount": 3,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "ApplicationNote",
+      "dbName": "ApplicationNote",
+      "module": "ATTENDANCE",
+      "description": "Bảng dữ liệu ApplicationNote trong hệ thống ERP",
+      "columnCount": 6,
+      "indexCount": 3,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "InterviewRound",
+      "dbName": "InterviewRound",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu InterviewRound trong hệ thống ERP",
+      "columnCount": 14,
+      "indexCount": 4,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 1
+    },
+    {
+      "name": "Scorecard",
+      "dbName": "Scorecard",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu Scorecard trong hệ thống ERP",
+      "columnCount": 12,
+      "indexCount": 4,
+      "outgoingRelationCount": 2,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "RecruitmentOffer",
+      "dbName": "RecruitmentOffer",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu RecruitmentOffer trong hệ thống ERP",
+      "columnCount": 22,
+      "indexCount": 4,
+      "outgoingRelationCount": 3,
+      "incomingRelationCount": 2
+    },
+    {
+      "name": "OfferVersion",
+      "dbName": "OfferVersion",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu OfferVersion trong hệ thống ERP",
+      "columnCount": 11,
+      "indexCount": 3,
+      "outgoingRelationCount": 1,
+      "incomingRelationCount": 0
+    },
+    {
+      "name": "BackgroundCheck",
+      "dbName": "BackgroundCheck",
+      "module": "RECRUITMENT",
+      "description": "Bảng dữ liệu BackgroundCheck trong hệ thống ERP",
+      "columnCount": 21,
+      "indexCount": 4,
+      "outgoingRelationCount": 3,
+      "incomingRelationCount": 0
+    }
+  ]
+}

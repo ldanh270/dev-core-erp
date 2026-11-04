@@ -1,0 +1,616 @@
+{
+  "name": "JobRequisition",
+  "dbName": "JobRequisition",
+  "module": "RECRUITMENT",
+  "description": "Bảng dữ liệu JobRequisition trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "code",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": true,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã quy chuẩn / Mã định danh duy nhất",
+      "rawAttributes": "@unique"
+    },
+    {
+      "name": "title",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Tiêu đề / Chức danh",
+      "rawAttributes": ""
+    },
+    {
+      "name": "department",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu department",
+      "rawAttributes": ""
+    },
+    {
+      "name": "positionLevel",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu positionLevel",
+      "rawAttributes": ""
+    },
+    {
+      "name": "employmentType",
+      "type": "EmployeeType",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu employmentType",
+      "rawAttributes": ""
+    },
+    {
+      "name": "salaryMin",
+      "type": "Decimal",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu salaryMin",
+      "rawAttributes": "@db.Decimal(15, 2)"
+    },
+    {
+      "name": "salaryMax",
+      "type": "Decimal",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu salaryMax",
+      "rawAttributes": "@db.Decimal(15, 2)"
+    },
+    {
+      "name": "currency",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "VND",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Đơn vị tiền tệ (mặc định VND)",
+      "rawAttributes": "@default(\"VND\")"
+    },
+    {
+      "name": "headcount",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "1",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Chỉ số số lượng / Tổng số",
+      "rawAttributes": "@default(1)"
+    },
+    {
+      "name": "filledCount",
+      "type": "Int",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "0",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Chỉ số số lượng / Tổng số",
+      "rawAttributes": "@default(0)"
+    },
+    {
+      "name": "priority",
+      "type": "RequisitionPriority",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "medium",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Mức độ ưu tiên xử lý",
+      "rawAttributes": "@default(medium)"
+    },
+    {
+      "name": "status",
+      "type": "RequisitionStatus",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "draft",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trạng thái nghiệp vụ hiện tại",
+      "rawAttributes": "@default(draft)"
+    },
+    {
+      "name": "reason",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu reason",
+      "rawAttributes": "@db.Text"
+    },
+    {
+      "name": "targetHireDate",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": "@db.Date"
+    },
+    {
+      "name": "targetCloseDate",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": "@db.Date"
+    },
+    {
+      "name": "summary",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu summary",
+      "rawAttributes": "@db.Text"
+    },
+    {
+      "name": "responsibilities",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu responsibilities",
+      "rawAttributes": "@db.Text"
+    },
+    {
+      "name": "requirements",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu requirements",
+      "rawAttributes": "@db.Text"
+    },
+    {
+      "name": "benefits",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu benefits",
+      "rawAttributes": "@db.Text"
+    },
+    {
+      "name": "requestedById",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng requestedBy",
+      "rawAttributes": "",
+      "relationName": "RequisitionRequester"
+    },
+    {
+      "name": "approverId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng approver",
+      "rawAttributes": "",
+      "relationName": "RequisitionDesignatedApprover"
+    },
+    {
+      "name": "approvedById",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng approvedBy",
+      "rawAttributes": "",
+      "relationName": "RequisitionApprover"
+    },
+    {
+      "name": "approvedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "approvalComment",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu approvalComment",
+      "rawAttributes": ""
+    },
+    {
+      "name": "positionId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Position",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết vị trí chuyên môn",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "createdAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm tạo bản ghi",
+      "rawAttributes": "@default(now())"
+    },
+    {
+      "name": "updatedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm cập nhật bản ghi gần nhất",
+      "rawAttributes": "@updatedAt"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_JobRequisition_approverId",
+      "columns": [
+        "approverId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_JobRequisition_code",
+      "columns": [
+        "code"
+      ],
+      "isUnique": true,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_JobRequisition_department",
+      "columns": [
+        "department"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_JobRequisition_positionId",
+      "columns": [
+        "positionId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_JobRequisition_requestedById",
+      "columns": [
+        "requestedById"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_JobRequisition_status",
+      "columns": [
+        "status"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_JobRequisition",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "requestedBy",
+      "targetModel": "Employee",
+      "relationName": "RequisitionRequester",
+      "foreignKeyFields": [
+        "requestedById"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "approver",
+      "targetModel": "Employee",
+      "relationName": "RequisitionDesignatedApprover",
+      "foreignKeyFields": [
+        "approverId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "approvedBy",
+      "targetModel": "Employee",
+      "relationName": "RequisitionApprover",
+      "foreignKeyFields": [
+        "approvedById"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "position",
+      "targetModel": "Position",
+      "relationName": null,
+      "foreignKeyFields": [
+        "positionId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "requestedById",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "RequisitionRequester"
+    },
+    {
+      "sourceColumn": "approverId",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "RequisitionDesignatedApprover"
+    },
+    {
+      "sourceColumn": "approvedById",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "RequisitionApprover"
+    },
+    {
+      "sourceColumn": "positionId",
+      "targetTable": "Position",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": [
+    {
+      "sourceTable": "JobPosting",
+      "sourceColumn": "requisitionId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "CandidateFieldDefinition",
+      "sourceColumn": "requisitionId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "RecruitmentApplication",
+      "sourceColumn": "requisitionId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "RecruitmentPipelineStage",
+      "sourceColumn": "requisitionId",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ]
+}

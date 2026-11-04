@@ -1,0 +1,99 @@
+{
+  "name": "ApplicationOvertimeDetail",
+  "dbName": "ApplicationOvertimeDetail",
+  "module": "ATTENDANCE",
+  "description": "Chi tiết số giờ và công việc của đơn đăng ký làm thêm giờ (OT)",
+  "columns": [
+    {
+      "name": "applicationId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Application",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng application",
+      "rawAttributes": "@id",
+      "relationName": null
+    },
+    {
+      "name": "employeeShiftId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "EmployeeShift",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng employeeShift",
+      "rawAttributes": "",
+      "relationName": "ApplicationOvertimeShift"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_ApplicationOvertimeDetail_employeeShiftId",
+      "columns": [
+        "employeeShiftId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_ApplicationOvertimeDetail",
+      "columns": [
+        "applicationId"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "application",
+      "targetModel": "Application",
+      "relationName": null,
+      "foreignKeyFields": [
+        "applicationId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "employeeShift",
+      "targetModel": "EmployeeShift",
+      "relationName": "ApplicationOvertimeShift",
+      "foreignKeyFields": [
+        "employeeShiftId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "applicationId",
+      "targetTable": "Application",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "employeeShiftId",
+      "targetTable": "EmployeeShift",
+      "targetColumn": "id",
+      "relationName": "ApplicationOvertimeShift"
+    }
+  ],
+  "incomingRelations": []
+}

@@ -1,0 +1,132 @@
+{
+  "name": "EmployeeRole",
+  "dbName": "employee_roles",
+  "module": "SECURITY",
+  "description": "Bảng dữ liệu EmployeeRole trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "employeeId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết hồ sơ nhân viên",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "roleId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "AppRole",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết vai trò phân quyền",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "assignedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": "@default(now())"
+    },
+    {
+      "name": "assignedBy",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu assignedBy",
+      "rawAttributes": ""
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_employee_roles_roleId",
+      "columns": [
+        "roleId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_employee_roles",
+      "columns": [
+        "employeeId",
+        "roleId"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "employee",
+      "targetModel": "Employee",
+      "relationName": null,
+      "foreignKeyFields": [
+        "employeeId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "role",
+      "targetModel": "AppRole",
+      "relationName": null,
+      "foreignKeyFields": [
+        "roleId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "employeeId",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "roleId",
+      "targetTable": "AppRole",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": []
+}

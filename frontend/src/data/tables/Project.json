@@ -1,0 +1,337 @@
+{
+  "name": "Project",
+  "dbName": "Project",
+  "module": "PROJECT",
+  "description": "Dự án phát triển phần mềm / hợp đồng dịch vụ IT outsourcing",
+  "columns": [
+    {
+      "name": "id",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": "cuid(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Khóa chính bản ghi (Primary Key)",
+      "rawAttributes": "@id @default(cuid())"
+    },
+    {
+      "name": "name",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": true,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Tên định danh hiển thị",
+      "rawAttributes": "@unique"
+    },
+    {
+      "name": "description",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mô tả chi tiết nghiệp vụ",
+      "rawAttributes": ""
+    },
+    {
+      "name": "status",
+      "type": "ProjectStatus",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "planning",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Trạng thái nghiệp vụ hiện tại",
+      "rawAttributes": "@default(planning)"
+    },
+    {
+      "name": "taskCreationPolicy",
+      "type": "TaskCreationPolicy",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "leader_only",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": true,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": "@default(leader_only)"
+    },
+    {
+      "name": "startDate",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Ngày bắt đầu có hiệu lực",
+      "rawAttributes": ""
+    },
+    {
+      "name": "expectedEndDate",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "actualEndDate",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời gian / Ngày tháng ghi nhận",
+      "rawAttributes": ""
+    },
+    {
+      "name": "dealTargetPercent",
+      "type": "Float",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu dealTargetPercent",
+      "rawAttributes": ""
+    },
+    {
+      "name": "teamLeaderId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng teamLeader",
+      "rawAttributes": "",
+      "relationName": "ProjectTeamLeader"
+    },
+    {
+      "name": "createdById",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "Employee",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng createdBy",
+      "rawAttributes": "",
+      "relationName": "ProjectCreator"
+    },
+    {
+      "name": "createdAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": "now(",
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm tạo bản ghi",
+      "rawAttributes": "@default(now())"
+    },
+    {
+      "name": "updatedAt",
+      "type": "DateTime",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Thời điểm cập nhật bản ghi gần nhất",
+      "rawAttributes": "@updatedAt"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_Project_createdById",
+      "columns": [
+        "createdById"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Project_name",
+      "columns": [
+        "name"
+      ],
+      "isUnique": true,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Project_status",
+      "columns": [
+        "status"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "IX_Project_teamLeaderId_status",
+      "columns": [
+        "teamLeaderId",
+        "status"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_Project",
+      "columns": [
+        "id"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "teamLeader",
+      "targetModel": "Employee",
+      "relationName": "ProjectTeamLeader",
+      "foreignKeyFields": [
+        "teamLeaderId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "createdBy",
+      "targetModel": "Employee",
+      "relationName": "ProjectCreator",
+      "foreignKeyFields": [
+        "createdById"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "teamLeaderId",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "ProjectTeamLeader"
+    },
+    {
+      "sourceColumn": "createdById",
+      "targetTable": "Employee",
+      "targetColumn": "id",
+      "relationName": "ProjectCreator"
+    }
+  ],
+  "incomingRelations": [
+    {
+      "sourceTable": "ProjectMember",
+      "sourceColumn": "projectId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "Task",
+      "sourceColumn": "projectId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "CustomQuery",
+      "sourceColumn": "projectId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "ProjectTaskStatus",
+      "sourceColumn": "projectId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "ProjectRole",
+      "sourceColumn": "projectId",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceTable": "ProjectTracker",
+      "sourceColumn": "projectId",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "name": "PayslipTemplateComponent",
+  "dbName": "PayslipTemplateComponent",
+  "module": "PAYROLL",
+  "description": "Bảng dữ liệu PayslipTemplateComponent trong hệ thống ERP",
+  "columns": [
+    {
+      "name": "templateId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "PayslipTemplate",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng template",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "componentId",
+      "type": "String",
+      "isArray": false,
+      "isOptional": false,
+      "isPk": true,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": true,
+      "fkTargetTable": "SalaryComponent",
+      "fkTargetField": "id",
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Mã liên kết đến bảng component",
+      "rawAttributes": "",
+      "relationName": null
+    },
+    {
+      "name": "overrideFormula",
+      "type": "String",
+      "isArray": false,
+      "isOptional": true,
+      "isPk": false,
+      "isUnique": false,
+      "defaultValue": null,
+      "isFk": false,
+      "fkTargetTable": null,
+      "fkTargetField": null,
+      "isEnum": false,
+      "isPrismaVirtual": false,
+      "description": "Trường dữ liệu overrideFormula",
+      "rawAttributes": ""
+    }
+  ],
+  "indexes": [
+    {
+      "name": "IX_PayslipTemplateComponent_componentId",
+      "columns": [
+        "componentId"
+      ],
+      "isUnique": false,
+      "isPrimary": false
+    },
+    {
+      "name": "PK_PayslipTemplateComponent",
+      "columns": [
+        "templateId",
+        "componentId"
+      ],
+      "isUnique": true,
+      "isPrimary": true
+    }
+  ],
+  "virtualRelations": [
+    {
+      "virtualName": "template",
+      "targetModel": "PayslipTemplate",
+      "relationName": null,
+      "foreignKeyFields": [
+        "templateId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    },
+    {
+      "virtualName": "component",
+      "targetModel": "SalaryComponent",
+      "relationName": null,
+      "foreignKeyFields": [
+        "componentId"
+      ],
+      "referenceFields": [
+        "id"
+      ]
+    }
+  ],
+  "outgoingRelations": [
+    {
+      "sourceColumn": "templateId",
+      "targetTable": "PayslipTemplate",
+      "targetColumn": "id",
+      "relationName": null
+    },
+    {
+      "sourceColumn": "componentId",
+      "targetTable": "SalaryComponent",
+      "targetColumn": "id",
+      "relationName": null
+    }
+  ],
+  "incomingRelations": []
+}
