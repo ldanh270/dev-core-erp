@@ -179,7 +179,9 @@ export default function ContractsPage() {
           <div className="flex flex-col min-w-0">
             <button
               type="button"
-              onClick={() => handleEdit(contract)}
+              onClick={() => {
+                handleEdit(contract)
+              }}
               className="font-semibold text-left text-foreground hover:text-primary transition-colors truncate focus:outline-none cursor-pointer"
               title={contract.title || "Hợp đồng lao động"}
             >
@@ -268,14 +270,18 @@ export default function ContractsPage() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="rounded-xl">
                 <DropdownMenuItem
-                  onClick={() => handleEdit(contract)}
+                  onClick={() => {
+                    handleEdit(contract)
+                  }}
                   className="cursor-pointer"
                 >
                   Chỉnh sửa hợp đồng
                 </DropdownMenuItem>
                 {contract.status === CONTRACT_STATUS.ACTIVE && (
                   <DropdownMenuItem
-                    onClick={() => handleTerminate(contract)}
+                    onClick={() => {
+                      handleTerminate(contract)
+                    }}
                     className="cursor-pointer text-destructive focus:text-destructive"
                   >
                     Chấm dứt hợp đồng
@@ -283,14 +289,18 @@ export default function ContractsPage() {
                 )}
                 {contract.status === CONTRACT_STATUS.PENDING_SIGNATURE && (
                   <DropdownMenuItem
-                    onClick={() => void handleSign(contract)}
+                    onClick={() => {
+                      void handleSign(contract)
+                    }}
                     className="cursor-pointer text-primary font-medium focus:text-primary"
                   >
                     Ký hợp đồng
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem
-                  onClick={() => handleRenew(contract)}
+                  onClick={() => {
+                    handleRenew(contract)
+                  }}
                   className="cursor-pointer"
                 >
                   Gia hạn hợp đồng
@@ -377,7 +387,9 @@ export default function ContractsPage() {
       extraContent={
         <ContractModal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => {
+            setIsModalOpen(false)
+          }}
           employeeId={selectedContract?.employeeId || ""}
           mode={modalMode}
           contract={selectedContract}
