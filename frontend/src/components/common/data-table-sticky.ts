@@ -84,6 +84,10 @@ export function computeStickyLayout<T>(columns: DataTableColumn<T>[]): StickyLay
   }
 }
 
+export type StickyCellStyle = CSSProperties & {
+  [key: `--${string}`]: string | number | undefined
+}
+
 /**
  * Helper generating utility classes and inline styles for sticky cells (th/td)
  * used inside DataTablePage or custom renderRows implementations.
@@ -92,7 +96,7 @@ export function getStickyCellProps<T>(
   col: DataTableColumn<T>,
   layout: StickyLayoutResult,
   options?: { isHeader?: boolean },
-): { className?: string; style?: CSSProperties } {
+): { className?: string; style?: StickyCellStyle } {
   const isSticky = layout.stickyColIds.has(col.id)
   const isHeader = options?.isHeader ?? false
 
@@ -135,7 +139,7 @@ export function getStickyCellProps<T>(
       width: col.width,
       minWidth: col.minWidth || col.width,
       maxWidth: col.width,
-      ["--sticky-left" as any]: `${layout.offsets[col.id] ?? 0}px`,
+      "--sticky-left": `${layout.offsets[col.id] ?? 0}px`,
     },
   }
 }
