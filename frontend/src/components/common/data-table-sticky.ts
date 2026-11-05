@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react"
+
 import type { DataTableColumn } from "./data-table.types"
 
 export interface StickyLayoutResult {
@@ -77,7 +78,8 @@ export function computeStickyLayout<T>(columns: DataTableColumn<T>[]): StickyLay
   return {
     offsets,
     lastStickyId,
-    totalMinWidth: allColumnsHavePx && accumulatedTotalWidth > 0 ? accumulatedTotalWidth : undefined,
+    totalMinWidth:
+      allColumnsHavePx && accumulatedTotalWidth > 0 ? accumulatedTotalWidth : undefined,
     stickyColIds,
   }
 }
