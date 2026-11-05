@@ -58,9 +58,7 @@ export function DataTablePage<T>({
     : "h-11 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
 
   // Multiples of 4px: Fixed cell padding & typography
-  const tdClass = isCompact
-    ? "px-3 text-sm"
-    : "px-4 text-sm"
+  const tdClass = isCompact ? "px-3 text-sm" : "px-4 text-sm"
 
   const rowHeightClass = isCompact ? "h-12" : "h-16"
 
@@ -83,7 +81,13 @@ export function DataTablePage<T>({
   const renderPrimaryAction = () => {
     if (!primaryAction) return null
     if (typeof primaryAction === "object" && "label" in primaryAction) {
-      const { label, icon: Icon, onClick, disabled, variant: btnVariant = "default" } = primaryAction
+      const {
+        label,
+        icon: Icon,
+        onClick,
+        disabled,
+        variant: btnVariant = "default",
+      } = primaryAction
       return (
         <Button
           onClick={onClick}
@@ -136,7 +140,9 @@ export function DataTablePage<T>({
                   }}
                   className={cn(
                     "relative flex items-center gap-2 px-3.5 h-11 text-sm font-medium transition-colors whitespace-nowrap cursor-pointer",
-                    isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground",
+                    isActive
+                      ? "text-primary font-semibold"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {TabIcon && <TabIcon className="size-4" />}
@@ -153,7 +159,9 @@ export function DataTablePage<T>({
                       {tab.count}
                     </span>
                   )}
-                  {isActive && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />}
+                  {isActive && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+                  )}
                 </button>
               )
             })}
@@ -175,7 +183,9 @@ export function DataTablePage<T>({
               )}
               {filters}
             </div>
-            {toolbarActions && <div className="flex items-center gap-2 shrink-0">{toolbarActions}</div>}
+            {toolbarActions && (
+              <div className="flex items-center gap-2 shrink-0">{toolbarActions}</div>
+            )}
           </div>
         )}
 
@@ -186,16 +196,17 @@ export function DataTablePage<T>({
               "w-full border-separate border-spacing-0 text-left",
               stickyLayout.totalMinWidth && "table-fixed",
             )}
-            style={stickyLayout.totalMinWidth ? { minWidth: `${stickyLayout.totalMinWidth}px` } : undefined}
+            style={
+              stickyLayout.totalMinWidth
+                ? { minWidth: `${stickyLayout.totalMinWidth}px` }
+                : undefined
+            }
           >
             {/* Column width synchronization */}
             {stickyLayout.totalMinWidth && (
               <colgroup>
                 {columns.map((col) => (
-                  <col
-                    key={`col-${col.id}`}
-                    style={col.width ? { width: col.width } : undefined}
-                  />
+                  <col key={`col-${col.id}`} style={col.width ? { width: col.width } : undefined} />
                 ))}
               </colgroup>
             )}
@@ -256,7 +267,10 @@ export function DataTablePage<T>({
                     <EmptyState
                       icon={emptyState?.icon}
                       title={emptyState?.title || "Không có dữ liệu"}
-                      description={emptyState?.description || "Chưa có bản ghi nào phù hợp với bộ lọc hiện tại."}
+                      description={
+                        emptyState?.description ||
+                        "Chưa có bản ghi nào phù hợp với bộ lọc hiện tại."
+                      }
                       action={emptyState?.action}
                     />
                   </td>
@@ -269,10 +283,7 @@ export function DataTablePage<T>({
                 data.map((item, idx) => (
                   <tr
                     key={keyExtractor ? keyExtractor(item, idx) : idx}
-                    className={cn(
-                      "group hover:bg-muted/25",
-                      rowHeightClass,
-                    )}
+                    className={cn("group hover:bg-muted/25", rowHeightClass)}
                   >
                     {columns.map((col) => {
                       const stickyProps = getStickyCellProps(col, stickyLayout)
@@ -290,7 +301,11 @@ export function DataTablePage<T>({
                           )}
                           style={stickyProps.style}
                         >
-                          {col.cell ? col.cell(item, idx) : col.accessor ? col.accessor(item) : null}
+                          {col.cell
+                            ? col.cell(item, idx)
+                            : col.accessor
+                              ? col.accessor(item)
+                              : null}
                         </td>
                       )
                     })}
