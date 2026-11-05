@@ -274,7 +274,9 @@ export default function EmployeeList() {
                     {employee.lockedUntil && new Date(employee.lockedUntil) > new Date() && (
                       <>
                         <DropdownMenuItem
-                          onClick={() => handleUnlock(employee.id)}
+                          onClick={() => {
+                            handleUnlock(employee.id)
+                          }}
                           className="cursor-pointer gap-2 text-amber-600 focus:text-amber-700 focus:bg-amber-50 dark:text-amber-400 dark:focus:text-amber-300 dark:focus:bg-amber-950/30"
                         >
                           <Unlock className="size-3.5" />
