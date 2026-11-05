@@ -80,7 +80,7 @@ export function AppPagination({
   ).sort((a, b) => a - b)
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-3 border-t border-border text-sm">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-border text-sm">
       {/* Page size selector & total items counter */}
       <div className="flex flex-col sm:flex-row items-center gap-3 text-muted-foreground">
         {onItemsPerPageChange && (
@@ -92,7 +92,7 @@ export function AppPagination({
                 onItemsPerPageChange(Number(val))
               }}
             >
-              <SelectTrigger size="sm" className="w-20 h-8 bg-background rounded-full text-xs font-medium px-3 shadow-none border-border">
+              <SelectTrigger size="sm" className="w-20 bg-background rounded-full text-xs font-medium px-3 shadow-none border-border">
                 <SelectValue placeholder={itemsPerPage.toString()} />
               </SelectTrigger>
               <SelectContent>
@@ -127,7 +127,7 @@ export function AppPagination({
                   e.preventDefault()
                   if (currentPage > 1) onPageChange(currentPage - 1)
                 }}
-                className={`h-8 rounded-full px-3 text-xs ${currentPage <= 1 ? "pointer-events-none opacity-50" : ""}`}
+                className={`rounded-full px-3 text-xs ${currentPage <= 1 ? "pointer-events-none opacity-50" : ""}`}
                 title="Trang trước"
               />
             </PaginationItem>
@@ -151,7 +151,7 @@ export function AppPagination({
                       e.preventDefault()
                       onPageChange(page)
                     }}
-                    className={`size-8 rounded-full text-xs font-semibold ${
+                    className={`rounded-full text-xs font-semibold ${
                       page === currentPage
                         ? "bg-primary text-primary-foreground hover:bg-primary/90"
                         : "hover:bg-muted"
@@ -172,7 +172,7 @@ export function AppPagination({
                   e.preventDefault()
                   if (currentPage < totalPages) onPageChange(currentPage + 1)
                 }}
-                className={`h-8 rounded-full px-3 text-xs ${currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}`}
+                className={`rounded-full px-3 text-xs ${currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}`}
                 title="Trang sau"
               />
             </PaginationItem>

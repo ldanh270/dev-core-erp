@@ -6,12 +6,15 @@ import { PageHeader } from "@/components/common/page-header"
 import { SearchInput } from "@/components/common/search-input"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 
 import { useMemo } from "react"
 
+import { RotateCcw, SearchX } from "lucide-react"
+
 import { computeStickyLayout, getStickyCellProps } from "./data-table-sticky"
-import type { DataTableColumn, DataTablePageProps } from "./data-table.types"
+import type { DataTablePageProps } from "./data-table.types"
 
 export type {
   DataTableColumn,
@@ -22,8 +25,8 @@ export type {
 
 /**
  * Master Enterprise Data Table Page component.
- * Combines viewport-locked internal scrolling, sticky thead, sticky left columns (>= md),
- * 400ms debounced search, and pinned pagination into a single reusable Clean Architecture primitive.
+ * Combines viewport-locked internal scrolling, sticky thead, sticky left columns (>= lg),
+ * 400ms debounced search, smart context-aware empty state, and pinned pagination into a single reusable Clean Architecture primitive.
  * Strictly adheres to 4px multiples design tokens (docs/component-sizing-standard.md).
  */
 export function DataTablePage<T>({
@@ -50,31 +53,47 @@ export function DataTablePage<T>({
   emptyState,
   pagination,
   extraContent,
+  onResetFilters,
 }: DataTablePageProps<T>) {
   const isCompact = density === "compact"
-  // Multiples of 4px: Header h-12 (48px) vs compact h-10 (40px)
+  // Padding-driven typography: flexible cell padding instead of hardcoded fixed heights
   const thClass = isCompact
-    ? "h-10 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
-    : "h-11 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+    ? "px-3 py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+    : "px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
 
-  // Multiples of 4px: Fixed cell padding & typography
-  const tdClass = isCompact ? "px-3 text-sm" : "px-4 text-sm"
+  // Padding-driven cell sizing: py-3 (12px top + 12px bottom = 24px) + 36px content = exactly 60px standard row
+  const tdClass = isCompact ? "px-3 py-2 text-sm" : "px-4 py-3 text-sm"
 
-  const rowHeightClass = isCompact ? "h-12" : "h-16"
+  // Responsive breakpoint hooks for progressive column visibility
+  const isMd = useMediaQuery("(min-width: 768px)")
+  const isLg = useMediaQuery("(min-width: 1024px)")
+  const isXl = useMediaQuery("(min-width: 1280px)")
 
-  // Compute sticky offsets and table minWidth using pure utility
-  const stickyLayout = useMemo(() => computeStickyLayout(columns), [columns])
+  // Sticky Column Integrity Law: Columns hidden by breakpoints are filtered out
+  // BEFORE computing sticky offsets, colgroup, and totalMinWidth
+  const visibleColumns = useMemo(() => {
+    return columns.filter((col) => {
+      if (col.hideBelow === "md" && !isMd) return false
+      if (col.hideBelow === "lg" && !isLg) return false
+      if (col.hideBelow === "xl" && !isXl) return false
+      return true
+    })
+  }, [columns, isMd, isLg, isXl])
 
-  const hideClass = (col: DataTableColumn<T>) => {
-    switch (col.hideBelow) {
-      case "xl":
-        return "hidden xl:table-cell"
-      case "lg":
-        return "hidden lg:table-cell"
-      case "md":
-        return "hidden md:table-cell"
-      default:
-        return undefined
+  // Compute sticky offsets and table minWidth using pure utility on visibleColumns
+  const stickyLayout = useMemo(() => computeStickyLayout(visibleColumns), [visibleColumns])
+
+  const hasActiveSearch = Boolean(search?.value && search.value.trim().length > 0)
+
+  const handleResetSearchAndFilters = () => {
+    if (search?.onClear) {
+      search.onClear()
+    }
+    if (search?.onSearch) {
+      search.onSearch("")
+    }
+    if (onResetFilters) {
+      onResetFilters()
     }
   }
 
@@ -93,7 +112,7 @@ export function DataTablePage<T>({
           onClick={onClick}
           disabled={disabled}
           variant={btnVariant}
-          className="h-10 px-4 rounded-full gap-2 text-sm font-semibold shadow-xs"
+          className="rounded-full shadow-xs"
         >
           {Icon && <Icon className="size-4" />}
           <span>{label}</span>
@@ -127,7 +146,7 @@ export function DataTablePage<T>({
       >
         {/* Tab navigation */}
         {tabs && (
-          <nav className="flex items-center gap-1 border-b border-border bg-card px-6 h-11 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink-0 relative">
+          <nav className="flex items-center gap-1 border-b border-border bg-card px-0 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink-0 relative">
             {tabs.items.map((tab) => {
               const isActive = tabs.activeTab === tab.id
               const TabIcon = tab.icon
@@ -139,18 +158,18 @@ export function DataTablePage<T>({
                     tabs.onTabChange(tab.id)
                   }}
                   className={cn(
-                    "relative flex items-center gap-2 px-3.5 h-11 text-sm font-medium transition-colors whitespace-nowrap cursor-pointer",
+                    "relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium leading-5 transition-colors whitespace-nowrap cursor-pointer",
                     isActive
                       ? "text-primary font-semibold"
                       : "text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  {TabIcon && <TabIcon className="size-4" />}
+                  {TabIcon && <TabIcon className="size-4 shrink-0" />}
                   <span>{tab.label}</span>
                   {tab.count !== undefined && (
                     <span
                       className={cn(
-                        "rounded-full h-5 min-w-5 px-2 flex items-center justify-center text-xs font-semibold border",
+                        "rounded-full h-5 min-w-5 px-2 flex items-center justify-center text-xs font-semibold border leading-none",
                         isActive
                           ? "bg-primary text-primary-foreground border-primary"
                           : "bg-muted text-muted-foreground border-border",
@@ -170,7 +189,7 @@ export function DataTablePage<T>({
 
         {/* Toolbar & filters */}
         {(search || filters || toolbarActions) && (
-          <div className="relative z-30 flex flex-col gap-3 border-b border-border px-6 py-3 sm:flex-row sm:items-center justify-between bg-card shrink-0">
+          <div className="relative z-30 flex flex-col gap-2.5 border-b border-border px-4 py-3 sm:flex-row sm:items-center justify-between bg-card shrink-0">
             <div className="flex flex-1 flex-wrap items-center gap-3">
               {search && (
                 <SearchInput
@@ -178,6 +197,7 @@ export function DataTablePage<T>({
                   value={search.value}
                   debounceMs={search.debounceMs}
                   onSearch={search.onSearch}
+                  onClear={search.onClear}
                   className="w-full sm:max-w-xs"
                 />
               )}
@@ -205,15 +225,15 @@ export function DataTablePage<T>({
             {/* Column width synchronization */}
             {stickyLayout.totalMinWidth && (
               <colgroup>
-                {columns.map((col) => (
+                {visibleColumns.map((col) => (
                   <col key={`col-${col.id}`} style={col.width ? { width: col.width } : undefined} />
                 ))}
               </colgroup>
             )}
             {/* Table header */}
             <thead className="bg-card">
-              <tr className={isCompact ? "h-10" : "h-11"}>
-                {columns.map((col) => {
+              <tr>
+                {visibleColumns.map((col) => {
                   const stickyProps = getStickyCellProps(col, stickyLayout, { isHeader: true })
                   return (
                     <th
@@ -223,7 +243,6 @@ export function DataTablePage<T>({
                         "border-b border-border bg-card whitespace-nowrap select-none",
                         col.align === "center" && "text-center",
                         col.align === "right" && "text-right",
-                        hideClass(col),
                         stickyProps.className,
                         col.headerClassName,
                       )}
@@ -240,8 +259,8 @@ export function DataTablePage<T>({
               {isLoading ? (
                 /* Loading skeleton */
                 Array.from({ length: loadingRowsCount }).map((_, rIdx) => (
-                  <tr key={`loading-row-${rIdx}`} className={rowHeightClass}>
-                    {columns.map((col) => {
+                  <tr key={`loading-row-${rIdx}`}>
+                    {visibleColumns.map((col) => {
                       const stickyProps = getStickyCellProps(col, stickyLayout)
                       return (
                         <td
@@ -249,7 +268,6 @@ export function DataTablePage<T>({
                           className={cn(
                             tdClass,
                             "border-b border-border bg-card",
-                            hideClass(col),
                             stickyProps.className,
                           )}
                           style={stickyProps.style}
@@ -261,18 +279,38 @@ export function DataTablePage<T>({
                   </tr>
                 ))
               ) : data.length === 0 ? (
-                /* Empty state */
+                /* Smart Context-Aware Empty State */
                 <tr>
-                  <td colSpan={columns.length} className="p-8">
-                    <EmptyState
-                      icon={emptyState?.icon}
-                      title={emptyState?.title || "Không có dữ liệu"}
-                      description={
-                        emptyState?.description ||
-                        "Chưa có bản ghi nào phù hợp với bộ lọc hiện tại."
-                      }
-                      action={emptyState?.action}
-                    />
+                  <td colSpan={visibleColumns.length} className="py-12 px-4">
+                    {hasActiveSearch ? (
+                      <EmptyState
+                        icon={SearchX}
+                        title="Không tìm thấy kết quả phù hợp"
+                        description={`Không có bản ghi nào khớp với từ khóa "${search?.value}".`}
+                        action={
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleResetSearchAndFilters}
+                            className="rounded-full gap-1.5"
+                          >
+                            <RotateCcw className="size-3.5" />
+                            <span>Đặt lại bộ lọc</span>
+                          </Button>
+                        }
+                      />
+                    ) : (
+                      <EmptyState
+                        icon={emptyState?.icon}
+                        title={emptyState?.title || "Không có dữ liệu"}
+                        description={
+                          emptyState?.description ||
+                          "Chưa có bản ghi nào được ghi nhận."
+                        }
+                        action={emptyState?.action}
+                      />
+                    )}
                   </td>
                 </tr>
               ) : renderRows ? (
@@ -283,9 +321,9 @@ export function DataTablePage<T>({
                 data.map((item, idx) => (
                   <tr
                     key={keyExtractor ? keyExtractor(item, idx) : idx}
-                    className={cn("group hover:bg-muted/25", rowHeightClass)}
+                    className="group hover:bg-muted/25 transition-colors"
                   >
-                    {columns.map((col) => {
+                    {visibleColumns.map((col) => {
                       const stickyProps = getStickyCellProps(col, stickyLayout)
                       return (
                         <td
@@ -295,17 +333,29 @@ export function DataTablePage<T>({
                             "border-b border-border bg-card group-hover:bg-muted",
                             col.align === "center" && "text-center",
                             col.align === "right" && "text-right",
-                            hideClass(col),
                             stickyProps.className,
                             col.className,
                           )}
                           style={stickyProps.style}
                         >
-                          {col.cell
-                            ? col.cell(item, idx)
-                            : col.accessor
-                              ? col.accessor(item)
-                              : null}
+                          {(() => {
+                            const content = col.cell
+                              ? col.cell(item, idx)
+                              : col.accessor
+                                ? col.accessor(item)
+                                : null
+                            if (col.truncate) {
+                              return (
+                                <div
+                                  className="min-w-0 truncate"
+                                  title={typeof content === "string" ? content : undefined}
+                                >
+                                  {content}
+                                </div>
+                              )
+                            }
+                            return content
+                          })()}
                         </td>
                       )
                     })}
