@@ -116,15 +116,17 @@ export function getStickyCellProps<T>(
 
   const isLast = col.id === layout.lastStickyId
 
-  // Header cells stick vertically (top: 0) and horizontally (left: offset) with highest z-index (z-30).
-  // Body cells stick horizontally (left: offset) with z-10.
+  // Responsive Horizontal Pinning:
+  // - Offset is assigned via CSS variable `--sticky-left` rather than inline `left`.
+  // - th sticks vertically (top: 0) at all breakpoints, but ONLY pins horizontally on desktop (lg: >= 1024px).
+  // - td pins horizontally ONLY on desktop (lg:sticky lg:left-[var(--sticky-left)]); static on mobile (< 1024px).
   const baseClass = isHeader
-    ? "sticky top-0 z-30 bg-card"
-    : "sticky z-10 bg-card group-hover:bg-muted"
+    ? "sticky top-0 z-20 lg:z-30 lg:left-[var(--sticky-left)] bg-card"
+    : "lg:sticky lg:z-10 lg:left-[var(--sticky-left)] bg-card group-hover:bg-muted"
 
-  // Separator border and subtle drop shadow on the right edge of the last pinned column.
+  // Separator border and subtle drop shadow on the right edge of the last pinned column (desktop only).
   const shadowClass = isLast
-    ? "border-r border-border shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)] dark:shadow-[4px_0_6px_-4px_rgba(0,0,0,0.5)]"
+    ? "lg:border-r lg:border-border lg:shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)] dark:lg:shadow-[4px_0_6px_-4px_rgba(0,0,0,0.5)]"
     : ""
 
   return {
@@ -133,7 +135,7 @@ export function getStickyCellProps<T>(
       width: col.width,
       minWidth: col.minWidth || col.width,
       maxWidth: col.width,
-      left: `${layout.offsets[col.id] ?? 0}px`,
+      ["--sticky-left" as any]: `${layout.offsets[col.id] ?? 0}px`,
     },
   }
 }

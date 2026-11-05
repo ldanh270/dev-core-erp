@@ -17,8 +17,10 @@ export interface DataTableColumn<T> {
   stickyLeft?: boolean
   /** Optional manual left offset override. If omitted, offset is automatically calculated. */
   stickyLeftOffset?: string
-  /** Hides column below specified breakpoint (if applicable). */
+  /** Hides column below specified breakpoint (if applicable). NOTE: Sticky columns MUST NOT set hideBelow. */
   hideBelow?: "md" | "lg" | "xl"
+  /** Enables text truncation with ellipsis and native tooltip on cell text */
+  truncate?: boolean
 }
 
 export interface DataTableTabItem {
@@ -67,7 +69,9 @@ export interface DataTablePageProps<T> {
     value?: string
     debounceMs?: number
     onSearch: (value: string) => void
+    onClear?: () => void
   }
+  onResetFilters?: () => void
   filters?: ReactNode
   toolbarActions?: ReactNode
   columns: DataTableColumn<T>[]
