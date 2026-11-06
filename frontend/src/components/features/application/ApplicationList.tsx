@@ -186,7 +186,7 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
                   setPage(1)
                 }}
               >
-                <SelectTrigger size="sm" aria-label="Lọc theo loại đơn" className="bg-background border-border shadow-none rounded-full">
+                <SelectTrigger aria-label="Lọc theo loại đơn" className="bg-background border-border shadow-none rounded-full text-sm font-semibold">
                   <SelectValue placeholder="Loại đơn" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -203,16 +203,15 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
             <Button
               type="button"
               variant="outline"
-              size="sm"
               onClick={() => {
                 beginTransition()
                 setKeyword("")
                 setTypeFilter("all")
                 setPage(1)
               }}
-              className="gap-1.5 rounded-full"
+              className="gap-1.5 rounded-full text-sm font-semibold"
             >
-              <RotateCcw className="size-3.5" />
+              <RotateCcw className="size-4" />
               Đặt lại
             </Button>
           </div>
@@ -222,20 +221,46 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
       {/* Table Area */}
       <div className="relative flex-1 min-h-0 overflow-auto overscroll-contain app-scrollbar">
         <table className="w-full border-separate border-spacing-0 text-left">
+          <colgroup>
+            <col style={{ width: "120px" }} />
+            {(mode === "manage" || mode === "all") && <col style={{ width: "200px" }} />}
+            {(mode === "manage" || mode === "all") && <col style={{ width: "130px" }} />}
+            <col style={{ width: "160px" }} />
+            <col style={{ width: "150px" }} />
+            <col style={{ width: "130px" }} />
+            <col style={{ width: "160px" }} />
+            <col style={{ width: "160px" }} />
+          </colgroup>
           <thead className="bg-card">
             <tr>
-              <th className={cn(thClass, "border-b border-border bg-card")}>Mã đơn</th>
+              <th className={cn(thClass, "sticky top-0 z-20 lg:z-30 lg:sticky lg:left-0 border-b border-border bg-card whitespace-nowrap")}>
+                Mã đơn
+              </th>
               {(mode === "manage" || mode === "all") && (
-                <th className={cn(thClass, "border-b border-border bg-card")}>Họ và tên</th>
+                <th className={cn(thClass, "sticky top-0 z-20 lg:z-30 lg:sticky lg:left-[120px] border-b border-border bg-card whitespace-nowrap lg:border-r lg:border-border")}>
+                  Họ và tên
+                </th>
               )}
               {(mode === "manage" || mode === "all") && (
-                <th className={cn(thClass, "border-b border-border bg-card")}>Mã nhân sự</th>
+                <th className={cn(thClass, "sticky top-0 z-20 border-b border-border bg-card whitespace-nowrap")}>
+                  Mã nhân sự
+                </th>
               )}
-              <th className={cn(thClass, "border-b border-border bg-card")}>Loại đơn</th>
-              <th className={cn(thClass, "border-b border-border bg-card")}>Trạng thái</th>
-              <th className={cn(thClass, "border-b border-border bg-card")}>Ngày tạo</th>
-              <th className={cn(thClass, "border-b border-border bg-card")}>Người tạo</th>
-              <th className={cn(thClass, "border-b border-border bg-card")}>Người duyệt</th>
+              <th className={cn(thClass, "sticky top-0 z-20 border-b border-border bg-card whitespace-nowrap")}>
+                Loại đơn
+              </th>
+              <th className={cn(thClass, "sticky top-0 z-20 border-b border-border bg-card whitespace-nowrap")}>
+                Trạng thái
+              </th>
+              <th className={cn(thClass, "sticky top-0 z-20 border-b border-border bg-card whitespace-nowrap")}>
+                Ngày tạo
+              </th>
+              <th className={cn(thClass, "sticky top-0 z-20 border-b border-border bg-card whitespace-nowrap")}>
+                Người tạo
+              </th>
+              <th className={cn(thClass, "sticky top-0 z-20 border-b border-border bg-card whitespace-nowrap")}>
+                Người duyệt
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -275,23 +300,23 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
                   }}
                   className="group hover:bg-muted/25 transition-colors cursor-pointer border-b border-border"
                 >
-                  <td className={cn(tdClass, "border-b border-border font-medium text-foreground")}>
+                  <td className={cn(tdClass, "border-b border-border font-medium text-foreground lg:sticky lg:left-0 lg:z-10 bg-card group-hover:bg-muted whitespace-nowrap")}>
                     {app.id.substring(0, 8).toUpperCase()}
                   </td>
                   {(mode === "manage" || mode === "all") && (
-                    <td className={cn(tdClass, "border-b border-border font-medium text-foreground whitespace-nowrap")}>
+                    <td className={cn(tdClass, "border-b border-border font-medium text-foreground whitespace-nowrap lg:sticky lg:left-[120px] lg:z-10 bg-card group-hover:bg-muted lg:border-r lg:border-border")}>
                       {app.employee?.fullName || "N/A"}
                     </td>
                   )}
                   {(mode === "manage" || mode === "all") && (
-                    <td className={cn(tdClass, "border-b border-border text-primary font-medium group-hover:underline")}>
+                    <td className={cn(tdClass, "border-b border-border text-primary font-medium group-hover:underline whitespace-nowrap")}>
                       {app.employeeId.substring(0, 10)}
                     </td>
                   )}
-                  <td className={cn(tdClass, "border-b border-border text-foreground font-medium")}>
+                  <td className={cn(tdClass, "border-b border-border text-foreground font-medium whitespace-nowrap")}>
                     {APPLICATION_TYPE_LABELS[app.type] || app.type}
                   </td>
-                  <td className={cn(tdClass, "border-b border-border")}>
+                  <td className={cn(tdClass, "border-b border-border whitespace-nowrap")}>
                     <StatusPill
                       label={STATUS_LABELS[app.status]?.label || app.status}
                       variant={STATUS_LABELS[app.status]?.variant || "neutral"}
@@ -302,15 +327,15 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
                   </td>
                   <td className={cn(tdClass, "border-b border-border")}>
                     <div className="flex flex-col">
-                      <span className="text-primary font-medium">
+                      <span className="text-primary font-medium text-xs">
                         {app.employeeId.substring(0, 10)}
                       </span>
-                      <span className="text-muted-foreground text-xs">
+                      <span className="text-muted-foreground text-xs truncate max-w-40">
                         {app.employee?.fullName || "N/A"}
                       </span>
                     </div>
                   </td>
-                  <td className={cn(tdClass, "border-b border-border text-muted-foreground")}>
+                  <td className={cn(tdClass, "border-b border-border text-muted-foreground whitespace-nowrap")}>
                     {app.approvedBy?.fullName || app.assignedTo?.fullName || "—"}
                   </td>
                 </tr>
