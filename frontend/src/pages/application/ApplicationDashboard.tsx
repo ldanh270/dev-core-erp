@@ -1,6 +1,6 @@
 "use client"
 
-import { PageCard, PageHeader } from "@/components/common"
+import { PageCard, PageContainer, PageHeader } from "@/components/common"
 import { ApplicationDetail } from "@/components/features/application/ApplicationDetail"
 import { ApplicationList } from "@/components/features/application/ApplicationList"
 import { CancelDialog } from "@/components/features/application/CancelDialog"
@@ -173,7 +173,7 @@ export default function ApplicationDashboard() {
   }
 
   return (
-    <main className="container mx-auto w-full space-y-6 p-8 animate-in fade-in duration-300">
+    <PageContainer variant="default" className="space-y-6">
       {/* Header */}
       <div className="space-y-4">
         <PageHeader
@@ -186,9 +186,7 @@ export default function ApplicationDashboard() {
                 : "Tra cứu, theo dõi và quản lý toàn bộ đơn từ của công ty."
           }
           actions={
-            <Button
-              size="sm"
-              className="h-9 px-4 rounded-full font-semibold gap-1.5 text-xs"
+            <Button size="default" className="rounded-full shadow-xs gap-2 font-semibold"
               onClick={() => {
                 setCreateType(undefined)
                 setShowSubmitModal(true)
@@ -206,7 +204,9 @@ export default function ApplicationDashboard() {
               onClick={() => {
                 setMineSubTab("list")
               }}
-              className={`relative flex items-center py-3 font-medium text-[14px] transition-colors ${
+              type="button"
+              className={`relative flex items-center px-1 py-2.5 font-medium text-sm transition-colors cursor-pointer ${
+
                 mineSubTab === "list"
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
@@ -214,14 +214,16 @@ export default function ApplicationDashboard() {
             >
               Danh sách đơn
               {mineSubTab === "list" && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary rounded-t-full" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
               )}
             </button>
             <button
               onClick={() => {
                 setMineSubTab("leaves")
               }}
-              className={`relative flex items-center py-3 font-medium text-[14px] transition-colors ${
+              type="button"
+              className={`relative flex items-center px-1 py-2.5 font-medium text-sm transition-colors cursor-pointer ${
+
                 mineSubTab === "leaves"
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
@@ -229,7 +231,7 @@ export default function ApplicationDashboard() {
             >
               Tổng phép
               {mineSubTab === "leaves" && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary rounded-t-full" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
               )}
             </button>
           </div>
@@ -337,6 +339,6 @@ export default function ApplicationDashboard() {
           optionalReason={true}
         />
       )}
-    </main>
+    </PageContainer>
   )
 }

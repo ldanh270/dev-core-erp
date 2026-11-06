@@ -1,5 +1,7 @@
 "use client"
 
+import { BackButton, PageContainer } from "@/components/common"
+import { Button } from "@/components/ui/button"
 import { CreateApplicationInfoSection } from "@/components/features/application/CreateApplicationInfoSection"
 import { CreateApplicationTimeSection } from "@/components/features/application/CreateApplicationTimeSection"
 import { CreateApplicationRecruitmentSection } from "@/components/features/application/create-application-recruitment-section"
@@ -8,7 +10,7 @@ import { ROUTES } from "@/config/routes.config"
 import { useCreateApplicationForm } from "@/hooks/application/useCreateApplicationForm"
 import { useAuthStore } from "@/store/auth-store"
 
-import { ArrowLeft, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 
 /** Renders the route-level application creation workflow. */
@@ -39,15 +41,10 @@ export default function CreateApplicationPage() {
   }
 
   return (
-    <div className="min-h-full w-full bg-background animate-in fade-in duration-300">
-      <div className="mx-auto flex min-h-full w-full max-w-5xl flex-col gap-6 p-6 md:p-8">
-        <button
-          onClick={handleBack}
-          aria-label="Quay lại danh sách đơn thư"
-          className="flex h-10 w-10 shrink-0 items-center justify-center self-start rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-        >
-          <ArrowLeft size={20} />
-        </button>
+    <PageContainer variant="centered" className="space-y-6">
+      <div className="flex items-center">
+        <BackButton onBack={handleBack} backHref={ROUTES.APPLICATION.BASE} />
+      </div>
 
         {/* Section 1: Thông tin đơn */}
         <CreateApplicationInfoSection
@@ -86,35 +83,39 @@ export default function CreateApplicationPage() {
             )}
 
             <div className="flex justify-center mt-4">
-              <button
+              <Button
+                type="button"
+                variant="outline"
                 onClick={addForm}
-                className="flex h-10 items-center gap-2 rounded-full border border-dashed border-primary px-6 text-xs font-semibold text-primary transition-colors hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                className="rounded-full border-dashed border-primary px-6 text-xs font-semibold text-primary hover:bg-primary/5 shadow-none gap-2"
               >
                 <Plus size={15} /> Thêm {typeLabel.toLowerCase()}
-              </button>
+              </Button>
             </div>
           </div>
         )}
 
-        <div className="mt-auto flex justify-end gap-3 pb-2 pt-6">
-          <button
+        <div className="mt-auto flex justify-end gap-3 pb-2 pt-6 border-t border-border">
+          <Button
+            type="button"
+            variant="outline"
             onClick={handleBack}
-            className="h-10 rounded-full border border-input px-6 text-xs font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            className="rounded-full px-6 font-semibold shadow-xs"
           >
             Hủy
-          </button>
-          <button
+          </Button>
+          <Button
+            type="button"
             onClick={(e) => {
               e.preventDefault()
               void handleSubmit()
             }}
             disabled={isSubmitting}
-            className="h-10 rounded-full bg-primary px-6 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50"
+            className="rounded-full bg-primary px-8 font-semibold text-primary-foreground shadow-xs hover:bg-primary/90"
           >
             {isSubmitting ? "Đang gửi..." : `Gửi ${forms.length} đơn`}
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>
+    </PageContainer>
   )
 }
