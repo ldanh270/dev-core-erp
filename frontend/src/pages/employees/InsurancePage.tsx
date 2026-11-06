@@ -70,11 +70,11 @@ export default function InsurancePage() {
             <div className="size-9 rounded-full bg-muted flex items-center justify-center shrink-0 border border-border">
               <User className="size-4 text-muted-foreground" />
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold text-sm text-foreground truncate" title={employee.fullName}>
+            <div className="min-w-0 flex-1 flex flex-col justify-center">
+              <p className="font-semibold text-sm leading-5 text-foreground truncate" title={employee.fullName}>
                 {employee.fullName}
               </p>
-              <p className="text-xs text-muted-foreground truncate" title={employee.username}>
+              <p className="text-xs leading-4 text-muted-foreground truncate" title={employee.username}>
                 {employee.username}
               </p>
             </div>
@@ -173,8 +173,11 @@ export default function InsurancePage() {
       isLoading={isLoading}
       emptyState={{
         icon: ShieldAlert,
-        title: "Không tìm thấy dữ liệu bảo hiểm",
-        description: "Không có nhân sự hoặc hồ sơ bảo hiểm nào phù hợp với từ khóa tìm kiếm.",
+        title: "Chưa có dữ liệu bảo hiểm",
+        description: "Bắt đầu khai báo hồ sơ bảo hiểm cho nhân sự công ty.",
+      }}
+      onResetFilters={() => {
+        setSearchParams(new URLSearchParams())
       }}
       pagination={
         filteredEmployees.length > 0

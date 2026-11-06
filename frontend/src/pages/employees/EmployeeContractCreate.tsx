@@ -30,6 +30,7 @@ import {
   CONTRACT_TYPES,
   type ContractType,
 } from "@/config/entities/employee-contract.config"
+import { ROUTES } from "@/config/routes.config"
 import { useCreateContract } from "@/hooks/employee-contract/use-contracts"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import { routerNavigate } from "@/lib/router-navigator"
@@ -175,7 +176,7 @@ export default function EmployeeContractCreate() {
       })
 
       toast.success("Tạo mới hợp đồng lao động thành công")
-      routerNavigate("/hrm/contracts")
+      routerNavigate(ROUTES.HRM.CONTRACTS)
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } }
       toast.error(error.response?.data?.message || "Không thể tạo hợp đồng")
@@ -185,7 +186,9 @@ export default function EmployeeContractCreate() {
   return (
     <EntityFormPage
       title="Tạo mới hợp đồng lao động"
-      onBack={() => routerNavigate("/hrm/contracts")}
+      onBack={() => {
+        routerNavigate(ROUTES.HRM.CONTRACTS)
+      }}
       formId="contract-create-form"
       isPending={createContractMutation.isPending}
       submitLabel="Lưu"
@@ -599,7 +602,7 @@ export default function EmployeeContractCreate() {
                           variant="ghost"
                           size="icon"
                           onClick={() => { handleRemoveAllowanceRow(row.id); }}
-                          className="h-8 w-8 text-destructive rounded-full hover:bg-destructive/10"
+                          className="text-destructive rounded-full hover:bg-destructive/10"
                         >
                           <Trash2 size={14} />
                         </Button>

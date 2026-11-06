@@ -176,18 +176,18 @@ export default function ContractsPage() {
         minWidth: "240px",
         sticky: true,
         cell: (contract) => (
-          <div className="flex flex-col min-w-0">
+          <div className="flex flex-col justify-center min-w-0">
             <button
               type="button"
               onClick={() => {
                 handleEdit(contract)
               }}
-              className="font-semibold text-left text-foreground hover:text-primary transition-colors truncate focus:outline-none cursor-pointer"
+              className="font-semibold text-left text-sm leading-5 text-foreground hover:text-primary transition-colors truncate focus:outline-none cursor-pointer"
               title={contract.title || "Hợp đồng lao động"}
             >
               {contract.title || "Hợp đồng lao động"}
             </button>
-            <span className="font-mono text-xs text-muted-foreground mt-0.5 truncate">
+            <span className="font-mono text-xs leading-4 text-muted-foreground truncate">
               {contract.contractNumber}
             </span>
           </div>
@@ -262,7 +262,8 @@ export default function ContractsPage() {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="size-8 p-0 rounded-full text-muted-foreground hover:text-foreground"
+                  size="icon"
+                  className="rounded-full text-muted-foreground hover:text-foreground"
                 >
                   <span className="sr-only">Mở menu thao tác</span>
                   <MoreHorizontal className="size-4" />
@@ -359,8 +360,11 @@ export default function ContractsPage() {
       isLoading={isLoading}
       emptyState={{
         icon: FileText,
-        title: "Không tìm thấy hợp đồng",
-        description: "Không có hợp đồng lao động nào phù hợp với điều kiện tìm kiếm hoặc bộ lọc hiện tại.",
+        title: "Chưa có hợp đồng nào",
+        description: "Bắt đầu tạo hợp đồng lao động đầu tiên cho nhân sự.",
+      }}
+      onResetFilters={() => {
+        setSearchParams(new URLSearchParams())
       }}
       pagination={
         filteredContracts.length > 0
