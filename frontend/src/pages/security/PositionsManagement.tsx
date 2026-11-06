@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { PageCard } from "@/components/common"
+import { PageCard, PageContainer } from "@/components/common"
 import {
   Dialog,
   DialogContent,
@@ -117,7 +117,7 @@ export default function PositionsManagement() {
   }
 
   return (
-    <div className="container p-8 space-y-6">
+    <PageContainer variant="default" className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border pb-6">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
@@ -130,7 +130,7 @@ export default function PositionsManagement() {
         </div>
         <Button
           onClick={handleOpenCreate}
-          className="rounded-full bg-primary text-primary-foreground hover:bg-primary/95 flex items-center gap-1.5 h-10 text-xs px-4"
+          size="default" className="rounded-full shadow-xs gap-2 font-semibold"
         >
           <Plus className="size-4" />
           Thêm chức vụ mới
@@ -313,6 +313,6 @@ export default function PositionsManagement() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageContainer>
   )
 }

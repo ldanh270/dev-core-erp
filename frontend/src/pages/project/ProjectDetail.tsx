@@ -16,7 +16,7 @@ import { taskApi } from "@/lib/api/task.api"
 import { useAuthStore } from "@/store/auth-store"
 
 import { extractErrorMessage } from "@/utils/error-helper"
-import { useConfirm } from "@/components/common"
+import { PageContainer, useConfirm } from "@/components/common"
 
 // Sub-components imports
 import { ProjectHeader } from "./components/project-header"
@@ -216,21 +216,21 @@ export default function ProjectDetail() {
   // Loading state placeholder view using Skeleton structure panels
   if (isLoadingProject) {
     return (
-      <div className="container p-8 space-y-6">
+      <PageContainer variant="default" className="space-y-6">
         <Skeleton className="h-14 w-1/3 rounded-full" />
         <Skeleton className="h-10 w-full rounded-full" />
         <div className="grid grid-cols-3 gap-6">
           <Skeleton className="h-64 col-span-2 rounded-xl" />
           <Skeleton className="h-64 col-span-1 rounded-xl" />
         </div>
-      </div>
+      </PageContainer>
     )
   }
 
   // Error feedback view if the target project record is not found in database.
   if (isProjectError || !project) {
     return (
-      <div className="container p-8 text-center space-y-4">
+      <PageContainer variant="default" className="text-center space-y-4">
         <AlertCircle className="size-12 text-destructive mx-auto" />
         <h3 className="text-lg font-bold text-foreground">Không tìm thấy dự án</h3>
         <p className="text-sm text-muted-foreground">
@@ -239,7 +239,7 @@ export default function ProjectDetail() {
         <Button asChild className="rounded-full">
           <Link to="/project/list">Quay lại danh sách</Link>
         </Button>
-      </div>
+      </PageContainer>
     )
   }
 
@@ -272,7 +272,7 @@ export default function ProjectDetail() {
   activitiesList.sort((a, b) => b.date.getTime() - a.date.getTime())
 
   return (
-    <div className="container p-8 space-y-6">
+    <PageContainer variant="default" className="space-y-6">
       {/* Top Header Section */}
       <ProjectHeader
         projectId={projectId}
@@ -449,6 +449,6 @@ export default function ProjectDetail() {
         isOpen={isAiDecomposeOpen}
         onOpenChange={setIsAiDecomposeOpen}
       />
-    </div>
+    </PageContainer>
   )
 }

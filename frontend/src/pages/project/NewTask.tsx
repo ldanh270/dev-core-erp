@@ -1,5 +1,5 @@
 // Import custom page container component
-import { DatePicker, PageCard } from "@/components/common"
+import { BackButton, DatePicker, PageCard, PageContainer } from "@/components/common"
 // Import UI buttons, inputs, labels, and select components
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -24,7 +24,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   UploadCloud,
   User,
-  ArrowLeft,
 } from "lucide-react"
 // Import standard React hooks for component state and refs
 import { useState, useRef, useEffect } from "react"
@@ -356,7 +355,7 @@ export default function NewTask() {
   }
 
   return (
-    <div className="container p-8 space-y-6 max-w-[1000px]">
+    <PageContainer variant="centered" className="space-y-6">
       {/* Top Header / Breadcrumbs navigation structure */}
       <div className="space-y-1">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -371,14 +370,7 @@ export default function NewTask() {
           <span className="font-semibold text-foreground">Tạo công việc mới</span>
         </div>
         <div className="flex items-center gap-3 pt-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => { navigate(-1) }}
-            className="rounded-full size-8 p-0 border border-border"
-          >
-            <ArrowLeft className="size-4" />
-          </Button>
+          <BackButton fallbackHref={pId ? `/project/${pId}/issues` : "/project/list"} />
           <h1 className="text-2xl font-black tracking-tight text-foreground">Tạo công việc mới</h1>
         </div>
         <p className="text-xs text-muted-foreground">
@@ -403,7 +395,7 @@ export default function NewTask() {
                 LOẠI YÊU CẦU <span className="text-destructive">*</span>
               </Label>
               <Select value={taskTracker} onValueChange={(val) => { setTaskTracker(val as TaskTracker) }}>
-                <SelectTrigger id="tracker" className="w-full h-10 border-border rounded-full px-4 bg-background">
+                <SelectTrigger id="tracker" className="w-full border-border rounded-full bg-background">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent position="popper" className="rounded-xl border-border bg-popover text-popover-foreground">
@@ -421,7 +413,7 @@ export default function NewTask() {
                 TRẠNG THÁI
               </Label>
               <Select value={taskStatusId} onValueChange={(val) => { setTaskStatusId(val) }}>
-                <SelectTrigger id="status" className="w-full h-10 border-border rounded-full px-4 bg-background">
+                <SelectTrigger id="status" className="w-full border-border rounded-full bg-background">
                   <SelectValue placeholder="Chọn trạng thái..." />
                 </SelectTrigger>
                 <SelectContent position="popper" className="rounded-xl border-border bg-popover text-popover-foreground">
@@ -472,7 +464,7 @@ export default function NewTask() {
                 ĐỘ ƯU TIÊN
               </Label>
               <Select value={taskPriority} onValueChange={(val) => { setTaskPriority(val as TaskPriority) }}>
-                <SelectTrigger id="priority" className="w-full h-10 border-border rounded-full px-4 bg-background">
+                <SelectTrigger id="priority" className="w-full border-border rounded-full bg-background">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent position="popper" className="rounded-xl border-border bg-popover text-popover-foreground">
@@ -517,7 +509,7 @@ export default function NewTask() {
                 NGƯỜI THỰC HIỆN
               </Label>
               <Select value={taskAssignee} onValueChange={setTaskAssignee}>
-                <SelectTrigger id="assignee" className="w-full h-10 border-border rounded-full px-4 bg-background">
+                <SelectTrigger id="assignee" className="w-full border-border rounded-full bg-background">
                   <User className="size-3.5 text-muted-foreground shrink-0" />
                   <SelectValue placeholder="Chọn thành viên" />
                 </SelectTrigger>
@@ -556,7 +548,7 @@ export default function NewTask() {
                 % HOÀN THÀNH
               </Label>
               <Select value={taskProgress} onValueChange={(val) => { setTaskProgress(val) }}>
-                <SelectTrigger id="progress" className="w-full h-10 border-border rounded-full px-4 bg-background">
+                <SelectTrigger id="progress" className="w-full border-border rounded-full bg-background">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent position="popper" className="rounded-xl border-border bg-popover text-popover-foreground">
@@ -577,7 +569,7 @@ export default function NewTask() {
                 CÔNG VIỆC CHA
               </Label>
               <Select value={parentTask} onValueChange={(val) => { setParentTask(val) }}>
-                <SelectTrigger id="parentTask" className="w-full h-10 border-border rounded-full px-4 bg-background">
+                <SelectTrigger id="parentTask" className="w-full border-border rounded-full bg-background">
                   <SelectValue placeholder="Chọn công việc cha" />
                 </SelectTrigger>
                 <SelectContent position="popper" className="rounded-xl border-border bg-popover text-popover-foreground">
@@ -706,12 +698,12 @@ export default function NewTask() {
         </PageCard>
 
         {/* Cancel, Save, and Save & Create Another Action Buttons */}
-        <div className="flex justify-end items-center gap-3">
+        <div className="flex justify-end items-center gap-3 pt-4 border-t border-border">
           <Button
             type="button"
             variant="ghost"
             onClick={() => { navigate(-1) }}
-            className="rounded-full text-sm font-semibold h-10 px-5 text-muted-foreground hover:text-foreground cursor-pointer"
+            className="rounded-full font-semibold shadow-xs"
           >
             Hủy
           </Button>
@@ -721,7 +713,7 @@ export default function NewTask() {
             variant="outline"
             onClick={(e) => { handleSubmit(e, true) }}
             disabled={createTaskMutation.isPending}
-            className="rounded-full text-sm font-semibold border-border hover:bg-muted/50 h-10 px-5 cursor-pointer text-blue-600 hover:text-blue-700"
+            className="rounded-full font-semibold shadow-xs"
           >
             Tạo và thêm tiếp
           </Button>
@@ -729,14 +721,14 @@ export default function NewTask() {
           <Button
             type="submit"
             disabled={createTaskMutation.isPending}
-            className="rounded-full text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 h-10 px-6 cursor-pointer"
+            className="rounded-full font-semibold bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs"
           >
             {createTaskMutation.isPending ? "Đang tạo..." : "Tạo công việc"}
           </Button>
         </div>
       </form>
 
-    </div>
+    </PageContainer>
   )
 }
 
