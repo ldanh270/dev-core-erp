@@ -197,7 +197,7 @@ export default function UsersManagement() {
       search={{
         value: search,
         onSearch: (val: string) => {
-          handleSearch({ target: { value: val } } as React.ChangeEvent<HTMLInputElement>)
+          handleSearch(val)
         },
         placeholder: "Tìm kiếm người dùng...",
       }}

@@ -79,8 +79,9 @@ export function useActivityLogsMaster() {
     })
   }, [actionTypeParam, categoryParam, fromDateParam, pageParam, toDateParam])
 
-  const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(e.target.value)
+  const handleSearch = useCallback((valueOrEvent: React.ChangeEvent<HTMLInputElement> | string) => {
+    const value = typeof valueOrEvent === "string" ? valueOrEvent : valueOrEvent.target.value
+    setSearchText(value)
     setQuery((prev) => ({ ...prev, page: 1 }))
   }, [])
 

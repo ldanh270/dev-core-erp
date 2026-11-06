@@ -152,7 +152,14 @@ export default function OAuthAccountsPage() {
           `/recruitment/oauth/google/auth-url?${queryParams.toString()}`,
         )
         if (res.data?.url) {
-          window.location.href = res.data.url
+          const authUrl = encodeURI(res.data.url)
+          const parsed = new URL(authUrl)
+          if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+            window.location.assign(authUrl)
+          } else {
+            toast.error("Đường dẫn đăng nhập Google không hợp lệ")
+            setIsConnecting(false)
+          }
         } else {
           toast.error("Không lấy được đường dẫn đăng nhập Google")
           setIsConnecting(false)

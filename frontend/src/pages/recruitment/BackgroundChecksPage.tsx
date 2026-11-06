@@ -77,7 +77,7 @@ export default function BackgroundChecksPage() {
   const meta = data?.meta
 
   const tabCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: backgroundChecks.length }
+    const counts: Record<string, number | undefined> = { all: backgroundChecks.length }
     for (const item of backgroundChecks) {
       counts[item.status] = (counts[item.status] || 0) + 1
     }
