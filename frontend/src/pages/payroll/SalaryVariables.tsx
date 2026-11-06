@@ -3,6 +3,7 @@ import {
   DataTableToolbar,
   EmptyState,
   PageCard,
+  PageContainer,
   PageHeader,
   useConfirm,
 } from "@/components/common"
@@ -192,12 +193,12 @@ export default function SalaryVariablesPage() {
   }
 
   return (
-    <div className="container px-3 sm:px-6 py-4 sm:py-6">
+    <PageContainer variant="default">
       <PageHeader
         title="Biến hệ thống"
         description="Biến dùng cho công thức full-time và biến chỉnh sửa cho lương part-time (hệ số OT, đơn giá/giờ mặc định)."
         actions={
-          <Button className="gap-2 rounded-full" onClick={handleOpenCreate}>
+          <Button className="gap-2 rounded-full font-semibold" onClick={handleOpenCreate}>
             <Plus size={16} /> Thêm biến mới
           </Button>
         }
@@ -217,22 +218,22 @@ export default function SalaryVariablesPage() {
           <Table className="text-sm">
             <TableHeader className="bg-muted/40">
               <TableRow className="hover:bg-transparent border-b">
-                <TableHead className="min-w-12.5 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-center">
+                <TableHead className="h-10 min-w-12.5 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-center">
                   #
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Mã biến (Code)
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Tên biến
                 </TableHead>
-                <TableHead className="hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Giá trị mặc định
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Trạng thái
                 </TableHead>
-                <TableHead className="min-w-25 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-right whitespace-nowrap">
+                <TableHead className="h-10 min-w-25 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-right whitespace-nowrap">
                   Thao tác
                 </TableHead>
               </TableRow>
@@ -260,13 +261,13 @@ export default function SalaryVariablesPage() {
                     key={variable.id}
                     className={`hover:bg-muted/30 ${variable.isSystem ? "bg-muted/10" : ""}`}
                   >
-                    <TableCell className="px-4 py-3 text-muted-foreground text-center">
+                    <TableCell className="h-[60px] px-4 py-3 text-muted-foreground text-center">
                       {(page - 1) * limit + index + 1}
                     </TableCell>
-                    <TableCell className="px-4 py-3 font-mono font-medium text-primary/80 whitespace-nowrap">
+                    <TableCell className="h-[60px] px-4 py-3 font-mono font-medium text-primary/80 whitespace-nowrap">
                       {variable.code}
                     </TableCell>
-                    <TableCell className="px-4 py-3 whitespace-nowrap">
+                    <TableCell className="h-[60px] px-4 py-3 whitespace-nowrap">
                       <div className="font-medium text-foreground">{variable.name}</div>
                       {variable.description && (
                         <div className="text-muted-foreground line-clamp-1 mt-0.5">
@@ -274,12 +275,12 @@ export default function SalaryVariablesPage() {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell px-4 py-3 whitespace-nowrap">
+                    <TableCell className="h-[60px] hidden sm:table-cell px-4 py-3 whitespace-nowrap">
                       {typeof variable.value === "number"
                         ? variable.value.toLocaleString()
                         : variable.value}
                     </TableCell>
-                    <TableCell className="px-4 py-3 whitespace-nowrap">
+                    <TableCell className="h-[60px] px-4 py-3 whitespace-nowrap">
                       <Badge
                         variant={variable.isActive ? "default" : "secondary"}
                         className="text-[10px] font-semibold rounded-full"
@@ -291,7 +292,7 @@ export default function SalaryVariablesPage() {
                             : "Vô hiệu"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-right">
+                    <TableCell className="h-[60px] px-4 py-3 text-right">
                       {!variable.isSystem ? (
                         <div className="flex items-center justify-end gap-1">
                           <Button
@@ -340,6 +341,6 @@ export default function SalaryVariablesPage() {
           />
         )}
       </PageCard>
-    </div>
+    </PageContainer>
   )
 }

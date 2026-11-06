@@ -1,4 +1,4 @@
-import { AppPagination, DataTableToolbar, PageCard, PageHeader } from "@/components/common"
+import { AppPagination, DataTableToolbar, PageCard, PageContainer, PageHeader } from "@/components/common"
 import { BulkAssignPayslipTemplateDialog } from "@/components/features/payroll/bulk-assign-payslip-template-dialog"
 import { CreatePayslipTemplateForm } from "@/components/payroll/CreatePayslipTemplateForm"
 import { Button } from "@/components/ui/button"
@@ -106,12 +106,12 @@ export default function PayslipTemplates() {
   const totalPages = Math.ceil(filteredTemplates.length / limit)
 
   return (
-    <div className="container px-3 sm:px-6 py-4 sm:py-6">
+    <PageContainer variant="default">
       <PageHeader
         title="Mẫu phiếu lương"
         description="Quản lý mẫu phiếu lương và gán nhanh cho nhiều nhân viên."
         actions={
-          <Button onClick={handleOpenCreate} className="gap-2">
+          <Button onClick={handleOpenCreate} className="gap-2 rounded-full font-semibold">
             <Plus size={16} /> Tạo mới mẫu phiếu lương
           </Button>
         }
@@ -143,22 +143,22 @@ export default function PayslipTemplates() {
           <Table className="text-sm">
             <TableHeader className="bg-muted/40">
               <TableRow className="hover:bg-transparent border-b">
-                <TableHead className="min-w-12.5 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-center">
+                <TableHead className="h-10 min-w-12.5 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-center">
                   #
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Tên mẫu phiếu lương
                 </TableHead>
-                <TableHead className="hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Ngày tạo
                 </TableHead>
-                <TableHead className="hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Người tạo
                 </TableHead>
-                <TableHead className="hidden md:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 hidden md:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Mô tả
                 </TableHead>
-                <TableHead className="min-w-12.5 px-4 py-3"></TableHead>
+                <TableHead className="h-10 min-w-12.5 px-4 py-3"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="divide-y divide-border">
@@ -180,10 +180,10 @@ export default function PayslipTemplates() {
               ) : (
                 paginatedTemplates.map((template, index) => (
                   <TableRow key={template.id} className="hover:bg-muted/50 transition-colors">
-                    <TableCell className="text-center px-4 py-3 text-muted-foreground">
+                    <TableCell className="h-[60px] text-center px-4 py-3 text-muted-foreground">
                       {(page - 1) * limit + index + 1}
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-foreground font-medium whitespace-nowrap">
+                    <TableCell className="h-[60px] px-4 py-3 text-foreground font-medium whitespace-nowrap">
                       <button
                         onClick={() => {
                           handleOpenView(template)
@@ -193,18 +193,18 @@ export default function PayslipTemplates() {
                         {template.name}
                       </button>
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell px-4 py-3 text-muted-foreground whitespace-nowrap">
+                    <TableCell className="h-[60px] hidden sm:table-cell px-4 py-3 text-muted-foreground whitespace-nowrap">
                       {template.createdAt
                         ? new Date(template.createdAt).toLocaleDateString("vi-VN")
                         : "N/A"}
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell px-4 py-3 text-muted-foreground whitespace-nowrap">
+                    <TableCell className="h-[60px] hidden sm:table-cell px-4 py-3 text-muted-foreground whitespace-nowrap">
                       {template.createdBy?.fullName || "Hệ thống"}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell px-4 py-3 text-muted-foreground max-w-50 truncate">
+                    <TableCell className="h-[60px] hidden md:table-cell px-4 py-3 text-muted-foreground max-w-50 truncate">
                       {template.description || "N/A"}
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-center">
+                    <TableCell className="h-[60px] px-4 py-3 text-center">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
@@ -304,6 +304,6 @@ export default function PayslipTemplates() {
           if (!open) setTemplateToAssign(null)
         }}
       />
-    </div>
+    </PageContainer>
   )
 }

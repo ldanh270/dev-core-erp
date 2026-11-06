@@ -1,6 +1,6 @@
 import { WeeklyScheduleTemplateDialog } from "@/components/features/attendance/weekly-schedules/weekly-schedule-template-dialog"
 import { ApplyWeeklyScheduleTemplateDialog } from "@/components/features/attendance/weekly-schedules/apply-weekly-schedule-template-dialog"
-import { PageCard, PageHeader } from "@/components/common"
+import { PageCard, PageContainer, PageHeader } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { Button } from "@/components/ui/button"
 import {
@@ -66,12 +66,12 @@ export default function WeeklySchedules() {
   }
 
   return (
-    <div className="container px-6 py-6 space-y-6">
+    <PageContainer variant="default" className="space-y-6">
       <PageHeader
         title="Lịch hàng tuần"
         description="Tạo và quản lý template ca xoay tuần."
         actions={
-          <Button onClick={handleCreate} className="rounded-full">
+          <Button onClick={handleCreate} size="default" className="rounded-full shadow-xs gap-2 font-semibold">
             <Plus className="h-4 w-4 mr-2" />
             Tạo template
           </Button>
@@ -82,12 +82,12 @@ export default function WeeklySchedules() {
         <PageCard className="overflow-hidden p-0" noBorder={false}>
           <Table>
             <TableHeader className="bg-muted/40">
-              <TableRow className="hover:bg-transparent">
-                <TableHead>Tên</TableHead>
-                <TableHead>Chu kỳ</TableHead>
-                <TableHead>Ca đã gán</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead className="w-12" />
+              <TableRow className="hover:bg-transparent border-b">
+                <TableHead className="h-10 px-4 py-2.5 font-semibold text-xs text-muted-foreground uppercase tracking-wider align-middle">Tên</TableHead>
+                <TableHead className="h-10 px-4 py-2.5 font-semibold text-xs text-muted-foreground uppercase tracking-wider align-middle">Chu kỳ</TableHead>
+                <TableHead className="h-10 px-4 py-2.5 font-semibold text-xs text-muted-foreground uppercase tracking-wider align-middle">Ca đã gán</TableHead>
+                <TableHead className="h-10 px-4 py-2.5 font-semibold text-xs text-muted-foreground uppercase tracking-wider align-middle">Trạng thái</TableHead>
+                <TableHead className="h-10 px-4 py-2.5 w-12" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -112,7 +112,7 @@ export default function WeeklySchedules() {
               ) : (
                 templates.map((template) => (
                   <TableRow key={template.id}>
-                    <TableCell>
+                    <TableCell className="h-[60px] px-4 py-2.5 text-sm align-middle">
                       <button
                         type="button"
                         onClick={() => {
@@ -128,15 +128,15 @@ export default function WeeklySchedules() {
                         </p>
                       ) : null}
                     </TableCell>
-                    <TableCell>{template.cycleWeeks} tuần</TableCell>
-                    <TableCell>{countAssignedDays(template)} ô ca</TableCell>
-                    <TableCell>
+                    <TableCell className="h-[60px] px-4 py-2.5 text-sm align-middle">{template.cycleWeeks} tuần</TableCell>
+                    <TableCell className="h-[60px] px-4 py-2.5 text-sm align-middle">{countAssignedDays(template)} ô ca</TableCell>
+                    <TableCell className="h-[60px] px-4 py-2.5 text-sm align-middle">
                       <StatusPill
                         label={template.isActive ? "Đang dùng" : "Tắt"}
                         variant={template.isActive ? "success" : "neutral"}
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="h-[60px] px-4 py-2.5 text-sm align-middle">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -190,6 +190,6 @@ export default function WeeklySchedules() {
         }}
         template={applying}
       />
-    </div>
+    </PageContainer>
   )
 }

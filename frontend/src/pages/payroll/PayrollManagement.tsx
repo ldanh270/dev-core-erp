@@ -1,4 +1,4 @@
-import { PageCard, PageHeader } from "@/components/common"
+import { PageCard, PageContainer, PageHeader } from "@/components/common"
 import { GeneratePayrollModal } from "@/components/payroll/GeneratePayrollModal"
 import { PayrollHistoryTable } from "@/components/payroll/PayrollHistoryTable"
 import { Button } from "@/components/ui/button"
@@ -22,7 +22,7 @@ export default function PayrollManagement() {
   }
 
   return (
-    <div className="container px-3 sm:px-6 py-4 sm:py-6">
+    <PageContainer variant="default">
       <PageHeader
         title="Quản lý bảng lương"
         description="Quản lý chu kỳ lương của tổ chức, xem lịch sử và tạo bảng lương mới."
@@ -45,6 +45,6 @@ export default function PayrollManagement() {
       <PageCard className="p-0 overflow-hidden" noBorder={false}>
         <PayrollHistoryTable payrolls={payrolls || []} isLoading={isLoading} />
       </PageCard>
-    </div>
+    </PageContainer>
   )
 }

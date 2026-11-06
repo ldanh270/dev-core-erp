@@ -1,4 +1,4 @@
-import { AppPagination, DataTableToolbar, PageCard, PageHeader } from "@/components/common"
+import { AppPagination, DataTableToolbar, PageCard, PageContainer, PageHeader } from "@/components/common"
 import EmployeePayslipHistoryDialog from "@/components/features/payroll/EmployeePayslipHistoryDialog"
 import EmployeeSalaryConfigDialog from "@/components/features/payroll/employee-salary-config-dialog"
 import { Button } from "@/components/ui/button"
@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { SYSTEM_CONFIG } from "@/config/system.config"
+import { useDebounce } from "@/hooks/use-debounce"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import {
   useActiveSalaryConfig,
@@ -34,6 +35,7 @@ const formatCurrency = (val: number) => {
 
 export default function EmployeeSalary() {
   const [searchQuery, setSearchQuery] = useState("")
+  const debouncedSearch = useDebounce(searchQuery, 300)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState<number>(SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT)
 
@@ -49,7 +51,7 @@ export default function EmployeeSalary() {
   const { data: employeeData, isLoading: isEmployeesLoading } = useEmployees({
     page,
     limit,
-    search: searchQuery,
+    search: debouncedSearch,
   })
 
   const handleOpenConfigDialog = (emp: { id: string; fullName: string; position?: string }) => {
@@ -63,7 +65,7 @@ export default function EmployeeSalary() {
   }
 
   return (
-    <div className="container px-3 sm:px-6 py-4 sm:py-6">
+    <PageContainer variant="default">
       <PageHeader
         title="Lương nhân sự"
         description="Quản lý cấu hình mức lương cơ bản và mẫu phiếu lương của nhân viên."
@@ -83,22 +85,22 @@ export default function EmployeeSalary() {
           <Table className="text-sm">
             <TableHeader className="bg-muted/40">
               <TableRow className="hover:bg-transparent border-b">
-                <TableHead className="min-w-12.5 px-4 py-3 font-medium text-center text-xs text-muted-foreground uppercase">
+                <TableHead className="h-10 min-w-12.5 px-4 py-3 font-medium text-center text-xs text-muted-foreground uppercase">
                   STT
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Nhân sự
                 </TableHead>
-                <TableHead className="hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Vị trí / Vai trò
                 </TableHead>
-                <TableHead className="hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Lương cơ bản
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Mẫu phiếu lương
                 </TableHead>
-                <TableHead className="min-w-12.5 px-4 py-3"></TableHead>
+                <TableHead className="h-10 min-w-12.5 px-4 py-3"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="divide-y divide-border">
@@ -155,7 +157,7 @@ export default function EmployeeSalary() {
         onOpenChange={setHistoryDialogOpen}
         employee={selectedEmployee}
       />
-    </div>
+    </PageContainer>
   )
 }
 
@@ -179,8 +181,8 @@ function EmployeeRow({ emp, index, onConfigure, onViewHistory }: RowProps) {
         onConfigure({ id: emp.id, fullName: emp.fullName, position: emp.position || undefined })
       }
     >
-      <TableCell className="text-center px-4 py-3 text-muted-foreground">{index}</TableCell>
-      <TableCell className="px-4 py-3">
+      <TableCell className="h-[60px] text-center px-4 py-3 text-muted-foreground">{index}</TableCell>
+      <TableCell className="h-[60px] px-4 py-3">
         <div className="flex items-center gap-2">
           <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold overflow-hidden shrink-0 border">
             {emp.avatar?.url ? (
@@ -197,11 +199,11 @@ function EmployeeRow({ emp, index, onConfigure, onViewHistory }: RowProps) {
           </div>
         </div>
       </TableCell>
-      <TableCell className="hidden sm:table-cell px-4 py-3">
+      <TableCell className="h-[60px] hidden sm:table-cell px-4 py-3">
         <div className="font-semibold text-foreground/80">{emp.position || "-"}</div>
         <div className="text-[10px] text-muted-foreground uppercase">{emp.role}</div>
       </TableCell>
-      <TableCell className="hidden sm:table-cell px-4 py-3 font-semibold">
+      <TableCell className="h-[60px] hidden sm:table-cell px-4 py-3 font-semibold">
         {isLoading ? (
           <span className="text-muted-foreground">Đang tải...</span>
         ) : config ? (
@@ -210,7 +212,7 @@ function EmployeeRow({ emp, index, onConfigure, onViewHistory }: RowProps) {
           <span className="text-destructive">Chưa thiết lập</span>
         )}
       </TableCell>
-      <TableCell className="px-4 py-3">
+      <TableCell className="h-[60px] px-4 py-3">
         {isLoading ? (
           <span className="text-muted-foreground">Đang tải...</span>
         ) : (
@@ -225,10 +227,10 @@ function EmployeeRow({ emp, index, onConfigure, onViewHistory }: RowProps) {
           </span>
         )}
       </TableCell>
-      <TableCell className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+      <TableCell className="h-[60px] px-4 py-3" onClick={(e) => e.stopPropagation()}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-6 w-6 p-0 rounded-full">
+            <Button variant="ghost" className="h-8 w-8 p-0 rounded-full">
               <MoreHorizontal className="h-3.5 w-3.5" />
             </Button>
           </DropdownMenuTrigger>
