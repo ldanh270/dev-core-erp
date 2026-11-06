@@ -78,8 +78,8 @@ export function useUsersManagementMaster() {
   }, [filteredLockedUsers, query.page, query.limit])
 
   // Reset pagination on search input changes
-  const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value
+  const handleSearch = useCallback((valueOrEvent: React.ChangeEvent<HTMLInputElement> | string) => {
+    const val = typeof valueOrEvent === "string" ? valueOrEvent : valueOrEvent.target.value
     setSearch(val)
     setQuery((prev) => ({ ...prev, page: 1 }))
   }, [])

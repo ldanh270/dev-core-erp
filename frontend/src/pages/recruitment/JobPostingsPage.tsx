@@ -153,7 +153,7 @@ export default function JobPostingsPage() {
   const { data: postings = [], isLoading } = useJobPostings()
 
   const tabCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: postings.length }
+    const counts: Record<string, number | undefined> = { all: postings.length }
     for (const p of postings) {
       counts[p.status] = (counts[p.status] || 0) + 1
     }

@@ -80,7 +80,7 @@ export default function OffersPage() {
   const meta = data?.meta
 
   const tabCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: offers.length }
+    const counts: Record<string, number | undefined> = { all: offers.length }
     for (const offer of offers) {
       counts[offer.status] = (counts[offer.status] || 0) + 1
     }

@@ -112,7 +112,7 @@ export default function ActivityLogs() {
               {searchTerm && (
                 <button
                   onClick={() => {
-                    handleSearch({ target: { value: "" } } as React.ChangeEvent<HTMLInputElement>)
+                    handleSearch("")
                   }}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
