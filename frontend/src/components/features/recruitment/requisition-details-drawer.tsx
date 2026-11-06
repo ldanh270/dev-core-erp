@@ -197,7 +197,7 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                           size="sm"
                           className="rounded-full gap-1.5"
                           disabled={submitMutation.isPending}
-                          onClick={() => submitMutation.mutate(requisition.id)}
+                          onClick={() => { submitMutation.mutate(requisition.id); }}
                         >
                           <Send size={14} /> Gửi phê duyệt
                         </Button>
@@ -215,7 +215,7 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                             size="sm"
                             className="rounded-full gap-1.5 bg-success text-success-foreground hover:bg-success/90"
                             disabled={approveMutation.isPending}
-                            onClick={() => approveMutation.mutate({ id: requisition.id, data: { approved: true } })}
+                            onClick={() => { approveMutation.mutate({ id: requisition.id, data: { approved: true } }); }}
                           >
                             <Check size={14} /> Chấp nhận
                           </Button>

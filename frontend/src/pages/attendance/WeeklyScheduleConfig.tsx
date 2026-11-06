@@ -114,7 +114,7 @@ function TriggerTimeField({ control }: { control: Control<WeeklyScheduleSettings
           render={({ field }) => (
             <FormItem>
               <Select
-                onValueChange={(val) => field.onChange(Number(val))}
+                onValueChange={(val) => { field.onChange(Number(val)); }}
                 value={field.value?.toString()}
               >
                 <FormControl>
@@ -141,7 +141,7 @@ function TriggerTimeField({ control }: { control: Control<WeeklyScheduleSettings
           render={({ field }) => (
             <FormItem>
               <Select
-                onValueChange={(val) => field.onChange(Number(val))}
+                onValueChange={(val) => { field.onChange(Number(val)); }}
                 value={field.value?.toString()}
               >
                 <FormControl>
@@ -185,7 +185,7 @@ function TriggerDayOfWeekField({ control }: { control: Control<WeeklyScheduleSet
             </FormDescription>
           </div>
           <Select
-            onValueChange={(val) => field.onChange(Number(val))}
+            onValueChange={(val) => { field.onChange(Number(val)); }}
             value={field.value?.toString()}
           >
             <FormControl>

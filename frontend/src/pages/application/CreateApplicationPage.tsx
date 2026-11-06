@@ -50,7 +50,7 @@ export default function CreateApplicationPage() {
         <CreateApplicationInfoSection
           type={type}
           form={forms[0]}
-          set={(k, v) => updateForm(0, k, v)}
+          set={(k, v) => { updateForm(0, k, v); }}
           assignedToId={assignedToId}
           setAssignedToId={setAssignedToId}
           user={user}
@@ -65,18 +65,18 @@ export default function CreateApplicationPage() {
                 <CreateApplicationRecruitmentSection
                   key={index}
                   formIndex={index}
-                  onRemove={forms.length > 1 ? () => removeForm(index) : undefined}
+                  onRemove={forms.length > 1 ? () => { removeForm(index); } : undefined}
                   form={form}
-                  set={(k, v) => updateForm(index, k, v)}
+                  set={(k, v) => { updateForm(index, k, v); }}
                 />
               ) : (
                 <CreateApplicationTimeSection
                   key={index}
                   formIndex={index}
-                  onRemove={forms.length > 1 ? () => removeForm(index) : undefined}
+                  onRemove={forms.length > 1 ? () => { removeForm(index); } : undefined}
                   type={type}
                   form={form}
-                  set={(k, v) => updateForm(index, k, v)}
+                  set={(k, v) => { updateForm(index, k, v); }}
                   employees={employees}
                 />
               ),

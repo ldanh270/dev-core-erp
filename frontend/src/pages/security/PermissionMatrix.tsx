@@ -40,12 +40,12 @@ export default function PermissionMatrix() {
   useEffect(() => {
     apiClient
       .get(API_ENDPOINTS.DEBUG.ROUTE_MANIFEST)
-      .then((res) => setManifest(res.data.data))
+      .then((res) => { setManifest(res.data.data); })
       .catch((err) => {
         toast.error("Không thể tải cấu hình Route Manifest")
         console.error(err)
       })
-      .finally(() => setLoading(false))
+      .finally(() => { setLoading(false); })
   }, [])
 
   // Count matches/mismatches for summary cards
@@ -232,7 +232,7 @@ export default function PermissionMatrix() {
               placeholder="Tìm kiếm API, đường dẫn..."
               className="pl-10 bg-background border-border/80 focus:border-primary transition-colors rounded-full text-sm"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { setSearch(e.target.value); }}
             />
           </div>
           <div className="flex flex-wrap items-center gap-4 ml-auto">

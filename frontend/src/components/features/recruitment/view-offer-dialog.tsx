@@ -99,11 +99,11 @@ export function ViewOfferDialog({ open, onOpenChange, offer }: Props) {
           {/* Response status */}
           <div className="flex items-center justify-between rounded-lg p-3 bg-muted/10 border border-border">
             <span className="text-xs font-medium text-muted-foreground">Phản hồi của ứng viên</span>
-            {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
+            { }
             {offer.response ? (
               <StatusPill
                 label={OFFER_RESPONSE_LABELS[offer.response] || offer.response}
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                 
                 variant={responseVariantMap[offer.response] ?? "neutral"}
               />
             ) : (

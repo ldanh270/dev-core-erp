@@ -133,7 +133,7 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
                       <FormControl>
                         <DatePicker
                           value={field.value || null}
-                          onChange={(val) => field.onChange(val || "")}
+                          onChange={(val) => { field.onChange(val || ""); }}
                           placeholder="Chọn ngày ca làm..."
                         />
                       </FormControl>

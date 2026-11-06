@@ -64,7 +64,7 @@ export default function ShiftManagement() {
         cell: (shift) => (
           <button
             type="button"
-            onClick={() => handleEdit(shift)}
+            onClick={() => { handleEdit(shift); }}
             className="rounded-full text-left font-medium text-foreground hover:text-primary hover:underline focus:outline-none truncate block max-w-full"
           >
             {shift.name}
@@ -149,9 +149,9 @@ export default function ShiftManagement() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleEdit(shift)}>Chỉnh sửa</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { handleEdit(shift); }}>Chỉnh sửa</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(shift.id)}>
+              <DropdownMenuItem className="text-destructive" onClick={() => { handleDelete(shift.id); }}>
                 Xoá ca
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -152,7 +152,7 @@ export default function JobPostingDetailPage() {
           {canSync && (
             <Button
               className="rounded-full"
-              onClick={() => sync.mutate(id)}
+              onClick={() => { sync.mutate(id); }}
               disabled={sync.isPending}
             >
               <RefreshCw className={`mr-2 h-4 w-4 ${sync.isPending ? "animate-spin" : ""}`} />

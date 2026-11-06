@@ -91,7 +91,7 @@ export function useVirtualScanner(): {
     const timer = setInterval(() => {
       setCurrentTime(new Date())
     }, 1000)
-    return () => clearInterval(timer)
+    return () => { clearInterval(timer); }
   }, [])
 
   useEffect(() => {

@@ -235,7 +235,7 @@ export default function EmployeeSalaryConfigDialog({ open, onOpenChange, employe
                                 className="rounded-md h-9"
                                 placeholder="Nhập lương cơ bản..."
                                 {...field}
-                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                onChange={(e) => { field.onChange(Number(e.target.value)); }}
                               />
                             </FormControl>
                             <FormMessage />
@@ -253,7 +253,7 @@ export default function EmployeeSalaryConfigDialog({ open, onOpenChange, employe
                             <FormControl>
                               <DatePicker
                                 value={field.value || null}
-                                onChange={(val) => field.onChange(val || "")}
+                                onChange={(val) => { field.onChange(val || ""); }}
                                 placeholder="Chọn ngày áp dụng..."
                               />
                             </FormControl>
@@ -289,7 +289,7 @@ export default function EmployeeSalaryConfigDialog({ open, onOpenChange, employe
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => onOpenChange(false)}
+                        onClick={() => { onOpenChange(false); }}
                         className="rounded-full"
                       >
                         Hủy

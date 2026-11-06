@@ -55,7 +55,14 @@ export function PayrollDetailSheet({ payrollId, onClose }: PayrollDetailSheetPro
 
   return (
     <>
-      <Sheet open={!!payrollId} onOpenChange={(open) => !open && onClose()}>
+      <Sheet
+        open={!!payrollId}
+        onOpenChange={(open) => {
+          if (!open) {
+            onClose()
+          }
+        }}
+      >
         <SheetContent className="w-[95vw] max-w-[95vw]! sm:max-w-300! overflow-y-auto p-6 sm:p-8">
           <SheetHeader className="mb-6 px-0 pt-0 pb-0 flex flex-row items-center justify-between">
             <SheetTitle className="text-2xl">Payroll Details</SheetTitle>

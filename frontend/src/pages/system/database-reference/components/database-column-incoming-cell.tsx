@@ -26,7 +26,7 @@ export function ColumnIncomingCell({
             type="button"
             variant="link"
             className="h-auto p-0 font-mono text-xs font-semibold text-primary justify-start"
-            onClick={() => onSelectTable(rel.sourceTable)}
+            onClick={() => { onSelectTable(rel.sourceTable); }}
           >
             <span className="mr-1 font-extrabold text-violet-600 dark:text-violet-400">←</span>
             <span>

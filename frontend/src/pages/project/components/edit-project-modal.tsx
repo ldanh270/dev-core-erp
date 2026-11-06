@@ -492,7 +492,7 @@ export function EditProjectModal({
                               <input
                                 type="text"
                                 value={editingTrackerName}
-                                onChange={(e) => setEditingTrackerName(e.target.value)}
+                                onChange={(e) => { setEditingTrackerName(e.target.value); }}
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter") {
                                     handleSaveRename(tracker.id)
@@ -500,10 +500,10 @@ export function EditProjectModal({
                                     setEditingTrackerId("")
                                   }
                                 }}
-                                onBlur={() => handleSaveRename(tracker.id)}
+                                onBlur={() => { handleSaveRename(tracker.id); }}
                                 className="h-6 text-xs border border-border rounded px-1.5 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary w-full"
                                 autoFocus
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => { e.stopPropagation(); }}
                               />
                             ) : (
                               <span className="text-xs font-semibold leading-tight line-clamp-1">
@@ -547,7 +547,7 @@ export function EditProjectModal({
                         type="text"
                         placeholder="Thêm loại yêu cầu mới..."
                         value={newTrackerName}
-                        onChange={(e) => setNewTrackerName(e.target.value)}
+                        onChange={(e) => { setNewTrackerName(e.target.value); }}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault()
@@ -582,7 +582,7 @@ export function EditProjectModal({
               <DatePicker
                 id="editProjStart"
                 value={editProjectStart || null}
-                onChange={(val) => setEditProjectStart(val || "")}
+                onChange={(val) => { setEditProjectStart(val || ""); }}
                 placeholder="Chọn ngày bắt đầu..."
               />
             </div>
@@ -595,7 +595,7 @@ export function EditProjectModal({
                 id="editProjEnd"
                 value={editProjectEnd || null}
                 minDate={editProjectStart}
-                onChange={(val) => setEditProjectEnd(val || "")}
+                onChange={(val) => { setEditProjectEnd(val || ""); }}
                 placeholder="Chọn ngày kết thúc..."
               />
             </div>

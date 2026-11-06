@@ -263,7 +263,7 @@ function RolePermissionsDrawerContent({
                         <Switch
                           checked={!!isChecked}
                           disabled={selectedRole.isSystem && selectedRole.name === "admin"} // Disable changing admin permissions
-                          onCheckedChange={() => handleTogglePermission(p.id, !!isChecked)}
+                          onCheckedChange={() => { handleTogglePermission(p.id, !!isChecked); }}
                         />
                       </div>
                     )

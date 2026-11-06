@@ -12,7 +12,7 @@ interface SubsystemState {
 export const useSubsystemStore = create<SubsystemState>((set, get) => ({
   activeSubsystem: "attendance", // Default to attendance
 
-  setActiveSubsystem: (id) => set({ activeSubsystem: id }),
+  setActiveSubsystem: (id) => { set({ activeSubsystem: id }); },
 
   getActiveSubsystemConfig: () => {
     const { activeSubsystem } = get()

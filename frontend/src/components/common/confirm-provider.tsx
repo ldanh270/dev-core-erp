@@ -57,7 +57,14 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
   return (
     <ConfirmContext.Provider value={confirm}>
       {children}
-      <AlertDialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
+      <AlertDialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCancel()
+          }
+        }}
+      >
         <AlertDialogContent
           size="default"
           className="sm:max-w-md rounded-2xl border border-border/40 p-5 gap-5 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] bg-background"

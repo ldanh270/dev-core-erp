@@ -259,7 +259,7 @@ export default function OAuthAccountsPage() {
           return (
             <div
               className="flex items-center justify-end gap-1.5"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => { e.stopPropagation(); }}
             >
               {!isConnected && (
                 <Tooltip>
@@ -267,7 +267,7 @@ export default function OAuthAccountsPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleOpenConnect(account.channel, account.id)}
+                      onClick={() => { handleOpenConnect(account.channel, account.id); }}
                       className="h-8 px-2.5 text-xs rounded-full gap-1 border-primary/30 text-primary hover:bg-primary/5"
                     >
                       <RefreshCw className="h-3 w-3" />
@@ -340,7 +340,7 @@ export default function OAuthAccountsPage() {
         primaryAction={{
           label: "Kết nối tài khoản",
           icon: Plus,
-          onClick: () => handleOpenConnect(),
+          onClick: () => { handleOpenConnect(); },
         }}
         filters={
           <div className="flex items-center gap-2">
@@ -433,7 +433,7 @@ export default function OAuthAccountsPage() {
               <Input
                 placeholder="Ví dụ: Google HR Team, LinkedIn Tuyển dụng..."
                 value={accountName}
-                onChange={(e) => setAccountName(e.target.value)}
+                onChange={(e) => { setAccountName(e.target.value); }}
                 className="h-10 text-xs rounded-xl"
               />
               <p className="text-[11px] text-muted-foreground">
@@ -445,7 +445,7 @@ export default function OAuthAccountsPage() {
           <DialogFooter className="gap-2 sm:gap-0">
             <Button
               variant="outline"
-              onClick={() => setIsConnectModalOpen(false)}
+              onClick={() => { setIsConnectModalOpen(false); }}
               disabled={isConnecting}
               className="rounded-full h-9 text-xs"
             >

@@ -37,7 +37,7 @@ export function ColumnConstraintsCell({
                 type="button"
                 variant="link"
                 className="h-auto p-0 font-mono text-xs font-semibold text-primary justify-start"
-                onClick={() => onSelectTable(rel.targetTable)}
+                onClick={() => { onSelectTable(rel.targetTable); }}
               >
                 → {rel.targetTable}.{rel.targetColumn}
                 <ExternalLink className="ml-1 size-3" />

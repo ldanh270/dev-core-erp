@@ -395,10 +395,9 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                           className="h-11"
                           {...field}
                           value={field.value ?? ""}
-                          onChange={(e) =>
-                            field.onChange(
+                          onChange={(e) => { field.onChange(
                               e.target.value === "" ? undefined : Number(e.target.value),
-                            )
+                            ); }
                           }
                         />
                       </FormControl>
@@ -421,10 +420,9 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                           className="h-11"
                           {...field}
                           value={field.value ?? ""}
-                          onChange={(e) =>
-                            field.onChange(
+                          onChange={(e) => { field.onChange(
                               e.target.value === "" ? undefined : Number(e.target.value),
-                            )
+                            ); }
                           }
                         />
                       </FormControl>
@@ -455,8 +453,7 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                         className="h-11"
                         {...field}
                         value={field.value ?? ""}
-                        onChange={(e) =>
-                          field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
+                        onChange={(e) => { field.onChange(e.target.value === "" ? undefined : Number(e.target.value)); }
                         }
                       />
                     </FormControl>

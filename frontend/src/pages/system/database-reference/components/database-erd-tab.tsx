@@ -81,7 +81,7 @@ export function DatabaseErdTab({
         onPointerDown={viewport.handlePointerDown}
         onPointerMove={viewport.handlePointerMove}
         onPointerUp={viewport.handlePointerUp}
-        onSelectNode={(table) => viewport.handleSelectNode(table, onSelectTable)}
+        onSelectNode={(table) => { viewport.handleSelectNode(table, onSelectTable); }}
       />
     </section>
   )

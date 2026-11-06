@@ -452,7 +452,7 @@ export default function RolesManagement() {
                   type="checkbox"
                   id="create-is-default"
                   checked={isDefault}
-                  onChange={(e) => setIsDefault(e.target.checked)}
+                  onChange={(e) => { setIsDefault(e.target.checked); }}
                   className="size-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
                 />
                 <Label htmlFor="create-is-default" className="text-xs font-medium text-foreground cursor-pointer select-none">
@@ -508,7 +508,7 @@ export default function RolesManagement() {
                   type="checkbox"
                   id="edit-is-default"
                   checked={isDefault}
-                  onChange={(e) => setIsDefault(e.target.checked)}
+                  onChange={(e) => { setIsDefault(e.target.checked); }}
                   className="size-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
                 />
                 <Label htmlFor="edit-is-default" className="text-xs font-medium text-foreground cursor-pointer select-none">

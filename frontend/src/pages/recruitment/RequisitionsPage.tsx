@@ -112,7 +112,7 @@ function RequisitionRowActions({
     <>
       <div
         className="flex items-center justify-end gap-1"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => { e.stopPropagation(); }}
       >
         <Tooltip>
           <TooltipTrigger asChild>
@@ -218,10 +218,9 @@ function RequisitionRowActions({
                 size="icon"
                 className="rounded-full hover:text-primary hover:bg-primary/10 h-8 w-8"
                 aria-label={`Tạo JD cho ${requisition.code}`}
-                onClick={() =>
-                  routerNavigate(
+                onClick={() => { routerNavigate(
                     `/recruitment/job-descriptions/create?requisitionId=${requisition.id}`,
-                  )
+                  ); }
                 }
               >
                 <FilePlus2 className="h-3.5 w-3.5" />
@@ -237,11 +236,10 @@ function RequisitionRowActions({
         open={isRejectOpen}
         pending={approve.isPending}
         onOpenChange={setIsRejectOpen}
-        onConfirm={(comment) =>
-          approve.mutate(
+        onConfirm={(comment) => { approve.mutate(
             { id: requisition.id, data: { approved: false, comment } },
-            { onSuccess: () => setIsRejectOpen(false) },
-          )
+            { onSuccess: () => { setIsRejectOpen(false); } },
+          ); }
         }
       />
     </>
@@ -316,7 +314,7 @@ export default function RequisitionsPage() {
         sticky: true,
         cell: (requisition) => (
           <button
-            onClick={() => routerNavigate(`/recruitment/requisitions/${requisition.id}/overview`)}
+            onClick={() => { routerNavigate(`/recruitment/requisitions/${requisition.id}/overview`); }}
             className="font-mono text-xs font-semibold text-primary hover:underline focus-visible:outline-none text-left"
           >
             {requisition.code}
@@ -332,7 +330,7 @@ export default function RequisitionsPage() {
         cell: (requisition) => (
           <div className="min-w-0 max-w-[260px]">
             <button
-              onClick={() => routerNavigate(`/recruitment/requisitions/${requisition.id}/overview`)}
+              onClick={() => { routerNavigate(`/recruitment/requisitions/${requisition.id}/overview`); }}
               className="font-medium text-foreground text-left hover:text-primary hover:underline transition-colors focus-visible:outline-none block truncate w-full"
               title={requisition.title}
             >
@@ -425,7 +423,7 @@ export default function RequisitionsPage() {
               hasPermission("recruitment.update") &&
               (requisition.status === "draft" || requisition.status === "pending_approval")
             }
-            onViewDetails={(id) => routerNavigate(`/recruitment/requisitions/${id}/overview`)}
+            onViewDetails={(id) => { routerNavigate(`/recruitment/requisitions/${id}/overview`); }}
             onEdit={(req) => {
               setSelectedRequisition(req)
               setIsEditOpen(true)
@@ -508,7 +506,7 @@ export default function RequisitionsPage() {
         }
         primaryAction={
           hasPermission("recruitment.create") ? (
-            <Button onClick={() => setIsCreateOpen(true)} className="rounded-full font-semibold">
+            <Button onClick={() => { setIsCreateOpen(true); }} className="rounded-full font-semibold">
               <Plus className="mr-2 h-4 w-4" />
               Tạo yêu cầu mới
             </Button>
@@ -550,7 +548,7 @@ export default function RequisitionsPage() {
 
       <RequisitionDetailsDrawer
         requisitionId={viewingRequisitionId}
-        onClose={() => setViewingRequisitionId(null)}
+        onClose={() => { setViewingRequisitionId(null); }}
         onEdit={(req) => {
           setSelectedRequisition(req)
           setIsEditOpen(true)
