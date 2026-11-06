@@ -178,11 +178,10 @@ export default function RolesManagement() {
         description="Xem, tạo mới và quản lý các vai trò trong hệ thống."
         actions={
           <Button
-            size="sm"
             onClick={handleOpenCreate}
-            className="gap-1.5 rounded-full font-semibold"
+            className="gap-1.5 rounded-full text-sm font-semibold"
           >
-            <Plus size={14} strokeWidth={2.5} />
+            <Plus size={16} strokeWidth={2.5} />
             Thêm vai trò
           </Button>
         }
@@ -205,7 +204,7 @@ export default function RolesManagement() {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
           {rolesData?.data?.map((role: Role) => {
             const count = role.employeesCount ?? 0
             const isSystem = role.isSystem

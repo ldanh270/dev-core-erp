@@ -150,7 +150,7 @@ export default function PermissionMatrix() {
 
   if (loading) {
     return (
-      <PageContainer variant="default">
+      <PageContainer variant="table">
       <div className="flex h-[calc(100vh-200px)] w-full items-center justify-center">
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -162,14 +162,14 @@ export default function PermissionMatrix() {
   }
 
   return (
-    <PageContainer variant="default">
+    <PageContainer variant="table">
       <PageHeader
         title="Cấu trúc Phân quyền"
         description="Danh sách các API endpoints của hệ thống và quyền cần có để truy cập (Single Source of Truth)."
       />
 
       {/* Summary Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-7">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 shrink-0">
         <PageCard className="bg-muted/20 border-border">
           <div className="p-4 flex items-center gap-3">
             <div className="p-2 rounded-lg bg-muted text-muted-foreground">
@@ -223,24 +223,23 @@ export default function PermissionMatrix() {
       </div>
 
       {/* Main Table Matrix */}
-      <PageCard className="overflow-hidden" padding="sm">
+      <PageCard className="flex-1 min-h-0 flex flex-col overflow-hidden p-0 shadow-none border-border" noBorder={false}>
         {/* Toolbar */}
         <div className="px-5 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-border">
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <Input
-              size="sm"
               placeholder="Tìm kiếm API, đường dẫn..."
-              className="pl-8 bg-background border-border/80 focus:border-primary transition-colors rounded-full"
+              className="pl-10 bg-background border-border/80 focus:border-primary transition-colors rounded-full text-sm"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="flex flex-wrap items-center gap-4 ml-auto">
             <div className="flex items-center gap-2">
-              <ArrowUpDown size={15} className="text-muted-foreground" />
+              <ArrowUpDown size={16} className="text-muted-foreground shrink-0" />
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger size="sm" className="w-[200px] bg-background rounded-full">
+                <SelectTrigger className="w-[200px] bg-background rounded-full text-sm font-semibold">
                   <SelectValue placeholder="Sắp xếp theo..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -253,9 +252,9 @@ export default function PermissionMatrix() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Filter size={15} className="text-muted-foreground" />
+              <Filter size={16} className="text-muted-foreground shrink-0" />
               <Select value={methodFilter} onValueChange={setMethodFilter}>
-                <SelectTrigger size="sm" className="w-[170px] bg-background rounded-full">
+                <SelectTrigger className="w-[170px] bg-background rounded-full text-sm font-semibold">
                   <SelectValue placeholder="Phương thức..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -271,15 +270,15 @@ export default function PermissionMatrix() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/10 text-[11px] uppercase tracking-wider font-bold text-muted-foreground">
-                <th className="h-10 px-5 py-3 text-left">Tên API</th>
-                <th className="h-10 px-5 py-3 text-left">Phương thức</th>
-                <th className="h-10 px-5 py-3 text-left">Đường dẫn API</th>
-                <th className="h-10 px-5 py-3 text-center">Xác thực</th>
-                <th className="h-10 px-5 py-3 text-left">Phân quyền</th>
+        <div className="flex-1 min-h-0 overflow-auto app-scrollbar">
+          <table className="w-full text-sm border-separate border-spacing-0">
+            <thead className="sticky top-0 z-20 bg-background shadow-xs">
+              <tr className="border-b border-border bg-muted/20 text-[11px] uppercase tracking-wider font-bold text-muted-foreground">
+                <th className="h-10 px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground align-middle">Tên API</th>
+                <th className="h-10 px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground align-middle">Phương thức</th>
+                <th className="h-10 px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground align-middle">Đường dẫn API</th>
+                <th className="h-10 px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground align-middle">Xác thực</th>
+                <th className="h-10 px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground align-middle">Phân quyền</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/60">
