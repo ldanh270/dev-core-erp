@@ -1,4 +1,4 @@
-import { AppPagination, DataTableToolbar, PageCard, PageContainer, PageHeader } from "@/components/common"
+import { DataTablePage, type DataTableColumn } from "@/components/common"
 import EmployeePayslipHistoryDialog from "@/components/features/payroll/EmployeePayslipHistoryDialog"
 import EmployeeSalaryConfigDialog from "@/components/features/payroll/employee-salary-config-dialog"
 import { Button } from "@/components/ui/button"
@@ -8,14 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useDebounce } from "@/hooks/use-debounce"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
@@ -25,12 +17,46 @@ import {
 } from "@/hooks/payroll/use-employee-salary-config"
 import type { Employee } from "@/types/employee.types"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
-import { Loader2, MoreHorizontal, User } from "lucide-react"
+import { MoreHorizontal, User } from "lucide-react"
 
 const formatCurrency = (val: number) => {
   return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(val)
+}
+
+function EmployeeSalaryInfoCell({
+  employeeId,
+  templates,
+}: {
+  employeeId: string
+  templates?: { id: string; name: string }[]
+}) {
+  const { data: config, isLoading } = useActiveSalaryConfig(employeeId)
+  const templateName = templates?.find((t) => t.id === config?.templateId)?.name || "Chưa thiết lập"
+
+  if (isLoading) {
+    return <span className="text-muted-foreground text-xs">Đang tải...</span>
+  }
+
+  return (
+    <div className="flex items-center gap-3">
+      <span className="font-semibold text-foreground">
+        {config ? formatCurrency(Number(config.baseSalary)) : (
+          <span className="text-destructive font-normal">Chưa thiết lập</span>
+        )}
+      </span>
+      <span
+        className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+          config
+            ? "bg-primary/5 text-primary border-primary/20"
+            : "bg-muted text-muted-foreground border-border"
+        }`}
+      >
+        {templateName}
+      </span>
+    </div>
+  )
 }
 
 export default function EmployeeSalary() {
@@ -54,6 +80,8 @@ export default function EmployeeSalary() {
     search: debouncedSearch,
   })
 
+  const { data: templates } = usePayslipTemplates()
+
   const handleOpenConfigDialog = (emp: { id: string; fullName: string; position?: string }) => {
     setSelectedEmployee(emp)
     setConfigDialogOpen(true)
@@ -64,87 +92,149 @@ export default function EmployeeSalary() {
     setHistoryDialogOpen(true)
   }
 
+  const columns: DataTableColumn<Employee>[] = useMemo(
+    () => [
+      {
+        id: "index",
+        header: "STT",
+        width: "60px",
+        align: "center",
+        sticky: true,
+        cell: (_, index) => (
+          <span className="text-muted-foreground">{(page - 1) * limit + index + 1}</span>
+        ),
+      },
+      {
+        id: "employee",
+        header: "Nhân sự",
+        minWidth: "240px",
+        sticky: true,
+        cell: (emp) => (
+          <div
+            className="flex items-center gap-2.5 cursor-pointer"
+            onClick={() =>
+              handleOpenConfigDialog({
+                id: emp.id,
+                fullName: emp.fullName,
+                position: emp.position || undefined,
+              })
+            }
+          >
+            <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold overflow-hidden shrink-0 border border-border">
+              {emp.avatar?.url ? (
+                <img src={emp.avatar.url} alt={emp.fullName} className="w-full h-full object-cover" />
+              ) : (
+                <User className="h-3.5 w-3.5" />
+              )}
+            </div>
+            <div className="min-w-0">
+              <div className="font-medium text-foreground truncate hover:text-primary transition-colors">
+                {emp.fullName}
+              </div>
+              <div className="text-[10px] text-muted-foreground font-mono">
+                {emp.id.split("-")[0].toUpperCase()}
+              </div>
+            </div>
+          </div>
+        ),
+      },
+      {
+        id: "position",
+        header: "Vị trí / Vai trò",
+        minWidth: "180px",
+        hideBelow: "md",
+        cell: (emp) => (
+          <div>
+            <div className="font-semibold text-foreground/85 text-xs">{emp.position || "—"}</div>
+            <div className="text-[10px] text-muted-foreground uppercase">{emp.role}</div>
+          </div>
+        ),
+      },
+      {
+        id: "salaryConfig",
+        header: "Lương cơ bản & Mẫu phiếu lương",
+        minWidth: "260px",
+        cell: (emp) => (
+          <EmployeeSalaryInfoCell employeeId={emp.id} templates={templates} />
+        ),
+      },
+      {
+        id: "actions",
+        header: "",
+        width: "60px",
+        align: "center",
+        cell: (emp) => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0 rounded-full">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="text-xs rounded-xl">
+              <DropdownMenuItem
+                onClick={() =>
+                  handleOpenConfigDialog({
+                    id: emp.id,
+                    fullName: emp.fullName,
+                    position: emp.position || undefined,
+                  })
+                }
+              >
+                Gán mẫu phiếu lương
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  handleOpenHistoryDialog({
+                    id: emp.id,
+                    fullName: emp.fullName,
+                    position: emp.position || undefined,
+                  })
+                }
+              >
+                Xem lịch sử phiếu lương
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ),
+      },
+    ],
+    [page, limit, templates],
+  )
+
   return (
-    <PageContainer variant="default">
-      <PageHeader
+    <>
+      <DataTablePage<Employee>
         title="Lương nhân sự"
         description="Quản lý cấu hình mức lương cơ bản và mẫu phiếu lương của nhân viên."
-      />
-
-      <PageCard className="overflow-hidden p-0" noBorder={false}>
-        <DataTableToolbar
-          searchQuery={searchQuery}
-          onSearchChange={(val) => {
+        variant="viewport"
+        data={employeeData?.data ?? []}
+        columns={columns}
+        isLoading={isEmployeesLoading}
+        keyExtractor={(emp) => emp.id}
+        search={{
+          value: searchQuery,
+          onSearch: (val: string) => {
             setSearchQuery(val)
             setPage(1)
-          }}
-          searchPlaceholder="Tìm kiếm nhân viên..."
-        />
-
-        <div className="overflow-x-auto">
-          <Table className="text-sm">
-            <TableHeader className="bg-muted/40">
-              <TableRow className="hover:bg-transparent border-b">
-                <TableHead className="h-10 min-w-12.5 px-4 py-3 font-medium text-center text-xs text-muted-foreground uppercase">
-                  STT
-                </TableHead>
-                <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Nhân sự
-                </TableHead>
-                <TableHead className="h-10 hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Vị trí / Vai trò
-                </TableHead>
-                <TableHead className="h-10 hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Lương cơ bản
-                </TableHead>
-                <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Mẫu phiếu lương
-                </TableHead>
-                <TableHead className="h-10 min-w-12.5 px-4 py-3"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="divide-y divide-border">
-              {isEmployeesLoading ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
-                    <Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground" />
-                  </TableCell>
-                </TableRow>
-              ) : !employeeData || employeeData.data.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                    Không tìm thấy nhân viên nào phù hợp.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                employeeData.data.map((emp: Employee, index: number) => (
-                  <EmployeeRow
-                    key={emp.id}
-                    emp={emp}
-                    index={(page - 1) * limit + index + 1}
-                    onConfigure={handleOpenConfigDialog}
-                    onViewHistory={handleOpenHistoryDialog}
-                  />
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        {employeeData && employeeData.meta.total > 0 && (
-          <AppPagination
-            currentPage={page}
-            totalPages={employeeData.meta.totalPages}
-            onPageChange={setPage}
-            totalItems={employeeData.meta.total}
-            itemsPerPage={limit}
-            onItemsPerPageChange={(newLimit) => {
-              setLimit(newLimit)
-              setPage(1)
-            }}
-          />
-        )}
-      </PageCard>
+          },
+          placeholder: "Tìm kiếm nhân viên...",
+        }}
+        pagination={
+          employeeData && employeeData.meta.total > 0
+            ? {
+                currentPage: page,
+                totalPages: employeeData.meta.totalPages,
+                totalItems: employeeData.meta.total,
+                itemsPerPage: limit,
+                onPageChange: setPage,
+                onItemsPerPageChange: (newLimit) => {
+                  setLimit(newLimit)
+                  setPage(1)
+                },
+              }
+            : undefined
+        }
+      />
 
       <EmployeeSalaryConfigDialog
         open={configDialogOpen}
@@ -157,109 +247,6 @@ export default function EmployeeSalary() {
         onOpenChange={setHistoryDialogOpen}
         employee={selectedEmployee}
       />
-    </PageContainer>
-  )
-}
-
-interface RowProps {
-  emp: Employee
-  index: number
-  onConfigure: (emp: { id: string; fullName: string; position?: string }) => void
-  onViewHistory: (emp: { id: string; fullName: string; position?: string }) => void
-}
-
-function EmployeeRow({ emp, index, onConfigure, onViewHistory }: RowProps) {
-  const { data: config, isLoading } = useActiveSalaryConfig(emp.id)
-  const { data: templates } = usePayslipTemplates()
-
-  const templateName = templates?.find((t) => t.id === config?.templateId)?.name || "Chưa thiết lập"
-
-  return (
-    <TableRow
-      className="hover:bg-muted/30 cursor-pointer"
-      onClick={() =>
-        onConfigure({ id: emp.id, fullName: emp.fullName, position: emp.position || undefined })
-      }
-    >
-      <TableCell className="h-[60px] text-center px-4 py-3 text-muted-foreground">{index}</TableCell>
-      <TableCell className="h-[60px] px-4 py-3">
-        <div className="flex items-center gap-2">
-          <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold overflow-hidden shrink-0 border">
-            {emp.avatar?.url ? (
-              <img src={emp.avatar.url} alt={emp.fullName} className="w-full h-full object-cover" />
-            ) : (
-              <User className="h-3 w-3" />
-            )}
-          </div>
-          <div>
-            <div className="font-medium text-foreground">{emp.fullName}</div>
-            <div className="text-[10px] text-muted-foreground font-mono">
-              {emp.id.split("-")[0].toUpperCase()}
-            </div>
-          </div>
-        </div>
-      </TableCell>
-      <TableCell className="h-[60px] hidden sm:table-cell px-4 py-3">
-        <div className="font-semibold text-foreground/80">{emp.position || "-"}</div>
-        <div className="text-[10px] text-muted-foreground uppercase">{emp.role}</div>
-      </TableCell>
-      <TableCell className="h-[60px] hidden sm:table-cell px-4 py-3 font-semibold">
-        {isLoading ? (
-          <span className="text-muted-foreground">Đang tải...</span>
-        ) : config ? (
-          formatCurrency(Number(config.baseSalary))
-        ) : (
-          <span className="text-destructive">Chưa thiết lập</span>
-        )}
-      </TableCell>
-      <TableCell className="h-[60px] px-4 py-3">
-        {isLoading ? (
-          <span className="text-muted-foreground">Đang tải...</span>
-        ) : (
-          <span
-            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
-              config
-                ? "bg-primary/5 text-primary border-primary/20"
-                : "bg-muted text-muted-foreground"
-            }`}
-          >
-            {templateName}
-          </span>
-        )}
-      </TableCell>
-      <TableCell className="h-[60px] px-4 py-3" onClick={(e) => e.stopPropagation()}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0 rounded-full">
-              <MoreHorizontal className="h-3.5 w-3.5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="text-xs">
-            <DropdownMenuItem
-              onClick={() =>
-                onConfigure({
-                  id: emp.id,
-                  fullName: emp.fullName,
-                  position: emp.position || undefined,
-                })
-              }
-            >
-              Gán mẫu phiếu lương
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() =>
-                onViewHistory({
-                  id: emp.id,
-                  fullName: emp.fullName,
-                  position: emp.position || undefined,
-                })
-              }
-            >
-              Xem lịch sử phiếu lương
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </TableCell>
-    </TableRow>
+    </>
   )
 }
