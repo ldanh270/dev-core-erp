@@ -210,9 +210,9 @@ export default function ProjectDashboard() {
     }
 
     return (
-      <div className="relative overflow-x-auto rounded-lg border border-border bg-card">
+      <div className="relative max-h-[420px] overflow-auto app-scrollbar rounded-lg border border-border bg-card">
         <Table>
-          <TableHeader>
+          <TableHeader className="sticky top-0 z-10 bg-card shadow-xs">
             <TableRow className="hover:bg-transparent h-12">
               <TableHead className="w-16 font-semibold">ID</TableHead>
               <TableHead className="font-semibold">Dự án</TableHead>
@@ -406,7 +406,7 @@ export default function ProjectDashboard() {
 
         {/* Fetching loading state for projects */}
         {isLoadingProjects ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
             <Skeleton className="h-32 w-full rounded-xl" />
             <Skeleton className="h-32 w-full rounded-xl" />
             <Skeleton className="h-32 w-full rounded-xl" />
@@ -421,7 +421,7 @@ export default function ProjectDashboard() {
           </div>
         ) : (
           // Projects grid display list
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
             {projects.map((proj) => {
               const isLeader = proj.teamLeaderId === user?.id
               const isAdminOrGM = hasAnyPermission(["project.update", "project.task.approve"])
