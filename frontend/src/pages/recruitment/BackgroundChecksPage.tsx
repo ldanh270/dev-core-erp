@@ -123,7 +123,7 @@ export default function BackgroundChecksPage() {
         cell: (bgc) => (
           <div
             className="flex items-center gap-3 cursor-pointer group"
-            onClick={() => handleViewDetails(bgc)}
+            onClick={() => { handleViewDetails(bgc); }}
           >
             <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
               <span className="text-xs font-semibold text-primary">
@@ -229,7 +229,7 @@ export default function BackgroundChecksPage() {
         cell: (bgc) => (
           <div
             className="flex items-center justify-end gap-1"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => { e.stopPropagation(); }}
           >
             {bgc.status === BGC_STATUS.PENDING && canStart && (
               <Tooltip>
@@ -238,7 +238,7 @@ export default function BackgroundChecksPage() {
                     variant="ghost"
                     size="icon"
                     className="rounded-full hover:bg-muted h-8 w-8"
-                    onClick={() => handleStart(bgc.id)}
+                    onClick={() => { handleStart(bgc.id); }}
                   >
                     <Play className="h-3.5 w-3.5" />
                   </Button>
@@ -254,7 +254,7 @@ export default function BackgroundChecksPage() {
                       variant="ghost"
                       size="icon"
                       className="rounded-full hover:bg-muted h-8 w-8"
-                      onClick={() => handleComplete(bgc.id, true)}
+                      onClick={() => { handleComplete(bgc.id, true); }}
                     >
                       <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
                     </Button>
@@ -267,7 +267,7 @@ export default function BackgroundChecksPage() {
                       variant="ghost"
                       size="icon"
                       className="rounded-full hover:bg-muted h-8 w-8"
-                      onClick={() => handleComplete(bgc.id, false)}
+                      onClick={() => { handleComplete(bgc.id, false); }}
                     >
                       <XCircle className="h-3.5 w-3.5 text-destructive" />
                     </Button>
@@ -282,7 +282,7 @@ export default function BackgroundChecksPage() {
                   variant="ghost"
                   size="icon"
                   className="rounded-full hover:bg-muted h-8 w-8"
-                  onClick={() => handleViewDetails(bgc)}
+                  onClick={() => { handleViewDetails(bgc); }}
                 >
                   <Eye className="h-3.5 w-3.5" />
                 </Button>

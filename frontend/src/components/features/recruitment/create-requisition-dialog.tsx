@@ -213,12 +213,11 @@ export function CreateRequisitionDialog({
             <Field label="Loại hình làm việc" required error={errors.employmentType?.message}>
               <Select
                 value={employmentType}
-                onValueChange={(value) =>
-                  form.setValue(
+                onValueChange={(value) => { form.setValue(
                     "employmentType",
                     value as RequisitionFormValues["employmentType"],
                     { shouldValidate: true },
-                  )
+                  ); }
                 }
               >
                 <SelectTrigger className="w-full">
@@ -277,10 +276,9 @@ export function CreateRequisitionDialog({
             <Field label="Ưu tiên" required error={errors.priority?.message}>
               <Select
                 value={priority}
-                onValueChange={(value) =>
-                  form.setValue("priority", value as RequisitionFormValues["priority"], {
+                onValueChange={(value) => { form.setValue("priority", value as RequisitionFormValues["priority"], {
                     shouldValidate: true,
-                  })
+                  }); }
                 }
               >
                 <SelectTrigger className="w-full">
@@ -301,8 +299,7 @@ export function CreateRequisitionDialog({
               ) : (
                 <Select
                   value={approverId}
-                  onValueChange={(value) =>
-                    form.setValue("approverId", value, { shouldValidate: true })
+                  onValueChange={(value) => { form.setValue("approverId", value, { shouldValidate: true }); }
                   }
                   disabled={approvers.length === 0}
                 >

@@ -260,7 +260,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
           ? r.allowedTaskTrackers
           : trackers.map((t) => t.code)
       })
-// eslint-disable-next-line react-hooks/set-state-in-effect
+ 
       setLocalRules(initialTrackers)
     }
   }, [roles, trackers])
@@ -279,7 +279,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
   }
 
   const handleSave = async () => {
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
     const invalidRole = Object.entries(localRules).find(([_, allowedTaskTrackers]) => allowedTaskTrackers.length === 0)
     if (invalidRole) {
       const roleObj = roles.find(r => r.id === invalidRole[0])
@@ -366,7 +366,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleOpenEdit(role)}
+                          onClick={() => { handleOpenEdit(role); }}
                           className="size-7 rounded-full hover:bg-muted"
                         >
                           <Edit2 className="size-3 text-muted-foreground hover:text-foreground" />
@@ -421,7 +421,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
                               type="button"
                               variant="ghost"
                               size="icon"
-                              onClick={() => handleOpenAddMemberToRole(role)}
+                              onClick={() => { handleOpenAddMemberToRole(role); }}
                               className="size-5 rounded-full hover:bg-muted text-primary cursor-pointer"
                               title="Thêm/Chuyển nhân sự vào vai trò này"
                             >
@@ -468,7 +468,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
                         roleId={role.id}
                         allowed={allowed}
                         trackers={trackers}
-                        onToggle={(key) => handleToggle(role.id, key)}
+                        onToggle={(key) => { handleToggle(role.id, key); }}
                         onSelectAll={() => {
                           setLocalRules((prev) => ({
                             ...prev,
@@ -511,7 +511,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
               <Input
                 id="role_name"
                 value={roleName}
-                onChange={(e) => handleNameChange(e.target.value)}
+                onChange={(e) => { handleNameChange(e.target.value); }}
                 placeholder="Ví dụ: Designer"
                 className="rounded-full h-10 text-sm"
                 required
@@ -522,7 +522,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
               <Input
                 id="role_code"
                 value={roleCode}
-                onChange={(e) => setRoleCode(e.target.value)}
+                onChange={(e) => { setRoleCode(e.target.value); }}
                 placeholder="Ví dụ: designer"
                 className="rounded-full h-10 text-sm font-mono"
                 disabled
@@ -534,7 +534,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => { setIsModalOpen(false); }}
                 className="rounded-full text-xs h-9"
               >
                 Hủy bỏ
@@ -593,7 +593,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsAddMemberModalOpen(false)}
+                onClick={() => { setIsAddMemberModalOpen(false); }}
                 className="rounded-full text-xs h-9"
                 disabled={isSubmittingMember}
               >

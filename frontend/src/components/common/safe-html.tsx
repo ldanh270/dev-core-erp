@@ -73,7 +73,7 @@ export const SafeHtml: React.FC<SafeHtmlProps> = ({ content, className }) => {
 
   useEffect(() => { // lgtm[js/xss] // NOSONAR
     if (!content) {
-// eslint-disable-next-line react-hooks/set-state-in-effect
+ 
       setReactNodes([])
       return
     }

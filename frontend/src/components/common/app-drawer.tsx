@@ -59,7 +59,14 @@ export function AppDrawer({
   const shouldShowClose = showCloseButton ?? true
 
   return (
-    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Sheet
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          onClose()
+        }
+      }}
+    >
       <SheetContent
         showCloseButton={false}
         className={cn(

@@ -215,7 +215,7 @@ export default function NewTask() {
   useEffect(() => {
     if (statuses.length > 0 && !taskStatusId) {
       const defaultStatus = statuses.find((s: ProjectTaskStatus) => s.isDefault) || statuses[0]
-// eslint-disable-next-line react-hooks/set-state-in-effect
+ 
       setTaskStatusId(defaultStatus.id)
     }
   }, [statuses, taskStatusId])
@@ -224,7 +224,7 @@ export default function NewTask() {
   useEffect(() => {
     if (allowedTrackers.length > 0) {
       if (!allowedTrackers.includes(taskTracker)) {
-// eslint-disable-next-line react-hooks/set-state-in-effect
+ 
         setTaskTracker(allowedTrackers[0] as TaskTracker)
       }
     }
@@ -484,7 +484,7 @@ export default function NewTask() {
               <DatePicker
                 id="startDate"
                 value={taskStart || null}
-                onChange={(val) => setTaskStart(val || "")}
+                onChange={(val) => { setTaskStart(val || ""); }}
                 placeholder="Chọn ngày bắt đầu..."
               />
             </div>
@@ -496,7 +496,7 @@ export default function NewTask() {
               <DatePicker
                 id="dueDate"
                 value={taskDue || null}
-                onChange={(val) => setTaskDue(val || "")}
+                onChange={(val) => { setTaskDue(val || ""); }}
                 placeholder="Chọn hạn hoàn thành..."
               />
             </div>

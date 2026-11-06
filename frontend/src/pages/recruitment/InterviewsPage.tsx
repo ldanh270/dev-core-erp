@@ -447,7 +447,7 @@ export default function InterviewsPage() {
                       </TableCell>
                       <TableCell
                         className="h-[60px] px-4 py-3 text-right"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => { e.stopPropagation(); }}
                       >
                         <Tooltip>
                           <TooltipTrigger asChild>

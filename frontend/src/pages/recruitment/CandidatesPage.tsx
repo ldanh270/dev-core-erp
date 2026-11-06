@@ -56,7 +56,7 @@ export default function CandidatesPage() {
         cell: (candidate) => (
           <div
             className="flex items-center gap-3 cursor-pointer group"
-            onClick={() => handleViewDetails(candidate)}
+            onClick={() => { handleViewDetails(candidate); }}
           >
             <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
               <span className="text-xs font-semibold text-primary">
@@ -155,7 +155,7 @@ export default function CandidatesPage() {
                 variant="ghost"
                 size="icon"
                 className="rounded-full hover:bg-muted h-8 w-8"
-                onClick={() => handleViewDetails(candidate)}
+                onClick={() => { handleViewDetails(candidate); }}
               >
                 <Eye className="h-4 w-4" />
               </Button>
@@ -190,7 +190,7 @@ export default function CandidatesPage() {
           hasPermission("recruitment.intake.manage") ? (
             <Button
               className="rounded-full font-semibold gap-1.5"
-              onClick={() => routerNavigate(ROUTES.RECRUITMENT.APPLICANT_INTAKE)}
+              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.APPLICANT_INTAKE); }}
             >
               <Plus className="h-4 w-4" />
               Tiếp nhận ứng viên

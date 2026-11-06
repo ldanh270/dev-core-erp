@@ -293,9 +293,9 @@ export default function ApplicationDashboard() {
             setShowSubmitModal(false)
           }}
           onSuccess={() => {
-            void myApps.refetch()
-            void manageApps.refetch()
-            void allApps.refetch()
+            myApps.refetch()
+            manageApps.refetch()
+            allApps.refetch()
           }}
           initialType={createType}
         />

@@ -1068,7 +1068,7 @@ export default function TaskDetail() {
                 <DatePicker
                   id="editStart"
                   value={taskStart || null}
-                  onChange={(val) => setTaskStart(val || "")}
+                  onChange={(val) => { setTaskStart(val || ""); }}
                   placeholder="Chọn ngày bắt đầu..."
                 />
               </div>
@@ -1080,7 +1080,7 @@ export default function TaskDetail() {
                 <DatePicker
                   id="editDue"
                   value={taskDue || null}
-                  onChange={(val) => setTaskDue(val || "")}
+                  onChange={(val) => { setTaskDue(val || ""); }}
                   placeholder="Chọn hạn hoàn thành..."
                 />
               </div>

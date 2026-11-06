@@ -265,7 +265,7 @@ export function CreatePayslipTemplateForm({
                               type="button"
                               variant="outline"
                               className="rounded-full border-primary text-primary hover:bg-primary/10 shadow-none px-6"
-                              onClick={() => setIsModalOpen(true)}
+                              onClick={() => { setIsModalOpen(true); }}
                               disabled={isReadOnly}
                             >
                               <Plus className="w-4 h-4 mr-2" />
@@ -318,7 +318,7 @@ export function CreatePayslipTemplateForm({
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10"
-                                onClick={() => remove(index)}
+                                onClick={() => { remove(index); }}
                                 disabled={isReadOnly}
                               >
                                 <Minus className="h-4 w-4" />
@@ -337,7 +337,7 @@ export function CreatePayslipTemplateForm({
                       type="button"
                       variant="outline"
                       className="rounded-full border-primary text-primary hover:bg-primary/10 shadow-none px-6"
-                      onClick={() => setIsModalOpen(true)}
+                      onClick={() => { setIsModalOpen(true); }}
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       Thêm thành phần

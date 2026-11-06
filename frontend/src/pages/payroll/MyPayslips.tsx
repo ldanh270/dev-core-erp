@@ -74,7 +74,7 @@ export default function MyPayslips() {
         cell: (payslip) => (
           <div
             className="flex items-center gap-3 cursor-pointer group"
-            onClick={() => handleSelect(payslip)}
+            onClick={() => { handleSelect(payslip); }}
           >
             <div className="h-9 w-9 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
               <CalendarDays className="h-4.5 w-4.5" />
@@ -165,7 +165,7 @@ export default function MyPayslips() {
             variant="ghost"
             size="icon"
             className="h-8 w-8 rounded-full"
-            onClick={() => handleSelect(payslip)}
+            onClick={() => { handleSelect(payslip); }}
           >
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </Button>

@@ -142,8 +142,7 @@ export function SalaryVariableFormPage({
                         className="rounded-full"
                         disabled={isReadOnly}
                         {...field}
-                        onChange={(e) =>
-                          field.onChange(e.target.value === "" ? 0 : Number(e.target.value))
+                        onChange={(e) => { field.onChange(e.target.value === "" ? 0 : Number(e.target.value)); }
                         }
                       />
                     </FormControl>

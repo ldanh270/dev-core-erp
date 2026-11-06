@@ -71,7 +71,7 @@ export default function WeeklySchedules() {
           <div className="min-w-0">
             <button
               type="button"
-              onClick={() => handleEdit(template)}
+              onClick={() => { handleEdit(template); }}
               className="rounded-full text-left font-medium text-foreground hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring truncate block max-w-full"
             >
               {template.name}
@@ -124,10 +124,10 @@ export default function WeeklySchedules() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleEdit(template)}>Sửa</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setApplying(template)}>Áp dụng</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { handleEdit(template); }}>Sửa</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { setApplying(template); }}>Áp dụng</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(template.id)}>
+              <DropdownMenuItem className="text-destructive" onClick={() => { handleDelete(template.id); }}>
                 Xoá
               </DropdownMenuItem>
             </DropdownMenuContent>

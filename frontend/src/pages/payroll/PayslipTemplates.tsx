@@ -102,7 +102,7 @@ export default function PayslipTemplates() {
         cell: (template) => (
           <button
             type="button"
-            onClick={() => handleOpenView(template)}
+            onClick={() => { handleOpenView(template); }}
             className="font-medium text-foreground hover:text-primary hover:underline text-left transition-colors"
           >
             {template.name}
@@ -156,15 +156,15 @@ export default function PayslipTemplates() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="text-xs rounded-xl">
-              <DropdownMenuItem onClick={() => setTemplateToAssign(template)}>
+              <DropdownMenuItem onClick={() => { setTemplateToAssign(template); }}>
                 Gán cho nhân viên
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleOpenEdit(template)}>
+              <DropdownMenuItem onClick={() => { handleOpenEdit(template); }}>
                 Chỉnh sửa
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive focus:bg-destructive/10 focus:text-destructive"
-                onClick={() => setTemplateToDelete(template)}
+                onClick={() => { setTemplateToDelete(template); }}
               >
                 Xoá
               </DropdownMenuItem>

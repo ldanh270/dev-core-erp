@@ -168,7 +168,7 @@ export default function PositionsManagement() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleOpenEdit(pos)}
+                      onClick={() => { handleOpenEdit(pos); }}
                       className="size-8 rounded-full hover:bg-muted"
                     >
                       <Edit2 className="size-3.5 text-muted-foreground hover:text-foreground" />
@@ -232,7 +232,7 @@ export default function PositionsManagement() {
                 <Input
                   id="name"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => { setName(e.target.value); }}
                   placeholder="Ví dụ: Lập trình viên"
                   className="rounded-full h-10 text-sm"
                   required
@@ -243,7 +243,7 @@ export default function PositionsManagement() {
                 <Input
                   id="code"
                   value={code}
-                  onChange={(e) => setCode(e.target.value)}
+                  onChange={(e) => { setCode(e.target.value); }}
                   placeholder="Ví dụ: developer"
                   className="rounded-full h-10 text-sm font-mono"
                   disabled={!!editingId}
@@ -257,7 +257,7 @@ export default function PositionsManagement() {
               <Textarea
                 id="desc"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => { setDescription(e.target.value); }}
                 placeholder="Nhập mô tả ngắn gọn về vai trò/chức năng của chức vụ này..."
                 className="rounded-xl min-h-[60px] text-sm"
               />
@@ -278,7 +278,7 @@ export default function PositionsManagement() {
                       <button
                         type="button"
                         key={key}
-                        onClick={() => handleToggleTracker(key)}
+                        onClick={() => { handleToggleTracker(key); }}
                         className={`flex items-center gap-2 p-2.5 rounded-full border text-left transition-all duration-200 cursor-pointer ${
                           isChecked
                             ? "bg-primary/5 border-primary text-primary"
@@ -298,7 +298,7 @@ export default function PositionsManagement() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsOpen(false)}
+                onClick={() => { setIsOpen(false); }}
                 className="rounded-full text-xs h-9"
               >
                 Hủy bỏ

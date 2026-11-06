@@ -369,7 +369,7 @@ function AdminAttendanceDashboard() {
 
           <Select
             value={statusFilter}
-            onValueChange={(v) => setStatusFilter(v as IAttendanceStatus | "all")}
+            onValueChange={(v) => { setStatusFilter(v as IAttendanceStatus | "all"); }}
           >
             <SelectTrigger className="w-44 rounded-full text-sm font-semibold">
               <SelectValue placeholder="Trạng thái" />

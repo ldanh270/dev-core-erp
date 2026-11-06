@@ -57,7 +57,7 @@ export function useActivityLogsMaster() {
 
   // Synchronize URL search params to local state (e.g. back/forward navigation or dashboard click)
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setQuery((prev) => {
       if (
         prev.category === categoryParam &&

@@ -173,7 +173,7 @@ export function GeneratePayrollModal() {
                 type="button"
                 variant="outline"
                 className="rounded-full border-border text-foreground hover:bg-accent"
-                onClick={() => setOpen(false)}
+                onClick={() => { setOpen(false); }}
                 disabled={isPending}
               >
                 Cancel

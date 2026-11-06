@@ -45,7 +45,7 @@ export function DatabaseErdNode({
   return (
     <button
       type="button"
-      onClick={() => onSelectTable(table)}
+      onClick={() => { onSelectTable(table); }}
       aria-label={`Xem chi tiết bảng ${table.name}`}
       data-erd-node={table.name}
       data-erd-role={isPrimary ? "primary" : "foreign-key"}

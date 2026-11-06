@@ -79,7 +79,7 @@ export default function SalaryComponents() {
         cell: (comp) => (
           <button
             type="button"
-            onClick={() => handleEdit(comp)}
+            onClick={() => { handleEdit(comp); }}
             className="font-medium text-foreground hover:text-primary hover:underline text-left transition-colors"
           >
             {comp.name}
@@ -138,7 +138,7 @@ export default function SalaryComponents() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="rounded-xl text-xs">
-              <DropdownMenuItem onClick={() => handleEdit(comp)}>
+              <DropdownMenuItem onClick={() => { handleEdit(comp); }}>
                 Sửa thành phần
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -117,7 +117,7 @@ export default function PayrollManagement() {
         cell: (payroll) => (
           <button
             type="button"
-            onClick={() => setSelectedPayrollId(payroll.id)}
+            onClick={() => { setSelectedPayrollId(payroll.id); }}
             className="font-mono font-medium text-primary hover:underline text-left"
           >
             PAY-{payroll.id.substring(payroll.id.length - 8).toUpperCase()}
@@ -190,11 +190,11 @@ export default function PayrollManagement() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40 rounded-xl">
-                <DropdownMenuItem onClick={() => handleApprove(payroll.id)}>
+                <DropdownMenuItem onClick={() => { handleApprove(payroll.id); }}>
                   <CheckCircle2 className="mr-2 h-4 w-4 text-emerald-600" />
                   <span>Duyệt</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleReject(payroll.id)}>
+                <DropdownMenuItem onClick={() => { handleReject(payroll.id); }}>
                   <XCircle className="mr-2 h-4 w-4 text-destructive" />
                   <span>Từ chối</span>
                 </DropdownMenuItem>
@@ -261,7 +261,7 @@ export default function PayrollManagement() {
 
       <PayrollDetailSheet
         payrollId={selectedPayrollId}
-        onClose={() => setSelectedPayrollId(null)}
+        onClose={() => { setSelectedPayrollId(null); }}
       />
     </>
   )

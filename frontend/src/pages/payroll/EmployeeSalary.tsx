@@ -112,12 +112,11 @@ export default function EmployeeSalary() {
         cell: (emp) => (
           <div
             className="flex items-center gap-2.5 cursor-pointer"
-            onClick={() =>
-              handleOpenConfigDialog({
+            onClick={() => { handleOpenConfigDialog({
                 id: emp.id,
                 fullName: emp.fullName,
                 position: emp.position || undefined,
-              })
+              }); }
             }
           >
             <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold overflow-hidden shrink-0 border border-border">
@@ -172,23 +171,21 @@ export default function EmployeeSalary() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="text-xs rounded-xl">
               <DropdownMenuItem
-                onClick={() =>
-                  handleOpenConfigDialog({
+                onClick={() => { handleOpenConfigDialog({
                     id: emp.id,
                     fullName: emp.fullName,
                     position: emp.position || undefined,
-                  })
+                  }); }
                 }
               >
                 Gán mẫu phiếu lương
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() =>
-                  handleOpenHistoryDialog({
+                onClick={() => { handleOpenHistoryDialog({
                     id: emp.id,
                     fullName: emp.fullName,
                     position: emp.position || undefined,
-                  })
+                  }); }
                 }
               >
                 Xem lịch sử phiếu lương
