@@ -116,7 +116,7 @@ export function SearchInput({
         onClick={handleTriggerSearch}
         disabled={disabled}
         aria-label="Kích hoạt tìm kiếm"
-        className="absolute left-1 p-1.5 rounded-full text-muted-foreground hover:text-foreground"
+        className="absolute left-1 p-1.5 aspect-square rounded-full text-muted-foreground hover:text-foreground"
       >
         <Search className="size-4" />
       </Button>
@@ -143,7 +143,7 @@ export function SearchInput({
           onClick={handleClear}
           disabled={disabled}
           aria-label="Xóa nội dung tìm kiếm"
-          className="absolute right-1 p-1.5 rounded-full text-muted-foreground hover:text-foreground"
+          className="absolute right-1 p-1.5 aspect-square rounded-full text-muted-foreground hover:text-foreground"
         >
           <X className="size-4" />
         </Button>

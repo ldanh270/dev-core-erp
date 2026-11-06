@@ -56,13 +56,14 @@ export function DataTablePage<T>({
   onResetFilters,
 }: DataTablePageProps<T>) {
   const isCompact = density === "compact"
-  // Padding-driven typography: flexible cell padding instead of hardcoded fixed heights
+  // In W3C CSS Table Model, 'height' on th/td natively acts as minimum height (never clips, auto-expands on multi-line)
+  // while guaranteeing clean integer rendering (exact 40px for header, 60px for data rows) in DevTools.
   const thClass = isCompact
-    ? "px-3 py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
-    : "px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+    ? "h-10 px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider align-middle"
+    : "h-10 px-4 py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider align-middle"
 
-  // Padding-driven cell sizing: py-3 (12px top + 12px bottom = 24px) + 36px content = exactly 60px standard row
-  const tdClass = isCompact ? "px-3 py-2 text-sm" : "px-4 py-3 text-sm"
+  // Standard row cell height: 60px standard, 48px compact
+  const tdClass = isCompact ? "h-12 px-3 py-2 text-sm align-middle" : "h-[60px] px-4 py-2.5 text-sm align-middle"
 
   // Responsive breakpoint hooks for progressive column visibility
   const isMd = useMediaQuery("(min-width: 768px)")
@@ -158,7 +159,7 @@ export function DataTablePage<T>({
                     tabs.onTabChange(tab.id)
                   }}
                   className={cn(
-                    "relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium leading-5 transition-colors whitespace-nowrap cursor-pointer",
+                    "relative flex min-h-11 items-center gap-2 px-4 py-2.5 text-sm font-medium leading-5 transition-colors whitespace-nowrap cursor-pointer",
                     isActive
                       ? "text-primary font-semibold"
                       : "text-muted-foreground hover:text-foreground",

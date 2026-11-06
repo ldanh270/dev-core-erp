@@ -5,27 +5,30 @@
 
 export const CONTROL_SIZES = {
   /**
-   * sm: ~30px (16px leading + 12px py + 2px border) — Toolbar, Filter Bar, Compact Table Actions
+   * sm: Compact controls (Toolbar filter, pagination size selector, compact table buttons)
+   * Content-driven with 32px baseline floor: min-h-8 + py-1.5 px-3 + text-xs leading-4
    */
-  sm: "px-3 py-1.5 text-xs font-semibold leading-4 rounded-full",
+  sm: "min-h-8 px-3 py-1.5 text-xs font-semibold leading-4 rounded-full",
 
   /**
-   * default: 40px (exact 40px: 20px leading + 18px py + 2px border) — Standard Form Fields, Modals, Drawers
+   * default: Standard interactive controls (Search inputs, action buttons, modals)
+   * Content-driven with 40px baseline floor: min-h-10 + py-[0.5625rem] px-4 + text-sm leading-5
    */
-  default: "px-3.5 py-[0.5625rem] text-sm leading-5 rounded-full",
+  default: "min-h-10 px-4 py-[0.5625rem] text-sm font-semibold leading-5 rounded-full",
 
   /**
-   * lg: ~48px (24px leading + 22px py + 2px border) — Prominent Auth Forms, Hero Inputs
+   * lg: Prominent hero controls
+   * Content-driven with 48px baseline floor: min-h-12 + py-[0.6875rem] px-5 + text-base leading-6
    */
-  lg: "px-5 py-[0.6875rem] text-base leading-6 rounded-full",
+  lg: "min-h-12 px-5 py-[0.6875rem] text-base font-semibold leading-6 rounded-full",
 } as const
 
 export type ControlSize = keyof typeof CONTROL_SIZES
 
 export const CONTROL_HEIGHTS: Record<ControlSize, string> = {
-  sm: "h-9",
-  default: "h-10",
-  lg: "h-12",
+  sm: "min-h-8",
+  default: "min-h-10",
+  lg: "min-h-12",
 }
 
 /**
