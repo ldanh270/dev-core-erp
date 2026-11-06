@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils"
 import {
   Pagination,
   PaginationContent,
@@ -80,12 +81,12 @@ export function AppPagination({
   ).sort((a, b) => a - b)
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-border text-sm">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-border text-xs text-muted-foreground">
       {/* Page size selector & total items counter */}
       <div className="flex flex-col sm:flex-row items-center gap-3 text-muted-foreground">
         {onItemsPerPageChange && (
           <div className="flex items-center gap-2">
-            <span>Hiển thị</span>
+            <span className="text-xs font-medium text-muted-foreground">Hiển thị</span>
             <Select
               value={itemsPerPage.toString()}
               onValueChange={(val) => {
@@ -107,7 +108,7 @@ export function AppPagination({
         )}
 
         {totalItems !== undefined && (
-          <div className="text-center sm:text-left">
+          <div className="text-center sm:text-left text-xs font-medium text-muted-foreground">
             {totalItems === 0 ? "0" : `${startItemIndex}-${endItemIndex}`} trên{" "}
             <span className="font-semibold text-foreground">{totalItems}</span>
           </div>
@@ -127,7 +128,11 @@ export function AppPagination({
                   e.preventDefault()
                   if (currentPage > 1) onPageChange(currentPage - 1)
                 }}
-                className={`rounded-full px-3 text-xs ${currentPage <= 1 ? "pointer-events-none opacity-50" : ""}`}
+                className={cn(
+                  "text-xs font-medium text-muted-foreground hover:text-foreground",
+                  currentPage <= 1 && "opacity-50 cursor-not-allowed",
+                )}
+                aria-disabled={currentPage <= 1}
                 title="Trang trước"
               />
             </PaginationItem>
@@ -151,11 +156,12 @@ export function AppPagination({
                       e.preventDefault()
                       onPageChange(page)
                     }}
-                    className={`rounded-full text-xs font-semibold ${
+                    className={cn(
+                      "aspect-square min-w-8 min-h-8 p-1.5 rounded-full text-xs flex items-center justify-center transition-colors",
                       page === currentPage
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                        : "hover:bg-muted"
-                    }`}
+                        ? "bg-primary text-primary-foreground font-semibold hover:bg-primary/90"
+                        : "font-medium text-muted-foreground hover:text-foreground hover:bg-muted",
+                    )}
                   >
                     {page}
                   </PaginationLink>
@@ -172,7 +178,11 @@ export function AppPagination({
                   e.preventDefault()
                   if (currentPage < totalPages) onPageChange(currentPage + 1)
                 }}
-                className={`rounded-full px-3 text-xs ${currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}`}
+                className={cn(
+                  "text-xs font-medium text-muted-foreground hover:text-foreground",
+                  currentPage >= totalPages && "opacity-50 cursor-not-allowed",
+                )}
+                aria-disabled={currentPage >= totalPages}
                 title="Trang sau"
               />
             </PaginationItem>

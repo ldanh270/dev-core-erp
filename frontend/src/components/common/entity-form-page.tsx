@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils"
 
 import type { ReactNode } from "react"
 
-import { ChevronLeft } from "lucide-react"
+import { BackButton } from "@/components/common/back-button"
 
 interface EntityFormPageProps {
   title: string
@@ -43,19 +43,12 @@ export function EntityFormPage({
     <div className={cn("flex flex-col h-full min-h-screen bg-muted/30", className)}>
       {/* Sticky Header */}
       <div className="sticky top-0 z-10 flex items-center gap-4 px-6 py-4 bg-background border-b border-border">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onBack}
-          className="rounded-full hover:bg-accent"
-        >
-          <ChevronLeft className="w-5 h-5 text-foreground" />
-        </Button>
+        <BackButton onBack={onBack} />
         <h1 className="text-xl font-semibold tracking-tight text-foreground">{title}</h1>
       </div>
 
       {/* Scrollable Content Area */}
-      <div className="flex-1 max-w-5xl w-full mx-auto p-6 space-y-6">{children}</div>
+      <div className="flex-1 max-w-4xl w-full mx-auto px-4 md:px-6 py-6 space-y-6">{children}</div>
 
       {/* Sticky Footer */}
       <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 px-6 py-4 bg-background border-t border-border">
@@ -90,7 +83,7 @@ export function EntityFormPage({
               key="cancel-btn"
               type="button"
               variant="outline"
-              className="rounded-full border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground shadow-none px-8"
+              className="rounded-full rounded-full font-semibold border-border hover:bg-muted text-foreground shadow-xs px-8"
               onClick={onBack}
             >
               {cancelLabel}
@@ -100,7 +93,7 @@ export function EntityFormPage({
               type={formId ? "submit" : "button"}
               form={formId}
               onClick={!formId ? onSubmit : undefined}
-              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-none px-10"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-none px-8 font-semibold shadow-xs"
               disabled={isPending || !isDirty}
             >
               {isPending ? "Đang xử lý..." : submitLabel}
