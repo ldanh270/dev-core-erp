@@ -45,9 +45,9 @@ import { format, parseISO } from "date-fns"
 import { vi } from "date-fns/locale"
 
 const resultIconMap: Record<string, React.ReactNode> = {
-  [INTERVIEW_RESULT.PASS]: <CheckCircle className="h-4 w-4 text-green-500" />,
-  [INTERVIEW_RESULT.FAIL]: <XCircle className="h-4 w-4 text-red-500" />,
-  [INTERVIEW_RESULT.PENDING]: <Minus className="h-4 w-4 text-yellow-500" />,
+  [INTERVIEW_RESULT.PASS]: <CheckCircle className="h-4 w-4 text-emerald-500" />,
+  [INTERVIEW_RESULT.FAIL]: <XCircle className="h-4 w-4 text-destructive" />,
+  [INTERVIEW_RESULT.PENDING]: <Minus className="h-4 w-4 text-amber-500" />,
 }
 
 const resultVariantMap: Record<string, "success" | "warning" | "danger" | "neutral"> = {
@@ -96,7 +96,9 @@ function InterviewCard({ interview }: InterviewCardProps) {
             Vòng {interview.roundNumber}
           </Badge>
           <Badge variant="secondary" className="rounded-full text-[10px]">
-            {interview.interviewType ? INTERVIEW_TYPE_LABELS[interview.interviewType] || interview.interviewType : interview.title || "Phỏng vấn"}
+            {interview.interviewType
+              ? INTERVIEW_TYPE_LABELS[interview.interviewType] || interview.interviewType
+              : interview.title || "Phỏng vấn"}
           </Badge>
         </div>
         <div className="flex items-center gap-1">
@@ -187,7 +189,8 @@ export default function InterviewsPage() {
       return (
         item.candidateName?.toLowerCase().includes(searchStr) ||
         item.positionTitle?.toLowerCase().includes(searchStr) ||
-        (item.interviewType && INTERVIEW_TYPE_LABELS[item.interviewType]?.toLowerCase().includes(searchStr))
+        (item.interviewType &&
+          INTERVIEW_TYPE_LABELS[item.interviewType]?.toLowerCase().includes(searchStr))
       )
     })
   }, [interviews, activeTab, keyword])
@@ -197,7 +200,7 @@ export default function InterviewsPage() {
   }, [filteredInterviews, page, pageSize])
 
   return (
-    <PageContainer className="flex flex-col gap-6">
+    <PageContainer variant="table">
       <PageHeader
         title="Lịch phỏng vấn"
         description="Quản lý lịch phỏng vấn và đánh giá ứng viên"
@@ -209,11 +212,11 @@ export default function InterviewsPage() {
         }
       />
 
-      <PageCard padding="sm" className="p-0 overflow-hidden">
+      <PageCard padding="sm" className="p-0 overflow-hidden flex-1 min-h-0 flex flex-col">
         {/* Status Tab Navigation */}
         <nav
           aria-label="Lọc theo kết quả phỏng vấn"
-          className="flex items-center gap-6 overflow-x-auto border-b border-border px-6 hide-scrollbar bg-background"
+          className="flex items-center gap-6 overflow-x-auto border-b border-border px-6 hide-scrollbar bg-background shrink-0"
         >
           {TAB_DEFINITIONS.map((tab) => {
             const isActive = activeTab === tab.id
@@ -226,7 +229,9 @@ export default function InterviewsPage() {
                   setPage(1)
                 }}
                 className={`relative flex items-center gap-2 py-4 font-medium text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
-                  isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"
+                  isActive
+                    ? "text-primary font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {tab.label}
@@ -262,7 +267,9 @@ export default function InterviewsPage() {
                   <Button
                     variant={viewMode === "table" ? "secondary" : "ghost"}
                     size="sm"
-                    onClick={() => { setViewMode("table"); }}
+                    onClick={() => {
+                      setViewMode("table")
+                    }}
                     className="h-7 px-3 rounded-full text-xs gap-1.5"
                   >
                     <List className="h-3.5 w-3.5" />
@@ -276,7 +283,9 @@ export default function InterviewsPage() {
                   <Button
                     variant={viewMode === "cards" ? "secondary" : "ghost"}
                     size="sm"
-                    onClick={() => { setViewMode("cards"); }}
+                    onClick={() => {
+                      setViewMode("cards")
+                    }}
                     className="h-7 px-3 rounded-full text-xs gap-1.5"
                   >
                     <LayoutGrid className="h-3.5 w-3.5" />
@@ -290,7 +299,7 @@ export default function InterviewsPage() {
         />
 
         {viewMode === "cards" ? (
-          <div className="p-6">
+          <div className="flex-1 min-h-0 overflow-auto app-scrollbar p-6">
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {Array.from({ length: 4 }).map((_, i) => (
@@ -312,18 +321,34 @@ export default function InterviewsPage() {
             )}
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="flex-1 min-h-0 overflow-auto app-scrollbar w-full">
             <Table>
-              <TableHeader className="bg-muted/40">
+              <TableHeader className="sticky top-0 z-20 bg-background shadow-xs">
                 <TableRow>
-                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-56 px-4 py-2">Ứng viên</TableHead>
-                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell min-w-44 px-4 py-2">Vị trí</TableHead>
-                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 px-4 py-2">Vòng</TableHead>
-                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell w-36 px-4 py-2">Loại</TableHead>
-                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-44 px-4 py-2">Thời gian</TableHead>
-                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell w-36 px-4 py-2">Hình thức</TableHead>
-                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-36 px-4 py-2">Kết quả</TableHead>
-                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 px-4 py-2 text-right">Thao tác</TableHead>
+                  <TableHead className="sticky left-0 z-30 bg-background h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-56 px-4 py-2">
+                    Ứng viên
+                  </TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell min-w-44 px-4 py-2">
+                    Vị trí
+                  </TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 px-4 py-2">
+                    Vòng
+                  </TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell w-36 px-4 py-2">
+                    Loại
+                  </TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-44 px-4 py-2">
+                    Thời gian
+                  </TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell w-36 px-4 py-2">
+                    Hình thức
+                  </TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-36 px-4 py-2">
+                    Kết quả
+                  </TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 px-4 py-2 text-right">
+                    Thao tác
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -347,20 +372,27 @@ export default function InterviewsPage() {
                   paginatedInterviews.map((interview: InterviewRound) => (
                     <TableRow
                       key={interview.id}
-                      onClick={() => { handleViewDetails(interview); }}
+                      onClick={() => {
+                        handleViewDetails(interview)
+                      }}
                       className="cursor-pointer transition-colors duration-100 hover:bg-muted/25"
                     >
-                      <TableCell className="h-[60px] px-4 py-3 font-medium text-foreground">
+                      <TableCell className="sticky left-0 z-10 bg-background h-[60px] px-4 py-3 font-medium text-foreground">
                         {interview.candidateName}
                       </TableCell>
                       <TableCell className="h-[60px] hidden md:table-cell px-4 py-3 text-muted-foreground text-sm">
                         {interview.positionTitle}
                       </TableCell>
                       <TableCell className="h-[60px] px-4 py-3">
-                        <Badge variant="outline" className="rounded-full text-[11px]">Vòng {interview.roundNumber}</Badge>
+                        <Badge variant="outline" className="rounded-full text-[11px]">
+                          Vòng {interview.roundNumber}
+                        </Badge>
                       </TableCell>
                       <TableCell className="h-[60px] hidden lg:table-cell px-4 py-3 text-sm">
-                        {interview.interviewType ? INTERVIEW_TYPE_LABELS[interview.interviewType] || interview.interviewType : interview.title || "Phỏng vấn"}
+                        {interview.interviewType
+                          ? INTERVIEW_TYPE_LABELS[interview.interviewType] ||
+                            interview.interviewType
+                          : interview.title || "Phỏng vấn"}
                       </TableCell>
                       <TableCell className="h-[60px] px-4 py-3">
                         {interview.scheduledAt ? (
@@ -368,10 +400,17 @@ export default function InterviewsPage() {
                             try {
                               return (
                                 <div className="text-sm">
-                                  <p className="font-medium text-foreground">{format(parseISO(interview.scheduledAt), "dd/MM/yyyy", { locale: vi })}</p>
+                                  <p className="font-medium text-foreground">
+                                    {format(parseISO(interview.scheduledAt), "dd/MM/yyyy", {
+                                      locale: vi,
+                                    })}
+                                  </p>
                                   <p className="text-xs text-muted-foreground mt-0.5">
-                                    {format(parseISO(interview.scheduledAt), "HH:mm", { locale: vi })}
-                                    {interview.durationMinutes && ` (${interview.durationMinutes} phút)`}
+                                    {format(parseISO(interview.scheduledAt), "HH:mm", {
+                                      locale: vi,
+                                    })}
+                                    {interview.durationMinutes &&
+                                      ` (${interview.durationMinutes} phút)`}
                                   </p>
                                 </div>
                               )
@@ -390,7 +429,10 @@ export default function InterviewsPage() {
                           ) : (
                             <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
                           )}
-                          <span>{(interview.format && INTERVIEW_FORMAT_LABELS[interview.format]) || interview.format}</span>
+                          <span>
+                            {(interview.format && INTERVIEW_FORMAT_LABELS[interview.format]) ||
+                              interview.format}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell className="h-[60px] px-4 py-3">
@@ -403,14 +445,19 @@ export default function InterviewsPage() {
                           <StatusPill label="Chờ" variant="warning" />
                         )}
                       </TableCell>
-                      <TableCell className="h-[60px] px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                      <TableCell
+                        className="h-[60px] px-4 py-3 text-right"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
                               variant="ghost"
                               size="icon"
                               className="rounded-full hover:bg-muted"
-                              onClick={() => { handleViewDetails(interview); }}
+                              onClick={() => {
+                                handleViewDetails(interview)
+                              }}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -426,17 +473,19 @@ export default function InterviewsPage() {
           </div>
         )}
 
-        <AppPagination
-          currentPage={page}
-          totalPages={Math.max(1, Math.ceil(filteredInterviews.length / pageSize))}
-          onPageChange={setPage}
-          totalItems={filteredInterviews.length}
-          itemsPerPage={pageSize}
-          onItemsPerPageChange={(val) => {
-            setPageSize(val)
-            setPage(1)
-          }}
-        />
+        <div className="border-t border-border shrink-0">
+          <AppPagination
+            currentPage={page}
+            totalPages={Math.max(1, Math.ceil(filteredInterviews.length / pageSize))}
+            onPageChange={setPage}
+            totalItems={filteredInterviews.length}
+            itemsPerPage={pageSize}
+            onItemsPerPageChange={(val) => {
+              setPageSize(val)
+              setPage(1)
+            }}
+          />
+        </div>
       </PageCard>
 
       <ViewInterviewDialog
@@ -447,4 +496,3 @@ export default function InterviewsPage() {
     </PageContainer>
   )
 }
-
