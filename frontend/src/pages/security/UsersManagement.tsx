@@ -1,6 +1,7 @@
-import { PageCard, StatusPill } from "@/components/common"
+import { AppPagination, PageCard, PageContainer, PageHeader, StatusPill } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { SYSTEM_CONFIG } from "@/config/system.config"
 import { ROLE_LABELS } from "@/config/entities/employee.config"
 import { useUsersManagementMaster } from "@/hooks/security/use-users-management-master"
 import { cn } from "@/lib/utils"
@@ -50,25 +51,24 @@ export default function UsersManagement() {
     unlockMutation,
     total,
     totalPages,
-    pageStart,
-    pageEnd,
-    visiblePages,
   } = useUsersManagementMaster()
 
   const rows = (displayData ?? []) as UserListItem[]
 
   if (isLoading) {
     return (
-      <div className="container px-6 py-8 flex flex-col items-center justify-center min-h-[400px]">
+      <PageContainer variant="default">
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
         <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
         <p className="text-sm text-muted-foreground mt-4">Đang tải danh sách người dùng...</p>
       </div>
+      </PageContainer>
     )
   }
 
   if (isError || (!displayData && activeTab === "locked")) {
     return (
-      <div className="container px-6 py-8">
+      <PageContainer variant="default">
         <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-6 text-center">
           <AlertTriangle className="h-10 w-10 text-destructive mx-auto mb-4" />
           <h2 className="text-lg font-bold text-destructive">Lỗi tải dữ liệu</h2>
@@ -79,23 +79,16 @@ export default function UsersManagement() {
             Thử lại
           </Button>
         </div>
-      </div>
+      </PageContainer>
     )
   }
 
   return (
-    <div className="container max-w-7xl px-6 py-8">
-      {/* Page header */}
-      <div className="flex items-start justify-between mb-7">
-        <div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-foreground leading-snug">
-            Quản lý người dùng & Bảo mật
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Giám sát trạng thái tài khoản, vai trò và xử lý khóa truy cập.
-          </p>
-        </div>
-      </div>
+    <PageContainer variant="default">
+      <PageHeader
+        title="Quản lý người dùng & Bảo mật"
+        description="Giám sát trạng thái tài khoản, vai trò và xử lý khóa truy cập."
+      />
 
       <PageCard className="overflow-hidden" padding="sm">
         {/* Tab Switcher */}
@@ -147,7 +140,7 @@ export default function UsersManagement() {
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Tìm kiếm người dùng..."
-              className="pl-8 h-8 text-xs"
+              className="pl-8 rounded-full text-xs"
               value={search}
               onChange={handleSearch}
             />
@@ -169,10 +162,10 @@ export default function UsersManagement() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/5 text-[11px] uppercase tracking-wider font-bold text-muted-foreground">
-                <th className="px-5 py-3 text-left">Người dùng</th>
-                <th className="px-5 py-3 text-left">Vai trò</th>
-                <th className="px-5 py-3 text-left">Bảo mật</th>
-                <th className="px-5 py-3 text-right">Thao tác</th>
+                <th className="h-10 px-5 py-3 text-left">Người dùng</th>
+                <th className="h-10 px-5 py-3 text-left">Vai trò</th>
+                <th className="h-10 px-5 py-3 text-left">Bảo mật</th>
+                <th className="h-10 px-5 py-3 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
@@ -188,7 +181,7 @@ export default function UsersManagement() {
                   
                   return (
                     <tr key={user.id || user.employeeId} className="group hover:bg-muted/30 transition-colors">
-                      <td className="px-5 py-4">
+                      <td className="h-[60px] px-5 py-3">
                         <div className="flex items-center gap-3">
                           <div className={cn(
                             "h-9 w-9 rounded-full flex items-center justify-center border transition-all",
@@ -206,14 +199,14 @@ export default function UsersManagement() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="h-[60px] px-5 py-3">
                         <StatusPill 
                           label={(user.role ? (ROLE_LABELS as Record<string, string>)[user.role] : undefined) || "N/A"} 
                           variant="neutral" 
                           className="font-medium"
                         />
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="h-[60px] px-5 py-3">
                         {isLocked ? (
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-1.5 text-rose-600 font-bold text-[11px]">
@@ -233,12 +226,12 @@ export default function UsersManagement() {
                           </div>
                         )}
                       </td>
-                      <td className="px-5 py-4 text-right">
+                      <td className="h-[60px] px-5 py-3 text-right">
                         {isLocked && (
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-8 border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 gap-1.5 text-xs font-bold"
+                            className="border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 gap-1.5 text-xs font-semibold rounded-full"
                             onClick={() => {
                               const id = user.id || user.employeeId
                               if (id) handleUnlock(id)
@@ -258,53 +251,19 @@ export default function UsersManagement() {
           </table>
         </div>
 
-        {/* Pagination Controls */}
-        <div className="px-5 py-3 border-t border-border flex items-center justify-between">
-          <p className="text-[12px] text-muted-foreground">
-            {pageStart}–{pageEnd}{" "}
-            <span className="text-foreground font-medium">/ {total}</span>
-          </p>
-
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-xs"
-              disabled={query.page === 1}
-              onClick={() => {
-                setQuery((prev) => ({ ...prev, page: Math.max(1, (prev.page || 1) - 1) }))
-              }}
-            >
-              ←
-            </Button>
-
-            {visiblePages.map((p) => (
-              <button
-                key={p}
-                onClick={() => { setQuery((prev) => ({ ...prev, page: p })) }}
-                className={[
-                  "w-7 h-7 rounded-md text-xs flex items-center justify-center transition-colors",
-                  query.page === p
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "text-muted-foreground hover:bg-muted",
-                ].join(" ")}
-              >
-                {p}
-              </button>
-            ))}
-
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-xs"
-              disabled={query.page === totalPages || totalPages === 0}
-              onClick={() => { setQuery((prev) => ({ ...prev, page: (prev.page || 1) + 1 })) }}
-            >
-              →
-            </Button>
+        {total > 0 && (
+          <div className="border-t border-border">
+            <AppPagination
+              currentPage={query.page || 1}
+              totalPages={totalPages}
+              onPageChange={(p) => { setQuery((prev) => ({ ...prev, page: p })); }}
+              totalItems={total}
+              itemsPerPage={query.limit || SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT}
+              onItemsPerPageChange={(limit) => { setQuery((prev) => ({ ...prev, limit, page: 1 })); }}
+            />
           </div>
-        </div>
+        )}
       </PageCard>
-    </div>
+    </PageContainer>
   )
 }

@@ -28,6 +28,7 @@ import {
 } from "lucide-react"
 
 import { StatusPill } from "@/components/common/status-pill"
+import { PageContainer } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -98,7 +99,7 @@ export default function MyInterviewsPage() {
   )
 
   return (
-    <div className="flex h-full flex-col p-6 space-y-6">
+    <PageContainer className="flex h-full flex-col space-y-6">
       {/* ── Page Header ───────────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-5">
         <div className="space-y-1">
@@ -413,7 +414,7 @@ export default function MyInterviewsPage() {
           if (!open) setSelectedInterview(null)
         }}
       />
-    </div>
+    </PageContainer>
   )
 }
 

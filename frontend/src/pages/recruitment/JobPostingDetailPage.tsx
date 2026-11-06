@@ -1,4 +1,4 @@
-import { PageCard, useConfirm } from "@/components/common"
+import { PageCard, PageContainer, useConfirm } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { RecruitmentWorkspaceSkeleton } from "@/components/features/recruitment/recruitment-workspace-skeleton"
 import { Button } from "@/components/ui/button"
@@ -111,7 +111,7 @@ export default function JobPostingDetailPage() {
   )
 
   return (
-    <div className="container space-y-6 px-3 py-4 sm:px-6 sm:py-6">
+    <PageContainer className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-2">
           <Button variant="ghost" className="h-8 rounded-full px-2 text-muted-foreground" asChild>
@@ -366,7 +366,7 @@ export default function JobPostingDetailPage() {
         </TabsContent>
       </Tabs>
       <CreateCandidateDialog postingId={id} open={isCreateOpen} onOpenChange={setIsCreateOpen} />
-    </div>
+    </PageContainer>
   )
 }
 

@@ -27,7 +27,7 @@ import {
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 
-import { PageCard, StatusPill } from "@/components/common"
+import { PageCard, PageContainer, StatusPill } from "@/components/common"
 import { CreateOfferDialog } from "@/components/features/recruitment/create-offer-dialog"
 import { Badge } from "@/components/ui/badge"
 import { DatePicker } from "@/components/common"
@@ -232,7 +232,7 @@ export default function ApplicationDetailPage() {
   const candidatePortfolioUrl = (application.candidate as { portfolioUrl?: string | null }).portfolioUrl
 
   return (
-    <div className="container space-y-6 px-3 py-4 sm:px-6 sm:py-6">
+    <PageContainer className="space-y-6">
       {/* ── Top Header / Navigation ──────────────────────────────────────────────── */}
       <div className="flex flex-col gap-4 border-b border-border pb-6 md:flex-row md:items-center md:justify-between">
         <div>
@@ -1293,6 +1293,6 @@ export default function ApplicationDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageContainer>
   )
 }

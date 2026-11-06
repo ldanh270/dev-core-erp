@@ -1,4 +1,4 @@
-import { DateRangePicker, PageCard } from "@/components/common"
+import { AppPagination, DateRangePicker, PageCard, PageContainer, PageHeader } from "@/components/common"
 import { ActivityLogDetailDrawer } from "@/components/features/security/ActivityLogDetailDrawer"
 import { ActivityLogsTable } from "@/components/features/security/ActivityLogsTable"
 import { Button } from "@/components/ui/button"
@@ -42,30 +42,23 @@ export default function ActivityLogs() {
     refetch,
   } = useActivityLogsMaster()
 
-  // Derived pagination calculations
   const totalPages = data?.meta.totalPages ?? 0
-  const pageStart = ((query.page || 1) - 1) * (query.limit || 20) + (data?.data.length ? 1 : 0)
-  const pageEnd = ((query.page || 1) - 1) * (query.limit || 20) + (data?.data.length || 0)
-
-  // Visible pages calculation (simple array)
-  const visiblePages = Array.from({ length: totalPages }, (_, i) => i + 1).slice(
-    Math.max(0, (query.page || 1) - 3),
-    Math.min(totalPages, (query.page || 1) + 2),
-  )
 
 
   if (isLoading) {
     return (
-      <div className="container px-6 py-8 flex flex-col items-center justify-center min-h-[400px]">
+      <PageContainer variant="default">
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         <p className="text-sm text-muted-foreground mt-4">Đang tải dữ liệu nhật ký...</p>
       </div>
+      </PageContainer>
     )
   }
 
   if (isError || !data) {
     return (
-      <div className="container px-6 py-8">
+      <PageContainer variant="default">
         <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-6 text-center">
           <AlertTriangle className="h-10 w-10 text-destructive mx-auto mb-4" />
           <h2 className="text-lg font-bold text-destructive">Lỗi tải dữ liệu</h2>
@@ -76,32 +69,27 @@ export default function ActivityLogs() {
             Thử lại
           </Button>
         </div>
-      </div>
+      </PageContainer>
     )
   }
 
   return (
-    <div className="container max-w-7xl px-6 py-8">
-      {/* ── Page header ───────────────────────────────────────────── */}
-      <div className="flex items-start justify-between mb-7">
-        <div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-foreground leading-snug">
-            Nhật ký hoạt động
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Truy vết toàn bộ hoạt động bảo mật và thay đổi dữ liệu trong hệ thống.
-          </p>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => { refetch(); }}
-          className="gap-1.5 h-8 px-3 text-xs rounded-full font-semibold"
-        >
-          <RefreshCw className={cn("h-3 w-3", isFetching && "animate-spin")} />
-          Làm mới
-        </Button>
-      </div>
+    <PageContainer variant="default">
+      <PageHeader
+        title="Nhật ký hoạt động"
+        description="Truy vết toàn bộ hoạt động bảo mật và thay đổi dữ liệu trong hệ thống."
+        actions={
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => { refetch(); }}
+            className="gap-1.5 rounded-full text-xs font-semibold"
+          >
+            <RefreshCw className={cn("h-3 w-3", isFetching && "animate-spin")} />
+            Làm mới
+          </Button>
+        }
+      />
 
       <PageCard className="overflow-hidden" padding="sm">
         {/* ── Toolbar ──────────────────────────────────────────────── */}
@@ -112,7 +100,7 @@ export default function ActivityLogs() {
               <Input
                 size="sm"
                 placeholder="Tìm theo ID nhân viên..."
-                className="pl-8 bg-background border-border/80 focus:border-primary"
+                className="pl-8 bg-background border-border/80 focus:border-primary rounded-full"
                 value={searchTerm}
                 onChange={handleSearch}
               />
@@ -126,7 +114,7 @@ export default function ActivityLogs() {
                   handleFilterChange("category", val === "all" ? undefined : val)
                 }}
               >
-                <SelectTrigger size="sm" className="w-[170px] bg-background border-border/80 font-semibold">
+                <SelectTrigger size="sm" className="w-[170px] bg-background border-border/80 font-semibold rounded-full">
                   <SelectValue placeholder="Tất cả danh mục" />
                 </SelectTrigger>
                 <SelectContent>
@@ -169,52 +157,18 @@ export default function ActivityLogs() {
         {/* ── Table ────────────────────────────────────────────────── */}
         <ActivityLogsTable logs={data.data} onViewDetail={setViewingLogId} />
 
-        {/* ── Pagination ───────────────────────────────────────────── */}
-        <div className="px-5 py-4 border-t border-border flex items-center justify-between bg-muted/5">
-          <p className="text-[12px] text-muted-foreground">
-            Hiển thị {pageStart}–{pageEnd} trong tổng số{" "}
-            <span className="text-foreground font-bold">{data?.meta.total ?? 0}</span> bản ghi
-          </p>
-
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 text-xs rounded-full"
-              disabled={query.page === 1}
-              onClick={() => {
-                setQuery((prev) => ({ ...prev, page: Math.max(1, (prev.page || 1) - 1) }))
-              }}
-            >
-              ←
-            </Button>
-
-            {visiblePages.map((p) => (
-              <button
-                key={p}
-                onClick={() => { setQuery((prev) => ({ ...prev, page: p })) }}
-                className={[
-                  "w-8 h-8 rounded-full text-xs font-semibold flex items-center justify-center transition-all duration-200 border",
-                  query.page === p
-                    ? "bg-primary text-primary-foreground font-bold border-primary shadow-sm"
-                    : "bg-background text-muted-foreground hover:bg-muted border-border hover:border-muted-foreground/30",
-                ].join(" ")}
-              >
-                {p}
-              </button>
-            ))}
-
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 text-xs rounded-full"
-              disabled={!data || query.page === totalPages || totalPages === 0}
-              onClick={() => { setQuery((prev) => ({ ...prev, page: (prev.page || 1) + 1 })) }}
-            >
-              →
-            </Button>
+        {data && data.meta.total > 0 && (
+          <div className="border-t border-border">
+            <AppPagination
+              currentPage={query.page || 1}
+              totalPages={totalPages}
+              onPageChange={(p) => { setQuery((prev) => ({ ...prev, page: p })); }}
+              totalItems={data.meta.total}
+              itemsPerPage={query.limit || 20}
+              onItemsPerPageChange={(limit) => { setQuery((prev) => ({ ...prev, limit, page: 1 })); }}
+            />
           </div>
-        </div>
+        )}
       </PageCard>
 
       {/* Detail Drawer */}
@@ -222,6 +176,6 @@ export default function ActivityLogs() {
         logId={viewingLogId}
         onClose={() => { setViewingLogId(null); }}
       />
-    </div>
+    </PageContainer>
   )
 }

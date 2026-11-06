@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { Check, Eye, FilePlus2, FileSearch, Filter, Pencil, Plus, RotateCcw, Send, X } from "lucide-react"
-import { AppPagination, DataTableToolbar, EmptyState, PageCard, PageHeader } from "@/components/common"
+import { AppPagination, DataTableToolbar, EmptyState, PageCard, PageContainer, PageHeader } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { CreateRequisitionDialog } from "@/components/features/recruitment/create-requisition-dialog"
 import { RejectRequisitionDialog } from "@/components/features/recruitment/reject-requisition-dialog"
@@ -153,7 +153,7 @@ export default function RequisitionsPage() {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="container flex flex-col gap-6 px-3 py-4 sm:px-6 sm:py-6">
+      <PageContainer className="flex flex-col gap-6">
         <PageHeader
           title="Yêu cầu tuyển dụng"
           description="Theo dõi nhu cầu tuyển dụng, người duyệt và tiến độ mở vị trí."
@@ -264,13 +264,13 @@ export default function RequisitionsPage() {
             <Table>
               <TableHeader className="bg-muted/40">
                 <TableRow>
-                  <TableHead className="w-28 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Mã</TableHead>
-                  <TableHead className="min-w-56 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Vị trí tuyển</TableHead>
-                  <TableHead className="hidden lg:table-cell w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Ngân sách</TableHead>
-                  <TableHead className="hidden xl:table-cell w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Hạn tuyển</TableHead>
-                  <TableHead className="hidden md:table-cell w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Người duyệt</TableHead>
-                  <TableHead className="w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Trạng thái</TableHead>
-                  <TableHead className="w-36 px-4 py-3 text-right text-xs font-medium uppercase text-muted-foreground">
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 px-4 py-2">Mã</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-56 px-4 py-2">Vị trí tuyển</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell w-44 px-4 py-2">Ngân sách</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden xl:table-cell w-36 px-4 py-2">Hạn tuyển</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell w-44 px-4 py-2">Người duyệt</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-36 px-4 py-2">Trạng thái</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-36 px-4 py-2 text-right">
                     Thao tác
                   </TableHead>
                 </TableRow>
@@ -361,7 +361,7 @@ export default function RequisitionsPage() {
             setIsEditOpen(true)
           }}
         />
-      </div>
+      </PageContainer>
     </TooltipProvider>
   )
 }
@@ -394,7 +394,7 @@ function RequisitionRow({
       className="cursor-pointer transition-colors duration-100 hover:bg-muted/25"
     >
       {/* Code */}
-      <TableCell className="px-4 py-3 font-mono text-xs font-medium text-primary">
+      <TableCell className="h-[60px] px-4 py-3 font-mono text-xs font-medium text-primary">
         <button
           onClick={(e) => {
             e.stopPropagation()
@@ -407,7 +407,7 @@ function RequisitionRow({
       </TableCell>
 
       {/* Position Title & Department */}
-      <TableCell className="px-4 py-3">
+      <TableCell className="h-[60px] px-4 py-3">
         <button
           onClick={(e) => {
             e.stopPropagation()
@@ -432,23 +432,23 @@ function RequisitionRow({
       </TableCell>
 
       {/* Salary Budget */}
-      <TableCell className="hidden lg:table-cell px-4 py-3 text-sm">
+      <TableCell className="h-[60px] hidden lg:table-cell px-4 py-3 text-sm">
         {formatCurrencyRange(requisition)}
       </TableCell>
 
       {/* Target Hire Date */}
-      <TableCell className="hidden xl:table-cell px-4 py-3 text-sm text-muted-foreground">
+      <TableCell className="h-[60px] hidden xl:table-cell px-4 py-3 text-sm text-muted-foreground">
         {formatDate(requisition.targetHireDate)}
       </TableCell>
 
       {/* Approver */}
-      <TableCell className="hidden md:table-cell px-4 py-3">
+      <TableCell className="h-[60px] hidden md:table-cell px-4 py-3">
         <p className="text-sm font-medium">{requisition.approver?.fullName ?? "Chưa chỉ định"}</p>
         <p className="text-xs text-muted-foreground">{requisition.approver?.position ?? ""}</p>
       </TableCell>
 
       {/* Status */}
-      <TableCell className="px-4 py-3">
+      <TableCell className="h-[60px] px-4 py-3">
         <StatusPill
           label={REQUISITION_STATUS_LABELS[requisition.status]}
           variant={statusVariantMap[requisition.status]}
@@ -456,7 +456,7 @@ function RequisitionRow({
       </TableCell>
 
       {/* Actions */}
-      <TableCell className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+      <TableCell className="h-[60px] px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-end gap-1">
           {/* View Details */}
           <Tooltip>

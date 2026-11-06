@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import { ExternalLink, Eye, FileSpreadsheet, Plus, RefreshCw, Share2 } from "lucide-react"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { AppPagination, DataTableToolbar, EmptyState, PageCard, PageHeader } from "@/components/common"
+import { AppPagination, DataTableToolbar, EmptyState, PageCard, PageContainer, PageHeader } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { CreateJobPostingDialog } from "@/components/features/recruitment/create-job-posting-dialog"
 import { Button } from "@/components/ui/button"
@@ -73,7 +73,7 @@ export default function JobPostingsPage() {
   }
 
   return (
-    <div className="container flex flex-col gap-6 px-3 py-4 sm:px-6 sm:py-6">
+    <PageContainer className="flex flex-col gap-6">
       <PageHeader
         title="Bài đăng tuyển dụng"
         description="Tạo và quản lý bài đăng tuyển dụng trên các kênh (Google Form, LinkedIn, Facebook, v.v.)"
@@ -133,11 +133,11 @@ export default function JobPostingsPage() {
           <Table>
             <TableHeader className="bg-muted/40">
               <TableRow>
-                <TableHead className="min-w-64 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Bài đăng / Vị trí</TableHead>
-                <TableHead className="w-48 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Kênh</TableHead>
-                <TableHead className="w-32 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Trạng thái</TableHead>
-                <TableHead className="w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Kết nối</TableHead>
-                <TableHead className="w-44 px-4 py-3 text-right text-xs font-medium uppercase text-muted-foreground">Thao tác</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-64 px-4 py-2">Bài đăng / Vị trí</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-48 px-4 py-2">Kênh</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-32 px-4 py-2">Trạng thái</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-36 px-4 py-2">Kết nối</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-44 px-4 py-2 text-right">Thao tác</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -179,7 +179,7 @@ export default function JobPostingsPage() {
                       }}
                       className="cursor-pointer transition-colors duration-100 hover:bg-muted/25"
                     >
-                      <TableCell className="px-4 py-3">
+                      <TableCell className="h-[60px] px-4 py-3">
                         <p className="font-medium text-foreground">{posting.requisition?.title ?? "N/A"}</p>
                         <p className="mt-0.5 text-xs text-muted-foreground">
                           <span className="font-mono text-primary font-medium">{posting.requisition?.code ?? "—"}</span>
@@ -187,20 +187,20 @@ export default function JobPostingsPage() {
                           {posting.requisition?.department || "Chưa có phòng ban"}
                         </p>
                       </TableCell>
-                      <TableCell className="px-4 py-3">
+                      <TableCell className="h-[60px] px-4 py-3">
                         <span className="text-sm font-medium">{channelLabel(posting.channel)}</span>
                         <p className="text-xs text-muted-foreground font-mono mt-0.5">{posting.sourceCode}</p>
                       </TableCell>
-                      <TableCell className="px-4 py-3">
+                      <TableCell className="h-[60px] px-4 py-3">
                         <StatusPill
                           label={posting.status === "open" ? "Đang mở" : posting.status === "closed" ? "Đã đóng" : "Nháp"}
                           variant={posting.status === "open" ? "success" : posting.status === "closed" ? "danger" : "neutral"}
                         />
                       </TableCell>
-                      <TableCell className="px-4 py-3">
+                      <TableCell className="h-[60px] px-4 py-3">
                         <ConnectorStatus posting={posting} />
                       </TableCell>
-                      <TableCell className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                      <TableCell className="h-[60px] px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                         <PostingActions posting={posting} onOpenWorkspace={() => { handleOpenWorkspace(posting); }} />
                       </TableCell>
                     </TableRow>
@@ -226,7 +226,7 @@ export default function JobPostingsPage() {
         initialRequisitionId={initialRequisitionId}
         jobRequisitions={requisitions}
       />
-    </div>
+    </PageContainer>
   )
 }
 

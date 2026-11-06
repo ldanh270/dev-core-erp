@@ -1,4 +1,4 @@
-import { AppPagination, DataTableToolbar, EmptyState, PageCard, PageHeader } from "@/components/common"
+import { AppPagination, DataTableToolbar, EmptyState, PageCard, PageContainer, PageHeader } from "@/components/common"
 import { ViewCandidateDialog } from "@/components/features/recruitment/view-candidate-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -16,6 +16,7 @@ import { RECRUITMENT_SOURCE_LABELS } from "@/config/entities/recruitment.config"
 import { ROUTES } from "@/config/routes.config"
 import { useCandidates } from "@/hooks/recruitment/use-recruitment-queries"
 import { usePermission } from "@/hooks/use-permission"
+import { useDebounce } from "@/hooks/use-debounce"
 import { routerNavigate } from "@/lib/router-navigator"
 import type { Candidate } from "@/types/recruitment.types"
 import { Eye, Mail, Phone, Plus, UserX } from "lucide-react"
@@ -25,12 +26,13 @@ export default function CandidatesPage() {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
   const [keyword, setKeyword] = useState("")
+  const debouncedKeyword = useDebounce(keyword, 400)
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null)
   const [viewCandidateOpen, setViewCandidateOpen] = useState(false)
   const { hasPermission } = usePermission()
 
   const { data, isLoading } = useCandidates({
-    keyword: keyword || undefined,
+    keyword: debouncedKeyword || undefined,
     page,
     pageSize,
   })
@@ -49,7 +51,7 @@ export default function CandidatesPage() {
   }
 
   return (
-    <div className="container flex flex-col gap-6 px-3 py-4 sm:px-6 sm:py-6">
+    <PageContainer className="flex flex-col gap-6">
       <PageHeader
         title="Ứng viên"
         description="Quản lý danh sách ứng viên và hồ sơ"
@@ -75,13 +77,13 @@ export default function CandidatesPage() {
           <Table>
             <TableHeader className="bg-muted/40">
               <TableRow>
-                <TableHead className="min-w-64 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Ứng viên</TableHead>
-                <TableHead className="w-56 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Email</TableHead>
-                <TableHead className="hidden md:table-cell w-40 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Điện thoại</TableHead>
-                <TableHead className="w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Nguồn</TableHead>
-                <TableHead className="hidden lg:table-cell w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Kinh nghiệm</TableHead>
-                <TableHead className="hidden lg:table-cell min-w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Kỹ năng</TableHead>
-                <TableHead className="w-28 px-4 py-3 text-right text-xs font-medium uppercase text-muted-foreground">Thao tác</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-64 px-4 py-2">Ứng viên</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-56 px-4 py-2">Email</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell w-40 px-4 py-2">Điện thoại</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-36 px-4 py-2">Nguồn</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell w-36 px-4 py-2">Kinh nghiệm</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell min-w-44 px-4 py-2">Kỹ năng</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 px-4 py-2 text-right">Thao tác</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -114,7 +116,7 @@ export default function CandidatesPage() {
                     onClick={() => { handleViewDetails(candidate); }}
                     className="group cursor-pointer transition-colors duration-150 hover:bg-muted/30"
                   >
-                    <TableCell className="px-4 py-3">
+                    <TableCell className="h-[60px] px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
                           <span className="text-xs font-semibold text-primary">
@@ -133,13 +135,13 @@ export default function CandidatesPage() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="px-4 py-3">
+                    <TableCell className="h-[60px] px-4 py-3">
                       <div className="flex items-center gap-1.5 text-sm">
                         <Mail className="h-3.5 w-3.5 text-muted-foreground" />
                         <span className="text-foreground">{candidate.email}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell px-4 py-3">
+                    <TableCell className="h-[60px] hidden md:table-cell px-4 py-3">
                       {candidate.phone ? (
                         <div className="flex items-center gap-1.5 text-sm">
                           <Phone className="h-3.5 w-3.5 text-muted-foreground" />
@@ -149,17 +151,17 @@ export default function CandidatesPage() {
                         <span className="text-muted-foreground text-xs">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="px-4 py-3">
+                    <TableCell className="h-[60px] px-4 py-3">
                       <Badge variant="outline" className="rounded-full text-[11px]">
                         {RECRUITMENT_SOURCE_LABELS[candidate.source] || candidate.source}
                       </Badge>
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell px-4 py-3 text-sm">
+                    <TableCell className="h-[60px] hidden lg:table-cell px-4 py-3 text-sm">
                       {candidate.yearsOfExperience
                         ? `${candidate.yearsOfExperience} năm`
                         : "—"}
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell px-4 py-3">
+                    <TableCell className="h-[60px] hidden lg:table-cell px-4 py-3">
                       <div className="flex flex-wrap gap-1 max-w-[200px]">
                         {(candidate.skills || []).slice(0, 3).map((skill, i) => (
                           <Badge key={i} variant="secondary" className="rounded-full text-[10px]">
@@ -173,7 +175,7 @@ export default function CandidatesPage() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                    <TableCell className="h-[60px] px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
@@ -213,6 +215,6 @@ export default function CandidatesPage() {
         onOpenChange={setViewCandidateOpen}
         candidate={selectedCandidate}
       />
-    </div>
+    </PageContainer>
   )
 }

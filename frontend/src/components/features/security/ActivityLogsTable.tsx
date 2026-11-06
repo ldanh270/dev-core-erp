@@ -44,24 +44,24 @@ export function ActivityLogsTable({
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border bg-muted/5">
-            <th className="w-[20%] px-5 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+            <th className="w-[20%] h-10 px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               Hành động
             </th>
             {!hideEmployee && (
-              <th className="w-[20%] px-5 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+              <th className="w-[20%] h-10 px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Nhân viên
               </th>
             )}
-            <th className="w-[15%] px-5 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+            <th className="w-[15%] h-10 px-5 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               Danh mục
             </th>
-            <th className="w-[20%] px-5 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+            <th className="w-[20%] h-10 px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               Địa chỉ IP
             </th>
-            <th className="w-[15%] px-5 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+            <th className="w-[15%] h-10 px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               Thời gian
             </th>
-            <th className="w-[10%] px-5 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+            <th className="w-[10%] h-10 px-5 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               Chi tiết
             </th>
           </tr>
@@ -80,7 +80,7 @@ export function ActivityLogsTable({
           ) : (
             logs.map((log) => (
               <tr key={log.id} className="group hover:bg-muted/30 transition-colors duration-100">
-                <td className="px-5 py-4">
+                <td className="h-[60px] px-5 py-3">
                   <div className="flex items-center gap-2.5">
                     <div
                       className={
@@ -103,7 +103,7 @@ export function ActivityLogsTable({
                   </div>
                 </td>
                 {!hideEmployee && (
-                  <td className="px-5 py-4">
+                  <td className="h-[60px] px-5 py-3">
                     <div className="text-[13px] text-foreground font-medium">
                       {log.employeeName || (
                         <span className="text-muted-foreground italic">{COMMON_TEXTS.SYSTEM}</span>
@@ -114,20 +114,20 @@ export function ActivityLogsTable({
                     </div>
                   </td>
                 )}
-                <td className="px-5 py-4 text-center">
+                <td className="h-[60px] px-5 py-3 text-center">
                   <StatusPill
                     label={log.category}
                     variant={SECURITY_CATEGORY_VARIANTS[log.category] ?? "neutral"}
                     className="text-[13px] px-3 py-1 font-bold uppercase"
                   />
                 </td>
-                <td className="px-5 py-4 font-mono text-[12px] text-muted-foreground">
+                <td className="h-[60px] px-5 py-3 font-mono text-[12px] text-muted-foreground">
                   <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-muted/50 rounded-full border border-border/40 text-xs">
                     <Globe className="w-3.5 h-3.5 opacity-50" />
                     <span>{log.ipAddress || "—"}</span>
                   </div>
                 </td>
-                <td className="px-5 py-4">
+                <td className="h-[60px] px-5 py-3">
                   <div className="text-[13px] text-foreground tabular-nums">
                     {new Date(log.createdAt).toLocaleDateString("vi-VN")}
                   </div>
@@ -138,7 +138,7 @@ export function ActivityLogsTable({
                     })}
                   </div>
                 </td>
-                <td className="px-5 py-4 text-center">
+                <td className="h-[60px] px-5 py-3 text-center">
                   <button
                     onClick={() => {
                       onViewDetail(log.id)

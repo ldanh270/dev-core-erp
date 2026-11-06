@@ -1,4 +1,5 @@
 import { SYSTEM_CONFIG } from "@/config/system.config"
+import { useDebounce } from "@/hooks/use-debounce"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import { USERS_MANAGEMENT_TABS, type IUsersManagementTab } from "@/config/entities/security.config"
 import { useLockedAccounts, useUnlockAccount } from "@/hooks/security/queries/use-security-query"
@@ -16,6 +17,7 @@ import { toast } from "sonner"
 export function useUsersManagementMaster() {
   const [activeTab, setActiveTab] = useState<IUsersManagementTab>(USERS_MANAGEMENT_TABS.ALL)
   const [search, setSearch] = useState("")
+  const debouncedSearch = useDebounce(search, 400)
 
   const [query, setQuery] = useState<EmployeeListQuery>({
     page: 1,
@@ -30,7 +32,7 @@ export function useUsersManagementMaster() {
     refetch: refetchAll,
   } = useEmployees({
     ...query,
-    search: search || undefined,
+    search: debouncedSearch || undefined,
   })
 
   const {

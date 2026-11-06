@@ -1,4 +1,4 @@
-import { PageCard } from "@/components/common"
+import { PageCard, PageContainer } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { ApplicationDetailPanel } from "@/components/features/recruitment/application-detail-panel"
 import { CreateJobPostingDialog } from "@/components/features/recruitment/create-job-posting-dialog"
@@ -136,7 +136,7 @@ export default function RequisitionDetailPage() {
     )
 
   return (
-    <div className="container space-y-6 px-3 py-4 sm:px-6 sm:py-6">
+    <PageContainer className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-2">
           <Button variant="ghost" className="h-8 rounded-full px-2 text-muted-foreground" asChild>
@@ -591,7 +591,7 @@ export default function RequisitionDetailPage() {
         }}
         applicationId={selectedAppId}
       />
-    </div>
+    </PageContainer>
   )
 }
 
