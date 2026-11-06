@@ -6,7 +6,7 @@ import * as React from "react"
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto">
+    <div data-slot="table-container" className="relative w-full overflow-x-auto app-scrollbar">
       <table
         data-slot="table"
         className={cn("w-full caption-bottom text-sm", className)}
@@ -58,7 +58,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "h-12 px-3 text-left align-middle font-medium whitespace-nowrap text-foreground has-[[role=checkbox]]:pr-0",
+        "h-10 px-4 py-2.5 text-left align-middle text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap has-[[role=checkbox]]:pr-0",
         className,
       )}
       {...props}
