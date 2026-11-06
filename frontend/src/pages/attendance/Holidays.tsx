@@ -174,7 +174,7 @@ export default function Holidays() {
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
         ) : holidays?.length ? (
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5">
             {holidays.map((holiday) => (
               <div key={holiday.id} className="rounded-lg border border-border bg-secondary/30 p-4">
                 <div className="flex items-start justify-between gap-3">

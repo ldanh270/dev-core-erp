@@ -277,7 +277,7 @@ function AdminAttendanceDashboard() {
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border">
+        <div className="overflow-x-auto app-scrollbar rounded-xl border">
           <Table className="text-sm">
             <TableHeader className="bg-muted/40">
               <TableRow className="hover:bg-transparent">
@@ -359,7 +359,7 @@ function AdminAttendanceDashboard() {
           <DateRangePicker
             startDate={startDate}
             endDate={endDate}
-            size="sm"
+            size="default"
             onChange={({ startDate: s, endDate: e }) => {
               if (s) setStartDate(s)
               if (e) setEndDate(e)
@@ -371,7 +371,7 @@ function AdminAttendanceDashboard() {
             value={statusFilter}
             onValueChange={(v) => setStatusFilter(v as IAttendanceStatus | "all")}
           >
-            <SelectTrigger size="sm" className="w-44">
+            <SelectTrigger className="w-44 rounded-full text-sm font-semibold">
               <SelectValue placeholder="Trạng thái" />
             </SelectTrigger>
             <SelectContent>
@@ -387,7 +387,7 @@ function AdminAttendanceDashboard() {
 
         {/* Attendance History Table */}
         <PageCard className="overflow-hidden p-0" noBorder={false}>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto app-scrollbar">
             <Table className="text-sm">
               <TableHeader className="bg-muted/40">
                 <TableRow className="hover:bg-transparent border-b">

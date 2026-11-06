@@ -70,7 +70,7 @@ export function CompanyWorkSchedulesView() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex-1 min-h-0 flex flex-col space-y-4">
       <WorkScheduleToolbar
         employeeSearch={employeeSearch}
         selectedDate={selectedDate}
@@ -84,37 +84,37 @@ export function CompanyWorkSchedulesView() {
         onSelectedDateChange={handleDateChange}
       />
 
-      <PageCard className="overflow-hidden p-0" noBorder={false}>
-        <div className="w-full overflow-hidden text-sm">
+      <PageCard className="flex-1 min-h-0 flex flex-col overflow-hidden p-0 shadow-none border-border" noBorder={false}>
+        <div className="flex-1 min-h-0 overflow-auto app-scrollbar w-full text-sm">
           <div
-            className="grid border-b bg-muted/40"
+            className="sticky top-0 z-20 grid border-b border-border bg-card shadow-xs"
             style={{ gridTemplateColumns: SCHEDULE_GRID_COLUMNS }}
           >
-            <div className="min-w-0 px-4 py-3 text-xs font-medium text-muted-foreground uppercase">
+            <div className="min-w-0 px-4 py-2.5 text-xs font-semibold text-muted-foreground uppercase bg-card flex flex-col justify-center">
               <span className="block truncate">Nhân viên</span>
             </div>
             {weekDates.map((day) => (
               <div
                 key={day.dateKey}
-                className="min-w-0 px-3 py-3 text-xs font-medium text-muted-foreground uppercase"
+                className="min-w-0 px-3 py-2 text-xs font-semibold text-muted-foreground uppercase bg-card flex flex-col justify-center"
               >
                 <p className="truncate">{day.label}</p>
-                <p className="mt-1 truncate text-[11px] text-primary">{day.shortDate}</p>
+                <p className="mt-0.5 truncate text-[11px] font-semibold text-primary">{day.shortDate}</p>
               </div>
             ))}
           </div>
 
           <div className="divide-y divide-border">
             {isEmployeesLoading || isSchedulesLoading || isHolidaysLoading ? (
-              <div className="flex h-24 items-center justify-center">
-                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              <div className="flex h-32 items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
               </div>
             ) : isEmployeesError || isSchedulesError || isHolidaysError ? (
-              <div className="flex h-24 items-center justify-center text-destructive">
+              <div className="flex h-32 items-center justify-center text-destructive">
                 Lỗi khi tải lịch làm việc nhân viên.
               </div>
             ) : employees.length === 0 ? (
-              <div className="flex h-24 items-center justify-center text-muted-foreground">
+              <div className="flex h-32 items-center justify-center text-muted-foreground">
                 Không có nhân viên nào.
               </div>
             ) : (

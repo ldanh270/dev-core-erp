@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils"
 /** Interactive admin workforce matrix for weekly and monthly attendance review. */
 import { DatePicker, PageCard } from "@/components/common"
 import { AttendanceMatrixCell } from "@/components/features/attendance/attendance-matrix-cell"
@@ -60,7 +61,7 @@ export function AttendanceMatrix() {
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               aria-label="Tìm nhân viên"
-              className="pl-10 rounded-full h-9 bg-background border-border/80 text-xs"
+              className="pl-10 rounded-full bg-background border-border/80 text-sm shadow-none"
               placeholder="Tìm họ tên hoặc email"
               value={search}
               onChange={(event) => {
@@ -71,7 +72,7 @@ export function AttendanceMatrix() {
           <Button
             variant="outline"
             size="icon"
-            className="rounded-full size-8 shrink-0"
+            className="rounded-full size-10 shrink-0"
             aria-label="Kỳ trước"
             onClick={() => {
               movePeriod(-1)
@@ -79,21 +80,23 @@ export function AttendanceMatrix() {
           >
             <ChevronLeft className="size-4" />
           </Button>
-          <div className="w-40">
+          <div className="w-44">
             <DatePicker
               value={anchor}
-              size="sm"
+              size="default"
               clearable={false}
               onChange={(val) => {
                 if (val) handlePeriodChange(val)
               }}
             />
           </div>
-          <span className="min-w-44 text-center text-sm font-medium">{periodLabel}</span>
+          <div className="flex h-10 items-center justify-center min-w-44 px-4 rounded-full border border-border bg-muted/30 text-sm font-semibold text-foreground shadow-xs">
+            {periodLabel}
+          </div>
           <Button
             variant="outline"
             size="icon"
-            className="rounded-full size-8 shrink-0"
+            className="rounded-full size-10 shrink-0"
             aria-label="Kỳ sau"
             onClick={() => {
               movePeriod(1)
@@ -101,12 +104,12 @@ export function AttendanceMatrix() {
           >
             <ChevronRight className="size-4" />
           </Button>
-          <div className="flex rounded-full border border-border/80 p-0.5 bg-secondary/40">
+          <div className="flex h-10 items-center rounded-full border border-border/80 p-1 bg-secondary/40">
             {ATTENDANCE_MATRIX_VIEW_VALUES.map((item) => (
               <Button
                 key={item}
                 size="sm"
-                className="rounded-full text-xs font-semibold px-3 h-7"
+                className="rounded-full text-xs font-semibold px-3.5 h-8"
                 variant={view === item ? "default" : "ghost"}
                 onClick={() => {
                   setView(item)
@@ -132,7 +135,10 @@ export function AttendanceMatrix() {
             Không tải được bảng công.
           </div>
         ) : (
-          <table className="min-w-max border-separate border-spacing-0 text-sm">
+          <table className={cn(
+            "w-full border-separate border-spacing-0 text-sm",
+            view === ATTENDANCE_MATRIX_VIEW.WEEK ? "min-w-full" : "min-w-max"
+          )}>
             <thead className="sticky top-0 z-20 bg-background">
               <tr>
                 <th className="sticky left-0 z-30 w-28 min-w-28 border-b bg-background p-3 text-left">
@@ -145,7 +151,13 @@ export function AttendanceMatrix() {
                   Vị trí
                 </th>
                 {dates.map((date) => (
-                  <th key={date} className="min-w-40 border-b bg-muted/40 p-3 text-center">
+                  <th
+                    key={date}
+                    className={cn(
+                      "border-b bg-muted/40 p-3 text-center",
+                      view === ATTENDANCE_MATRIX_VIEW.WEEK ? "w-[14.28%] min-w-36" : "min-w-40"
+                    )}
+                  >
                     <span className="block text-xs text-muted-foreground">
                       {ATTENDANCE_MATRIX_UI.WEEKDAY_LABELS[dayjs(date).day()]}
                     </span>
@@ -181,7 +193,13 @@ export function AttendanceMatrix() {
                     </span>
                   </td>
                   {dates.map((date) => (
-                    <td key={date} className="border-b p-2 align-top">
+                    <td
+                      key={date}
+                      className={cn(
+                        "border-b p-2 align-top",
+                        view === ATTENDANCE_MATRIX_VIEW.WEEK && "w-[14.28%]"
+                      )}
+                    >
                       <AttendanceMatrixCell
                         collapseMultiple={view === ATTENDANCE_MATRIX_VIEW.MONTH}
                         shifts={employee.days.find((day) => day.date === date)?.shifts ?? []}
