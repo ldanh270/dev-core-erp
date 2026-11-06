@@ -1,4 +1,4 @@
-import { PageCard, PageHeader } from "@/components/common"
+import { PageCard, PageContainer, PageHeader } from "@/components/common"
 import { HolidayFormDialog } from "@/components/features/attendance/holiday-form-dialog"
 import {
   AlertDialog,
@@ -127,7 +127,7 @@ export default function Holidays() {
   }
 
   return (
-    <div className="container px-6 py-6 space-y-6">
+    <PageContainer variant="default" className="space-y-6">
       <PageHeader
         title="Ngày lễ"
         description="Quản lý ngày nghỉ lễ áp dụng cho lịch làm việc nhân viên."
@@ -141,7 +141,7 @@ export default function Holidays() {
           </div>
           <div className="flex items-center gap-2">
             {isAdmin ? (
-              <Button size="sm" className="h-8 px-4 rounded-full" onClick={openCreateDialog}>
+              <Button size="default" className="rounded-full shadow-xs gap-1.5 font-semibold" onClick={openCreateDialog}>
                 <Plus className="h-4 w-4" />
                 Thêm ngày lễ
               </Button>
@@ -149,7 +149,7 @@ export default function Holidays() {
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8 rounded-full"
+              className="rounded-full"
               onClick={() => {
                 setYear((y) => y - 1)
               }}
@@ -159,7 +159,7 @@ export default function Holidays() {
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8 rounded-full"
+              className="rounded-full"
               onClick={() => {
                 setYear((y) => y + 1)
               }}
@@ -269,6 +269,6 @@ export default function Holidays() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </PageContainer>
   )
 }

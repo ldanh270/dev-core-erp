@@ -1,4 +1,4 @@
-import { AppPagination, DataTableToolbar, PageCard, PageHeader } from "@/components/common"
+import { AppPagination, DataTableToolbar, PageCard, PageContainer, PageHeader } from "@/components/common"
 import { PayslipDetailPage } from "@/components/features/payroll/payslip-detail-page"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -54,7 +54,7 @@ export default function MyPayslips() {
   }
 
   return (
-    <div className="container px-3 sm:px-6 py-4 sm:py-6">
+    <PageContainer variant="default">
       <PageHeader
         title="Lương của tôi"
         description="Xem trước lương sắp nhận, lịch sử và chi tiết các phiếu lương của bạn."
@@ -74,28 +74,28 @@ export default function MyPayslips() {
           <Table className="text-sm">
             <TableHeader className="bg-muted/40">
               <TableRow className="hover:bg-transparent border-b">
-                <TableHead className="min-w-12.5 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-center">
+                <TableHead className="h-10 min-w-12.5 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-center">
                   #
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Kỳ lương
                 </TableHead>
-                <TableHead className="hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap text-center">
+                <TableHead className="h-10 hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap text-center">
                   Ngày công
                 </TableHead>
-                <TableHead className="hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap text-center">
+                <TableHead className="h-10 hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap text-center">
                   Tăng ca
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Duyệt lương
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                   Nhận lương
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap text-right">
+                <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap text-right">
                   Thực lãnh
                 </TableHead>
-                <TableHead className="px-4 py-3"></TableHead>
+                <TableHead className="h-10 px-4 py-3"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="divide-y divide-border">
@@ -139,10 +139,10 @@ export default function MyPayslips() {
                       setView("detail")
                     }}
                   >
-                    <TableCell className="px-4 py-3 text-muted-foreground text-center">
+                    <TableCell className="h-[60px] px-4 py-3 text-muted-foreground text-center">
                       {(page - 1) * limit + index + 1}
                     </TableCell>
-                    <TableCell className="px-4 py-3">
+                    <TableCell className="h-[60px] px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="h-8 w-8 sm:h-10 sm:w-10 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                           <CalendarDays className="h-5 w-5" />
@@ -162,13 +162,13 @@ export default function MyPayslips() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell px-4 py-3 text-center font-medium text-muted-foreground">
+                    <TableCell className="h-[60px] hidden sm:table-cell px-4 py-3 text-center font-medium text-muted-foreground">
                       {payslip.workingDays} <span className="text-xs font-normal">ngày</span>
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell px-4 py-3 text-center font-medium text-muted-foreground">
+                    <TableCell className="h-[60px] hidden sm:table-cell px-4 py-3 text-center font-medium text-muted-foreground">
                       {payslip.overtimeMinutes} <span className="text-xs font-normal">phút</span>
                     </TableCell>
-                    <TableCell className="px-4 py-3">
+                    <TableCell className="h-[60px] px-4 py-3">
                       <Badge
                         variant={payslip.status ? PAYROLL_STATUS_BADGE[payslip.status] : "default"}
                         className="rounded-full shadow-none font-medium px-2.5 py-0.5"
@@ -176,19 +176,19 @@ export default function MyPayslips() {
                         {payslip.status ? PAYROLL_STATUS_LABELS[payslip.status] : "Không rõ"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="px-4 py-3">
+                    <TableCell className="h-[60px] px-4 py-3">
                       <Badge variant="outline" className="rounded-full shadow-none font-medium px-2.5 py-0.5">
                         {payslip.receiptStatus
                           ? PAYSLIP_RECEIPT_STATUS_LABELS[payslip.receiptStatus]
                           : "Chưa nhận"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-right">
+                    <TableCell className="h-[60px] px-4 py-3 text-right">
                       <div className="font-bold text-primary text-base">
                         {formatCurrency(payslip.netSalary)}
                       </div>
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-right">
+                    <TableCell className="h-[60px] px-4 py-3 text-right">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -218,6 +218,6 @@ export default function MyPayslips() {
           />
         )}
       </PageCard>
-    </div>
+    </PageContainer>
   )
 }

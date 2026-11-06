@@ -1,4 +1,4 @@
-import { DateRangePicker, PageCard, PageHeader } from "@/components/common"
+import { DateRangePicker, PageCard, PageContainer, PageHeader } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { AttendanceMatrix } from "@/components/features/attendance/attendance-matrix"
 import {
@@ -167,12 +167,12 @@ function AdminAttendanceDashboard() {
   }
 
   return (
-    <div className="container px-6 py-6 space-y-6">
+    <PageContainer variant="default" className="space-y-6">
       <PageHeader
         title="Tổng quan chấm công"
         description="Dữ liệu chấm công toàn bộ nhân sự và cá nhân bạn."
         actions={
-          <Button variant="outline" className="gap-2" onClick={handleExport}>
+          <Button variant="outline" size="default" className="gap-2 rounded-full shadow-xs font-semibold" onClick={handleExport}>
             <Download size={16} /> Xuất CSV
           </Button>
         }
@@ -526,6 +526,6 @@ function AdminAttendanceDashboard() {
           setSelectedEmployee(null)
         }}
       />
-    </div>
+    </PageContainer>
   )
 }

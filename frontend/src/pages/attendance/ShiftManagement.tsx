@@ -1,4 +1,4 @@
-import { PageCard, PageHeader } from "@/components/common"
+import { PageCard, PageContainer, PageHeader } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { ShiftDialog } from "@/components/features/attendance/shift-sheet"
 import { Button } from "@/components/ui/button"
@@ -78,12 +78,12 @@ export default function ShiftManagement() {
   }
 
   return (
-    <div className="container px-6 py-6">
+    <PageContainer variant="default" className="space-y-6">
       <PageHeader
         title="Quản lý ca làm việc"
         description="Tạo và quản lý các ca làm việc, giờ vào/ra và cấu hình GPS."
         actions={
-          <Button className="gap-2" onClick={handleCreate}>
+          <Button size="default" className="gap-2 rounded-full shadow-xs font-semibold" onClick={handleCreate}>
             <Plus size={16} /> Tạo ca mới
           </Button>
         }
@@ -94,28 +94,28 @@ export default function ShiftManagement() {
           <Table className="text-sm">
             <TableHeader className="bg-muted/40">
               <TableRow className="hover:bg-transparent border-b">
-                <TableHead className="min-w-12 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-center">
+                <TableHead className="h-10 px-4 py-2.5 font-semibold text-xs text-muted-foreground uppercase tracking-wider align-middle text-center w-12">
                   #
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-2.5 font-semibold text-xs text-muted-foreground uppercase tracking-wider align-middle whitespace-nowrap">
                   Tên ca
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-2.5 font-semibold text-xs text-muted-foreground uppercase tracking-wider align-middle whitespace-nowrap">
                   Giờ làm
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-2.5 font-semibold text-xs text-muted-foreground uppercase tracking-wider align-middle whitespace-nowrap">
                   Giờ nghỉ
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-2.5 font-semibold text-xs text-muted-foreground uppercase tracking-wider align-middle whitespace-nowrap">
                   Ân hạn
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-2.5 font-semibold text-xs text-muted-foreground uppercase tracking-wider align-middle whitespace-nowrap">
                   GPS
                 </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                <TableHead className="h-10 px-4 py-2.5 font-semibold text-xs text-muted-foreground uppercase tracking-wider align-middle whitespace-nowrap">
                   Trạng thái
                 </TableHead>
-                <TableHead className="min-w-12 px-4 py-3" />
+                <TableHead className="h-10 px-4 py-2.5 w-12" />
               </TableRow>
             </TableHeader>
 
@@ -151,10 +151,10 @@ export default function ShiftManagement() {
                 // Shift data rendering
                 shifts.map((shift, index) => (
                   <TableRow key={shift.id} className="hover:bg-muted/30">
-                    <TableCell className="px-4 py-4 text-muted-foreground text-center">
+                    <TableCell className="h-[60px] px-4 py-2.5 text-muted-foreground text-center align-middle">
                       {index + 1}
                     </TableCell>
-                    <TableCell className="px-4 py-4 font-medium text-foreground">
+                    <TableCell className="h-[60px] px-4 py-2.5 font-medium text-foreground align-middle">
                       <button
                         onClick={() => {
                           handleEdit(shift)
@@ -164,22 +164,22 @@ export default function ShiftManagement() {
                         {shift.name}
                       </button>
                     </TableCell>
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="h-[60px] px-4 py-2.5 align-middle">
                       <span className="inline-flex items-center gap-1.5 text-muted-foreground">
                         <Clock className="h-3.5 w-3.5" />
                         {minutesToTime(shift.startTime)} – {minutesToTime(shift.endTime)}
                       </span>
                     </TableCell>
-                    <TableCell className="px-4 py-4 text-muted-foreground">
+                    <TableCell className="h-[60px] px-4 py-2.5 text-muted-foreground align-middle">
                       {/* A dash preserves compatibility with legacy shifts created before break fields existed. */}
                       {shift.breakStartTime != null && shift.breakEndTime != null
                         ? `${minutesToTime(shift.breakStartTime)} – ${minutesToTime(shift.breakEndTime)}`
                         : "—"}
                     </TableCell>
-                    <TableCell className="px-4 py-4 text-muted-foreground">
+                    <TableCell className="h-[60px] px-4 py-2.5 text-muted-foreground align-middle">
                       {shift.gracePeriodMinutes} phút
                     </TableCell>
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="h-[60px] px-4 py-2.5 align-middle">
                       {shift.gpsLat ? (
                         <span className="inline-flex items-center gap-1 text-xs text-info-foreground">
                           <MapPin className="h-3.5 w-3.5" />
@@ -189,7 +189,7 @@ export default function ShiftManagement() {
                         <span className="text-muted-foreground text-xs">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="h-[60px] px-4 py-2.5 align-middle">
                       <StatusPill
                         label={shift.isActive ? "Đang dùng" : "Tạm dừng"}
                         variant={shift.isActive ? "success" : "neutral"}
@@ -233,6 +233,6 @@ export default function ShiftManagement() {
       </PageCard>
 
       <ShiftDialog open={sheetOpen} onOpenChange={setSheetOpen} initialData={editing} />
-    </div>
+    </PageContainer>
   )
 }

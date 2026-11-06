@@ -115,25 +115,25 @@ export function PayrollHistoryTable({ payrolls, isLoading }: PayrollHistoryTable
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead className="min-w-12.5 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-center">
+              <TableHead className="h-10 min-w-12.5 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-center">
                 #
               </TableHead>
-              <TableHead className="hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+              <TableHead className="h-10 hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                 Payroll ID
               </TableHead>
-              <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+              <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                 Period
               </TableHead>
-              <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+              <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                 Total Amount
               </TableHead>
-              <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+              <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                 Status
               </TableHead>
-              <TableHead className="hidden md:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+              <TableHead className="h-10 hidden md:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
                 Created At
               </TableHead>
-              <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap text-right">
+              <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap text-right">
                 Actions
               </TableHead>
             </TableRow>
@@ -141,7 +141,7 @@ export function PayrollHistoryTable({ payrolls, isLoading }: PayrollHistoryTable
           <TableBody>
             {paginatedPayrolls.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="p-8">
+                <TableCell colSpan={7} className="h-[60px] p-8">
                   <EmptyState
                     icon={Clock}
                     title="Không tìm thấy bảng lương"
@@ -155,10 +155,10 @@ export function PayrollHistoryTable({ payrolls, isLoading }: PayrollHistoryTable
 
                 return (
                   <TableRow key={payroll.id}>
-                    <TableCell className="px-4 py-3 text-center text-muted-foreground">
+                    <TableCell className="h-[60px] px-4 py-3 text-center text-muted-foreground">
                       {(page - 1) * limit + index + 1}
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell px-4 py-3">
+                    <TableCell className="h-[60px] hidden sm:table-cell px-4 py-3">
                       <button
                         type="button"
                         onClick={() => setSelectedPayrollId(payroll.id)}
@@ -167,29 +167,29 @@ export function PayrollHistoryTable({ payrolls, isLoading }: PayrollHistoryTable
                         PAY-{payroll.id.substring(payroll.id.length - 8).toUpperCase()}
                       </button>
                     </TableCell>
-                    <TableCell className="px-4 py-3 font-medium">
+                    <TableCell className="h-[60px] px-4 py-3 font-medium">
                       {payroll.periodMonth} / {payroll.periodYear}
                     </TableCell>
-                    <TableCell className="px-4 py-3">
+                    <TableCell className="h-[60px] px-4 py-3">
                       {new Intl.NumberFormat("vi-VN", {
                         style: "currency",
                         currency: "VND",
                       }).format(payroll.totalAmount)}
                     </TableCell>
-                    <TableCell className="px-4 py-3">
+                    <TableCell className="h-[60px] px-4 py-3">
                       <StatusPill
                         label={PAYROLL_STATUS_LABELS[payroll.status]}
                         variant={getPayrollStatusVariant(payroll.status)}
                       />
                     </TableCell>
-                    <TableCell className="hidden md:table-cell px-4 py-3 text-muted-foreground">
+                    <TableCell className="h-[60px] hidden md:table-cell px-4 py-3 text-muted-foreground">
                       {new Intl.DateTimeFormat("en-US", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
                       }).format(new Date(payroll.createdAt))}
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-right">
+                    <TableCell className="h-[60px] px-4 py-3 text-right">
                       {isDraft ? (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
