@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { AppPagination, DataTableToolbar, PageCard, PageHeader } from "@/components/common"
+import { AppPagination, DataTableToolbar, PageCard, PageContainer, PageHeader } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { ViewInterviewDialog } from "@/components/features/recruitment/view-interview-dialog"
 import { Button } from "@/components/ui/button"
@@ -197,7 +197,7 @@ export default function InterviewsPage() {
   }, [filteredInterviews, page, pageSize])
 
   return (
-    <div className="container flex flex-col gap-6 px-3 py-4 sm:px-6 sm:py-6">
+    <PageContainer className="flex flex-col gap-6">
       <PageHeader
         title="Lịch phỏng vấn"
         description="Quản lý lịch phỏng vấn và đánh giá ứng viên"
@@ -316,14 +316,14 @@ export default function InterviewsPage() {
             <Table>
               <TableHeader className="bg-muted/40">
                 <TableRow>
-                  <TableHead className="min-w-56 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Ứng viên</TableHead>
-                  <TableHead className="hidden md:table-cell min-w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Vị trí</TableHead>
-                  <TableHead className="w-28 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Vòng</TableHead>
-                  <TableHead className="hidden lg:table-cell w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Loại</TableHead>
-                  <TableHead className="w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Thời gian</TableHead>
-                  <TableHead className="hidden lg:table-cell w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Hình thức</TableHead>
-                  <TableHead className="w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Kết quả</TableHead>
-                  <TableHead className="w-28 px-4 py-3 text-right text-xs font-medium uppercase text-muted-foreground">Thao tác</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-56 px-4 py-2">Ứng viên</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell min-w-44 px-4 py-2">Vị trí</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 px-4 py-2">Vòng</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell w-36 px-4 py-2">Loại</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-44 px-4 py-2">Thời gian</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell w-36 px-4 py-2">Hình thức</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-36 px-4 py-2">Kết quả</TableHead>
+                  <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 px-4 py-2 text-right">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -350,19 +350,19 @@ export default function InterviewsPage() {
                       onClick={() => { handleViewDetails(interview); }}
                       className="cursor-pointer transition-colors duration-100 hover:bg-muted/25"
                     >
-                      <TableCell className="px-4 py-3 font-medium text-foreground">
+                      <TableCell className="h-[60px] px-4 py-3 font-medium text-foreground">
                         {interview.candidateName}
                       </TableCell>
-                      <TableCell className="hidden md:table-cell px-4 py-3 text-muted-foreground text-sm">
+                      <TableCell className="h-[60px] hidden md:table-cell px-4 py-3 text-muted-foreground text-sm">
                         {interview.positionTitle}
                       </TableCell>
-                      <TableCell className="px-4 py-3">
+                      <TableCell className="h-[60px] px-4 py-3">
                         <Badge variant="outline" className="rounded-full text-[11px]">Vòng {interview.roundNumber}</Badge>
                       </TableCell>
-                      <TableCell className="hidden lg:table-cell px-4 py-3 text-sm">
+                      <TableCell className="h-[60px] hidden lg:table-cell px-4 py-3 text-sm">
                         {interview.interviewType ? INTERVIEW_TYPE_LABELS[interview.interviewType] || interview.interviewType : interview.title || "Phỏng vấn"}
                       </TableCell>
-                      <TableCell className="px-4 py-3">
+                      <TableCell className="h-[60px] px-4 py-3">
                         {interview.scheduledAt ? (
                           (() => {
                             try {
@@ -393,7 +393,7 @@ export default function InterviewsPage() {
                           <span>{(interview.format && INTERVIEW_FORMAT_LABELS[interview.format]) || interview.format}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="px-4 py-3">
+                      <TableCell className="h-[60px] px-4 py-3">
                         {interview.result ? (
                           <StatusPill
                             label={INTERVIEW_RESULT_LABELS[interview.result]}
@@ -403,7 +403,7 @@ export default function InterviewsPage() {
                           <StatusPill label="Chờ" variant="warning" />
                         )}
                       </TableCell>
-                      <TableCell className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                      <TableCell className="h-[60px] px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
@@ -444,7 +444,7 @@ export default function InterviewsPage() {
         onOpenChange={setViewInterviewOpen}
         interview={selectedInterview}
       />
-    </div>
+    </PageContainer>
   )
 }
 

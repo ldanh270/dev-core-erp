@@ -1,4 +1,4 @@
-import { AppPagination, DataTableToolbar, PageCard, PageHeader, useConfirm } from "@/components/common"
+import { AppPagination, DataTableToolbar, PageCard, PageContainer, PageHeader, useConfirm } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { Button } from "@/components/ui/button"
 import {
@@ -195,7 +195,7 @@ export default function OAuthAccountsPage() {
   }
 
   return (
-    <div className="container flex flex-col gap-6 px-3 py-4 sm:px-6 sm:py-6">
+    <PageContainer className="flex flex-col gap-6">
       {/* Page Header with Action Button */}
       <PageHeader
         title="Tài khoản OAuth"
@@ -314,19 +314,19 @@ export default function OAuthAccountsPage() {
           <Table>
             <TableHeader className="bg-muted/40">
               <TableRow>
-                <TableHead className="min-w-56 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-56 px-4 py-2">
                   Tên tài khoản / Mã ID
                 </TableHead>
-                <TableHead className="w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-44 px-4 py-2">
                   Kênh tuyển dụng
                 </TableHead>
-                <TableHead className="w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-36 px-4 py-2">
                   Trạng thái
                 </TableHead>
-                <TableHead className="hidden md:table-cell w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell w-44 px-4 py-2">
                   Ngày kết nối
                 </TableHead>
-                <TableHead className="w-36 px-4 py-3 text-right text-xs font-medium uppercase text-muted-foreground">
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-36 px-4 py-2 text-right">
                   Thao tác
                 </TableHead>
               </TableRow>
@@ -369,7 +369,7 @@ export default function OAuthAccountsPage() {
                       className="transition-colors duration-100 hover:bg-muted/25"
                     >
                       {/* Name & Subtext */}
-                      <TableCell className="px-4 py-3">
+                      <TableCell className="h-[60px] px-4 py-3">
                         <div className="flex items-center gap-2">
                           <Link2 className="h-4 w-4 text-primary shrink-0" />
                           <div>
@@ -391,7 +391,7 @@ export default function OAuthAccountsPage() {
                       </TableCell>
 
                       {/* Status Pill */}
-                      <TableCell className="px-4 py-3">
+                      <TableCell className="h-[60px] px-4 py-3">
                         <StatusPill
                           label={isConnected ? "Đã kết nối" : "Chưa xác thực"}
                           variant={isConnected ? "success" : "warning"}
@@ -410,7 +410,7 @@ export default function OAuthAccountsPage() {
                       </TableCell>
 
                       {/* Actions */}
-                      <TableCell className="px-4 py-3 text-right">
+                      <TableCell className="h-[60px] px-4 py-3 text-right">
                         <div className="flex justify-end gap-1">
                           {account.channel === "google_form" && (
                             <Tooltip>
@@ -541,6 +541,6 @@ export default function OAuthAccountsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageContainer>
   )
 }

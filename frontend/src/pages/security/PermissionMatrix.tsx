@@ -1,4 +1,4 @@
-import { EmptyState, PageCard } from "@/components/common"
+import { EmptyState, PageCard, PageContainer, PageHeader } from "@/components/common"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -150,29 +150,23 @@ export default function PermissionMatrix() {
 
   if (loading) {
     return (
+      <PageContainer variant="default">
       <div className="flex h-[calc(100vh-200px)] w-full items-center justify-center">
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <p className="text-sm font-medium">Đang tải dữ liệu...</p>
         </div>
       </div>
+    </PageContainer>
     )
   }
 
   return (
-    <div className="container max-w-7xl px-6 py-8">
-      {/* Page Header */}
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-foreground leading-snug">
-            Cấu trúc Phân quyền
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Danh sách các API endpoints của hệ thống và quyền cần có để truy cập (Single Source of
-            Truth).
-          </p>
-        </div>
-      </div>
+    <PageContainer variant="default">
+      <PageHeader
+        title="Cấu trúc Phân quyền"
+        description="Danh sách các API endpoints của hệ thống và quyền cần có để truy cập (Single Source of Truth)."
+      />
 
       {/* Summary Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-7">
@@ -237,7 +231,7 @@ export default function PermissionMatrix() {
             <Input
               size="sm"
               placeholder="Tìm kiếm API, đường dẫn..."
-              className="pl-8 bg-background border-border/80 focus:border-primary transition-colors"
+              className="pl-8 bg-background border-border/80 focus:border-primary transition-colors rounded-full"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -246,7 +240,7 @@ export default function PermissionMatrix() {
             <div className="flex items-center gap-2">
               <ArrowUpDown size={15} className="text-muted-foreground" />
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger size="sm" className="w-[200px] bg-background">
+                <SelectTrigger size="sm" className="w-[200px] bg-background rounded-full">
                   <SelectValue placeholder="Sắp xếp theo..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -261,7 +255,7 @@ export default function PermissionMatrix() {
             <div className="flex items-center gap-2">
               <Filter size={15} className="text-muted-foreground" />
               <Select value={methodFilter} onValueChange={setMethodFilter}>
-                <SelectTrigger size="sm" className="w-[170px] bg-background">
+                <SelectTrigger size="sm" className="w-[170px] bg-background rounded-full">
                   <SelectValue placeholder="Phương thức..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -281,11 +275,11 @@ export default function PermissionMatrix() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/10 text-[11px] uppercase tracking-wider font-bold text-muted-foreground">
-                <th className="px-5 py-3 text-left">Tên API</th>
-                <th className="px-5 py-3 text-left">Phương thức</th>
-                <th className="px-5 py-3 text-left">Đường dẫn API</th>
-                <th className="px-5 py-3 text-center">Xác thực</th>
-                <th className="px-5 py-3 text-left">Phân quyền</th>
+                <th className="h-10 px-5 py-3 text-left">Tên API</th>
+                <th className="h-10 px-5 py-3 text-left">Phương thức</th>
+                <th className="h-10 px-5 py-3 text-left">Đường dẫn API</th>
+                <th className="h-10 px-5 py-3 text-center">Xác thực</th>
+                <th className="h-10 px-5 py-3 text-left">Phân quyền</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/60">
@@ -295,7 +289,7 @@ export default function PermissionMatrix() {
                     key={`${row.method}-${row.path}-${index}`}
                     className="hover:bg-muted/20 transition-colors"
                   >
-                    <td className="px-5 py-3.5">
+                    <td className="h-[60px] px-5 py-3">
                       <div className="flex flex-col">
                         <span className="text-xs font-bold text-foreground leading-snug">
                           {row.name}
@@ -307,15 +301,15 @@ export default function PermissionMatrix() {
                         )}
                       </div>
                     </td>
-                    <td className="px-5 py-3.5 whitespace-nowrap">
+                    <td className="h-[60px] px-5 py-3 whitespace-nowrap">
                       {renderMethodBadge(row.method)}
                     </td>
-                    <td className="px-5 py-3.5">
+                    <td className="h-[60px] px-5 py-3">
                       <span className="font-mono text-[11px] text-foreground bg-muted/60 px-2.5 py-0.5 rounded-full border border-border/40 inline-block break-all">
                         {row.path}
                       </span>
                     </td>
-                    <td className="px-5 py-3.5 text-center">
+                    <td className="h-[60px] px-5 py-3 text-center">
                       {row.authRequired ? (
                         <div
                           className="inline-flex items-center justify-center text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 p-1.5 rounded-full"
@@ -332,7 +326,7 @@ export default function PermissionMatrix() {
                         </div>
                       )}
                     </td>
-                    <td className="px-5 py-3.5">{renderPermissionsList(row.permissions)}</td>
+                    <td className="h-[60px] px-5 py-3">{renderPermissionsList(row.permissions)}</td>
                   </tr>
                 )
               })}
@@ -351,6 +345,6 @@ export default function PermissionMatrix() {
           </table>
         </div>
       </PageCard>
-    </div>
+    </PageContainer>
   )
 }

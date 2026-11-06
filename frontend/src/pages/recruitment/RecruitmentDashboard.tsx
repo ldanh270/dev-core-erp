@@ -1,5 +1,5 @@
 import { routerNavigate } from "@/lib/router-navigator"
-import { PageHeader } from "@/components/common"
+import { PageContainer, PageHeader } from "@/components/common"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -167,7 +167,7 @@ export default function RecruitmentDashboard() {
   const totalApps = appStats?.total || 1
 
   return (
-    <div className="container flex flex-col gap-6 px-3 py-4 sm:px-6 sm:py-6">
+    <PageContainer className="flex flex-col gap-6">
       <PageHeader
         title="Dashboard Tuyển dụng"
         description="Tổng quan tình hình tuyển dụng, tiến độ ứng viên và lịch phỏng vấn"
@@ -375,6 +375,6 @@ export default function RecruitmentDashboard() {
           />
         </div>
       </div>
-    </div>
+    </PageContainer>
   )
 }

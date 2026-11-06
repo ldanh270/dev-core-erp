@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { AppPagination, DataTableToolbar, PageCard, PageHeader } from "@/components/common"
+import { AppPagination, DataTableToolbar, PageCard, PageContainer, PageHeader } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { ViewBackgroundCheckDialog } from "@/components/features/recruitment/view-background-check-dialog"
 import { Button } from "@/components/ui/button"
@@ -80,7 +80,7 @@ function BackgroundCheckRow({ bgc, onStart, onComplete, onViewDetails, canStart,
 
   return (
     <TableRow className="transition-colors duration-100 hover:bg-muted/25">
-      <TableCell className="px-4 py-3">
+      <TableCell className="h-[60px] px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
             <span className="text-xs font-semibold text-primary">
@@ -93,16 +93,16 @@ function BackgroundCheckRow({ bgc, onStart, onComplete, onViewDetails, canStart,
           </div>
         </div>
       </TableCell>
-      <TableCell className="px-4 py-3">
+      <TableCell className="h-[60px] px-4 py-3">
         <Badge variant="outline" className="rounded-full text-[11px]">{BGC_GROUP_LABELS[bgc.group] || bgc.group}</Badge>
       </TableCell>
-      <TableCell className="px-4 py-3">
+      <TableCell className="h-[60px] px-4 py-3">
         <StatusPill
           label={BGC_STATUS_LABELS[bgc.status] || bgc.status}
           variant={statusVariantMap[bgc.status]}
         />
       </TableCell>
-      <TableCell className="px-4 py-3">
+      <TableCell className="h-[60px] px-4 py-3">
         <div className="flex items-center gap-2 text-sm">
           <div className="flex items-center gap-1">
             {hasIdVerification ? (
@@ -130,8 +130,8 @@ function BackgroundCheckRow({ bgc, onStart, onComplete, onViewDetails, canStart,
           </div>
         </div>
       </TableCell>
-      <TableCell className="hidden md:table-cell px-4 py-3 text-sm">{formatDate(bgc.startedAt)}</TableCell>
-      <TableCell className="hidden md:table-cell px-4 py-3 text-sm">{formatDate(bgc.completedAt)}</TableCell>
+      <TableCell className="h-[60px] hidden md:table-cell px-4 py-3 text-sm">{formatDate(bgc.startedAt)}</TableCell>
+      <TableCell className="h-[60px] hidden md:table-cell px-4 py-3 text-sm">{formatDate(bgc.completedAt)}</TableCell>
       <TableCell className="hidden lg:table-cell px-4 py-3">
         {bgc.failReason ? (
           <p className="text-xs text-destructive max-w-[150px] truncate" title={bgc.failReason}>
@@ -141,7 +141,7 @@ function BackgroundCheckRow({ bgc, onStart, onComplete, onViewDetails, canStart,
           <span className="text-xs text-muted-foreground">—</span>
         )}
       </TableCell>
-      <TableCell className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+      <TableCell className="h-[60px] px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-end gap-1">
           {bgc.status === BGC_STATUS.PENDING && canStart && (
             <Tooltip>
@@ -267,7 +267,7 @@ export default function BackgroundChecksPage() {
   }
 
   return (
-    <div className="container flex flex-col gap-6 px-3 py-4 sm:px-6 sm:py-6">
+    <PageContainer className="flex flex-col gap-6">
       <PageHeader
         title="Kiểm tra Background"
         description="Kiểm tra được tạo tự động sau khi ứng viên chấp nhận offer. Tại đây chỉ theo dõi và xử lý kiểm tra."
@@ -324,14 +324,14 @@ export default function BackgroundChecksPage() {
           <Table>
             <TableHeader className="bg-muted/40">
               <TableRow>
-                <TableHead className="min-w-64 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Ứng viên</TableHead>
-                <TableHead className="w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Nhóm</TableHead>
-                <TableHead className="w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Trạng thái</TableHead>
-                <TableHead className="w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Xác minh</TableHead>
-                <TableHead className="hidden md:table-cell w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Ngày bắt đầu</TableHead>
-                <TableHead className="hidden md:table-cell w-36 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Ngày hoàn thành</TableHead>
-                <TableHead className="hidden lg:table-cell w-44 px-4 py-3 text-xs font-medium uppercase text-muted-foreground">Lý do thất bại</TableHead>
-                <TableHead className="w-32 px-4 py-3 text-right text-xs font-medium uppercase text-muted-foreground">Thao tác</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-64 px-4 py-2">Ứng viên</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-36 px-4 py-2">Nhóm</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-36 px-4 py-2">Trạng thái</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-44 px-4 py-2">Xác minh</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell w-36 px-4 py-2">Ngày bắt đầu</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell w-36 px-4 py-2">Ngày hoàn thành</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell w-44 px-4 py-2">Lý do thất bại</TableHead>
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-32 px-4 py-2 text-right">Thao tác</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -386,6 +386,6 @@ export default function BackgroundChecksPage() {
         onOpenChange={setViewBgcOpen}
         backgroundCheck={selectedBgc}
       />
-    </div>
+    </PageContainer>
   )
 }

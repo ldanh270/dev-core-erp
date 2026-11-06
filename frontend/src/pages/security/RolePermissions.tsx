@@ -1,4 +1,4 @@
-import { AppDrawer, PageCard } from "@/components/common"
+import { AppDrawer, PageCard, PageContainer, PageHeader } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { ROLE_LABELS } from "@/config/entities/employee.config"
@@ -46,18 +46,11 @@ export default function RolePermissions() {
   }
 
   return (
-    <div className="container max-w-7xl px-6 py-8">
-      {/* Page header */}
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-foreground leading-snug">
-            Cấu hình Quyền hạn
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Xem danh sách các vai trò hệ thống và cấu hình chi tiết các quyền hạn tương ứng.
-          </p>
-        </div>
-      </div>
+    <PageContainer variant="default">
+      <PageHeader
+        title="Cấu hình Quyền hạn"
+        description="Xem danh sách các vai trò hệ thống và cấu hình chi tiết các quyền hạn tương ứng."
+      />
 
       {/* Main Content */}
       {isLoadingRoles ? (
@@ -120,7 +113,7 @@ export default function RolePermissions() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="gap-1.5 h-8 px-2.5 text-xs text-primary hover:text-primary hover:bg-primary/5"
+                    className="gap-1.5 rounded-full px-3 text-xs font-semibold text-primary hover:text-primary hover:bg-primary/5"
                     onClick={() => { handleOpenRoleDetail(role); }}
                   >
                     Cấu hình quyền
@@ -152,7 +145,7 @@ export default function RolePermissions() {
           )
         )}
       </AppDrawer>
-    </div>
+    </PageContainer>
   )
 }
 
@@ -287,7 +280,7 @@ function RolePermissionsDrawerContent({
             size="sm"
             onClick={onClose}
             disabled={updateRolePermissionsMutation.isPending}
-            className="h-9 text-xs"
+            className="rounded-full text-xs font-semibold"
           >
             Hủy
           </Button>
@@ -299,7 +292,7 @@ function RolePermissionsDrawerContent({
               !hasChanges ||
               (selectedRole.isSystem && selectedRole.name === "admin")
             }
-            className="h-9 text-xs"
+            className="rounded-full text-xs font-semibold"
           >
             {updateRolePermissionsMutation.isPending ? "Đang lưu..." : "Lưu thay đổi"}
           </Button>

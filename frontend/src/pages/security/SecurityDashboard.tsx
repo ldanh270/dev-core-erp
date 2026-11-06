@@ -1,4 +1,4 @@
-import { PageCard, SectionHeader, StatusPill } from "@/components/common"
+import { PageCard, PageContainer, PageHeader, SectionHeader, StatusPill } from "@/components/common"
 import { IconBox } from "@/components/common/icon-box"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -93,16 +93,18 @@ export default function SecurityDashboard() {
 
   if (isLoading) {
     return (
-      <div className="container px-6 py-8 flex flex-col items-center justify-center min-h-[400px]">
+      <PageContainer variant="default">
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
         <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
         <p className="text-sm text-muted-foreground mt-4">Đang tải dữ liệu bảo mật...</p>
       </div>
+      </PageContainer>
     )
   }
 
   if (isError || !data) {
     return (
-      <div className="container px-6 py-8">
+      <PageContainer variant="default">
         <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-6 text-center">
           <AlertTriangle className="h-10 w-10 text-destructive mx-auto mb-4" />
           <h2 className="text-lg font-bold text-destructive">Lỗi tải dữ liệu</h2>
@@ -113,47 +115,42 @@ export default function SecurityDashboard() {
             Thử lại
           </Button>
         </div>
-      </div>
+      </PageContainer>
     )
   }
 
   return (
-    <div className="container max-w-7xl px-6 py-8 space-y-8">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-foreground leading-snug">
-            Tổng quan bảo mật
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Theo dõi trạng thái tài khoản và nhật ký hoạt động quan trọng.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Select
-            value={timeRange}
-            onValueChange={(val: "today" | "7days" | "30days") => { setTimeRange(val); }}
-          >
-            <SelectTrigger className="w-[160px] h-8 text-xs">
-              <SelectValue placeholder="Chọn khoảng thời gian" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="today" className="text-xs">Hôm nay</SelectItem>
-              <SelectItem value="7days" className="text-xs">7 ngày qua</SelectItem>
-              <SelectItem value="30days" className="text-xs">30 ngày qua</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1.5 text-xs"
-            onClick={() => { refetch(); }}
-          >
-            <RefreshCw className="h-3 w-3" />
-            Làm mới
-          </Button>
-        </div>
-      </div>
+    <PageContainer variant="default" className="space-y-8">
+      <PageHeader
+        title="Tổng quan bảo mật"
+        description="Theo dõi trạng thái tài khoản và nhật ký hoạt động quan trọng."
+        actions={
+          <div className="flex items-center gap-3">
+            <Select
+              value={timeRange}
+              onValueChange={(val: "today" | "7days" | "30days") => { setTimeRange(val); }}
+            >
+              <SelectTrigger className="w-[160px] rounded-full text-xs font-semibold">
+                <SelectValue placeholder="Chọn khoảng thời gian" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="today" className="text-xs">Hôm nay</SelectItem>
+                <SelectItem value="7days" className="text-xs">7 ngày qua</SelectItem>
+                <SelectItem value="30days" className="text-xs">30 ngày qua</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 rounded-full text-xs font-semibold"
+              onClick={() => { refetch(); }}
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              Làm mới
+            </Button>
+          </div>
+        }
+      />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -295,6 +292,6 @@ export default function SecurityDashboard() {
           </div>
         </PageCard>
       </div>
-    </div>
+    </PageContainer>
   )
 }
