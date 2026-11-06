@@ -21,15 +21,15 @@ export default function LoginHistory() {
   } = useLoginHistoryMaster()
 
   return (
-    <PageContainer variant="default">
+    <PageContainer variant="table">
       <PageHeader
         title="Lịch sử đăng nhập"
         description="Theo dõi các phiên đăng nhập và bảo mật tài khoản của bạn."
       />
 
-      <PageCard padding="none">
-        <div className="flex flex-col">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+      <PageCard padding="none" className="flex-1 min-h-0 flex flex-col overflow-hidden">
+        <div className="flex flex-col flex-1 min-h-0">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card shrink-0">
             <div className="flex items-center gap-2">
               <History className="size-4 text-primary" />
               <h2 className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">
@@ -39,7 +39,9 @@ export default function LoginHistory() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => { void refetch() }}
+              onClick={() => {
+                void refetch()
+              }}
               disabled={isLoading || isFetching}
               className="gap-2 rounded-full"
             >
@@ -54,11 +56,13 @@ export default function LoginHistory() {
             hideEmployee={true}
           />
 
-          <div className="px-4 py-3 border-t border-border bg-card">
+          <div className="px-4 py-3 border-t border-border bg-card shrink-0">
             <AppPagination
               currentPage={query.page || 1}
               totalPages={data?.meta.totalPages || 1}
-              onPageChange={(page: number) => { setQuery((prev) => ({ ...prev, page })) }}
+              onPageChange={(page: number) => {
+                setQuery((prev) => ({ ...prev, page }))
+              }}
             />
           </div>
         </div>
@@ -67,7 +71,9 @@ export default function LoginHistory() {
       {/* Detail Drawer */}
       <ActivityLogDetailDrawer
         logId={viewingLogId}
-        onClose={() => { setViewingLogId(null); }}
+        onClose={() => {
+          setViewingLogId(null)
+        }}
         scope="me"
       />
     </PageContainer>

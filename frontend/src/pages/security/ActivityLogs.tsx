@@ -44,28 +44,33 @@ export default function ActivityLogs() {
 
   const totalPages = data?.meta.totalPages ?? 0
 
-
   if (isLoading) {
     return (
-      <PageContainer variant="default">
+      <PageContainer variant="table">
         <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        <p className="text-sm text-muted-foreground mt-4">Đang tải dữ liệu nhật ký...</p>
-      </div>
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground mt-4">Đang tải dữ liệu nhật ký...</p>
+        </div>
       </PageContainer>
     )
   }
 
   if (isError || !data) {
     return (
-      <PageContainer variant="default">
+      <PageContainer variant="table">
         <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-6 text-center">
           <AlertTriangle className="h-10 w-10 text-destructive mx-auto mb-4" />
           <h2 className="text-lg font-bold text-destructive">Lỗi tải dữ liệu</h2>
           <p className="text-sm text-muted-foreground mt-2">
             Không thể tải nhật ký hoạt động. Vui lòng thử lại sau.
           </p>
-          <Button variant="outline" className="mt-4 rounded-full text-xs font-semibold" onClick={() => { refetch(); }}>
+          <Button
+            variant="outline"
+            className="mt-4 rounded-full text-xs font-semibold"
+            onClick={() => {
+              refetch()
+            }}
+          >
             Thử lại
           </Button>
         </div>
@@ -74,69 +79,69 @@ export default function ActivityLogs() {
   }
 
   return (
-    <PageContainer variant="default">
+    <PageContainer variant="table">
       <PageHeader
         title="Nhật ký hoạt động"
         description="Truy vết toàn bộ hoạt động bảo mật và thay đổi dữ liệu trong hệ thống."
         actions={
           <Button
             variant="outline"
-            size="sm"
-            onClick={() => { refetch(); }}
-            className="gap-1.5 rounded-full text-xs font-semibold"
+            onClick={() => {
+              refetch()
+            }}
+            className="gap-1.5 rounded-full text-sm font-semibold"
           >
-            <RefreshCw className={cn("h-3 w-3", isFetching && "animate-spin")} />
+            <RefreshCw className={cn("h-4 w-4", isFetching && "animate-spin")} />
             Làm mới
           </Button>
         }
       />
 
-      <PageCard className="overflow-hidden" padding="sm">
+      <PageCard className="overflow-hidden p-0 flex-1 min-h-0 flex flex-col" padding="none">
         {/* ── Toolbar ──────────────────────────────────────────────── */}
-        <div className="px-5 py-4 flex flex-wrap items-center justify-between gap-4 border-b border-border bg-muted/10">
+        <div className="px-5 py-3 flex flex-wrap items-center justify-between gap-4 border-b border-border bg-muted/10 shrink-0">
           <div className="flex items-center gap-3 flex-1 min-w-[300px]">
             <div className="relative w-full max-w-xs">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <Input
-                size="sm"
                 placeholder="Tìm theo ID nhân viên..."
-                className="pl-8 bg-background border-border/80 focus:border-primary rounded-full"
+                className="pl-10 bg-background border-border/80 focus:border-primary rounded-full text-sm"
                 value={searchTerm}
                 onChange={handleSearch}
               />
+              {searchTerm && (
+                <button
+                  onClick={() => {
+                    handleSearch({ target: { value: "" } } as React.ChangeEvent<HTMLInputElement>)
+                  }}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
-            
+
             <div className="flex items-center gap-2">
-              <Filter size={14} className="text-muted-foreground" />
+              <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
               <Select
-                value={query.category || "all"}
+                value={query.category || "ALL"}
                 onValueChange={(val) => {
-                  handleFilterChange("category", val === "all" ? undefined : val)
+                  handleFilterChange("category", val)
                 }}
               >
-                <SelectTrigger size="sm" className="w-[170px] bg-background border-border/80 font-semibold rounded-full">
-                  <SelectValue placeholder="Tất cả danh mục" />
+                <SelectTrigger className="w-[150px] rounded-full text-sm font-semibold bg-background">
+                  <SelectValue placeholder="Danh mục" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tất cả danh mục</SelectItem>
-                  <SelectItem value="role">Vai trò</SelectItem>
-                  <SelectItem value="permission">Quyền hạn</SelectItem>
-                  <SelectItem value="employee">Nhân sự</SelectItem>
+                  <SelectItem value="ALL">Tất cả danh mục</SelectItem>
+                  <SelectItem value="AUTH">Xác thực</SelectItem>
+                  <SelectItem value="HRM">Nhân sự</SelectItem>
+                  <SelectItem value="SECURITY">Bảo mật</SelectItem>
+                  <SelectItem value="ATTENDANCE">Chấm công</SelectItem>
+                  <SelectItem value="SYSTEM">Hệ thống</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-
-            {query.actionType && (
-              <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 h-9 rounded-full text-xs font-semibold border border-primary/20">
-                Hành động: {query.actionType}
-                <button
-                  onClick={() => { handleFilterChange("actionType", undefined); }}
-                  className="hover:bg-primary hover:text-white rounded-full p-0.5 transition-colors flex items-center justify-center"
-                >
-                  <X size={12} />
-                </button>
-              </span>
-            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -145,10 +150,10 @@ export default function ActivityLogs() {
               startDate={query.fromDate || null}
               endDate={query.toDate || null}
               onChange={({ startDate, endDate }) => {
-                handleFilterChange("fromDate", startDate || undefined);
-                handleFilterChange("toDate", endDate || undefined);
+                handleFilterChange("fromDate", startDate || undefined)
+                handleFilterChange("toDate", endDate || undefined)
               }}
-              size="sm"
+              size="default"
               placeholder="Chọn khoảng ngày..."
             />
           </div>
@@ -158,14 +163,18 @@ export default function ActivityLogs() {
         <ActivityLogsTable logs={data.data} onViewDetail={setViewingLogId} />
 
         {data && data.meta.total > 0 && (
-          <div className="border-t border-border">
+          <div className="border-t border-border bg-card shrink-0">
             <AppPagination
               currentPage={query.page || 1}
               totalPages={totalPages}
-              onPageChange={(p) => { setQuery((prev) => ({ ...prev, page: p })); }}
+              onPageChange={(p) => {
+                setQuery((prev) => ({ ...prev, page: p }))
+              }}
               totalItems={data.meta.total}
               itemsPerPage={query.limit || 20}
-              onItemsPerPageChange={(limit) => { setQuery((prev) => ({ ...prev, limit, page: 1 })); }}
+              onItemsPerPageChange={(limit) => {
+                setQuery((prev) => ({ ...prev, limit, page: 1 }))
+              }}
             />
           </div>
         )}
@@ -174,7 +183,9 @@ export default function ActivityLogs() {
       {/* Detail Drawer */}
       <ActivityLogDetailDrawer
         logId={viewingLogId}
-        onClose={() => { setViewingLogId(null); }}
+        onClose={() => {
+          setViewingLogId(null)
+        }}
       />
     </PageContainer>
   )

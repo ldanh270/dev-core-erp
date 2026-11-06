@@ -40,28 +40,28 @@ export function ActivityLogsTable({
   hideEmployee = false,
 }: ActivityLogsTableProps) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-border bg-muted/5">
-            <th className="w-[20%] h-10 px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+    <div className="flex-1 min-h-0 overflow-auto app-scrollbar w-full">
+      <table className="w-full border-separate border-spacing-0 text-sm">
+        <thead className="sticky top-0 z-20 bg-background border-b border-border shadow-xs">
+          <tr>
+            <th className="sticky left-0 z-30 bg-background w-[22%] min-w-52 h-10 px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground align-middle">
               Hành động
             </th>
             {!hideEmployee && (
-              <th className="w-[20%] h-10 px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <th className="w-[20%] min-w-44 h-10 px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground align-middle">
                 Nhân viên
               </th>
             )}
-            <th className="w-[15%] h-10 px-5 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <th className="w-[15%] min-w-32 h-10 px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground align-middle">
               Danh mục
             </th>
-            <th className="w-[20%] h-10 px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <th className="w-[18%] min-w-36 h-10 px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground align-middle">
               Địa chỉ IP
             </th>
-            <th className="w-[15%] h-10 px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <th className="w-[15%] min-w-36 h-10 px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground align-middle">
               Thời gian
             </th>
-            <th className="w-[10%] h-10 px-5 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <th className="w-[10%] min-w-24 h-10 px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground align-middle">
               Chi tiết
             </th>
           </tr>
@@ -69,7 +69,7 @@ export function ActivityLogsTable({
         <tbody className="divide-y divide-border/40">
           {logs.length === 0 ? (
             <tr>
-              <td colSpan={hideEmployee ? 5 : 6} className="px-5 py-8 text-center">
+              <td colSpan={hideEmployee ? 5 : 6} className="px-5 py-12 text-center">
                 <EmptyState
                   icon={FileText}
                   title="Không có bản ghi nhật ký"
@@ -80,7 +80,7 @@ export function ActivityLogsTable({
           ) : (
             logs.map((log) => (
               <tr key={log.id} className="group hover:bg-muted/30 transition-colors duration-100">
-                <td className="h-[60px] px-5 py-3">
+                <td className="sticky left-0 z-10 bg-background h-[60px] px-5 py-3">
                   <div className="flex items-center gap-2.5">
                     <div
                       className={
@@ -97,14 +97,14 @@ export function ActivityLogsTable({
                     >
                       {getActionIcon(log.actionType)}
                     </div>
-                    <span className="font-semibold text-foreground text-[13px]">
+                    <span className="font-semibold text-foreground text-[13px] truncate">
                       {ACTIVITY_ACTION_LABELS[log.actionType] ?? log.actionType}
                     </span>
                   </div>
                 </td>
                 {!hideEmployee && (
                   <td className="h-[60px] px-5 py-3">
-                    <div className="text-[13px] text-foreground font-medium">
+                    <div className="text-[13px] text-foreground font-medium truncate">
                       {log.employeeName || (
                         <span className="text-muted-foreground italic">{COMMON_TEXTS.SYSTEM}</span>
                       )}

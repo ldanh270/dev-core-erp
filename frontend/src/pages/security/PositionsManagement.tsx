@@ -138,7 +138,7 @@ export default function PositionsManagement() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
           {[1, 2, 3].map((n) => (
             <div key={n} className="h-48 bg-muted animate-pulse rounded-xl" />
           ))}
@@ -150,7 +150,7 @@ export default function PositionsManagement() {
           <p className="text-xs text-muted-foreground mt-1">Bấm nút "Thêm chức vụ mới" để tạo.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
           {positions.map((pos) => (
             <PageCard
               key={pos.id}

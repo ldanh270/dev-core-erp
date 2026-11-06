@@ -130,22 +130,21 @@ export default function SecurityDashboard() {
               value={timeRange}
               onValueChange={(val: "today" | "7days" | "30days") => { setTimeRange(val); }}
             >
-              <SelectTrigger className="w-[160px] rounded-full text-xs font-semibold">
+              <SelectTrigger className="w-[160px] rounded-full text-sm font-semibold">
                 <SelectValue placeholder="Chọn khoảng thời gian" />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
-                <SelectItem value="today" className="text-xs">Hôm nay</SelectItem>
-                <SelectItem value="7days" className="text-xs">7 ngày qua</SelectItem>
-                <SelectItem value="30days" className="text-xs">30 ngày qua</SelectItem>
+                <SelectItem value="today" className="text-sm">Hôm nay</SelectItem>
+                <SelectItem value="7days" className="text-sm">7 ngày qua</SelectItem>
+                <SelectItem value="30days" className="text-sm">30 ngày qua</SelectItem>
               </SelectContent>
             </Select>
             <Button
               variant="outline"
-              size="sm"
-              className="gap-1.5 rounded-full text-xs font-semibold"
+              className="gap-1.5 rounded-full text-sm font-semibold"
               onClick={() => { refetch(); }}
             >
-              <RefreshCw className="h-3.5 w-3.5" />
+              <RefreshCw className="h-4 w-4" />
               Làm mới
             </Button>
           </div>
