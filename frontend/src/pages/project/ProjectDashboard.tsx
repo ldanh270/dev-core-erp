@@ -1,8 +1,7 @@
 // Import layout containers and custom UI elements
-import { PageCard, PageHeader, StatusPill } from "@/components/common"
+import { AppPagination, PageCard, PageContainer, PageHeader, StatusPill } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Button } from "@/components/ui/button"
 // Import custom UI tables
 import {
   Table,
@@ -360,79 +359,31 @@ export default function ProjectDashboard() {
     </div>
   )
 
-  // Reusable pagination layout handler
+  // Reusable pagination layout handler using AppPagination
   const renderPagination = (
     currentPage: number,
     totalPages: number,
     totalItems: number,
-    itemsOnPage: number,
+    _itemsOnPage: number,
     onPageChange: (page: number) => void
   ) => {
-    // Do not display pagination element if there is only 1 page
     if (totalPages <= 1) return null
 
     return (
-      <div className="pt-4 flex items-center justify-between text-xs text-muted-foreground border-t border-border mt-4">
-        {/* Record pagination range statistics */}
-        <div>
-          Hiển thị{" "}
-          <span className="font-medium text-foreground">
-            {(currentPage - 1) * tasksLimit + (itemsOnPage ? 1 : 0)}
-          </span>{" "}
-          đến{" "}
-          <span className="font-medium text-foreground">
-            {(currentPage - 1) * tasksLimit + itemsOnPage}
-          </span>{" "}
-          trong tổng số{" "}
-          <span className="font-medium text-foreground">{totalItems}</span>
-        </div>
-        {/* Pagination navigation controls */}
-        <div className="flex items-center gap-1.5">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 px-3 rounded-full text-[11px] font-semibold"
-            disabled={currentPage === 1}
-            onClick={() => { onPageChange(Math.max(1, currentPage - 1)); }}
-          >
-            Trước
-          </Button>
-          <div className="flex items-center gap-1">
-            {Array.from({ length: totalPages }).map((_, i) => {
-              const p = i + 1
-              // Cap surrounding buttons spacing
-              if (p < currentPage - 2 || p > currentPage + 2) return null
-              return (
-                <button
-                  key={p}
-                  onClick={() => { onPageChange(p); }}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors text-[11px] font-semibold border ${
-                    currentPage === p
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "hover:bg-muted text-muted-foreground border-border bg-background"
-                  }`}
-                >
-                  {p}
-                </button>
-              )
-            })}
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 px-3 rounded-full text-[11px] font-semibold"
-            disabled={currentPage === totalPages || totalPages === 0}
-            onClick={() => { onPageChange(currentPage + 1); }}
-          >
-            Sau
-          </Button>
-        </div>
+      <div className="pt-2 border-t border-border mt-4">
+        <AppPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={tasksLimit}
+          onPageChange={onPageChange}
+        />
       </div>
     )
   }
 
   return (
-    <div className="container p-8 space-y-6">
+    <PageContainer variant="default" className="space-y-6">
       {/* Page header title details */}
       <PageHeader
         title="Tổng quan của tôi (My Page)"
@@ -633,7 +584,7 @@ export default function ProjectDashboard() {
           taskTitle={logTimeTask.title}
         />
       )}
-    </div>
+    </PageContainer>
   )
 }
 

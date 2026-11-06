@@ -1,4 +1,4 @@
-import { PageCard, SafeHtml, StatusPill } from "@/components/common"
+import { BackButton, PageCard, PageContainer, SafeHtml, StatusPill } from "@/components/common"
 import LogTimeModal from "@/components/features/project/LogTimeModal"
 import { TaskAssigneeAiModal } from "./components/task-assignee-ai-modal"
 import { Badge } from "@/components/ui/badge"
@@ -384,17 +384,17 @@ export default function TaskDetail() {
 
   if (isLoadingTask) {
     return (
-      <div className="container p-8 space-y-6">
+      <PageContainer variant="default" className="space-y-6">
         <Skeleton className="h-10 w-1/3 rounded-full" />
         <Skeleton className="h-40 w-full rounded-xl" />
         <Skeleton className="h-24 w-full rounded-xl" />
-      </div>
+      </PageContainer>
     )
   }
 
   if (!task) {
     return (
-      <div className="container p-8 text-center space-y-4">
+      <PageContainer variant="default" className="text-center space-y-4">
         <AlertCircle className="size-12 text-destructive mx-auto" />
         <h3 className="text-lg font-bold text-foreground">Không tìm thấy công việc</h3>
         <p className="text-sm text-muted-foreground">Công việc không tồn tại hoặc đã bị xóa.</p>
@@ -406,7 +406,7 @@ export default function TaskDetail() {
         >
           Quay lại
         </Button>
-      </div>
+      </PageContainer>
     )
   }
 
@@ -451,8 +451,10 @@ export default function TaskDetail() {
     <div className="container p-8 space-y-6">
       {/* Top Header/Breadcrumb */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border pb-6">
-        <div>
-          <div className="flex flex-wrap items-center justify-between gap-4 w-full md:min-w-[450px]">
+        <div className="flex items-start gap-3">
+          <BackButton fallbackHref={projectId ? `/project/${projectId}/issues` : "/project/list"} />
+          <div>
+            <div className="flex flex-wrap items-center justify-between gap-4 w-full md:min-w-[450px]">
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Link
                 to="/project/list"
@@ -514,14 +516,15 @@ export default function TaskDetail() {
             <h1 className="text-xl font-bold text-foreground">{task.title}</h1>
           </div>
         </div>
+      </div>
 
-        <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2">
           <Button
             onClick={() => {
               setEditingSpentTime(undefined)
               setIsOpenLogTimeModal(true)
             }}
-            className="rounded-full bg-primary text-primary-foreground hover:bg-primary/95 flex items-center gap-1.5 h-10 text-xs px-4"
+            size="default" className="rounded-full shadow-xs gap-1.5 font-semibold"
           >
             <Plus className="size-4" />
             Ghi nhận thời gian (Log Time)
@@ -529,9 +532,8 @@ export default function TaskDetail() {
 
           {canEditTask && (
             <Button
-              variant="outline"
               onClick={handleOpenEdit}
-              className="rounded-full border-border hover:bg-muted/50 flex items-center gap-1.5 h-10 text-xs px-4"
+              variant="outline" size="default" className="rounded-full border-border hover:bg-muted/50 gap-1.5 font-semibold shadow-xs"
             >
               <Edit className="size-4" />
               Chỉnh sửa
@@ -540,9 +542,8 @@ export default function TaskDetail() {
 
           {(isAdminOrGM || isLeader || isCreator) && (
             <Button
-              variant="destructive"
               onClick={handleDeleteTask}
-              className="rounded-full flex items-center gap-1.5 h-10 text-xs px-4 bg-destructive/10 text-destructive border-transparent hover:bg-destructive/20 cursor-pointer"
+              variant="destructive" size="default" className="rounded-full gap-1.5 font-semibold shadow-xs cursor-pointer"
             >
               <Trash2 className="size-4" />
               Xóa công việc
@@ -902,7 +903,7 @@ export default function TaskDetail() {
                 onChange={(e) => {
                   setTaskTitle(e.target.value)
                 }}
-                className="h-10 text-sm border-border rounded-full px-4"
+                className="border-border rounded-full"
                 required
               />
             </div>
@@ -929,7 +930,7 @@ export default function TaskDetail() {
                 <Select value={taskTracker} onValueChange={setTaskTracker}>
                   <SelectTrigger
                     id="editTracker"
-                    className="w-full h-10 border-border rounded-full px-4 bg-background"
+                    className="w-full border-border rounded-full bg-background"
                   >
                     <SelectValue />
                   </SelectTrigger>
@@ -953,7 +954,7 @@ export default function TaskDetail() {
                 <Select value={taskPriority} onValueChange={setTaskPriority}>
                   <SelectTrigger
                     id="editPriority"
-                    className="w-full h-10 border-border rounded-full px-4 bg-background"
+                    className="w-full border-border rounded-full bg-background"
                   >
                     <SelectValue />
                   </SelectTrigger>
@@ -974,7 +975,7 @@ export default function TaskDetail() {
                 <Select value={taskStatusId} onValueChange={setTaskStatusId}>
                   <SelectTrigger
                     id="editStatus"
-                    className="w-full h-10 border-border rounded-full px-4 bg-background"
+                    className="w-full border-border rounded-full bg-background"
                   >
                     <SelectValue placeholder="Chọn trạng thái..." />
                   </SelectTrigger>
@@ -1020,7 +1021,7 @@ export default function TaskDetail() {
                 <Select value={taskAssignee} onValueChange={setTaskAssignee}>
                   <SelectTrigger
                     id="editAssignee"
-                    className="w-full h-10 border-border rounded-full px-4 bg-background"
+                    className="w-full border-border rounded-full bg-background"
                   >
                     <SelectValue />
                   </SelectTrigger>
@@ -1053,7 +1054,7 @@ export default function TaskDetail() {
                   onChange={(e) => {
                     setTaskProgress(Number(e.target.value))
                   }}
-                  className="h-10 text-sm border-border rounded-full px-4"
+                  className="border-border rounded-full"
                   required
                 />
               </div>
@@ -1100,7 +1101,7 @@ export default function TaskDetail() {
                   onChange={(e) => {
                     setTaskEstimate(e.target.value)
                   }}
-                  className="h-10 text-sm border-border rounded-full px-4"
+                  className="border-border rounded-full"
                 />
               </div>
             </div>
@@ -1130,7 +1131,7 @@ export default function TaskDetail() {
                       onChange={(e) => {
                         setResultUrl(e.target.value)
                       }}
-                      className="h-10 text-sm border-border rounded-full px-4 bg-background"
+                      className="border-border rounded-full bg-background"
                     />
                   </div>
                   
@@ -1161,14 +1162,14 @@ export default function TaskDetail() {
                 onClick={() => {
                   setIsOpenEditModal(false)
                 }}
-                className="h-10 rounded-full px-5 text-sm"
+                className="rounded-full px-5 text-sm font-semibold shadow-xs"
                 disabled={updateMutation.isPending}
               >
                 Hủy
               </Button>
               <Button
                 type="submit"
-                className="h-10 rounded-full px-5 text-sm bg-primary text-primary-foreground hover:bg-primary/95"
+                className="rounded-full px-6 text-sm font-semibold shadow-xs bg-primary text-primary-foreground hover:bg-primary/90"
                 disabled={updateMutation.isPending}
               >
                 {updateMutation.isPending ? "Đang lưu..." : "Lưu thay đổi"}
