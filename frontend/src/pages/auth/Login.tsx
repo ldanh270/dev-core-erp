@@ -156,7 +156,7 @@ export default function Login() {
             {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full h-12 text-base font-semibold"
+              className="w-full text-sm font-semibold rounded-full"
               disabled={isLoggingIn}
             >
               {isLoggingIn ? "Logging in..." : "Login"}
@@ -180,7 +180,7 @@ export default function Login() {
             onClick={() => {
               setShowForgotModal(true)
             }}
-            className="w-full h-12 text-sm font-semibold flex items-center justify-center gap-2 border-border shadow-sm hover:bg-secondary/40"
+            className="w-full text-sm font-semibold flex items-center justify-center gap-2 rounded-full border-border shadow-sm hover:bg-secondary/40"
           >
             <KeyRound size={16} />
             <span>Reset Password</span>
