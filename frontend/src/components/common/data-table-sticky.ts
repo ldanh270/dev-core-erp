@@ -95,51 +95,55 @@ export type StickyCellStyle = CSSProperties & {
 export function getStickyCellProps<T>(
   col: DataTableColumn<T>,
   layout: StickyLayoutResult,
-  options?: { isHeader?: boolean },
+  options?: { isHeader?: boolean; isDesktop?: boolean },
 ): { className?: string; style?: StickyCellStyle } {
   const isSticky = layout.stickyColIds.has(col.id)
   const isHeader = options?.isHeader ?? false
+  const isDesktop = options?.isDesktop ?? true
+  const effectiveWidth = col.width || col.minWidth
 
-  if (!isSticky) {
+  if (!isSticky || !isDesktop) {
     if (isHeader) {
       return {
         className: "sticky top-0 z-20 bg-card",
         style: {
-          width: col.width,
+          width: effectiveWidth,
           minWidth: col.minWidth || col.width,
         },
       }
     }
     return {
       style: {
-        width: col.width,
+        width: effectiveWidth,
         minWidth: col.minWidth || col.width,
       },
     }
   }
 
   const isLast = col.id === layout.lastStickyId
+  const offsetPx = layout.offsets[col.id] ?? 0
 
-  // Responsive Horizontal Pinning:
-  // - Offset is assigned via CSS variable `--sticky-left` rather than inline `left`.
-  // - th sticks vertically (top: 0) at all breakpoints, but ONLY pins horizontally on desktop (lg: >= 1024px).
-  // - td pins horizontally ONLY on desktop (lg:sticky lg:left-[var(--sticky-left)]); static on mobile (< 1024px).
+  // Direct GPU hardware-accelerated pinning:
+  // - Direct numeric pixel `left: ${offsetPx}px` instead of CSS variable to allow
+  //   the compositor thread to handle horizontal scroll without frame-lag / stuttering.
+  // - `translate3d(0, 0, 0)` to promote sticky cells to an isolated composite layer.
   const baseClass = isHeader
-    ? "sticky top-0 z-20 lg:z-30 lg:left-[var(--sticky-left)] bg-card"
-    : "lg:sticky lg:z-10 lg:left-[var(--sticky-left)] bg-card group-hover:bg-muted"
+    ? "sticky top-0 z-30 bg-card [will-change:transform]"
+    : "sticky z-10 bg-card group-hover:bg-muted [will-change:transform]"
 
-  // Separator border and subtle drop shadow on the right edge of the last pinned column (desktop only).
   const shadowClass = isLast
-    ? "lg:border-r lg:border-border lg:shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)] dark:lg:shadow-[4px_0_6px_-4px_rgba(0,0,0,0.5)]"
+    ? "border-r border-border shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)] dark:shadow-[4px_0_6px_-4px_rgba(0,0,0,0.5)]"
     : ""
 
   return {
     className: `${baseClass} ${shadowClass}`.trim(),
     style: {
-      width: col.width,
+      width: effectiveWidth,
       minWidth: col.minWidth || col.width,
-      maxWidth: col.width,
-      "--sticky-left": `${layout.offsets[col.id] ?? 0}px`,
+      maxWidth: effectiveWidth,
+      left: `${offsetPx}px`,
+      transform: "translate3d(0, 0, 0)",
+      backfaceVisibility: "hidden",
     },
   }
 }

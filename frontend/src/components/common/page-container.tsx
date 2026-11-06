@@ -7,12 +7,12 @@ export const pageContainerVariants = cva("w-full flex flex-col min-w-0", {
   variants: {
     variant: {
       // Standard layout for general dashboard and analytics pages
-      default: "w-full max-w-[2400px] px-4 md:px-6 py-6 gap-6",
+      default: "w-full px-4 md:px-6 py-6 gap-6",
 
       // Viewport-locked layout for data tables (matches attendance matrix pattern)
       // Locks viewport height on desktop, eliminates window-level scrolling
       table:
-        "w-full max-w-[2400px] px-4 md:px-6 py-4 flex-1 h-full min-h-0 max-h-full flex flex-col overflow-hidden gap-4",
+        "w-full px-4 md:px-6 py-4 flex-1 h-full min-h-0 max-h-full flex flex-col overflow-hidden gap-4",
 
       // Focused center layout for forms, wizards, and profile detail flows
       centered: "max-w-4xl mx-auto px-4 md:px-6 py-6 gap-6",

@@ -235,7 +235,7 @@ export function DataTablePage<T>({
             <thead className="bg-card">
               <tr>
                 {visibleColumns.map((col) => {
-                  const stickyProps = getStickyCellProps(col, stickyLayout, { isHeader: true })
+                  const stickyProps = getStickyCellProps(col, stickyLayout, { isHeader: true, isDesktop: isLg })
                   return (
                     <th
                       key={col.id}
@@ -262,7 +262,7 @@ export function DataTablePage<T>({
                 Array.from({ length: loadingRowsCount }).map((_, rIdx) => (
                   <tr key={`loading-row-${rIdx}`}>
                     {visibleColumns.map((col) => {
-                      const stickyProps = getStickyCellProps(col, stickyLayout)
+                      const stickyProps = getStickyCellProps(col, stickyLayout, { isDesktop: isLg })
                       return (
                         <td
                           key={`loading-col-${col.id}`}
@@ -322,10 +322,10 @@ export function DataTablePage<T>({
                 data.map((item, idx) => (
                   <tr
                     key={keyExtractor ? keyExtractor(item, idx) : idx}
-                    className="group hover:bg-muted/25 transition-colors"
+                    className="group hover:bg-muted/25"
                   >
                     {visibleColumns.map((col) => {
-                      const stickyProps = getStickyCellProps(col, stickyLayout)
+                      const stickyProps = getStickyCellProps(col, stickyLayout, { isDesktop: isLg })
                       return (
                         <td
                           key={col.id}
