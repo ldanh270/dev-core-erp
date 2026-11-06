@@ -1,16 +1,10 @@
-import { AppPagination, DataTableToolbar, PageCard, PageContainer, PageHeader } from "@/components/common"
-import { StatusPill } from "@/components/common/status-pill"
+import {
+  DataTablePage,
+  StatusPill,
+  type DataTableColumn,
+} from "@/components/common"
 import { ViewOfferDialog } from "@/components/features/recruitment/view-offer-dialog"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   CURRENCY,
@@ -79,7 +73,7 @@ export default function OffersPage() {
     setViewOfferOpen(true)
   }
 
-  const { data, isLoading, isError, refetch } = useOffers({ page, pageSize })
+  const { data, isLoading } = useOffers({ page, pageSize })
   const sendOffer = useSendOffer()
 
   const offers = useMemo(() => data?.data ?? [], [data?.data])
@@ -93,6 +87,22 @@ export default function OffersPage() {
     return counts
   }, [offers])
 
+  const getCandidateName = (offer: RecruitmentOffer) => {
+    return offer.candidateName ?? offer.candidate?.fullName ?? "N/A"
+  }
+
+  const getCandidateEmail = (offer: RecruitmentOffer) => {
+    return offer.candidateEmail ?? offer.candidate?.email ?? ""
+  }
+
+  const formatDate = (dateStr: string) => {
+    try {
+      return format(parseISO(dateStr), "dd/MM/yyyy", { locale: vi })
+    } catch {
+      return dateStr
+    }
+  }
+
   const filteredOffers = useMemo(() => {
     return offers.filter((offer) => {
       if (activeTab !== "all" && offer.status !== activeTab) return false
@@ -100,7 +110,7 @@ export default function OffersPage() {
       const searchStr = keyword.toLowerCase().trim()
       if (!searchStr) return true
 
-      const candidateName = (offer.candidateName ?? offer.candidate?.fullName ?? "").toLowerCase()
+      const candidateName = getCandidateName(offer).toLowerCase()
       const jobTitle = (offer.jobTitle ?? "").toLowerCase()
       const department = (offer.department ?? "").toLowerCase()
 
@@ -112,30 +122,178 @@ export default function OffersPage() {
     })
   }, [offers, activeTab, keyword])
 
-  const formatDate = (dateStr: string) => {
-    try {
-      return format(parseISO(dateStr), "dd/MM/yyyy", { locale: vi })
-    } catch {
-      return dateStr
-    }
-  }
+  const columns: DataTableColumn<RecruitmentOffer>[] = useMemo(
+    () => [
+      {
+        id: "candidate",
+        header: "Ứng viên",
+        minWidth: "240px",
+        sticky: true,
+        cell: (offer) => (
+          <div
+            className="flex items-center gap-3 cursor-pointer group"
+            onClick={() => handleViewDetails(offer)}
+          >
+            <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+              <span className="text-xs font-semibold text-primary">
+                {getCandidateName(offer).charAt(0)?.toUpperCase() ?? "?"}
+              </span>
+            </div>
+            <div className="min-w-0">
+              <p className="font-medium text-foreground text-sm group-hover:text-primary group-hover:underline transition-colors truncate">
+                {getCandidateName(offer)}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-48">
+                {getCandidateEmail(offer)}
+              </p>
+            </div>
+          </div>
+        ),
+      },
+      {
+        id: "position",
+        header: "Vị trí / Phòng ban",
+        minWidth: "180px",
+        cell: (offer) => (
+          <div>
+            <p className="font-medium text-foreground text-sm">{offer.jobTitle}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{offer.department}</p>
+          </div>
+        ),
+      },
+      {
+        id: "salary",
+        header: "Mức lương",
+        minWidth: "160px",
+        cell: (offer) => (
+          <div className="flex items-center gap-1.5 text-sm font-medium">
+            <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
+            <span>{formatCurrency(offer.offeredSalary, offer.currency)}</span>
+          </div>
+        ),
+      },
+      {
+        id: "startDate",
+        header: "Ngày bắt đầu",
+        minWidth: "130px",
+        hideBelow: "md",
+        cell: (offer) => (
+          <span className="text-sm text-foreground">
+            {offer.startDate ? formatDate(offer.startDate) : "—"}
+          </span>
+        ),
+      },
+      {
+        id: "status",
+        header: "Trạng thái",
+        minWidth: "130px",
+        cell: (offer) => (
+          <StatusPill
+            label={OFFER_STATUS_LABELS[offer.status] || offer.status}
+            variant={statusVariantMap[offer.status]}
+          />
+        ),
+      },
+      {
+        id: "response",
+        header: "Phản hồi",
+        minWidth: "140px",
+        hideBelow: "lg",
+        cell: (offer) =>
+          offer.response ? (
+            <StatusPill
+              label={OFFER_RESPONSE_LABELS[offer.response] || offer.response}
+              variant={responseVariantMap[offer.response]}
+            />
+          ) : (
+            <span className="text-xs text-muted-foreground">Chưa phản hồi</span>
+          ),
+      },
+      {
+        id: "actions",
+        header: "",
+        width: "80px",
+        align: "right",
+        cell: (offer) => (
+          <div
+            className="flex items-center justify-end gap-1"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {offer.status === "draft" && hasPermission("recruitment.approve") && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full hover:bg-muted h-8 w-8"
+                    onClick={() => {
+                      sendOffer.mutate(offer.id)
+                    }}
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Gửi offer cho ứng viên</TooltipContent>
+              </Tooltip>
+            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full hover:bg-muted h-8 w-8"
+                  onClick={() => handleViewDetails(offer)}
+                >
+                  <Eye className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Xem chi tiết offer</TooltipContent>
+            </Tooltip>
+          </div>
+        ),
+      },
+    ],
+    [hasPermission, sendOffer],
+  )
 
-  const getCandidateName = (offer: RecruitmentOffer) => {
-    return offer.candidateName ?? offer.candidate?.fullName ?? "N/A"
-  }
-
-  const getCandidateEmail = (offer: RecruitmentOffer) => {
-    return offer.candidateEmail ?? offer.candidate?.email ?? ""
-  }
+  const tabsConfig = useMemo(
+    () => ({
+      items: TAB_DEFINITIONS.map((tab) => ({
+        id: tab.id,
+        label: tab.label,
+        count: tabCounts[tab.id] ?? 0,
+      })),
+      activeTab,
+      onTabChange: (id: string) => {
+        setActiveTab(id)
+        setPage(1)
+      },
+    }),
+    [activeTab, tabCounts],
+  )
 
   return (
-    <PageContainer className="flex flex-col gap-6">
-      <PageHeader
+    <>
+      <DataTablePage<RecruitmentOffer>
         title="Quản lý Offer"
         description="Tạo và quản lý offer cho ứng viên"
-        actions={
+        variant="viewport"
+        data={filteredOffers}
+        columns={columns}
+        isLoading={isLoading}
+        tabs={tabsConfig}
+        keyExtractor={(offer) => offer.id}
+        search={{
+          value: keyword,
+          onSearch: (val: string) => {
+            setKeyword(val)
+            setPage(1)
+          },
+          placeholder: "Tìm theo ứng viên, vị trí, phòng ban...",
+        }}
+        primaryAction={
           <Button
-            className="rounded-full"
+            className="rounded-full font-semibold"
             onClick={() => routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS)}
             disabled={!hasPermission("recruitment.create")}
           >
@@ -143,231 +301,31 @@ export default function OffersPage() {
             Tạo offer mới
           </Button>
         }
-      />
-
-      <PageCard padding="sm" className="p-0 overflow-hidden">
-        {/* Status Tab Navigation */}
-        <nav
-          aria-label="Lọc theo trạng thái offer"
-          className="flex items-center gap-6 overflow-x-auto border-b border-border px-6 hide-scrollbar bg-background"
-        >
-          {TAB_DEFINITIONS.map((tab) => {
-            const isActive = activeTab === tab.id
-            const count = tabCounts[tab.id] || 0
-            return (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setActiveTab(tab.id)
-                  setPage(1)
-                }}
-                className={`relative flex items-center gap-2 py-4 font-medium text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
-                  isActive
-                    ? "text-primary font-semibold"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {tab.label}
-                <span
-                  className={`inline-flex items-center justify-center min-w-[20px] h-[20px] rounded-full text-[11px] font-bold px-1.5 border ${
-                    isActive
-                      ? "bg-primary border-primary text-primary-foreground"
-                      : "bg-background border-border text-muted-foreground"
-                  }`}
-                >
-                  {count}
-                </span>
-                {isActive && (
-                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary rounded-t-full" />
-                )}
-              </button>
-            )
-          })}
-        </nav>
-
-        <DataTableToolbar
-          searchQuery={keyword}
-          onSearchChange={(val) => {
-            setKeyword(val)
-            setPage(1)
-          }}
-          searchPlaceholder="Tìm theo ứng viên, vị trí, phòng ban..."
-        />
-
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader className="bg-muted/40">
-              <TableRow>
-                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-64 px-4 py-2">
-                  Ứng viên
-                </TableHead>
-                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-44 px-4 py-2">
-                  Vị trí / Phòng ban
-                </TableHead>
-                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-44 px-4 py-2">
-                  Mức lương
-                </TableHead>
-                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden md:table-cell w-36 px-4 py-2">
-                  Ngày bắt đầu
-                </TableHead>
-                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-36 px-4 py-2">
-                  Trạng thái
-                </TableHead>
-                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hidden lg:table-cell w-36 px-4 py-2">
-                  Phản hồi
-                </TableHead>
-                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 px-4 py-2 text-right">
-                  Thao tác
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                Array.from({ length: 5 }).map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell colSpan={7} className="p-3">
-                      <Skeleton className="h-12 w-full rounded-lg" />
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : isError ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="h-32 text-center">
-                    <p className="font-medium text-destructive">Không tải được danh sách offer.</p>
-                    <Button
-                      variant="outline"
-                      className="mt-3 rounded-full"
-                      onClick={() => void refetch()}
-                    >
-                      Thử lại
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ) : filteredOffers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                    {keyword || activeTab !== "all"
-                      ? "Không tìm thấy offer phù hợp với bộ lọc"
-                      : "Chưa có offer nào"}
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredOffers.map((offer: RecruitmentOffer) => (
-                  <TableRow
-                    key={offer.id}
-                    onClick={() => {
-                      handleViewDetails(offer)
-                    }}
-                    className="cursor-pointer transition-colors duration-100 hover:bg-muted/25"
-                  >
-                    <TableCell className="h-[60px] px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                          <span className="text-xs font-semibold text-primary">
-                            {getCandidateName(offer).charAt(0)?.toUpperCase() ?? "?"}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-medium text-foreground text-sm">
-                            {getCandidateName(offer)}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {getCandidateEmail(offer)}
-                          </p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="h-[60px] px-4 py-3">
-                      <div>
-                        <p className="font-medium text-foreground text-sm">{offer.jobTitle}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{offer.department}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="h-[60px] px-4 py-3">
-                      <div className="flex items-center gap-1.5 text-sm font-medium">
-                        <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span>{formatCurrency(offer.offeredSalary, offer.currency)}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="h-[60px] hidden md:table-cell px-4 py-3 text-sm">
-                      {offer.startDate ? formatDate(offer.startDate) : "—"}
-                    </TableCell>
-                    <TableCell className="h-[60px] px-4 py-3">
-                      <StatusPill
-                        label={OFFER_STATUS_LABELS[offer.status] || offer.status}
-                        variant={statusVariantMap[offer.status]}
-                      />
-                    </TableCell>
-                    <TableCell className="h-[60px] hidden lg:table-cell px-4 py-3">
-                      {offer.response ? (
-                        <StatusPill
-                          label={OFFER_RESPONSE_LABELS[offer.response] || offer.response}
-                          variant={responseVariantMap[offer.response]}
-                        />
-                      ) : (
-                        <span className="text-xs text-muted-foreground">Chưa phản hồi</span>
-                      )}
-                    </TableCell>
-                    <TableCell
-                      className="px-4 py-3 text-right"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className="flex items-center justify-end gap-1">
-                        {offer.status === "draft" && hasPermission("recruitment.approve") && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="rounded-full hover:bg-muted"
-                                onClick={() => {
-                                  sendOffer.mutate(offer.id)
-                                }}
-                              >
-                                <Send className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Gửi offer cho ứng viên</TooltipContent>
-                          </Tooltip>
-                        )}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="rounded-full hover:bg-muted"
-                              onClick={() => {
-                                handleViewDetails(offer)
-                              }}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Xem chi tiết offer</TooltipContent>
-                        </Tooltip>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        <AppPagination
-          currentPage={page}
-          totalPages={meta ? Math.max(1, Math.ceil(meta.total / pageSize)) : 1}
-          onPageChange={setPage}
-          totalItems={meta?.total ?? filteredOffers.length}
-          itemsPerPage={pageSize}
-          onItemsPerPageChange={(val) => {
+        emptyState={{
+          title:
+            keyword || activeTab !== "all"
+              ? "Không tìm thấy offer phù hợp với bộ lọc"
+              : "Chưa có offer nào",
+          description: "Hiện tại chưa có lời mời nhận việc nào trong trạng thái này.",
+        }}
+        pagination={{
+          currentPage: page,
+          totalPages: meta ? Math.max(1, Math.ceil(meta.total / pageSize)) : 1,
+          totalItems: meta?.total ?? filteredOffers.length,
+          itemsPerPage: pageSize,
+          onPageChange: setPage,
+          onItemsPerPageChange: (val) => {
             setPageSize(val)
             setPage(1)
-          }}
-        />
-      </PageCard>
+          },
+        }}
+      />
 
-      <ViewOfferDialog open={viewOfferOpen} onOpenChange={setViewOfferOpen} offer={selectedOffer} />
-    </PageContainer>
+      <ViewOfferDialog
+        open={viewOfferOpen}
+        onOpenChange={setViewOfferOpen}
+        offer={selectedOffer}
+      />
+    </>
   )
 }
