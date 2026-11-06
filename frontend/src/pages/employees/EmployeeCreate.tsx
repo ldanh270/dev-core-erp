@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { ROUTES } from "@/config/routes.config"
 import { useEmployeeCreateWizard } from "@/hooks/employees/useEmployeeCreateWizard"
 import { routerNavigate } from "@/lib/router-navigator"
 import { HelpCircle } from "lucide-react"
@@ -45,7 +46,9 @@ export default function EmployeeCreatePage() {
   return (
     <EntityFormPage
       title="Tạo mới hồ sơ nhân sự"
-      onBack={() => routerNavigate("/hrm/employees")}
+      onBack={() => {
+        routerNavigate(ROUTES.HRM.EMPLOYEES)
+      }}
       onSubmit={handleNextTab}
       isPending={isSubmitting}
       submitLabel={activeTab === "family" ? "Lưu" : "Tiếp tục"}
