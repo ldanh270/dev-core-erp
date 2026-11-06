@@ -812,9 +812,9 @@ export function ProjectIssuesTab({
             </div>
           ) : (
             <>
-              <div className="relative overflow-x-auto rounded-lg border border-border">
+              <div className="relative overflow-auto app-scrollbar max-h-[calc(100vh-280px)] rounded-lg border border-border">
                 <Table>
-                  <TableHeader>
+                  <TableHeader className="sticky top-0 z-20 bg-background shadow-xs">
                     <TableRow className="hover:bg-transparent h-10">
                       {displayColumns.map((colKey) => {
                         const col = COLUMN_METADATA[colKey as keyof typeof COLUMN_METADATA]
