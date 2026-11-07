@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ROUTES } from "@/config/routes.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { useAllApplications } from "@/hooks/application/useAllApplications"
 import { useManageApplications } from "@/hooks/application/useManageApplications"
 import { useMyApplications } from "@/hooks/application/useMyApplications"
@@ -24,6 +25,7 @@ import {
   type IApplicationListItem,
   applicationApi,
 } from "@/lib/api/application.api"
+import { cn } from "@/lib/utils"
 
 import { startTransition, useEffect, useState } from "react"
 
@@ -294,27 +296,27 @@ export default function ApplicationDashboard() {
           <div className="overflow-x-auto p-4">
             <Table className="text-sm">
               <TableHeader className="bg-muted/40">
-                <TableRow className="hover:bg-transparent border-b">
-                  <TableHead className="text-center font-semibold text-foreground text-xs uppercase">
+                <TableRow className="hover:bg-transparent border-b border-border">
+                  <TableHead className={cn("text-center", TYPOGRAPHY.TABLE_HEADER)}>
                     Số phép
                   </TableHead>
-                  <TableHead className="text-center font-semibold text-foreground text-xs uppercase">
+                  <TableHead className={cn("text-center", TYPOGRAPHY.TABLE_HEADER)}>
                     Đã dùng
                   </TableHead>
-                  <TableHead className="text-center font-semibold text-foreground text-xs uppercase">
+                  <TableHead className={cn("text-center", TYPOGRAPHY.TABLE_HEADER)}>
                     Còn lại
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <TableRow className="hover:bg-transparent border-b-0">
-                  <TableCell className="py-6 text-center font-mono font-medium text-foreground text-lg">
+                  <TableCell className={cn("py-6 text-center text-lg font-bold", TYPOGRAPHY.CELL_CODE)}>
                     7
                   </TableCell>
-                  <TableCell className="py-6 text-center font-mono font-medium text-foreground text-lg">
+                  <TableCell className={cn("py-6 text-center text-lg font-bold", TYPOGRAPHY.CELL_CODE)}>
                     0
                   </TableCell>
-                  <TableCell className="py-6 text-center font-mono font-bold text-primary text-lg">
+                  <TableCell className={cn("py-6 text-center text-lg font-bold text-primary", TYPOGRAPHY.CELL_CODE)}>
                     7
                   </TableCell>
                 </TableRow>

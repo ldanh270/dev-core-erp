@@ -98,20 +98,18 @@ export function ApplicationList({
   const [isTransitionLoading, setIsTransitionLoading] = useState(true)
   const showLoading = isLoading || isRefreshing || isTransitionLoading
 
-  useEffect(() => {
-    if (!isLoading && !isRefreshing) {
-      const frame = requestAnimationFrame(() => {
-        setIsTransitionLoading(false)
-      })
-      return () => {
-        cancelAnimationFrame(frame)
-      }
-    }
-  }, [isLoading, isRefreshing])
-
   const beginTransition = () => {
     setIsTransitionLoading(true)
   }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsTransitionLoading(false)
+    }, 150)
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [applications, statusFilter, typeFilter, keyword, page, pageSize])
 
   const statusTabs = useMemo(() => [
     { id: "all", label: "Tất cả", count: stats.total },
@@ -205,8 +203,8 @@ export function ApplicationList({
       {
         id: "createdBy",
         header: "Người tạo",
-        width: "160px",
-        minWidth: "160px",
+        width: `${TABLE_COL_WIDTH.TYPE}px`,
+        minWidth: `${TABLE_COL_WIDTH.TYPE}px`,
         cell: (app) => (
           <div className="flex flex-col">
             <span className={cn(TYPOGRAPHY.CELL_CODE, "text-primary font-medium")}>
@@ -221,8 +219,8 @@ export function ApplicationList({
       {
         id: "approvedBy",
         header: "Người duyệt",
-        width: "160px",
-        minWidth: "160px",
+        width: `${TABLE_COL_WIDTH.TYPE}px`,
+        minWidth: `${TABLE_COL_WIDTH.TYPE}px`,
         cell: (app) => (
           <span className={cn(TYPOGRAPHY.CELL_SECONDARY, "whitespace-nowrap")}>
             {app.approvedBy?.fullName || app.assignedTo?.fullName || "—"}
