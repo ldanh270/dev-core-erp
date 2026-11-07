@@ -277,7 +277,7 @@ function AdminAttendanceDashboard() {
           </div>
         </div>
 
-        <div className="overflow-x-auto app-scrollbar rounded-xl border">
+        <div className="overflow-x-auto rounded-xl border">
           <Table className="text-sm">
             <TableHeader className="bg-muted/40">
               <TableRow className="hover:bg-transparent">
@@ -387,7 +387,7 @@ function AdminAttendanceDashboard() {
 
         {/* Attendance History Table */}
         <PageCard className="overflow-hidden p-0" noBorder={false}>
-          <div className="overflow-x-auto app-scrollbar">
+          <div className="overflow-x-auto">
             <Table className="text-sm">
               <TableHeader className="bg-muted/40">
                 <TableRow className="hover:bg-transparent border-b">

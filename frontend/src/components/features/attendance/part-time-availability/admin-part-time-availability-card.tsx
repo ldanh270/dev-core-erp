@@ -9,6 +9,8 @@ import {
   getPartTimeAvailabilityStatusLabel,
   getPartTimeAvailabilityStatusVariant,
 } from "@/config/entities/part-time-availability.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
+import { cn } from "@/lib/utils"
 import type {
   IPartTimeWeeklyAvailability,
   ISuggestPartTimeEmployeeSuggestion,
@@ -53,7 +55,7 @@ export function AdminPartTimeAvailabilityCard({
 
   return (
     <>
-      <div className="flex w-full items-start justify-between gap-4 rounded-xl border border-border/80 bg-secondary/10 p-5">
+      <div className="flex w-full items-start justify-between gap-4 rounded-xl border border-border bg-card p-5 shadow-xs transition-colors hover:border-border/80">
         <div className="min-w-0 flex-1 space-y-3">
           <div>
             <button
@@ -66,9 +68,9 @@ export function AdminPartTimeAvailabilityCard({
             >
               {employeeName}
             </button>
-            <p className="text-xs text-muted-foreground">{availability.employee?.email}</p>
+            <p className={TYPOGRAPHY.CELL_SECONDARY}>{availability.employee?.email}</p>
             {topReason ? (
-              <p className="mt-1 text-[11px] text-muted-foreground">{topReason}</p>
+              <p className={cn("mt-1", TYPOGRAPHY.CELL_SECONDARY)}>{topReason}</p>
             ) : null}
           </div>
 
@@ -79,10 +81,10 @@ export function AdminPartTimeAvailabilityCard({
               return (
                 <div
                   key={dayOfWeek}
-                  className="rounded-lg border border-border/50 bg-card/80 px-2 py-1.5"
+                  className="rounded-lg border border-border/60 bg-muted/30 px-2.5 py-2"
                 >
-                  <p className="text-[10px] font-medium text-foreground">{weekDay?.shortDate}</p>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-xs font-semibold text-foreground">{weekDay?.shortDate}</p>
+                  <p className={cn("mt-0.5", TYPOGRAPHY.CELL_SECONDARY)}>
                     {availability.hasAssignedShifts
                       ? (getAssignedDaySummary(availability.assignedDaySummaries, dayOfWeek) ??
                         "Không làm")
@@ -100,22 +102,22 @@ export function AdminPartTimeAvailabilityCard({
             variant={getPartTimeAvailabilityStatusVariant(availability.status)}
           />
           {suggestion ? (
-            <p className="text-[10px] font-medium text-primary">
+            <p className="text-xs font-semibold text-primary">
               {PART_TIME_AVAILABILITY_ASSIGN_LABELS.SCORE_LABEL}: {suggestion.score}
             </p>
           ) : null}
           {availability.hasAssignedShifts ? (
-            <p className="text-[10px] font-medium text-primary">Đã xếp ca</p>
+            <p className="text-xs font-semibold text-primary">Đã xếp ca</p>
           ) : null}
           <button
             type="button"
-            className="rounded-full p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             onClick={() => {
               setDrawerOpen(true)
             }}
             aria-label={`Xếp ca cho ${employeeName}`}
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="size-4" />
           </button>
         </div>
       </div>
