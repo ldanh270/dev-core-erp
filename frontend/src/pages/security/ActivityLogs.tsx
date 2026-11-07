@@ -241,50 +241,49 @@ export default function ActivityLogs() {
         },
       }}
       filters={
-        <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
-          <div className="flex items-center gap-2 shrink-0">
-            <Filter className="size-4 text-muted-foreground shrink-0" />
-            <Select
-              value={query.category || "ALL"}
-              onValueChange={(val) => {
-                handleFilterChange("category", val)
-              }}
+        <div className="flex items-center gap-2 shrink-0">
+          <Filter className="size-4 text-muted-foreground shrink-0" />
+          <Select
+            value={query.category || "ALL"}
+            onValueChange={(val) => {
+              handleFilterChange("category", val)
+            }}
+          >
+            <SelectTrigger
+              className={cn(
+                "w-[155px] rounded-full bg-background",
+                TYPOGRAPHY.TOOLBAR_CONTROL,
+              )}
             >
-              <SelectTrigger
-                className={cn(
-                  "w-[155px] rounded-full bg-background",
-                  TYPOGRAPHY.TOOLBAR_CONTROL,
-                )}
-              >
-                <SelectValue placeholder="Danh mục" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">Tất cả danh mục</SelectItem>
-                <SelectItem value="AUTH">Xác thực</SelectItem>
-                <SelectItem value="HRM">Nhân sự</SelectItem>
-                <SelectItem value="SECURITY">Bảo mật</SelectItem>
-                <SelectItem value="ATTENDANCE">Chấm công</SelectItem>
-                <SelectItem value="SYSTEM">Hệ thống</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            <span className={TYPOGRAPHY.TOOLBAR_LABEL}>
-              Lọc theo ngày:
-            </span>
-            <DateRangePicker
-              startDate={query.fromDate || null}
-              endDate={query.toDate || null}
-              onChange={({ startDate, endDate }) => {
-                handleFilterChange("fromDate", startDate || undefined)
-                handleFilterChange("toDate", endDate || undefined)
-              }}
-              size="default"
-              placeholder="Chọn khoảng ngày..."
-              className="w-[210px] rounded-full shrink-0"
-            />
-          </div>
+              <SelectValue placeholder="Danh mục" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Tất cả danh mục</SelectItem>
+              <SelectItem value="AUTH">Xác thực</SelectItem>
+              <SelectItem value="HRM">Nhân sự</SelectItem>
+              <SelectItem value="SECURITY">Bảo mật</SelectItem>
+              <SelectItem value="ATTENDANCE">Chấm công</SelectItem>
+              <SelectItem value="SYSTEM">Hệ thống</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      }
+      toolbarActions={
+        <div className="flex items-center gap-2 shrink-0">
+          <span className={TYPOGRAPHY.TOOLBAR_LABEL}>
+            Lọc theo ngày:
+          </span>
+          <DateRangePicker
+            startDate={query.fromDate || null}
+            endDate={query.toDate || null}
+            onChange={({ startDate, endDate }) => {
+              handleFilterChange("fromDate", startDate || undefined)
+              handleFilterChange("toDate", endDate || undefined)
+            }}
+            size="default"
+            placeholder="Chọn khoảng ngày..."
+            className="w-[210px] rounded-full shrink-0"
+          />
         </div>
       }
       columns={columns}
