@@ -30,7 +30,7 @@ import { routerNavigate } from "@/lib/router-navigator"
 import { formatCurrency } from "@/lib/utils"
 import type { IContract } from "@/types/employee-contract.types"
 
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { FileText, MoreHorizontal, Plus } from "lucide-react"
 import { useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
@@ -101,7 +101,7 @@ export default function ContractsPage() {
     setIsModalOpen(true)
   }
 
-  const handleSign = async (contract: IContract) => {
+  const handleSign = useCallback(async (contract: IContract) => {
     const isConfirmed = await confirm({
       title: "Ký hợp đồng lao động",
       description: `Bạn có chắc chắn muốn xác nhận ký hợp đồng số ${contract.contractNumber}? Trạng thái hợp đồng sẽ chuyển sang "Đang hiệu lực".`,
@@ -122,7 +122,7 @@ export default function ContractsPage() {
     } catch (_error) {
       toast.dismiss(toastId)
     }
-  }
+  }, [confirm, updateMutation])
 
   const formatDate = (dateStr?: string | null) => {
     if (!dateStr) return "—"
@@ -315,7 +315,7 @@ export default function ContractsPage() {
         ),
       },
     ],
-    [page, limit],
+    [page, limit, handleSign],
   )
 
   // ==========================================
@@ -369,28 +369,24 @@ export default function ContractsPage() {
       onResetFilters={() => {
         setSearchParams(new URLSearchParams())
       }}
-      pagination={
-        filteredContracts.length > 0
-          ? {
-              currentPage: page,
-              totalPages: totalPages || 1,
-              totalItems: filteredContracts.length,
-              itemsPerPage: limit,
-              onPageChange: (newPage) => {
-                const params = new URLSearchParams(searchParams)
-                params.set("page", newPage.toString())
-                setSearchParams(params)
-              },
-              onItemsPerPageChange: (newLimit) => {
-                const params = new URLSearchParams(searchParams)
-                params.set("limit", newLimit.toString())
-                params.set("page", "1")
-                setSearchParams(params)
-              },
-              pageSizeOptions: [10, 20, 50, 100],
-            }
-          : undefined
-      }
+      pagination={{
+        currentPage: page,
+        totalPages: totalPages || 1,
+        totalItems: filteredContracts.length,
+        itemsPerPage: limit,
+        onPageChange: (newPage) => {
+          const params = new URLSearchParams(searchParams)
+          params.set("page", newPage.toString())
+          setSearchParams(params)
+        },
+        onItemsPerPageChange: (newLimit) => {
+          const params = new URLSearchParams(searchParams)
+          params.set("limit", newLimit.toString())
+          params.set("page", "1")
+          setSearchParams(params)
+        },
+        pageSizeOptions: [10, 20, 50, 100],
+      }}
       extraContent={
         <ContractModal
           isOpen={isModalOpen}

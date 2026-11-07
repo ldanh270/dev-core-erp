@@ -393,23 +393,19 @@ export default function EmployeeList() {
         handleTabChange("all")
       }}
       /* Bottom Pagination Footer: 32px pagination controls */
-      pagination={
-        data && data.data.length > 0
-          ? {
-              currentPage,
-              totalPages,
-              totalItems: data.meta.total,
-              itemsPerPage: pageSize,
-              onPageChange: (page) => {
-                setQuery((prev) => ({ ...prev, page }))
-              },
-              onItemsPerPageChange: (limit) => {
-                setQuery((prev) => ({ ...prev, limit, page: 1 }))
-              },
-              pageSizeOptions: [10, 20, 50, 100],
-            }
-          : undefined
-      }
+      pagination={{
+        currentPage,
+        totalPages: totalPages || 1,
+        totalItems: data?.meta.total ?? 0,
+        itemsPerPage: pageSize,
+        onPageChange: (page) => {
+          setQuery((prev) => ({ ...prev, page }))
+        },
+        onItemsPerPageChange: (limit) => {
+          setQuery((prev) => ({ ...prev, limit, page: 1 }))
+        },
+        pageSizeOptions: [10, 20, 50, 100],
+      }}
       /* Drawer & Modal Overlays: Create Modal, Edit Drawer, Details Drawer */
       extraContent={
         <>
