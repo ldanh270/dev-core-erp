@@ -65,7 +65,7 @@ export function AddMemberModal({
     if (roles.length > 0 && !roleId) {
       const devRole = roles.find((r) => r.code === "developer")
       if (devRole) {
-// eslint-disable-next-line react-hooks/set-state-in-effect
+ 
         setRoleId(devRole.id)
       } else {
         setRoleId(roles[0].id)

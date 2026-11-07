@@ -24,6 +24,39 @@ export const PROJECT_STATUSES = [
 /**
  * Task creation policy enumeration
  */
+export const PROJECT_STATUS_LABELS: Record<(typeof PROJECT_STATUSES)[number], string> = {
+  [PROJECT_STATUS.PLANNING]: "Lập kế hoạch",
+  [PROJECT_STATUS.ACTIVE]: "Đang hoạt động",
+  [PROJECT_STATUS.ON_HOLD]: "Tạm dừng",
+  [PROJECT_STATUS.COMPLETED]: "Hoàn thành",
+  [PROJECT_STATUS.CANCELLED]: "Đã hủy",
+}
+
+export type ProjectStatusVariant = "success" | "warning" | "danger" | "info" | "neutral"
+
+export function getProjectStatusVariant(status: string): ProjectStatusVariant {
+  switch (status) {
+    case PROJECT_STATUS.ACTIVE:
+      return "success"
+    case PROJECT_STATUS.PLANNING:
+      return "neutral"
+    case PROJECT_STATUS.ON_HOLD:
+      return "warning"
+    case PROJECT_STATUS.COMPLETED:
+      return "info"
+    case PROJECT_STATUS.CANCELLED:
+    default:
+      return "danger"
+  }
+}
+
+export function getProjectStatusLabel(status: string): string {
+  if (status in PROJECT_STATUS_LABELS) {
+    return PROJECT_STATUS_LABELS[status as keyof typeof PROJECT_STATUS_LABELS]
+  }
+  return status
+}
+
 export const TASK_CREATION_POLICY = {
   LEADER_ONLY: "leader_only",
   ALL_MEMBERS: "all_members",

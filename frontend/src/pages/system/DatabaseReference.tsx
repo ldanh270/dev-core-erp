@@ -74,7 +74,7 @@ export default function DatabaseReference() {
     <DatabaseTableSheet
       table={state.selectedTable}
       schema={dbSchema}
-      onClose={() => actions.setSelectedTable(null)}
+      onClose={() => { actions.setSelectedTable(null); }}
       onSelectTable={actions.handleSelectTableByName}
       onViewErd={actions.handleViewErd}
       copied={state.selectedTable !== null && state.copiedTableName === state.selectedTable.name}

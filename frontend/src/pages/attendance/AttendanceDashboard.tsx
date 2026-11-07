@@ -1,4 +1,4 @@
-import { DateRangePicker, PageCard, PageHeader } from "@/components/common"
+import { DateRangePicker, PageCard, PageContainer, PageHeader } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { AttendanceMatrix } from "@/components/features/attendance/attendance-matrix"
 import {
@@ -167,12 +167,12 @@ function AdminAttendanceDashboard() {
   }
 
   return (
-    <div className="container px-6 py-6 space-y-6">
+    <PageContainer variant="default" className="space-y-6">
       <PageHeader
         title="Tổng quan chấm công"
         description="Dữ liệu chấm công toàn bộ nhân sự và cá nhân bạn."
         actions={
-          <Button variant="outline" className="gap-2" onClick={handleExport}>
+          <Button variant="outline" size="default" className="gap-2 rounded-full shadow-xs font-semibold" onClick={handleExport}>
             <Download size={16} /> Xuất CSV
           </Button>
         }
@@ -277,7 +277,7 @@ function AdminAttendanceDashboard() {
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border">
+        <div className="overflow-x-auto app-scrollbar rounded-xl border">
           <Table className="text-sm">
             <TableHeader className="bg-muted/40">
               <TableRow className="hover:bg-transparent">
@@ -359,7 +359,7 @@ function AdminAttendanceDashboard() {
           <DateRangePicker
             startDate={startDate}
             endDate={endDate}
-            size="sm"
+            size="default"
             onChange={({ startDate: s, endDate: e }) => {
               if (s) setStartDate(s)
               if (e) setEndDate(e)
@@ -369,9 +369,9 @@ function AdminAttendanceDashboard() {
 
           <Select
             value={statusFilter}
-            onValueChange={(v) => setStatusFilter(v as IAttendanceStatus | "all")}
+            onValueChange={(v) => { setStatusFilter(v as IAttendanceStatus | "all"); }}
           >
-            <SelectTrigger size="sm" className="w-44">
+            <SelectTrigger className="w-44 rounded-full text-sm font-semibold">
               <SelectValue placeholder="Trạng thái" />
             </SelectTrigger>
             <SelectContent>
@@ -387,7 +387,7 @@ function AdminAttendanceDashboard() {
 
         {/* Attendance History Table */}
         <PageCard className="overflow-hidden p-0" noBorder={false}>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto app-scrollbar">
             <Table className="text-sm">
               <TableHeader className="bg-muted/40">
                 <TableRow className="hover:bg-transparent border-b">
@@ -526,6 +526,6 @@ function AdminAttendanceDashboard() {
           setSelectedEmployee(null)
         }}
       />
-    </div>
+    </PageContainer>
   )
 }

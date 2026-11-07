@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { PageCard } from "@/components/common"
+import { PageCard, PageContainer } from "@/components/common"
 import {
   Dialog,
   DialogContent,
@@ -117,7 +117,7 @@ export default function PositionsManagement() {
   }
 
   return (
-    <div className="container p-8 space-y-6">
+    <PageContainer variant="default" className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border pb-6">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
@@ -130,7 +130,7 @@ export default function PositionsManagement() {
         </div>
         <Button
           onClick={handleOpenCreate}
-          className="rounded-full bg-primary text-primary-foreground hover:bg-primary/95 flex items-center gap-1.5 h-10 text-xs px-4"
+          size="default" className="rounded-full shadow-xs gap-2 font-semibold"
         >
           <Plus className="size-4" />
           Thêm chức vụ mới
@@ -138,7 +138,7 @@ export default function PositionsManagement() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
           {[1, 2, 3].map((n) => (
             <div key={n} className="h-48 bg-muted animate-pulse rounded-xl" />
           ))}
@@ -150,7 +150,7 @@ export default function PositionsManagement() {
           <p className="text-xs text-muted-foreground mt-1">Bấm nút "Thêm chức vụ mới" để tạo.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
           {positions.map((pos) => (
             <PageCard
               key={pos.id}
@@ -168,7 +168,7 @@ export default function PositionsManagement() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleOpenEdit(pos)}
+                      onClick={() => { handleOpenEdit(pos); }}
                       className="size-8 rounded-full hover:bg-muted"
                     >
                       <Edit2 className="size-3.5 text-muted-foreground hover:text-foreground" />
@@ -232,7 +232,7 @@ export default function PositionsManagement() {
                 <Input
                   id="name"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => { setName(e.target.value); }}
                   placeholder="Ví dụ: Lập trình viên"
                   className="rounded-full h-10 text-sm"
                   required
@@ -243,7 +243,7 @@ export default function PositionsManagement() {
                 <Input
                   id="code"
                   value={code}
-                  onChange={(e) => setCode(e.target.value)}
+                  onChange={(e) => { setCode(e.target.value); }}
                   placeholder="Ví dụ: developer"
                   className="rounded-full h-10 text-sm font-mono"
                   disabled={!!editingId}
@@ -257,7 +257,7 @@ export default function PositionsManagement() {
               <Textarea
                 id="desc"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => { setDescription(e.target.value); }}
                 placeholder="Nhập mô tả ngắn gọn về vai trò/chức năng của chức vụ này..."
                 className="rounded-xl min-h-[60px] text-sm"
               />
@@ -278,7 +278,7 @@ export default function PositionsManagement() {
                       <button
                         type="button"
                         key={key}
-                        onClick={() => handleToggleTracker(key)}
+                        onClick={() => { handleToggleTracker(key); }}
                         className={`flex items-center gap-2 p-2.5 rounded-full border text-left transition-all duration-200 cursor-pointer ${
                           isChecked
                             ? "bg-primary/5 border-primary text-primary"
@@ -298,7 +298,7 @@ export default function PositionsManagement() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsOpen(false)}
+                onClick={() => { setIsOpen(false); }}
                 className="rounded-full text-xs h-9"
               >
                 Hủy bỏ
@@ -313,6 +313,6 @@ export default function PositionsManagement() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageContainer>
   )
 }

@@ -1,4 +1,4 @@
-import { EntityFormPage, PageHeader } from "@/components/common"
+import { EntityFormPage, PageContainer, PageHeader } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import {
@@ -114,7 +114,7 @@ function TriggerTimeField({ control }: { control: Control<WeeklyScheduleSettings
           render={({ field }) => (
             <FormItem>
               <Select
-                onValueChange={(val) => field.onChange(Number(val))}
+                onValueChange={(val) => { field.onChange(Number(val)); }}
                 value={field.value?.toString()}
               >
                 <FormControl>
@@ -141,7 +141,7 @@ function TriggerTimeField({ control }: { control: Control<WeeklyScheduleSettings
           render={({ field }) => (
             <FormItem>
               <Select
-                onValueChange={(val) => field.onChange(Number(val))}
+                onValueChange={(val) => { field.onChange(Number(val)); }}
                 value={field.value?.toString()}
               >
                 <FormControl>
@@ -185,7 +185,7 @@ function TriggerDayOfWeekField({ control }: { control: Control<WeeklyScheduleSet
             </FormDescription>
           </div>
           <Select
-            onValueChange={(val) => field.onChange(Number(val))}
+            onValueChange={(val) => { field.onChange(Number(val)); }}
             value={field.value?.toString()}
           >
             <FormControl>
@@ -210,7 +210,7 @@ function TriggerDayOfWeekField({ control }: { control: Control<WeeklyScheduleSet
 
 function WeeklyScheduleConfigSkeleton() {
   return (
-    <div className="container px-3 sm:px-6 py-4 sm:py-6 max-w-5xl">
+    <PageContainer variant="centered" className="space-y-6">
       <PageHeader
         title="Cấu hình lịch tuần"
         description="Thiết lập lịch trình tự động sinh ca làm việc hàng tuần."
@@ -229,7 +229,7 @@ function WeeklyScheduleConfigSkeleton() {
           </div>
         </div>
       </Card>
-    </div>
+    </PageContainer>
   )
 }
 

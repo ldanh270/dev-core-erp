@@ -34,7 +34,7 @@ function CalendarGridSegment({
   return (
     <div className="overflow-x-auto rounded-lg border border-border/70">
       <div
-        className="min-w-0"
+        className="w-full min-w-0"
         style={{ minWidth: `${7 + dayColumnCount * 6.5}rem` }}
       >
         <div

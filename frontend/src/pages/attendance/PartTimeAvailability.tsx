@@ -1,15 +1,15 @@
-import { PageHeader } from "@/components/common"
+import { PageContainer, PageHeader } from "@/components/common"
 import { AdminPartTimeAvailabilityView } from "@/components/features/attendance/part-time-availability/admin-part-time-availability-view"
 
 export default function PartTimeAvailabilityPage() {
   // Admin-only page: assign shifts within employee-declared free-time windows.
   return (
-    <div className="container px-6 py-6 space-y-6">
+    <PageContainer variant="default" className="space-y-6">
       <PageHeader
         title="Xếp ca part-time"
         description="Xếp ca theo giờ/phút trong khung rảnh nhân viên bán thời gian đã gửi."
       />
       <AdminPartTimeAvailabilityView />
-    </div>
+    </PageContainer>
   )
 }

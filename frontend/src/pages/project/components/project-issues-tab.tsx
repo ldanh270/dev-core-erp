@@ -402,7 +402,7 @@ export function ProjectIssuesTab({
           const data = JSON.parse(matched.queryData)
           
           if (data.defaultColumns) {
-// eslint-disable-next-line react-hooks/set-state-in-effect
+ 
             setDisplayColumns(["id", "tracker", "title", "assignee", "status", "priority", "progress"])
           } else if (Array.isArray(data.selectedColumns)) {
             setDisplayColumns(data.selectedColumns)
@@ -467,7 +467,7 @@ export function ProjectIssuesTab({
             const newParams = new URLSearchParams(searchParams)
             newParams.delete("queryId")
             setSearchParams(newParams)
-// eslint-disable-next-line react-hooks/set-state-in-effect
+ 
             setAppliedUrlQueryId(null)
           }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -625,7 +625,7 @@ export function ProjectIssuesTab({
 
   // Reset page number back to 1 when filters are updated
   useEffect(() => {
-// eslint-disable-next-line react-hooks/set-state-in-effect
+ 
     setCurrentPage(1)
   }, [
     issueSearch,
@@ -812,9 +812,9 @@ export function ProjectIssuesTab({
             </div>
           ) : (
             <>
-              <div className="relative overflow-x-auto rounded-lg border border-border">
+              <div className="relative overflow-auto app-scrollbar max-h-[calc(100vh-280px)] rounded-lg border border-border">
                 <Table>
-                  <TableHeader>
+                  <TableHeader className="sticky top-0 z-20 bg-background shadow-xs">
                     <TableRow className="hover:bg-transparent h-10">
                       {displayColumns.map((colKey) => {
                         const col = COLUMN_METADATA[colKey as keyof typeof COLUMN_METADATA]
@@ -850,7 +850,7 @@ export function ProjectIssuesTab({
                           }
                           return renderFn(task)
                         })}
-                        <TableCell onClick={(e) => e.stopPropagation()}>
+                        <TableCell onClick={(e) => { e.stopPropagation(); }}>
                           <Button
                             variant="ghost"
                             size="icon-xs"

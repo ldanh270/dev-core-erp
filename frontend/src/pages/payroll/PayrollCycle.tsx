@@ -1,4 +1,4 @@
-import { EntityFormPage, PageHeader } from "@/components/common"
+import { EntityFormPage, PageContainer, PageHeader } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import {
@@ -239,7 +239,7 @@ function ScheduleDayField({
 
 function PayrollCycleSkeleton() {
   return (
-    <div className="container px-3 sm:px-6 py-4 sm:py-6 max-w-5xl">
+    <PageContainer variant="default" className="max-w-5xl">
       <PageHeader
         title="Chu kỳ lương"
         description="Quản lý lịch trình tổng hợp và xử lý lương của doanh nghiệp."
@@ -258,7 +258,7 @@ function PayrollCycleSkeleton() {
           </div>
         </div>
       </Card>
-    </div>
+    </PageContainer>
   )
 }
 

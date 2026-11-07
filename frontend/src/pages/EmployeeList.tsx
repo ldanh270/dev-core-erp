@@ -1,4 +1,4 @@
-import { DataTablePage, type DataTableColumn, StatusPill } from "@/components/common"
+import { DataTablePage, type DataTableColumn, StatusPill, TABLE_COL_WIDTH } from "@/components/common"
 import { EmployeeCreateModal } from "@/components/features/employees/EmployeeCreateModal"
 import { EmployeeDetailsDrawer } from "@/components/features/employees/EmployeeDetailsDrawer"
 import { EmployeeEditDrawer } from "@/components/features/employees/EmployeeEditDrawer"
@@ -35,7 +35,6 @@ import {
   Trash2,
   Unlock,
   User,
-  UserX,
 } from "lucide-react"
 
 type ActiveTab =
@@ -61,14 +60,14 @@ const TAB_DEFINITIONS: TabDefinition[] = [
 ]
 
 const COL_WIDTH = {
-  employee: 220,
-  code: 100,
-  position: 160,
-  contact: 220,
-  startDate: 130,
-  contract: 160,
-  status: 140,
-  actions: 100,
+  employee: TABLE_COL_WIDTH.EMPLOYEE,
+  code: TABLE_COL_WIDTH.CODE,
+  position: TABLE_COL_WIDTH.POSITION,
+  contact: TABLE_COL_WIDTH.CONTACT,
+  startDate: TABLE_COL_WIDTH.DATE,
+  contract: TABLE_COL_WIDTH.TYPE,
+  status: TABLE_COL_WIDTH.STATUS,
+  actions: TABLE_COL_WIDTH.ACTIONS,
 } as const
 
 /**
@@ -139,17 +138,17 @@ export default function EmployeeList() {
             <div className="size-9 rounded-full bg-muted flex items-center justify-center shrink-0 border border-border">
               <User className="size-4 text-muted-foreground" />
             </div>
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 flex flex-col justify-center">
               <p
                 onClick={() => {
                   setViewingEmployeeId(employee.id)
                 }}
-                className="font-medium text-sm text-foreground hover:text-primary transition-colors cursor-pointer truncate"
+                className="font-medium text-sm leading-5 text-foreground hover:text-primary transition-colors cursor-pointer truncate"
                 title={employee.fullName}
               >
                 {employee.fullName}
               </p>
-              <p className="text-xs text-muted-foreground truncate" title={employee.username}>
+              <p className="text-xs leading-4 text-muted-foreground truncate" title={employee.username}>
                 {employee.username}
               </p>
             </div>
@@ -176,13 +175,12 @@ export default function EmployeeList() {
         header: "Vị trí",
         width: `${COL_WIDTH.position}px`,
         minWidth: `${COL_WIDTH.position}px`,
-        sticky: true,
         cell: (employee) => (
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-foreground truncate" title={employee.position || ""}>
+          <div className="min-w-0 flex flex-col justify-center">
+            <p className="text-sm font-medium leading-5 text-foreground truncate" title={employee.position || ""}>
               {employee.position || "—"}
             </p>
-            <p className="text-xs text-muted-foreground truncate" title={employee.role || ""}>
+            <p className="text-xs leading-4 text-muted-foreground truncate" title={employee.role || ""}>
               {employee.role || "—"}
             </p>
           </div>
@@ -194,11 +192,11 @@ export default function EmployeeList() {
         width: `${COL_WIDTH.contact}px`,
         minWidth: `${COL_WIDTH.contact}px`,
         cell: (employee) => (
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-foreground truncate" title={employee.phone || "—"}>
+          <div className="min-w-0 flex flex-col justify-center">
+            <p className="text-sm font-medium leading-5 text-foreground truncate" title={employee.phone || "—"}>
               {employee.phone || "—"}
             </p>
-            <p className="text-xs text-muted-foreground truncate" title={employee.email}>
+            <p className="text-xs leading-4 text-muted-foreground truncate" title={employee.email}>
               {employee.email}
             </p>
           </div>
@@ -209,6 +207,7 @@ export default function EmployeeList() {
         header: "Ngày vào làm",
         width: `${COL_WIDTH.startDate}px`,
         minWidth: `${COL_WIDTH.startDate}px`,
+        hideBelow: "lg",
         cell: (employee) => {
           const dateStr = employee.startDate ? new Date(employee.startDate).toLocaleDateString("vi-VN") : "—"
           return (
@@ -223,15 +222,16 @@ export default function EmployeeList() {
         header: "Hợp đồng",
         width: `${COL_WIDTH.contract}px`,
         minWidth: `${COL_WIDTH.contract}px`,
+        hideBelow: "lg",
         cell: (employee) => {
           const typeLabel = getEmployeeTypeLabel(employee.employeeType)
           const scheduleLabel = getWorkScheduleTypeLabel(employee.workScheduleType)
           return (
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-foreground truncate" title={typeLabel}>
+            <div className="min-w-0 flex flex-col justify-center">
+              <p className="text-sm font-medium leading-5 text-foreground truncate" title={typeLabel}>
                 {typeLabel}
               </p>
-              <p className="text-xs text-muted-foreground truncate" title={scheduleLabel}>
+              <p className="text-xs leading-4 text-muted-foreground truncate" title={scheduleLabel}>
                 {scheduleLabel}
               </p>
             </div>
@@ -260,13 +260,14 @@ export default function EmployeeList() {
           <div className="flex justify-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="size-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full text-muted-foreground hover:text-foreground"
                   aria-label="Mở menu thao tác"
                 >
                   <MoreHorizontal className="size-4" />
-                </button>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-44 rounded-xl">
                 {isAdminOrManager && (
@@ -274,7 +275,9 @@ export default function EmployeeList() {
                     {employee.lockedUntil && new Date(employee.lockedUntil) > new Date() && (
                       <>
                         <DropdownMenuItem
-                          onClick={() => handleUnlock(employee.id)}
+                          onClick={() => {
+                            handleUnlock(employee.id)
+                          }}
                           className="cursor-pointer gap-2 text-amber-600 focus:text-amber-700 focus:bg-amber-50 dark:text-amber-400 dark:focus:text-amber-300 dark:focus:bg-amber-950/30"
                         >
                           <Unlock className="size-3.5" />
@@ -352,7 +355,7 @@ export default function EmployeeList() {
         <Button
           type="button"
           variant="outline"
-          className="h-10 px-4 rounded-full gap-2 text-sm font-medium text-foreground bg-background border-border hover:bg-accent"
+          className="rounded-full gap-2"
         >
           <FileDown className="size-4" />
           Xuất Excel
@@ -380,28 +383,27 @@ export default function EmployeeList() {
       data={data?.data || []}
       isLoading={isLoading || isFetching}
       emptyState={{
-        icon: UserX,
-        title: "Không tìm thấy nhân sự",
-        description: "Không có nhân sự nào phù hợp với bộ lọc hoặc từ khóa tìm kiếm hiện tại.",
+        title: "Chưa có nhân sự nào",
+        description: "Bắt đầu tạo hồ sơ nhân sự mới cho công ty.",
+      }}
+      onResetFilters={() => {
+        setQuery((prev) => ({ ...prev, page: 1, search: "" }))
+        handleTabChange("all")
       }}
       /* Bottom Pagination Footer: 32px pagination controls */
-      pagination={
-        data && data.data.length > 0
-          ? {
-              currentPage,
-              totalPages,
-              totalItems: data.meta.total,
-              itemsPerPage: pageSize,
-              onPageChange: (page) => {
-                setQuery((prev) => ({ ...prev, page }))
-              },
-              onItemsPerPageChange: (limit) => {
-                setQuery((prev) => ({ ...prev, limit, page: 1 }))
-              },
-              pageSizeOptions: [10, 20, 50, 100],
-            }
-          : undefined
-      }
+      pagination={{
+        currentPage,
+        totalPages: totalPages || 1,
+        totalItems: data?.meta.total ?? 0,
+        itemsPerPage: pageSize,
+        onPageChange: (page) => {
+          setQuery((prev) => ({ ...prev, page }))
+        },
+        onItemsPerPageChange: (limit) => {
+          setQuery((prev) => ({ ...prev, limit, page: 1 }))
+        },
+        pageSizeOptions: [10, 20, 50, 100],
+      }}
       /* Drawer & Modal Overlays: Create Modal, Edit Drawer, Details Drawer */
       extraContent={
         <>

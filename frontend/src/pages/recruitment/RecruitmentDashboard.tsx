@@ -1,5 +1,5 @@
 import { routerNavigate } from "@/lib/router-navigator"
-import { PageHeader } from "@/components/common"
+import { PageContainer, PageHeader } from "@/components/common"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -127,7 +127,7 @@ function QuickLink({
   return (
     <Card
       className="cursor-pointer border border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-primary/40 rounded-2xl"
-      onClick={() => routerNavigate(to)}
+      onClick={() => { routerNavigate(to); }}
     >
       <CardContent className="flex items-center gap-4 p-4">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 shrink-0 transition-transform hover:scale-105">
@@ -167,7 +167,7 @@ export default function RecruitmentDashboard() {
   const totalApps = appStats?.total || 1
 
   return (
-    <div className="container flex flex-col gap-6 px-3 py-4 sm:px-6 sm:py-6">
+    <PageContainer className="flex flex-col gap-6">
       <PageHeader
         title="Dashboard Tuyển dụng"
         description="Tổng quan tình hình tuyển dụng, tiến độ ứng viên và lịch phỏng vấn"
@@ -189,28 +189,28 @@ export default function RecruitmentDashboard() {
               value={reqStats?.total ?? 0}
               description={`${reqStats?.pending ?? 0} đang chờ phê duyệt`}
               icon={FileText}
-              onClick={() => routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS)}
+              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS); }}
             />
             <StatCard
               title="Ứng viên"
               value={appStats?.total ?? 0}
               description={`${appStats?.active ?? 0} đang trong quá trình`}
               icon={Users}
-              onClick={() => routerNavigate(ROUTES.RECRUITMENT.CANDIDATES)}
+              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.CANDIDATES); }}
             />
             <StatCard
               title="Offer"
               value={offerStats?.total ?? 0}
               description={`${offerStats?.pending ?? 0} đang chờ phản hồi`}
               icon={Briefcase}
-              onClick={() => routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS)}
+              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS); }}
             />
             <StatCard
               title="Background Check"
               value={bgcStats?.total ?? 0}
               description={`${bgcStats?.inProgress ?? 0} đang kiểm tra`}
               icon={CheckCircle}
-              onClick={() => routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS)}
+              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS); }}
             />
           </>
         )}
@@ -228,7 +228,7 @@ export default function RecruitmentDashboard() {
               variant="ghost"
               size="sm"
               className="rounded-full text-xs"
-              onClick={() => routerNavigate(ROUTES.RECRUITMENT.MY_INTERVIEWS)}
+              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.MY_INTERVIEWS); }}
             >
               Xem tất cả
               <ArrowRight className="ml-1 h-3.5 w-3.5" />
@@ -275,7 +275,7 @@ export default function RecruitmentDashboard() {
               variant="ghost"
               size="sm"
               className="rounded-full text-xs"
-              onClick={() => routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS)}
+              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS); }}
             >
               Xem Requisitions
               <ArrowRight className="ml-1 h-3.5 w-3.5" />
@@ -375,6 +375,6 @@ export default function RecruitmentDashboard() {
           />
         </div>
       </div>
-    </div>
+    </PageContainer>
   )
 }

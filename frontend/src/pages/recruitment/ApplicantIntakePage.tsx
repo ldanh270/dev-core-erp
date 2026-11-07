@@ -1,4 +1,4 @@
-import { PageCard, PageHeader } from "@/components/common"
+import { PageCard, PageContainer, PageHeader } from "@/components/common"
 import {
   parseApplicantCsv,
   validateApplicantRows,
@@ -34,6 +34,7 @@ import {
   useRequisitions,
 } from "@/hooks/recruitment/use-recruitment-queries"
 import { usePermission } from "@/hooks/use-permission"
+import { ROUTES } from "@/config/routes.config"
 import type { ApplicantImportResult } from "@/types/recruitment.types"
 
 import { useMemo, useRef, useState } from "react"
@@ -105,8 +106,9 @@ export default function ApplicantIntakePage() {
   }
 
   return (
-    <div className="container flex flex-col gap-6 px-3 py-4 sm:px-6 sm:py-6">
+    <PageContainer className="flex flex-col gap-6">
       <PageHeader
+        backHref={ROUTES.RECRUITMENT.CANDIDATES}
         title="Tiếp nhận ứng viên"
         description="Import hồ sơ vào đúng Yêu cầu tuyển dụng và khóa nguồn tuyển ngay khi tạo Application."
       />
@@ -230,16 +232,16 @@ export default function ApplicantIntakePage() {
           <Table>
             <TableHeader className="sticky top-0 bg-muted/40">
               <TableRow>
-                <TableHead className="px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground px-4 py-2">
                   Họ tên
                 </TableHead>
-                <TableHead className="px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground px-4 py-2">
                   Email
                 </TableHead>
-                <TableHead className="px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground px-4 py-2">
                   Điện thoại
                 </TableHead>
-                <TableHead className="px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground px-4 py-2">
                   CV
                 </TableHead>
               </TableRow>
@@ -250,14 +252,14 @@ export default function ApplicantIntakePage() {
                   key={`${row.email}-${index}`}
                   className="transition-colors duration-100 hover:bg-muted/25"
                 >
-                  <TableCell className="px-4 py-3 font-medium text-foreground">
+                  <TableCell className="h-[60px] px-4 py-3 font-medium text-foreground">
                     {row.fullName}
                   </TableCell>
-                  <TableCell className="px-4 py-3">{row.email}</TableCell>
-                  <TableCell className="px-4 py-3 text-muted-foreground">
+                  <TableCell className="h-[60px] px-4 py-3">{row.email}</TableCell>
+                  <TableCell className="h-[60px] px-4 py-3 text-muted-foreground">
                     {row.phone || "—"}
                   </TableCell>
-                  <TableCell className="px-4 py-3 max-w-52 truncate text-muted-foreground">
+                  <TableCell className="h-[60px] px-4 py-3 max-w-52 truncate text-muted-foreground">
                     {row.cvUrl || "—"}
                   </TableCell>
                 </TableRow>
@@ -324,7 +326,7 @@ export default function ApplicantIntakePage() {
           )}
         </PageCard>
       )}
-    </div>
+    </PageContainer>
   )
 }
 

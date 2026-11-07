@@ -1,4 +1,4 @@
-import { DatePicker, IconBox, PageCard, SectionHeader, StatusPill } from "@/components/common/index.ts"
+import { DatePicker, IconBox, PageCard, PageContainer, SectionHeader, StatusPill } from "@/components/common"
 import { PersonalEmployeeLinkSection } from "@/components/features/profile/personal-employee-link-section"
 import { Button } from "@/components/ui/button.tsx"
 import { Input } from "@/components/ui/input.tsx"
@@ -93,7 +93,7 @@ export default function Profile() {
       : "Chưa cập nhật"
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-6">
+    <PageContainer variant="default" className="space-y-6">
       {/* Breadcrumbs & Header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -671,6 +671,6 @@ export default function Profile() {
           </PageCard>
         </div>
       )}
-    </div>
+    </PageContainer>
   )
 }

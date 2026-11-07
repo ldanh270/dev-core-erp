@@ -23,6 +23,6 @@ export function useDatabaseErdKeyboard(
     }
 
     window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
+    return () => { window.removeEventListener("keydown", handleKeyDown); }
   }, [isFullscreen, toggleFullscreen])
 }

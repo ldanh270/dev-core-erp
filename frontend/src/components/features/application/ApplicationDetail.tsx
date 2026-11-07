@@ -1,9 +1,11 @@
+import { BackButton, PageContainer, StatusPill } from "@/components/common"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { APPLICATION_STATUS } from "@/config/entities/attendance.config"
 import type { IApplication } from "@/lib/api/application.api"
 import { minutesToTime } from "@/lib/utils"
 
-import { ArrowLeft, Check, ExternalLink, FileCheck2, Paperclip, X } from "lucide-react"
+import { Check, ExternalLink, FileCheck2, Paperclip, X } from "lucide-react"
 
 interface ApplicationDetailProps {
   application: IApplication | null
@@ -36,11 +38,11 @@ export function ApplicationDetail({
 }: ApplicationDetailProps) {
   if (isLoading || !application) {
     return (
-      <div className="container mx-auto space-y-4 p-8" aria-label="Đang tải chi tiết đơn">
+      <PageContainer variant="default" className="space-y-4" aria-label="Đang tải chi tiết đơn">
         <Skeleton className="h-10 w-10 rounded-full" />
         <Skeleton className="h-52 w-full rounded-xl" />
         <Skeleton className="h-72 w-full rounded-xl" />
-      </div>
+      </PageContainer>
     )
   }
 
@@ -208,72 +210,66 @@ export function ApplicationDetail({
   }
 
   return (
-    <main className="container mx-auto flex h-full w-full flex-col gap-6 bg-background p-8 animate-in fade-in duration-300">
+    <PageContainer variant="default" className="space-y-6">
       {/* Header Bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <button
-            onClick={onBack}
-            aria-label="Quay lại danh sách đơn thư"
-            className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted text-muted-foreground transition-colors"
-          >
-            <ArrowLeft size={18} />
-          </button>
+          <BackButton onBack={onBack} />
         </div>
 
         <div className="flex items-center gap-4">
           {/* Actions for Manager */}
           {mode === "manage" && isPending && (
             <div className="flex items-center gap-3 ml-4 border-l border-border pl-4">
-              <button
+              <Button
+                variant="outline"
+                size="default"
                 onClick={() => {
                   onApprove?.(application)
                 }}
-                className="flex h-10 items-center gap-2 rounded-full border border-border px-4 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                className="rounded-full shadow-xs gap-2 font-semibold"
               >
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <Check size={12} strokeWidth={3} />
-                </div>
+                <Check size={16} className="text-primary" />
                 Duyệt đơn
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="destructive"
+                size="default"
                 onClick={() => {
                   onReject?.(application)
                 }}
-                className="flex h-10 items-center gap-2 rounded-full bg-destructive/10 px-4 text-sm font-semibold text-destructive transition-colors hover:bg-destructive/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/30"
+                className="rounded-full shadow-xs gap-2 font-semibold"
               >
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                  <X size={12} strokeWidth={3} />
-                </div>
+                <X size={16} />
                 Không duyệt
-              </button>
+              </Button>
             </div>
           )}
           {/* Actions for Swap Partner */}
           {mode === "manage" && isPartnerPending && (
             <div className="flex items-center gap-3 ml-4 border-l border-border pl-4">
-              <button
+              <Button
+                variant="outline"
+                size="default"
                 onClick={() => {
                   onSwapConfirm?.(application)
                 }}
-                className="flex h-10 items-center gap-2 rounded-full border border-border px-4 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                className="rounded-full shadow-xs gap-2 font-semibold"
               >
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <Check size={12} strokeWidth={3} />
-                </div>
+                <Check size={16} className="text-primary" />
                 Đồng ý đổi ca
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="destructive"
+                size="default"
                 onClick={() => {
                   onSwapReject?.(application)
                 }}
-                className="flex h-10 items-center gap-2 rounded-full bg-destructive/10 px-4 text-sm font-semibold text-destructive transition-colors hover:bg-destructive/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/30"
+                className="rounded-full shadow-xs gap-2 font-semibold"
               >
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                  <X size={12} strokeWidth={3} />
-                </div>
+                <X size={16} />
                 Không duyệt đổi ca
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -332,27 +328,28 @@ export function ApplicationDetail({
             <div className="flex flex-col gap-1.5">
               <span className="text-xs text-muted-foreground font-medium">Trạng thái</span>
               <div>
-                <span
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${
+                <StatusPill
+                  label={
+                    application.status === APPLICATION_STATUS.PENDING
+                      ? "Đang duyệt"
+                      : application.status === APPLICATION_STATUS.PARTNER_PENDING
+                        ? "Chờ xác nhận đổi ca"
+                        : application.status === APPLICATION_STATUS.APPROVED
+                          ? "Đã duyệt"
+                          : application.status === APPLICATION_STATUS.REJECTED
+                            ? "Không duyệt"
+                            : application.status
+                  }
+                  variant={
                     application.status === APPLICATION_STATUS.APPROVED
-                      ? "border-emerald-600 text-emerald-600 bg-emerald-50"
+                      ? "success"
                       : application.status === APPLICATION_STATUS.REJECTED
-                        ? "border-red-600 text-red-600 bg-red-50"
-                        : application.status === APPLICATION_STATUS.PARTNER_PENDING
-                          ? "border-orange-500 text-orange-500 bg-orange-50"
-                          : "border-amber-600 text-amber-600 bg-amber-50"
-                  }`}
-                >
-                  {application.status === APPLICATION_STATUS.PENDING
-                    ? "Đang duyệt"
-                    : application.status === APPLICATION_STATUS.PARTNER_PENDING
-                      ? "Chờ xác nhận đổi ca"
-                      : application.status === APPLICATION_STATUS.APPROVED
-                        ? "Đã duyệt"
-                        : application.status === APPLICATION_STATUS.REJECTED
-                          ? "Không duyệt"
-                          : application.status}
-                </span>
+                        ? "danger"
+                        : application.status === APPLICATION_STATUS.PARTNER_PENDING || application.status === APPLICATION_STATUS.PENDING
+                          ? "warning"
+                          : "neutral"
+                  }
+                />
               </div>
             </div>
             {application.status === APPLICATION_STATUS.REJECTED && application.rejectReason && (
@@ -460,6 +457,6 @@ export function ApplicationDetail({
           </div>
         )}
       </div>
-    </main>
+    </PageContainer>
   )
 }

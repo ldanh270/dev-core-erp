@@ -116,7 +116,7 @@ export function SearchInput({
         onClick={handleTriggerSearch}
         disabled={disabled}
         aria-label="Kích hoạt tìm kiếm"
-        className="absolute left-1 size-8 rounded-full text-muted-foreground hover:text-foreground"
+        className="absolute left-1 p-1.5 aspect-square rounded-full text-muted-foreground hover:text-foreground"
       >
         <Search className="size-4" />
       </Button>
@@ -131,7 +131,7 @@ export function SearchInput({
         placeholder={placeholder}
         aria-label={ariaLabel}
         disabled={disabled}
-        className="h-10 rounded-full bg-background border-border/80 pl-10 pr-9 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary shadow-none"
+        className="rounded-full bg-background border-border/80 pl-10 pr-9 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary shadow-none"
       />
 
       {/* Clear search button */}
@@ -143,7 +143,7 @@ export function SearchInput({
           onClick={handleClear}
           disabled={disabled}
           aria-label="Xóa nội dung tìm kiếm"
-          className="absolute right-1 size-8 rounded-full text-muted-foreground hover:text-foreground"
+          className="absolute right-1 p-1.5 aspect-square rounded-full text-muted-foreground hover:text-foreground"
         >
           <X className="size-4" />
         </Button>

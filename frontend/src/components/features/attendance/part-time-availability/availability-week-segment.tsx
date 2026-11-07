@@ -24,7 +24,7 @@ export function AvailabilityWeekSegment({
 
   return (
     <div className="overflow-hidden rounded-xl border border-border/70">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto app-scrollbar">
         <div
           className="grid divide-x divide-border/60 border-b border-border/60 bg-secondary/40 text-center text-xs font-semibold text-muted-foreground"
           style={{ gridTemplateColumns: `repeat(${columnCount}, minmax(140px, 1fr))` }}

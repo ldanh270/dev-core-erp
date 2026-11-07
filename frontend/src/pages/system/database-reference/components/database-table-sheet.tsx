@@ -88,7 +88,7 @@ export function DatabaseTableSheet({
                   size="sm"
                   variant="outline"
                   className="rounded-full"
-                  onClick={() => onViewErd(table.module)}
+                  onClick={() => { onViewErd(table.module); }}
                 >
                   <Network className="mr-1.5 size-3.5" />
                   Xem trên ERD

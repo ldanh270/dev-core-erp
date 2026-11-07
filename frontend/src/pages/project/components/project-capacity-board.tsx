@@ -195,21 +195,21 @@ export function ProjectCapacityBoard() {
           <Button
             type="button"
             variant="outline"
-            className="rounded-full"
+            className="rounded-full font-semibold"
             onClick={() => {
               setWeekStart(getWeekStartDateKey(previousWeekStart))
             }}
           >
             Tuần trước
           </Button>
-          <div className="rounded-full border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground">
+          <div className="flex h-10 items-center rounded-full border border-border bg-background px-4 text-sm font-semibold text-foreground shadow-xs">
             <CalendarDays className="mr-2 inline size-4 text-muted-foreground" />
             {getWeekRangeLabel(weekStart)}
           </div>
           <Button
             type="button"
             variant="outline"
-            className="rounded-full"
+            className="rounded-full font-semibold"
             onClick={() => {
               setWeekStart(getWeekStartDateKey(nextWeekStart))
             }}
@@ -218,7 +218,7 @@ export function ProjectCapacityBoard() {
           </Button>
           <Button
             type="button"
-            className="rounded-full"
+            className="rounded-full font-semibold"
             disabled={forecastQuery.isFetching}
             onClick={() => {
               void forecastQuery.refetch()

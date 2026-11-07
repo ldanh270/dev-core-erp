@@ -21,7 +21,7 @@ export function EmployeeEditRoleCheckboxes({
   const [selectedRoleIds, setSelectedRoleIds] = useState(initialRoleIds)
 
   useEffect(() => {
-// eslint-disable-next-line react-hooks/set-state-in-effect
+ 
     setSelectedRoleIds(initialRoleIds)
     onSelectionChange(initialRoleIds)
   }, [initialRoleIds, onSelectionChange])

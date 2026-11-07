@@ -381,7 +381,7 @@ export function ProjectOverviewTab({
               <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-2">
                 Thành viên tham gia
               </span>
-              <div className="space-y-2 max-h-70 overflow-y-auto pr-1">
+              <div className="space-y-2 max-h-70 overflow-y-auto app-scrollbar pr-1">
                 {members.length > 0 ? (
                   members.map((member) => (
                     <div

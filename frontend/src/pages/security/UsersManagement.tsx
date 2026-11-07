@@ -1,15 +1,18 @@
-import { PageCard, StatusPill } from "@/components/common"
+import {
+  DataTablePage,
+  StatusPill,
+  type DataTableColumn,
+} from "@/components/common"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { SYSTEM_CONFIG } from "@/config/system.config"
 import { ROLE_LABELS } from "@/config/entities/employee.config"
 import { useUsersManagementMaster } from "@/hooks/security/use-users-management-master"
 import { cn } from "@/lib/utils"
 
+import { useMemo } from "react"
+
 import {
-  AlertTriangle,
   Lock,
-  RefreshCw,
-  Search,
   ShieldAlert,
   ShieldCheck,
   Unlock,
@@ -28,10 +31,6 @@ interface UserListItem {
   lockedUntil?: string | null
 }
 
-/**
- * UsersManagement Component.
- * Manages user security status, roles, and account locks with server-side pagination.
- */
 export default function UsersManagement() {
   const {
     query,
@@ -44,267 +43,197 @@ export default function UsersManagement() {
     allUsers,
     lockedUsers,
     isLoading,
-    isError,
-    refetch,
     handleUnlock,
     unlockMutation,
     total,
     totalPages,
-    pageStart,
-    pageEnd,
-    visiblePages,
   } = useUsersManagementMaster()
 
   const rows = (displayData ?? []) as UserListItem[]
 
-  if (isLoading) {
-    return (
-      <div className="container px-6 py-8 flex flex-col items-center justify-center min-h-[400px]">
-        <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
-        <p className="text-sm text-muted-foreground mt-4">Đang tải danh sách người dùng...</p>
-      </div>
-    )
-  }
+  const columns: DataTableColumn<UserListItem>[] = useMemo(
+    () => [
+      {
+        id: "user",
+        header: "Người dùng",
+        minWidth: "260px",
+        sticky: true,
+        cell: (user) => {
+          const isLocked =
+            activeTab === "locked" || lockedUsers?.some((lu) => lu.employeeId === user.id)
 
-  if (isError || (!displayData && activeTab === "locked")) {
-    return (
-      <div className="container px-6 py-8">
-        <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-6 text-center">
-          <AlertTriangle className="h-10 w-10 text-destructive mx-auto mb-4" />
-          <h2 className="text-lg font-bold text-destructive">Lỗi tải dữ liệu</h2>
-          <p className="text-sm text-muted-foreground mt-2">
-            Không thể tải thông tin người dùng. Vui lòng thử lại sau.
-          </p>
-          <Button variant="outline" className="mt-4" onClick={() => { refetch(); }}>
-            Thử lại
-          </Button>
-        </div>
-      </div>
-    )
-  }
+          return (
+            <div className="flex items-center gap-3">
+              <div
+                className={cn(
+                  "h-9 w-9 rounded-full flex items-center justify-center border transition-all shrink-0",
+                  isLocked
+                    ? "bg-rose-500/10 border-rose-500/30 text-rose-500"
+                    : "bg-muted border-border text-muted-foreground",
+                )}
+              >
+                <User size={16} />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-[13px] font-semibold text-foreground truncate">
+                  {user.fullName || user.employeeName}
+                </span>
+                <span className="text-[11px] text-muted-foreground truncate">
+                  {user.email || user.username}
+                </span>
+              </div>
+            </div>
+          )
+        },
+      },
+      {
+        id: "role",
+        header: "Vai trò",
+        minWidth: "140px",
+        cell: (user) => (
+          <StatusPill
+            label={
+              (user.role ? (ROLE_LABELS as Record<string, string>)[user.role] : undefined) || "N/A"
+            }
+            variant="neutral"
+            className="font-medium"
+          />
+        ),
+      },
+      {
+        id: "security",
+        header: "Bảo mật",
+        minWidth: "160px",
+        cell: (user) => {
+          const isLocked =
+            activeTab === "locked" || lockedUsers?.some((lu) => lu.employeeId === user.id)
 
-  return (
-    <div className="container max-w-7xl px-6 py-8">
-      {/* Page header */}
-      <div className="flex items-start justify-between mb-7">
-        <div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-foreground leading-snug">
-            Quản lý người dùng & Bảo mật
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Giám sát trạng thái tài khoản, vai trò và xử lý khóa truy cập.
-          </p>
-        </div>
-      </div>
-
-      <PageCard className="overflow-hidden" padding="sm">
-        {/* Tab Switcher */}
-        <nav className="flex items-end gap-0 px-5 border-b border-border">
-          <button
-            onClick={() => { handleTabChange("all"); }}
-            className={cn(
-              "relative py-4 px-4 text-[13px] font-medium transition-colors",
-              activeTab === "all" ? "text-foreground" : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <span className="flex items-center gap-2">
-              <UsersIcon size={14} />
-              Tất cả người dùng
-              <span className="bg-muted px-1.5 py-0.5 rounded-full text-[10px] tabular-nums">
-                {allUsers?.meta.total || 0}
-              </span>
-            </span>
-            {activeTab === "all" && (
-              <span className="absolute bottom-0 inset-x-0 h-0.5 bg-primary" />
-            )}
-          </button>
-          
-          <button
-            onClick={() => { handleTabChange("locked"); }}
-            className={cn(
-              "relative py-4 px-4 text-[13px] font-medium transition-colors",
-              activeTab === "locked" ? "text-rose-600" : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <span className="flex items-center gap-2">
-              <Lock size={14} />
-              Tài khoản bị khóa
-              {lockedUsers && lockedUsers.length > 0 && (
-                <span className="bg-rose-500 text-white px-1.5 py-0.5 rounded-full text-[10px] tabular-nums">
-                  {lockedUsers.length}
+          return isLocked ? (
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-bold text-[11px]">
+                <Lock size={12} />
+                ĐÃ KHÓA
+              </div>
+              {user.lockedUntil && (
+                <span className="text-[10px] text-muted-foreground">
+                  Đến: {new Date(user.lockedUntil).toLocaleString("vi-VN")}
                 </span>
               )}
-            </span>
-            {activeTab === "locked" && (
-              <span className="absolute bottom-0 inset-x-0 h-0.5 bg-rose-500" />
-            )}
-          </button>
-        </nav>
-
-        {/* Toolbar */}
-        <div className="px-5 py-3 flex items-center justify-between border-b border-border bg-muted/5">
-          <div className="relative w-64">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <Input
-              placeholder="Tìm kiếm người dùng..."
-              className="pl-8 h-8 text-xs"
-              value={search}
-              onChange={handleSearch}
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-              <ShieldCheck size={12} className="text-emerald-500" />
-              <span>Hoạt động</span>
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-              <ShieldAlert size={12} className="text-rose-500" />
-              <span>Bị khóa</span>
+          ) : (
+            <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">
+              <ShieldCheck size={12} />
+              AN TOÀN
             </div>
-          </div>
-        </div>
+          )
+        },
+      },
+      {
+        id: "actions",
+        header: "",
+        width: "120px",
+        align: "right",
+        cell: (user) => {
+          const isLocked =
+            activeTab === "locked" || lockedUsers?.some((lu) => lu.employeeId === user.id)
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/5 text-[11px] uppercase tracking-wider font-bold text-muted-foreground">
-                <th className="px-5 py-3 text-left">Người dùng</th>
-                <th className="px-5 py-3 text-left">Vai trò</th>
-                <th className="px-5 py-3 text-left">Bảo mật</th>
-                <th className="px-5 py-3 text-right">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/50">
-              {displayData?.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-5 py-20 text-center text-muted-foreground">
-                    Không có dữ liệu.
-                  </td>
-                </tr>
-              ) : (
-                rows.map((user) => {
-                  const isLocked = activeTab === "locked" || lockedUsers?.some(lu => lu.employeeId === user.id)
-                  
-                  return (
-                    <tr key={user.id || user.employeeId} className="group hover:bg-muted/30 transition-colors">
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className={cn(
-                            "h-9 w-9 rounded-full flex items-center justify-center border transition-all",
-                            isLocked ? "bg-rose-50 border-rose-200 text-rose-500" : "bg-muted border-border text-muted-foreground"
-                          )}>
-                            <User size={16} />
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-[13px] font-bold text-foreground">
-                              {user.fullName || user.employeeName}
-                            </span>
-                            <span className="text-[11px] text-muted-foreground">
-                              {user.email || user.username}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-5 py-4">
-                        <StatusPill 
-                          label={(user.role ? (ROLE_LABELS as Record<string, string>)[user.role] : undefined) || "N/A"} 
-                          variant="neutral" 
-                          className="font-medium"
-                        />
-                      </td>
-                      <td className="px-5 py-4">
-                        {isLocked ? (
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-1.5 text-rose-600 font-bold text-[11px]">
-                              <Lock size={12} />
-                              ĐÃ KHÓA
-                            </div>
-                            {user.lockedUntil && (
-                              <span className="text-[10px] text-muted-foreground">
-                                Đến: {new Date(user.lockedUntil).toLocaleString("vi-VN")}
-                              </span>
-                            )}
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-1.5 text-emerald-600 font-bold text-[11px]">
-                            <ShieldCheck size={12} />
-                            AN TOÀN
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-5 py-4 text-right">
-                        {isLocked && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8 border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 gap-1.5 text-xs font-bold"
-                            onClick={() => {
-                              const id = user.id || user.employeeId
-                              if (id) handleUnlock(id)
-                            }}
-                            disabled={unlockMutation.isPending}
-                          >
-                            <Unlock size={13} />
-                            Mở khóa
-                          </Button>
-                        )}
-                      </td>
-                    </tr>
-                  )
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+          if (!isLocked) return <span className="text-muted-foreground text-xs">—</span>
 
-        {/* Pagination Controls */}
-        <div className="px-5 py-3 border-t border-border flex items-center justify-between">
-          <p className="text-[12px] text-muted-foreground">
-            {pageStart}–{pageEnd}{" "}
-            <span className="text-foreground font-medium">/ {total}</span>
-          </p>
-
-          <div className="flex items-center gap-1">
+          return (
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className="h-7 px-2 text-xs"
-              disabled={query.page === 1}
+              className="border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/30 dark:border-rose-800 dark:text-rose-400 gap-1.5 text-xs font-semibold rounded-full"
               onClick={() => {
-                setQuery((prev) => ({ ...prev, page: Math.max(1, (prev.page || 1) - 1) }))
+                const id = user.id || user.employeeId
+                if (id) handleUnlock(id)
               }}
+              disabled={unlockMutation.isPending}
             >
-              ←
+              <Unlock size={13} />
+              Mở khóa
             </Button>
+          )
+        },
+      },
+    ],
+    [activeTab, lockedUsers, handleUnlock, unlockMutation.isPending],
+  )
 
-            {visiblePages.map((p) => (
-              <button
-                key={p}
-                onClick={() => { setQuery((prev) => ({ ...prev, page: p })) }}
-                className={[
-                  "w-7 h-7 rounded-md text-xs flex items-center justify-center transition-colors",
-                  query.page === p
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "text-muted-foreground hover:bg-muted",
-                ].join(" ")}
-              >
-                {p}
-              </button>
-            ))}
+  const tabsConfig = useMemo(
+    () => ({
+      items: [
+        {
+          id: "all",
+          label: "Tất cả người dùng",
+          count: allUsers?.meta.total || 0,
+          icon: UsersIcon,
+        },
+        {
+          id: "locked",
+          label: "Tài khoản bị khóa",
+          count: lockedUsers?.length || 0,
+          icon: Lock,
+        },
+      ],
+      activeTab,
+      onTabChange: (id: string) => {
+        handleTabChange(id as "all" | "locked")
+      },
+    }),
+    [activeTab, allUsers?.meta.total, lockedUsers?.length, handleTabChange],
+  )
 
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-xs"
-              disabled={query.page === totalPages || totalPages === 0}
-              onClick={() => { setQuery((prev) => ({ ...prev, page: (prev.page || 1) + 1 })) }}
-            >
-              →
-            </Button>
+  return (
+    <DataTablePage<UserListItem>
+      title="Quản lý người dùng & Bảo mật"
+      description="Giám sát trạng thái tài khoản, vai trò và xử lý khóa truy cập."
+      variant="viewport"
+      data={rows}
+      columns={columns}
+      isLoading={isLoading}
+      tabs={tabsConfig}
+      keyExtractor={(user) => user.id || user.employeeId || ""}
+      search={{
+        value: search,
+        onSearch: (val: string) => {
+          handleSearch(val)
+        },
+        placeholder: "Tìm kiếm người dùng...",
+      }}
+      toolbarActions={
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <ShieldCheck size={12} className="text-emerald-500" />
+            <span>Hoạt động</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <ShieldAlert size={12} className="text-rose-500" />
+            <span>Bị khóa</span>
           </div>
         </div>
-      </PageCard>
-    </div>
+      }
+      emptyState={{
+        icon: UsersIcon,
+        title: "Không có người dùng nào",
+        description: "Không tìm thấy người dùng nào phù hợp với bộ lọc hiện tại.",
+      }}
+      pagination={
+        total > 0
+          ? {
+              currentPage: query.page || 1,
+              totalPages,
+              totalItems: total,
+              itemsPerPage: query.limit || SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT,
+              onPageChange: (p) => {
+                setQuery((prev) => ({ ...prev, page: p }))
+              },
+              onItemsPerPageChange: (limit) => {
+                setQuery((prev) => ({ ...prev, limit, page: 1 }))
+              },
+            }
+          : undefined
+      }
+    />
   )
 }

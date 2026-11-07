@@ -39,6 +39,26 @@ export const CONTRACT_STATUS_COLORS: Record<
   renewed: "outline",
 }
 
+export type ContractStatusVariant = "success" | "warning" | "danger" | "info" | "neutral"
+
+export function getContractStatusVariant(status: string): ContractStatusVariant {
+  switch (status) {
+    case CONTRACT_STATUS.ACTIVE:
+      return "success"
+    case CONTRACT_STATUS.PENDING_SIGNATURE:
+      return "warning"
+    case CONTRACT_STATUS.DRAFT:
+      return "info"
+    case CONTRACT_STATUS.EXPIRED:
+    case CONTRACT_STATUS.TERMINATED:
+      return "danger"
+    case CONTRACT_STATUS.RENEWED:
+      return "neutral"
+    default:
+      return "neutral"
+  }
+}
+
 export const CONTRACT_QUERY_KEYS = {
   LIST: ["contracts"] as const,
   DETAIL: ["contract-detail"] as const,

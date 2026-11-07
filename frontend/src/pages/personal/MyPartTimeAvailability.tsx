@@ -1,3 +1,4 @@
+import { PageContainer } from "@/components/common"
 import { EmployeePartTimeAvailabilityView } from "@/components/features/attendance/part-time-availability/employee-part-time-availability-view"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ROUTES } from "@/config/routes.config"
@@ -11,9 +12,9 @@ export default function MyPartTimeAvailability() {
 
   if (isLoading) {
     return (
-      <div className="container px-6 py-6">
+      <PageContainer variant="default">
         <Skeleton className="h-40 w-full rounded-xl" />
-      </div>
+      </PageContainer>
     )
   }
 
@@ -23,8 +24,8 @@ export default function MyPartTimeAvailability() {
   }
 
   return (
-    <div className="container px-6 py-6">
+    <PageContainer variant="default">
       <EmployeePartTimeAvailabilityView />
-    </div>
+    </PageContainer>
   )
 }

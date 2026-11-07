@@ -48,7 +48,7 @@ export function useTaskUrlFilters() {
   )
 
   // External listener when searchParams change externally (e.g. back/forward navigation or custom query application)
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+   
   useEffect(() => {
     setIssueSearchState(searchParams.get("search") || "")
     setTrackerFilterState(searchParams.get("tracker") || ALL_FILTER_VALUE)

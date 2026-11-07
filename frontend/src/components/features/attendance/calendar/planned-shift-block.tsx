@@ -21,7 +21,7 @@ export function PlannedShiftBlock({
   return (
     <div
       className={cn(
-        "absolute inset-x-1 z-10 flex flex-col rounded-lg border-l-4 border-success bg-success/10 px-2.5 py-2 shadow-sm",
+        "absolute inset-x-1 z-10 flex flex-col rounded-lg border-l-4 border-success bg-success/10 px-2.5 py-2 shadow-xs",
         isMuted && "opacity-60",
         labelPlacement === "bottom" && "justify-end",
       )}

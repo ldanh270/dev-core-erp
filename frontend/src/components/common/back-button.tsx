@@ -68,7 +68,7 @@ export function BackButton({
         size="sm"
         onClick={handleClick}
         className={cn(
-          "h-8 rounded-full px-3 border border-border/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0 gap-1.5 text-xs font-medium",
+          "rounded-full border border-border/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0 gap-1.5",
           className,
         )}
         aria-label={label}
@@ -87,7 +87,7 @@ export function BackButton({
       size="icon"
       onClick={handleClick}
       className={cn(
-        "size-8 rounded-full border border-border/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0",
+        "rounded-full border border-border/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0",
         className,
       )}
       aria-label={label}

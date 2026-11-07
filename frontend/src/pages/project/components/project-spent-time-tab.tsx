@@ -152,11 +152,13 @@ export function ProjectSpentTimeTab({
           {SPENT_TIME_UI.EMPTY_PROJECT_LIST}
         </p>
       ) : (
-        <div className="relative overflow-x-auto rounded-lg border border-border">
+        <div className="relative overflow-auto app-scrollbar max-h-[calc(100vh-280px)] rounded-lg border border-border">
           <Table>
-            <TableHeader>
+            <TableHeader className="sticky top-0 z-20 bg-background shadow-xs">
               <TableRow className="hover:bg-transparent h-10">
-                <TableHead className="font-semibold text-xs">{SPENT_TIME_UI.TABLE_EMPLOYEE}</TableHead>
+                <TableHead className="sticky left-0 z-30 bg-background font-semibold text-xs min-w-36">
+                  {SPENT_TIME_UI.TABLE_EMPLOYEE}
+                </TableHead>
                 <TableHead className="font-semibold text-xs">{SPENT_TIME_UI.TABLE_TASK}</TableHead>
                 <TableHead className="font-semibold text-xs">{SPENT_TIME_UI.TABLE_DATE}</TableHead>
                 <TableHead className="font-semibold text-xs text-center">{SPENT_TIME_UI.TABLE_HOURS}</TableHead>
@@ -171,7 +173,7 @@ export function ProjectSpentTimeTab({
                 const isPending = st.status === SPENT_TIME_STATUS.PENDING
                 return (
                   <TableRow key={st.id} className="h-12 hover:bg-muted/30">
-                    <TableCell className="text-xs font-semibold">
+                    <TableCell className="sticky left-0 z-10 bg-background text-xs font-semibold">
                       {st.employee?.fullName ?? SPENT_TIME_UI.EMPTY_CELL}
                     </TableCell>
                     <TableCell className="text-xs max-w-[200px] truncate">

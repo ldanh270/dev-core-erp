@@ -1,4 +1,4 @@
-import { AppDrawer, PageCard, StatusPill } from "@/components/common"
+import { AppDrawer, PageCard, PageContainer, PageHeader, StatusPill } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -172,26 +172,20 @@ export default function RolesManagement() {
   const totalPages = roleUsers?.meta.totalPages ?? 0
 
   return (
-    <div className="container max-w-7xl px-6 py-8">
-      {/* Page header */}
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-foreground leading-snug">
-            Quản lý Vai trò
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Xem, tạo mới và quản lý các vai trò trong hệ thống.
-          </p>
-        </div>
-        <Button
-          size="sm"
-          onClick={handleOpenCreate}
-          className="gap-1.5 h-8 px-3 text-xs"
-        >
-          <Plus size={13} strokeWidth={2.5} />
-          Thêm vai trò
-        </Button>
-      </div>
+    <PageContainer variant="default">
+      <PageHeader
+        title="Quản lý Vai trò"
+        description="Xem, tạo mới và quản lý các vai trò trong hệ thống."
+        actions={
+          <Button
+            onClick={handleOpenCreate}
+            className="gap-1.5 rounded-full text-sm font-semibold"
+          >
+            <Plus size={16} strokeWidth={2.5} />
+            Thêm vai trò
+          </Button>
+        }
+      />
 
       {isLoadingRoles ? (
         <div className="py-20 flex flex-col items-center justify-center">
@@ -210,7 +204,7 @@ export default function RolesManagement() {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
           {rolesData?.data?.map((role: Role) => {
             const count = role.employeesCount ?? 0
             const isSystem = role.isSystem
@@ -400,7 +394,7 @@ export default function RolesManagement() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 px-2.5 text-[11px]"
+                  className="rounded-full px-3 text-[11px] font-semibold"
                   disabled={drawerPage === 1}
                   onClick={() => { setDrawerPage((prev) => Math.max(1, prev - 1)) }}
                 >
@@ -409,7 +403,7 @@ export default function RolesManagement() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 px-2.5 text-[11px]"
+                  className="rounded-full px-3 text-[11px] font-semibold"
                   disabled={drawerPage === totalPages}
                   onClick={() => { setDrawerPage((prev) => Math.min(totalPages, prev + 1)) }}
                 >
@@ -423,7 +417,7 @@ export default function RolesManagement() {
 
       {/* Dialog for Creating Role */}
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] rounded-xl">
           <form onSubmit={handleCreateRole}>
             <DialogHeader>
               <DialogTitle className="text-base font-bold">Thêm vai trò mới</DialogTitle>
@@ -439,7 +433,7 @@ export default function RolesManagement() {
                   placeholder="e.g. hr_assistant, project_viewer"
                   value={roleName}
                   onChange={(e) => { setRoleName(e.target.value); }}
-                  className="h-9 text-xs"
+                  className="rounded-full text-xs"
                   required
                 />
               </div>
@@ -458,7 +452,7 @@ export default function RolesManagement() {
                   type="checkbox"
                   id="create-is-default"
                   checked={isDefault}
-                  onChange={(e) => setIsDefault(e.target.checked)}
+                  onChange={(e) => { setIsDefault(e.target.checked); }}
                   className="size-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
                 />
                 <Label htmlFor="create-is-default" className="text-xs font-medium text-foreground cursor-pointer select-none">
@@ -467,10 +461,10 @@ export default function RolesManagement() {
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => { setIsCreateOpen(false); }} className="h-9 text-xs">
+              <Button type="button" variant="outline" onClick={() => { setIsCreateOpen(false); }} className="rounded-full text-xs font-semibold">
                 Hủy
               </Button>
-              <Button type="submit" disabled={createRoleMutation.isPending} className="h-9 text-xs">
+              <Button type="submit" disabled={createRoleMutation.isPending} className="rounded-full text-xs font-semibold">
                 {createRoleMutation.isPending ? "Đang tạo..." : "Tạo vai trò"}
               </Button>
             </DialogFooter>
@@ -480,7 +474,7 @@ export default function RolesManagement() {
 
       {/* Dialog for Editing Role */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] rounded-xl">
           <form onSubmit={handleUpdateRole}>
             <DialogHeader>
               <DialogTitle className="text-base font-bold">Chỉnh sửa vai trò</DialogTitle>
@@ -495,7 +489,7 @@ export default function RolesManagement() {
                   id="edit-name"
                   value={roleName}
                   onChange={(e) => { setRoleName(e.target.value); }}
-                  className="h-9 text-xs"
+                  className="rounded-full text-xs"
                   required
                   disabled={editingRole?.name === "admin"}
                 />
@@ -514,7 +508,7 @@ export default function RolesManagement() {
                   type="checkbox"
                   id="edit-is-default"
                   checked={isDefault}
-                  onChange={(e) => setIsDefault(e.target.checked)}
+                  onChange={(e) => { setIsDefault(e.target.checked); }}
                   className="size-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
                 />
                 <Label htmlFor="edit-is-default" className="text-xs font-medium text-foreground cursor-pointer select-none">
@@ -523,16 +517,16 @@ export default function RolesManagement() {
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => { setIsEditOpen(false); }} className="h-9 text-xs">
+              <Button type="button" variant="outline" onClick={() => { setIsEditOpen(false); }} className="rounded-full text-xs font-semibold">
                 Hủy
               </Button>
-              <Button type="submit" disabled={updateRoleMutation.isPending} className="h-9 text-xs">
+              <Button type="submit" disabled={updateRoleMutation.isPending} className="rounded-full text-xs font-semibold">
                 {updateRoleMutation.isPending ? "Đang lưu..." : "Lưu thay đổi"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageContainer>
   )
 }
