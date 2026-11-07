@@ -8,11 +8,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { useDeleteShift, useShifts } from "@/hooks/attendance/use-shifts"
-import { minutesToTime } from "@/lib/utils"
+import { cn, minutesToTime } from "@/lib/utils"
 import type { IWorkingShift } from "@/types/attendance.types"
 
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { Clock, MapPin, MoreHorizontal, Plus } from "lucide-react"
 
 /**
@@ -24,48 +26,80 @@ export default function ShiftManagement() {
   const { data: shifts = [], isLoading } = useShifts()
   const deleteMutation = useDeleteShift()
 
+  const [searchQuery, setSearchQuery] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editing, setEditing] = useState<IWorkingShift | null>(null)
 
-  const handleCreate = () => {
+  const handleCreate = useCallback(() => {
     setEditing(null)
     setSheetOpen(true)
-  }
+  }, [])
 
-  const handleEdit = (shift: IWorkingShift) => {
+  const handleEdit = useCallback((shift: IWorkingShift) => {
     setEditing(shift)
     setSheetOpen(true)
-  }
+  }, [])
 
-  const handleDelete = (id: string) => {
-    if (!window.confirm("Xác nhận xoá ca làm việc này?")) return
-    deleteMutation.mutate(id)
-  }
+  const handleDelete = useCallback(
+    (id: string) => {
+      if (!window.confirm("Xác nhận xoá ca làm việc này?")) return
+      deleteMutation.mutate(id)
+    },
+    [deleteMutation],
+  )
+
+  const handleSearch = useCallback((value: string) => {
+    setSearchQuery(value)
+    setCurrentPage(1)
+  }, [])
+
+  const filteredShifts = useMemo(() => {
+    if (!searchQuery.trim()) return shifts
+    const query = searchQuery.toLowerCase().trim()
+    return shifts.filter((shift) => shift.name.toLowerCase().includes(query))
+  }, [shifts, searchQuery])
+
+  const totalItems = filteredShifts.length
+  const totalPages = Math.ceil(totalItems / pageSize) || 1
+
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize
+    return filteredShifts.slice(startIndex, startIndex + pageSize)
+  }, [filteredShifts, currentPage, pageSize])
 
   const columns: DataTableColumn<IWorkingShift>[] = useMemo(
     () => [
       {
         id: "index",
         header: "#",
-        width: "56px",
-        minWidth: "56px",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
         align: "center",
         sticky: true,
         cell: (_, idx) => (
-          <span className="font-mono text-xs text-muted-foreground">{idx + 1}</span>
+          <span className={TYPOGRAPHY.CELL_CODE}>
+            {(currentPage - 1) * pageSize + idx + 1}
+          </span>
         ),
       },
       {
         id: "name",
         header: "Tên ca",
-        width: "220px",
+        width: getTableColWidthPx("TITLE"),
         minWidth: "180px",
         sticky: true,
         cell: (shift) => (
           <button
             type="button"
-            onClick={() => { handleEdit(shift); }}
-            className="rounded-full text-left font-medium text-foreground hover:text-primary hover:underline focus:outline-none truncate block max-w-full"
+            onClick={() => {
+              handleEdit(shift)
+            }}
+            className={cn(
+              TYPOGRAPHY.CELL_PRIMARY,
+              "rounded-full text-left hover:text-primary hover:underline focus:outline-none block max-w-full",
+            )}
           >
             {shift.name}
           </button>
@@ -74,11 +108,16 @@ export default function ShiftManagement() {
       {
         id: "workingHours",
         header: "Giờ làm",
-        width: "180px",
+        width: getTableColWidthPx("TYPE"),
         minWidth: "160px",
         cell: (shift) => (
-          <span className="inline-flex items-center gap-1.5 text-muted-foreground whitespace-nowrap">
-            <Clock className="h-3.5 w-3.5" />
+          <span
+            className={cn(
+              "inline-flex items-center gap-1.5 whitespace-nowrap",
+              TYPOGRAPHY.CELL_TIME,
+            )}
+          >
+            <Clock className="size-3.5 text-muted-foreground shrink-0" />
             {minutesToTime(shift.startTime)} – {minutesToTime(shift.endTime)}
           </span>
         ),
@@ -86,10 +125,10 @@ export default function ShiftManagement() {
       {
         id: "breakHours",
         header: "Giờ nghỉ",
-        width: "160px",
+        width: getTableColWidthPx("TYPE"),
         minWidth: "140px",
         cell: (shift) => (
-          <span className="text-muted-foreground whitespace-nowrap">
+          <span className={cn("whitespace-nowrap", TYPOGRAPHY.CELL_TIME)}>
             {shift.breakStartTime != null && shift.breakEndTime != null
               ? `${minutesToTime(shift.breakStartTime)} – ${minutesToTime(shift.breakEndTime)}`
               : "—"}
@@ -99,10 +138,10 @@ export default function ShiftManagement() {
       {
         id: "gracePeriod",
         header: "Ân hạn",
-        width: "120px",
+        width: getTableColWidthPx("CODE"),
         minWidth: "100px",
         cell: (shift) => (
-          <span className="text-muted-foreground whitespace-nowrap">
+          <span className={cn("whitespace-nowrap", TYPOGRAPHY.CELL_SECONDARY)}>
             {shift.gracePeriodMinutes} phút
           </span>
         ),
@@ -110,22 +149,27 @@ export default function ShiftManagement() {
       {
         id: "gps",
         header: "GPS",
-        width: "120px",
+        width: getTableColWidthPx("CODE"),
         minWidth: "100px",
         cell: (shift) =>
           shift.gpsLat ? (
-            <span className="inline-flex items-center gap-1 text-xs text-primary whitespace-nowrap">
-              <MapPin className="h-3.5 w-3.5" />
+            <span
+              className={cn(
+                "inline-flex items-center gap-1 text-primary whitespace-nowrap font-medium",
+                TYPOGRAPHY.CELL_SECONDARY,
+              )}
+            >
+              <MapPin className="size-3.5 text-primary shrink-0" />
               {shift.gpsRadiusMeters}m
             </span>
           ) : (
-            <span className="text-muted-foreground text-xs">—</span>
+            <span className={cn("text-muted-foreground", TYPOGRAPHY.CELL_SECONDARY)}>—</span>
           ),
       },
       {
         id: "status",
         header: "Trạng thái",
-        width: "130px",
+        width: getTableColWidthPx("STATUS"),
         minWidth: "120px",
         cell: (shift) => (
           <StatusPill
@@ -137,21 +181,32 @@ export default function ShiftManagement() {
       {
         id: "actions",
         header: "",
-        width: "60px",
+        width: getTableColWidthPx("INDEX"),
         minWidth: "60px",
         align: "right",
         cell: (shift) => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+              <Button variant="ghost" size="icon" className="size-8 rounded-full">
                 <span className="sr-only">Mở menu</span>
-                <MoreHorizontal className="h-4 w-4" />
+                <MoreHorizontal className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => { handleEdit(shift); }}>Chỉnh sửa</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  handleEdit(shift)
+                }}
+              >
+                Chỉnh sửa
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive" onClick={() => { handleDelete(shift.id); }}>
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => {
+                  handleDelete(shift.id)
+                }}
+              >
                 Xoá ca
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -159,7 +214,7 @@ export default function ShiftManagement() {
         ),
       },
     ],
-    [],
+    [currentPage, pageSize, handleEdit, handleDelete],
   )
 
   return (
@@ -171,13 +226,34 @@ export default function ShiftManagement() {
         icon: Plus,
         onClick: handleCreate,
       }}
+      search={{
+        placeholder: "Tìm kiếm ca làm việc...",
+        value: searchQuery,
+        onSearch: handleSearch,
+        onClear: () => {
+          handleSearch("")
+        },
+      }}
       columns={columns}
-      data={shifts}
+      data={paginatedData}
       isLoading={isLoading}
       keyExtractor={(shift) => shift.id}
       emptyState={{
-        title: "Chưa có ca làm việc nào",
-        description: "Tạo ca làm việc đầu tiên để thiết lập lịch công cho nhân sự.",
+        title: searchQuery ? "Không tìm thấy ca làm việc" : "Chưa có ca làm việc nào",
+        description: searchQuery
+          ? `Không có ca làm việc nào khớp với từ khóa "${searchQuery}".`
+          : "Tạo ca làm việc đầu tiên để thiết lập lịch công cho nhân sự.",
+      }}
+      pagination={{
+        currentPage,
+        totalPages,
+        totalItems,
+        itemsPerPage: pageSize,
+        onPageChange: setCurrentPage,
+        onItemsPerPageChange: (limit) => {
+          setPageSize(limit)
+          setCurrentPage(1)
+        },
       }}
       extraContent={
         <ShiftDialog open={sheetOpen} onOpenChange={setSheetOpen} initialData={editing} />

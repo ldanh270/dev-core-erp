@@ -4,12 +4,12 @@ import { CHECK_IN_VARIANCE_STATUS } from "@/config/entities/attendance.config"
 import type { IAttendanceMatrixShift } from "@/types/attendance.types"
 import { formatClock, formatVariance } from "@/utils/attendance/attendance-matrix.util"
 
-const VARIANTS = {
-  [CHECK_IN_VARIANCE_STATUS.EARLY]: "success",
-  [CHECK_IN_VARIANCE_STATUS.ON_TIME]: "info",
-  [CHECK_IN_VARIANCE_STATUS.LATE]: "warning",
-  [CHECK_IN_VARIANCE_STATUS.UNAVAILABLE]: "neutral",
-} as const
+const VARIANTS = new Map<string, "success" | "info" | "warning" | "neutral">([
+  [CHECK_IN_VARIANCE_STATUS.EARLY, "success"],
+  [CHECK_IN_VARIANCE_STATUS.ON_TIME, "info"],
+  [CHECK_IN_VARIANCE_STATUS.LATE, "warning"],
+  [CHECK_IN_VARIANCE_STATUS.UNAVAILABLE, "neutral"],
+])
 
 /** Renders one matrix day, optionally collapsing extra shifts in the monthly view. */
 export function AttendanceMatrixCell({
@@ -29,7 +29,7 @@ export function AttendanceMatrixCell({
   return (
     <div className="space-y-2">
       {visibleShifts.map((shift) => (
-        <div key={shift.id} className="min-w-32 space-y-1 rounded-lg border bg-background p-2">
+        <div key={shift.id} className="min-w-32 space-y-1 rounded-lg border border-border bg-muted/20 p-2">
           <p className="truncate text-xs font-medium">{shift.shiftName ?? "Ca làm"}</p>
           <p
             className="font-mono text-xs text-foreground"
@@ -37,7 +37,10 @@ export function AttendanceMatrixCell({
           >
             {formatClock(shift.checkInAt)} · {formatClock(shift.checkOutAt)}
           </p>
-          <StatusPill label={formatVariance(shift)} variant={VARIANTS[shift.status]} />
+          <StatusPill
+            label={formatVariance(shift)}
+            variant={VARIANTS.get(shift.status) ?? "neutral"}
+          />
         </div>
       ))}
       {hiddenShiftCount > 0 && (

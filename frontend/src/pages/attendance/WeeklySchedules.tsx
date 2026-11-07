@@ -9,14 +9,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import {
   useDeleteWeeklyScheduleTemplate,
   useWeeklyScheduleTemplates,
 } from "@/hooks/attendance/use-weekly-schedule-templates"
 import { usePermission } from "@/hooks/use-permission"
+import { cn } from "@/lib/utils"
 import type { IWeeklyScheduleTemplate } from "@/types/attendance.types"
 
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { MoreHorizontal, Plus } from "lucide-react"
 import { toast } from "sonner"
 
@@ -38,46 +41,86 @@ export default function WeeklySchedules() {
 
   const { data: templates = [], isLoading } = useWeeklyScheduleTemplates()
   const deleteMutation = useDeleteWeeklyScheduleTemplate()
+  const [searchQuery, setSearchQuery] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editing, setEditing] = useState<IWeeklyScheduleTemplate | null>(null)
   const [applying, setApplying] = useState<IWeeklyScheduleTemplate | null>(null)
 
-  const handleCreate = () => {
+  const handleCreate = useCallback(() => {
     setEditing(null)
     setDialogOpen(true)
-  }
+  }, [])
 
-  const handleEdit = (template: IWeeklyScheduleTemplate) => {
+  const handleEdit = useCallback((template: IWeeklyScheduleTemplate) => {
     setEditing(template)
     setDialogOpen(true)
-  }
+  }, [])
 
-  const handleDelete = (id: string) => {
-    if (!window.confirm("Xác nhận xoá template này?")) return
-    deleteMutation.mutate(id, {
-      onSuccess: () => toast.success("Đã xoá template"),
-    })
-  }
+  const handleDelete = useCallback(
+    (id: string) => {
+      if (!window.confirm("Xác nhận xoá template này?")) return
+      deleteMutation.mutate(id, {
+        onSuccess: () => {
+          toast.success("Đã xoá template")
+        },
+      })
+    },
+    [deleteMutation],
+  )
+
+  const handleSearch = useCallback((value: string) => {
+    setSearchQuery(value)
+    setCurrentPage(1)
+  }, [])
+
+  const filteredTemplates = useMemo(() => {
+    if (!canReadSchedules) return []
+    if (!searchQuery.trim()) return templates
+    const query = searchQuery.toLowerCase().trim()
+    return templates.filter(
+      (template) =>
+        template.name.toLowerCase().includes(query) ||
+        (template.description && template.description.toLowerCase().includes(query)),
+    )
+  }, [canReadSchedules, templates, searchQuery])
+
+  const totalItems = filteredTemplates.length
+  const totalPages = Math.ceil(totalItems / pageSize) || 1
+
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize
+    return filteredTemplates.slice(startIndex, startIndex + pageSize)
+  }, [filteredTemplates, currentPage, pageSize])
 
   const columns: DataTableColumn<IWeeklyScheduleTemplate>[] = useMemo(
     () => [
       {
         id: "name",
         header: "Tên",
-        width: "280px",
+        width: getTableColWidthPx("TITLE"),
         minWidth: "220px",
         sticky: true,
         cell: (template) => (
           <div className="min-w-0">
             <button
               type="button"
-              onClick={() => { handleEdit(template); }}
-              className="rounded-full text-left font-medium text-foreground hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring truncate block max-w-full"
+              onClick={() => {
+                handleEdit(template)
+              }}
+              className={cn(
+                TYPOGRAPHY.CELL_PRIMARY,
+                "rounded-full text-left hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring block max-w-full",
+              )}
             >
               {template.name}
             </button>
             {template.description && (
-              <p className="text-xs text-muted-foreground mt-0.5 truncate" title={template.description}>
+              <p
+                className={cn("mt-0.5", TYPOGRAPHY.CELL_SECONDARY)}
+                title={template.description}
+              >
                 {template.description}
               </p>
             )}
@@ -87,21 +130,25 @@ export default function WeeklySchedules() {
       {
         id: "cycleWeeks",
         header: "Chu kỳ",
-        width: "140px",
+        width: getTableColWidthPx("STATUS"),
         minWidth: "120px",
-        cell: (template) => `${template.cycleWeeks} tuần`,
+        cell: (template) => (
+          <span className={TYPOGRAPHY.CELL_PRIMARY}>{template.cycleWeeks} tuần</span>
+        ),
       },
       {
         id: "assignedDays",
         header: "Ca đã gán",
-        width: "140px",
+        width: getTableColWidthPx("STATUS"),
         minWidth: "120px",
-        cell: (template) => `${countAssignedDays(template)} ô ca`,
+        cell: (template) => (
+          <span className={TYPOGRAPHY.CELL_PRIMARY}>{countAssignedDays(template)} ô ca</span>
+        ),
       },
       {
         id: "status",
         header: "Trạng thái",
-        width: "140px",
+        width: getTableColWidthPx("STATUS"),
         minWidth: "130px",
         cell: (template) => (
           <StatusPill
@@ -113,21 +160,38 @@ export default function WeeklySchedules() {
       {
         id: "actions",
         header: "",
-        width: "60px",
+        width: getTableColWidthPx("INDEX"),
         minWidth: "60px",
         align: "right",
         cell: (template) => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                <MoreHorizontal className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="size-8 rounded-full">
+                <MoreHorizontal className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => { handleEdit(template); }}>Sửa</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => { setApplying(template); }}>Áp dụng</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  handleEdit(template)
+                }}
+              >
+                Sửa
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setApplying(template)
+                }}
+              >
+                Áp dụng
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive" onClick={() => { handleDelete(template.id); }}>
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => {
+                  handleDelete(template.id)
+                }}
+              >
                 Xoá
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -135,7 +199,7 @@ export default function WeeklySchedules() {
         ),
       },
     ],
-    [],
+    [handleDelete, handleEdit],
   )
 
   return (
@@ -147,13 +211,34 @@ export default function WeeklySchedules() {
         icon: Plus,
         onClick: handleCreate,
       }}
+      search={{
+        placeholder: "Tìm kiếm template theo tên...",
+        value: searchQuery,
+        onSearch: handleSearch,
+        onClear: () => {
+          handleSearch("")
+        },
+      }}
       columns={columns}
-      data={canReadSchedules ? templates : []}
+      data={paginatedData}
       isLoading={isLoading}
       keyExtractor={(item) => item.id}
       emptyState={{
-        title: "Chưa có template nào",
-        description: "Tạo template lịch xoay ca đầu tiên cho nhân sự.",
+        title: searchQuery ? "Không tìm thấy template" : "Chưa có template nào",
+        description: searchQuery
+          ? `Không tìm thấy template nào phù hợp với từ khóa "${searchQuery}".`
+          : "Tạo template lịch xoay ca đầu tiên cho nhân sự.",
+      }}
+      pagination={{
+        currentPage,
+        totalPages,
+        totalItems,
+        itemsPerPage: pageSize,
+        onPageChange: setCurrentPage,
+        onItemsPerPageChange: (limit) => {
+          setPageSize(limit)
+          setCurrentPage(1)
+        },
       }}
       extraContent={
         <>
