@@ -11,16 +11,19 @@ import {
   getProjectStatusVariant,
 } from "@/config/entities/project.config"
 import { SYSTEM_CONFIG } from "@/config/system.config"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { usePermission } from "@/hooks/use-permission"
 import { employeeApi } from "@/lib/api/employee.api"
 import { projectApi } from "@/lib/api/project.api"
 import { routerNavigate } from "@/lib/router-navigator"
+import { cn } from "@/lib/utils"
 import { ProjectCreateModal } from "@/pages/project/components/project-create-modal"
 import { useProjectTrackers } from "@/pages/project/hooks/use-project-tracker"
 import type { Project } from "@/types/project.types"
 
 import { useQuery } from "@tanstack/react-query"
-import { FolderKanban, Plus, Users } from "lucide-react"
+import { Plus, Users } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 
@@ -59,14 +62,14 @@ export default function ProjectList() {
     queryKey: ["projects"],
     queryFn: () => projectApi.list({ limit: 100 }),
   })
-  const projects = projectsData?.data || []
+  const projects = useMemo(() => projectsData?.data || [], [projectsData?.data])
 
   const { data: employeesData } = useQuery({
     queryKey: ["employees"],
     queryFn: () => employeeApi.list({ limit: 200 }),
     enabled: isOpenCreateModal,
   })
-  const employees = employeesData?.data || []
+  const employees = useMemo(() => employeesData?.data || [], [employeesData?.data])
 
   const firstProjectId = projects[0]?.id || ""
   const { data: dbTrackers = [] } = useProjectTrackers(firstProjectId)
@@ -121,8 +124,8 @@ export default function ProjectList() {
       {
         id: "name",
         header: "Tên dự án",
-        width: "280px",
-        minWidth: "280px",
+        width: getTableColWidthPx("TITLE"),
+        minWidth: "240px",
         sticky: true,
         cell: (proj) => (
           <div className="flex flex-col justify-center min-w-0">
@@ -132,13 +135,19 @@ export default function ProjectList() {
                 sessionStorage.setItem("activeProjectId", proj.id)
                 routerNavigate(`/project/${proj.id}/overview`)
               }}
-              className="text-primary hover:underline font-bold text-sm leading-5 text-left truncate cursor-pointer focus:outline-none"
+              className={cn(
+                TYPOGRAPHY.CELL_PRIMARY,
+                "text-primary hover:underline font-bold text-left truncate cursor-pointer focus:outline-none",
+              )}
               title={proj.name}
             >
               {proj.name}
             </button>
             {proj.description && (
-              <p className="text-xs leading-4 text-muted-foreground line-clamp-1 truncate max-w-[260px]" title={proj.description}>
+              <p
+                className={cn(TYPOGRAPHY.CELL_SECONDARY, "line-clamp-1 truncate max-w-[260px]")}
+                title={proj.description}
+              >
                 {proj.description}
               </p>
             )}
@@ -148,7 +157,7 @@ export default function ProjectList() {
       {
         id: "teamLeader",
         header: "Trưởng nhóm (TL)",
-        width: "180px",
+        width: getTableColWidthPx("EMPLOYEE"),
         minWidth: "180px",
         cell: (proj) =>
           proj.teamLeader ? (
@@ -156,18 +165,21 @@ export default function ProjectList() {
               <div className="size-7 rounded-full bg-secondary flex items-center justify-center shrink-0 text-muted-foreground border border-border">
                 <Users className="size-3.5" />
               </div>
-              <span className="text-xs font-semibold text-foreground truncate" title={proj.teamLeader.fullName}>
+              <span
+                className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-semibold truncate")}
+                title={proj.teamLeader.fullName}
+              >
                 {proj.teamLeader.fullName}
               </span>
             </div>
           ) : (
-            <span className="text-xs text-muted-foreground italic">Chưa phân công</span>
+            <span className={cn(TYPOGRAPHY.CELL_SECONDARY, "italic")}>Chưa phân công</span>
           ),
       },
       {
         id: "status",
         header: "Trạng thái",
-        width: "140px",
+        width: getTableColWidthPx("STATUS"),
         minWidth: "140px",
         cell: (proj) => (
           <StatusPill
@@ -179,22 +191,22 @@ export default function ProjectList() {
       {
         id: "techStack",
         header: "Công nghệ (Tech Stack)",
-        width: "220px",
-        minWidth: "220px",
+        width: getTableColWidthPx("TYPE"),
+        minWidth: "180px",
         cell: (proj) => (
-          <div className="flex flex-wrap gap-1 max-w-[200px]">
+          <div className="flex flex-wrap gap-1 max-w-[220px]">
             {proj.techStack.length > 0 ? (
               proj.techStack.map((tech) => (
                 <Badge
                   key={tech}
                   variant="secondary"
-                  className="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                  className="rounded-full px-2 py-0.5 text-xs font-medium"
                 >
                   {tech}
                 </Badge>
               ))
             ) : (
-              <span className="text-xs text-muted-foreground italic">—</span>
+              <span className={cn(TYPOGRAPHY.CELL_SECONDARY, "italic")}>—</span>
             )}
           </div>
         ),
@@ -202,10 +214,10 @@ export default function ProjectList() {
       {
         id: "startDate",
         header: "Ngày bắt đầu",
-        width: "130px",
+        width: getTableColWidthPx("DATE"),
         minWidth: "130px",
         cell: (proj) => (
-          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+          <span className={cn(TYPOGRAPHY.CELL_DATE, "whitespace-nowrap")}>
             {proj.startDate ? new Date(proj.startDate).toLocaleDateString("vi-VN") : "—"}
           </span>
         ),
@@ -213,10 +225,10 @@ export default function ProjectList() {
       {
         id: "expectedEndDate",
         header: "Dự kiến kết thúc",
-        width: "140px",
-        minWidth: "140px",
+        width: getTableColWidthPx("DATE"),
+        minWidth: "130px",
         cell: (proj) => (
-          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+          <span className={cn(TYPOGRAPHY.CELL_DATE, "whitespace-nowrap")}>
             {proj.expectedEndDate ? new Date(proj.expectedEndDate).toLocaleDateString("vi-VN") : "—"}
           </span>
         ),
@@ -275,7 +287,6 @@ export default function ProjectList() {
       data={pagedProjects}
       isLoading={isLoading}
       emptyState={{
-        icon: FolderKanban,
         title: "Chưa có dự án nào",
         description: "Chưa có dự án nào trong hệ thống. Hãy bấm 'Tạo dự án mới' để bắt đầu.",
       }}

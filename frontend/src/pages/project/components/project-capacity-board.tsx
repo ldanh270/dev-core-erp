@@ -11,12 +11,21 @@ import {
   CAPACITY_COPILOT_RULES,
   type CapacityConfidenceLevel,
 } from "@/config/rules/capacity-copilot.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { usePermission } from "@/hooks/use-permission"
 import { capacityCopilotApi } from "@/lib/api/capacity-copilot.api"
 import { cn } from "@/lib/utils"
 import type { CapacityBoardProjectSnapshot, CapacityForecastResult } from "@/types/capacity-copilot.types"
 import { useQuery } from "@tanstack/react-query"
-import { AlertTriangle, BrainCircuit, CalendarDays, CheckCircle2, RefreshCw } from "lucide-react"
+import {
+  AlertTriangle,
+  BrainCircuit,
+  CalendarDays,
+  CheckCircle2,
+  Inbox,
+  Info,
+  RefreshCw,
+} from "lucide-react"
 import { useState } from "react"
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
@@ -77,8 +86,8 @@ const ForecastRow = ({ item }: { item: CapacityBoardProjectSnapshot }) => {
 
   if (!forecast) {
     return (
-      <div className="rounded-lg border border-border bg-card p-3 text-sm">
-        <div className="font-semibold text-foreground">{projectName}</div>
+      <div className="rounded-xl border border-border bg-card p-4 text-sm">
+        <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-bold text-foreground")}>{projectName}</div>
         <p className="mt-1 text-xs text-muted-foreground">{errorMessage}</p>
       </div>
     )
@@ -91,14 +100,14 @@ const ForecastRow = ({ item }: { item: CapacityBoardProjectSnapshot }) => {
   )
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-xl border border-border bg-card p-4 shadow-2xs hover:border-border/90 transition-colors">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="font-semibold text-foreground">{projectName}</div>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-bold text-foreground")}>{projectName}</div>
+          <p className={cn(TYPOGRAPHY.CELL_SECONDARY, "mt-1")}>
             Target {forecast.targetPercent}% · Predicted {forecast.predictedPercent}% · Gap {forecast.percentGap}%
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-0.5 text-xs text-muted-foreground font-medium">
             {getConfidenceLabel(forecast.confidenceLevel)}
           </p>
         </div>
@@ -115,26 +124,30 @@ const ForecastRow = ({ item }: { item: CapacityBoardProjectSnapshot }) => {
         </Badge>
       </div>
       <div className="mt-3 grid grid-cols-1 gap-2 text-xs text-muted-foreground sm:grid-cols-3">
-        <div className="rounded-lg bg-muted/50 p-2">
-          <span className="block font-medium text-foreground">{forecast.totalEffectiveHours}h</span>
+        <div className="rounded-lg bg-muted/50 p-2.5">
+          <span className="block font-semibold text-foreground text-sm">{forecast.totalEffectiveHours}h</span>
           Effective hours
         </div>
-        <div className="rounded-lg bg-muted/50 p-2">
-          <span className="block font-medium text-foreground">{forecast.neededEffectiveHours}h</span>
+        <div className="rounded-lg bg-muted/50 p-2.5">
+          <span className="block font-semibold text-foreground text-sm">{forecast.neededEffectiveHours}h</span>
           Cần thêm
         </div>
-        <div className="rounded-lg bg-muted/50 p-2">
-          <span className="block font-medium text-foreground">
+        <div className="rounded-lg bg-muted/50 p-2.5">
+          <span
+            className="block font-semibold text-foreground text-sm truncate"
+            title={isShortage ? getWeakestRoleName(forecast) : strongestRole?.roleName ?? "Chưa có role"}
+          >
             {isShortage ? getWeakestRoleName(forecast) : strongestRole?.roleName ?? "Chưa có role"}
           </span>
           {isShortage ? "Role nên bổ sung" : "Role đang dư"}
         </div>
       </div>
-      {forecast.confidenceReasons.length > 0 ? (
-        <p className="mt-3 rounded-lg border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-          {forecast.confidenceReasons[0]}
-        </p>
-      ) : null}
+      {forecast.confidenceReasons.length > 0 && (
+        <div className="mt-3 flex items-start gap-2 rounded-lg border border-border/80 bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+          <Info className="size-3.5 shrink-0 mt-0.5 text-primary" />
+          <span>{forecast.confidenceReasons[0]}</span>
+        </div>
+      )}
     </div>
   )
 }
@@ -170,8 +183,8 @@ export function ProjectCapacityBoard() {
   if (!canForecast) return null
 
   return (
-    <PageCard className="p-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <PageCard className="p-6 flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between shrink-0">
         <div className="flex items-start gap-3">
           <div className="rounded-full bg-primary/10 p-2 text-primary">
             <BrainCircuit className="size-5" />
@@ -231,42 +244,60 @@ export function ProjectCapacityBoard() {
       </div>
 
       {forecastQuery.isLoading ? (
-        <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <Skeleton className="h-40 rounded-xl" />
-          <Skeleton className="h-40 rounded-xl" />
+        <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2 flex-1 min-h-0">
+          <Skeleton className="h-full min-h-[240px] rounded-xl" />
+          <Skeleton className="h-full min-h-[240px] rounded-xl" />
         </div>
       ) : forecastItems.length === 0 ? (
-        <div className="mt-5 rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
-          Chưa có project nào nhập cam kết tuần/milestone (Deal target %) nên chưa thể forecast.
+        <div className="mt-5 flex-1 min-h-[240px] flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 py-12 text-center">
+          <div className="rounded-full bg-secondary p-3 mb-3 text-muted-foreground">
+            <Inbox className="size-6" />
+          </div>
+          <p className="text-sm font-medium text-foreground">Chưa có dữ liệu dự báo</p>
+          <p className="mt-1 text-xs text-muted-foreground max-w-md">
+            Chưa có project nào nhập cam kết tuần/milestone (Deal target %) nên chưa thể forecast.
+          </p>
         </div>
       ) : (
-        <div className="mt-5 grid grid-cols-1 gap-4 xl:grid-cols-2">
-          <div className="rounded-xl border border-border bg-muted/20 p-4">
-            <div className="mb-3 flex items-center gap-2 font-semibold text-destructive">
-              <AlertTriangle className="size-4" />
-              Project thiếu capacity ({shortageItems.length})
+        <div className="mt-5 grid grid-cols-1 gap-6 xl:grid-cols-2 flex-1 min-h-0">
+          {/* Shortage projects */}
+          <div className="rounded-xl border border-border bg-muted/20 p-5 flex flex-col min-w-0 h-full overflow-hidden">
+            <div className="mb-4 flex items-center gap-2 font-semibold text-sm text-destructive shrink-0">
+              <AlertTriangle className="size-4 shrink-0" />
+              <span>Project thiếu capacity ({shortageItems.length})</span>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-3 flex-1 min-w-0 overflow-y-auto pr-1">
               {shortageItems.length === 0 ? (
-                <p className="rounded-lg border border-border bg-card p-3 text-sm text-muted-foreground">
-                  Không có project thiếu capacity trong tuần này.
-                </p>
+                <div className="h-full min-h-[200px] flex flex-col items-center justify-center rounded-xl border border-dashed border-border/80 bg-card/60 p-8 text-center">
+                  <div className="rounded-full bg-secondary p-2.5 mb-2 text-muted-foreground">
+                    <Inbox className="size-5" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Không có project thiếu capacity trong tuần này.
+                  </p>
+                </div>
               ) : (
                 shortageItems.map((item) => <ForecastRow key={item.projectId} item={item} />)
               )}
             </div>
           </div>
 
-          <div className="rounded-xl border border-border bg-muted/20 p-4">
-            <div className="mb-3 flex items-center gap-2 font-semibold text-primary">
-              <CheckCircle2 className="size-4" />
-              Project đủ hoặc dư capacity ({surplusItems.length})
+          {/* Surplus projects */}
+          <div className="rounded-xl border border-border bg-muted/20 p-5 flex flex-col min-w-0 h-full overflow-hidden">
+            <div className="mb-4 flex items-center gap-2 font-semibold text-sm text-primary shrink-0">
+              <CheckCircle2 className="size-4 shrink-0" />
+              <span>Project đủ hoặc dư capacity ({surplusItems.length})</span>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-3 flex-1 min-w-0 overflow-y-auto pr-1">
               {surplusItems.length === 0 ? (
-                <p className="rounded-lg border border-border bg-card p-3 text-sm text-muted-foreground">
-                  Chưa có project dư capacity để điều phối.
-                </p>
+                <div className="h-full min-h-[200px] flex flex-col items-center justify-center rounded-xl border border-dashed border-border/80 bg-card/60 p-8 text-center">
+                  <div className="rounded-full bg-secondary p-2.5 mb-2 text-muted-foreground">
+                    <Inbox className="size-5" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Chưa có project dư capacity để điều phối.
+                  </p>
+                </div>
               ) : (
                 surplusItems.map((item) => <ForecastRow key={item.projectId} item={item} />)
               )}
@@ -276,7 +307,7 @@ export function ProjectCapacityBoard() {
       )}
 
       {failedItems.length > 0 && (
-        <div className="mt-4 rounded-lg border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+        <div className="mt-3 shrink-0 rounded-lg border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
           {failedItems.length} project chưa forecast được do thiếu dữ liệu hoặc lỗi API.
         </div>
       )}
