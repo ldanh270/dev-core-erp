@@ -299,7 +299,7 @@ export default function InterviewsPage() {
         />
 
         {viewMode === "cards" ? (
-          <div className="flex-1 min-h-0 overflow-auto app-scrollbar p-6">
+          <div className="flex-1 min-h-0 overflow-auto p-6">
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {Array.from({ length: 4 }).map((_, i) => (
@@ -321,7 +321,7 @@ export default function InterviewsPage() {
             )}
           </div>
         ) : (
-          <div className="flex-1 min-h-0 overflow-auto app-scrollbar w-full">
+          <div className="flex-1 min-h-0 overflow-auto w-full">
             <Table>
               <TableHeader className="sticky top-0 z-20 bg-background shadow-xs">
                 <TableRow>

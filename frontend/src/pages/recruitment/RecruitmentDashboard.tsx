@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils"
 import { routerNavigate } from "@/lib/router-navigator"
 import { PageContainer, PageHeader } from "@/components/common"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -21,6 +22,7 @@ import {
   useBackgroundCheckStats,
 } from "@/hooks/recruitment/use-recruitment-queries"
 import { ROUTES } from "@/config/routes.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { format, parseISO, isToday, isTomorrow } from "date-fns"
 import { vi } from "date-fns/locale"
 
@@ -38,9 +40,9 @@ function StatCard({
   onClick?: () => void
 }) {
   return (
-    <Card className="cursor-pointer border border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-primary/40 rounded-2xl" onClick={onClick}>
+    <Card className="cursor-pointer border border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-primary/40 rounded-xl" onClick={onClick}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</CardTitle>
+        <CardTitle className={TYPOGRAPHY.TABLE_HEADER}>{title}</CardTitle>
         <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center transition-transform hover:scale-110">
           <Icon className="h-4.5 w-4.5 text-primary" />
         </div>
@@ -89,7 +91,7 @@ function InterviewItem({
   }
 
   return (
-    <div className="flex items-center justify-between py-3 px-2 rounded-xl transition-colors hover:bg-muted/30">
+    <div className="flex items-center justify-between py-3 px-2 rounded-lg transition-colors hover:bg-muted/30">
       <div className="flex items-center gap-3">
         <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
           <span className="text-xs font-bold text-primary">
@@ -126,7 +128,7 @@ function QuickLink({
 }) {
   return (
     <Card
-      className="cursor-pointer border border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-primary/40 rounded-2xl"
+      className="cursor-pointer border border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-primary/40 rounded-xl"
       onClick={() => { routerNavigate(to); }}
     >
       <CardContent className="flex items-center gap-4 p-4">
@@ -177,10 +179,10 @@ export default function RecruitmentDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {isLoading ? (
           <>
-            <Skeleton className="h-[120px] rounded-2xl" />
-            <Skeleton className="h-[120px] rounded-2xl" />
-            <Skeleton className="h-[120px] rounded-2xl" />
-            <Skeleton className="h-[120px] rounded-2xl" />
+            <Skeleton className="h-[120px] rounded-xl" />
+            <Skeleton className="h-[120px] rounded-xl" />
+            <Skeleton className="h-[120px] rounded-xl" />
+            <Skeleton className="h-[120px] rounded-xl" />
           </>
         ) : (
           <>
@@ -218,7 +220,7 @@ export default function RecruitmentDashboard() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Upcoming Interviews */}
-        <Card className="rounded-2xl border border-border/60 transition-all hover:shadow-md">
+        <Card className="rounded-xl border border-border/60 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <div>
               <CardTitle className="text-base font-bold">Lịch phỏng vấn sắp tới</CardTitle>
@@ -237,9 +239,9 @@ export default function RecruitmentDashboard() {
           <CardContent>
             {isLoadingInterviews ? (
               <div className="space-y-2">
-                <Skeleton className="h-12 rounded-xl" />
-                <Skeleton className="h-12 rounded-xl" />
-                <Skeleton className="h-12 rounded-xl" />
+                <Skeleton className="h-12 rounded-lg" />
+                <Skeleton className="h-12 rounded-lg" />
+                <Skeleton className="h-12 rounded-lg" />
               </div>
             ) : upcomingInterviews && upcomingInterviews.length > 0 ? (
               <div className="divide-y divide-border/40">
@@ -265,7 +267,7 @@ export default function RecruitmentDashboard() {
         </Card>
 
         {/* Application Pipeline Summary with Progress Bars */}
-        <Card className="rounded-2xl border border-border/60 transition-all hover:shadow-md">
+        <Card className="rounded-xl border border-border/60 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <div>
               <CardTitle className="text-base font-bold">Pipeline ứng viên</CardTitle>
@@ -284,53 +286,53 @@ export default function RecruitmentDashboard() {
           <CardContent>
             {isLoadingAppStats ? (
               <div className="space-y-3">
-                <Skeleton className="h-8 rounded-xl" />
-                <Skeleton className="h-8 rounded-xl" />
-                <Skeleton className="h-8 rounded-xl" />
+                <Skeleton className="h-8 rounded-lg" />
+                <Skeleton className="h-8 rounded-lg" />
+                <Skeleton className="h-8 rounded-lg" />
               </div>
             ) : appStats ? (
               <div className="space-y-3.5">
                 {/* Mới */}
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-blue-500" />Ứng viên mới</span>
+                    <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-info" />Ứng viên mới</span>
                     <span>{appStats.byStatus?.new ?? 0}</span>
                   </div>
                   <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full transition-all duration-500" style={{ width: `${Math.min(100, Math.round(((appStats.byStatus?.new ?? 0) / totalApps) * 100))}%` }} />
+                    <div className="h-full bg-info rounded-full transition-all duration-500" style={{ width: `${Math.min(100, Math.round(((appStats.byStatus?.new ?? 0) / totalApps) * 100))}%` }} />
                   </div>
                 </div>
 
                 {/* Phỏng vấn */}
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-500" />Đang phỏng vấn</span>
+                    <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-warning" />Đang phỏng vấn</span>
                     <span>{appStats.byStatus?.interviewing ?? 0}</span>
                   </div>
                   <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full bg-amber-500 rounded-full transition-all duration-500" style={{ width: `${Math.min(100, Math.round(((appStats.byStatus?.interviewing ?? 0) / totalApps) * 100))}%` }} />
+                    <div className="h-full bg-warning rounded-full transition-all duration-500" style={{ width: `${Math.min(100, Math.round(((appStats.byStatus?.interviewing ?? 0) / totalApps) * 100))}%` }} />
                   </div>
                 </div>
 
                 {/* Offer */}
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-purple-500" />Đã gửi Offer</span>
+                    <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-primary" />Đã gửi Offer</span>
                     <span>{appStats.byStatus?.offer_sent ?? 0}</span>
                   </div>
                   <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full bg-purple-500 rounded-full transition-all duration-500" style={{ width: `${Math.min(100, Math.round(((appStats.byStatus?.offer_sent ?? 0) / totalApps) * 100))}%` }} />
+                    <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${Math.min(100, Math.round(((appStats.byStatus?.offer_sent ?? 0) / totalApps) * 100))}%` }} />
                   </div>
                 </div>
 
                 {/* Đã tuyển */}
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-green-500" />Tuyển dụng thành công</span>
+                    <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-success" />Tuyển dụng thành công</span>
                     <span>{appStats.byStatus?.hired ?? 0}</span>
                   </div>
                   <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 rounded-full transition-all duration-500" style={{ width: `${Math.min(100, Math.round(((appStats.byStatus?.hired ?? 0) / totalApps) * 100))}%` }} />
+                    <div className="h-full bg-success rounded-full transition-all duration-500" style={{ width: `${Math.min(100, Math.round(((appStats.byStatus?.hired ?? 0) / totalApps) * 100))}%` }} />
                   </div>
                 </div>
               </div>
@@ -346,7 +348,7 @@ export default function RecruitmentDashboard() {
 
       {/* Quick Links */}
       <div>
-        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">Thao tác nhanh</h3>
+        <h3 className={cn(TYPOGRAPHY.TABLE_HEADER, "mb-3")}>Thao tác nhanh</h3>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <QuickLink
             title="Yêu cầu tuyển dụng"

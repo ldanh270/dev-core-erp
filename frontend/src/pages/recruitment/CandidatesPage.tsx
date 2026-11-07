@@ -8,10 +8,13 @@ import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { RECRUITMENT_SOURCE_LABELS } from "@/config/entities/recruitment.config"
 import { ROUTES } from "@/config/routes.config"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { useCandidates } from "@/hooks/recruitment/use-recruitment-queries"
 import { usePermission } from "@/hooks/use-permission"
 import { useDebounce } from "@/hooks/use-debounce"
 import { routerNavigate } from "@/lib/router-navigator"
+import { cn } from "@/lib/utils"
 import type { Candidate } from "@/types/recruitment.types"
 
 import { useMemo, useState } from "react"
@@ -51,7 +54,8 @@ export default function CandidatesPage() {
       {
         id: "candidate",
         header: "Ứng viên",
-        minWidth: "240px",
+        width: getTableColWidthPx("EMPLOYEE"),
+        minWidth: getTableColWidthPx("EMPLOYEE"),
         sticky: true,
         cell: (candidate) => (
           <div
@@ -64,11 +68,11 @@ export default function CandidatesPage() {
               </span>
             </div>
             <div className="min-w-0">
-              <span className="font-medium text-foreground group-hover:text-primary group-hover:underline text-sm transition-colors block truncate">
+              <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "group-hover:text-primary group-hover:underline transition-colors block truncate")}>
                 {candidate.fullName}
               </span>
               {candidate.currentPosition && (
-                <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-48">
+                <p className={cn(TYPOGRAPHY.CELL_SECONDARY, "mt-0.5 truncate max-w-48")}>
                   {candidate.currentPosition}
                 </p>
               )}
@@ -79,24 +83,26 @@ export default function CandidatesPage() {
       {
         id: "email",
         header: "Email",
+        width: getTableColWidthPx("CONTACT"),
         minWidth: "180px",
         cell: (candidate) => (
           <div className="flex items-center gap-1.5 text-sm">
             <Mail className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-            <span className="text-foreground truncate">{candidate.email}</span>
+            <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-normal truncate")}>{candidate.email}</span>
           </div>
         ),
       },
       {
         id: "phone",
         header: "Điện thoại",
+        width: "140px",
         minWidth: "140px",
         hideBelow: "md",
         cell: (candidate) =>
           candidate.phone ? (
             <div className="flex items-center gap-1.5 text-sm">
               <Phone className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-              <span>{candidate.phone}</span>
+              <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-normal")}>{candidate.phone}</span>
             </div>
           ) : (
             <span className="text-muted-foreground text-xs">—</span>
@@ -105,6 +111,7 @@ export default function CandidatesPage() {
       {
         id: "source",
         header: "Nguồn",
+        width: getTableColWidthPx("TYPE"),
         minWidth: "130px",
         cell: (candidate) => (
           <Badge variant="outline" className="rounded-full text-[11px] font-normal">
@@ -115,10 +122,11 @@ export default function CandidatesPage() {
       {
         id: "experience",
         header: "Kinh nghiệm",
+        width: "120px",
         minWidth: "120px",
         hideBelow: "lg",
         cell: (candidate) => (
-          <span className="text-sm text-foreground">
+          <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-normal")}>
             {candidate.yearsOfExperience ? `${candidate.yearsOfExperience} năm` : "—"}
           </span>
         ),
@@ -126,6 +134,7 @@ export default function CandidatesPage() {
       {
         id: "skills",
         header: "Kỹ năng",
+        width: "200px",
         minWidth: "180px",
         hideBelow: "lg",
         cell: (candidate) => (
@@ -146,8 +155,9 @@ export default function CandidatesPage() {
       {
         id: "actions",
         header: "",
-        width: "60px",
-        align: "center",
+        width: getTableColWidthPx("ACTIONS"),
+        minWidth: getTableColWidthPx("ACTIONS"),
+        align: "right",
         cell: (candidate) => (
           <Tooltip>
             <TooltipTrigger asChild>
