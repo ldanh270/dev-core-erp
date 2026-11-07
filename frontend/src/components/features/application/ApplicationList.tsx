@@ -1,4 +1,8 @@
-import { AppPagination, EmptyState, SearchInput, StatusPill } from "@/components/common"
+import {
+  DataTablePage,
+  type DataTableColumn,
+  StatusPill,
+} from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -7,48 +11,47 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
   APPLICATION_STATUS,
   APPLICATION_TYPES,
   APPLICATION_TYPE_LABELS,
 } from "@/config/entities/attendance.config"
+import { TABLE_COL_WIDTH } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn } from "@/lib/utils"
 import { useAllApplications } from "@/hooks/application/useAllApplications"
 import { useManageApplications } from "@/hooks/application/useManageApplications"
 import { useMyApplications } from "@/hooks/application/useMyApplications"
 import type { IApplicationListItem } from "@/lib/api/application.api"
 
-import { useEffect, useState } from "react"
-import { FileText, RotateCcw } from "lucide-react"
+import { type ReactNode, useEffect, useMemo, useState } from "react"
+import { FileText, type LucideIcon, RotateCcw } from "lucide-react"
 
 type StatusVariant = "success" | "warning" | "danger" | "neutral"
 
-const STATUS_LABELS: Record<string, { label: string; variant: StatusVariant } | undefined> = {
-  [APPLICATION_STATUS.PENDING]: {
-    label: "Đang duyệt",
-    variant: "warning",
-  },
-  [APPLICATION_STATUS.PARTNER_PENDING]: {
-    label: "Chờ xác nhận đổi ca",
-    variant: "warning",
-  },
-  [APPLICATION_STATUS.APPROVED]: {
-    label: "Đã duyệt",
-    variant: "success",
-  },
-  [APPLICATION_STATUS.REJECTED]: {
-    label: "Không duyệt",
-    variant: "danger",
-  },
-  [APPLICATION_STATUS.CANCELLED]: {
-    label: "Đã hủy",
-    variant: "neutral",
-  },
-}
+const STATUS_MAP = new Map<string, { label: string; variant: StatusVariant }>([
+  [APPLICATION_STATUS.PENDING, { label: "Đang duyệt", variant: "warning" }],
+  [APPLICATION_STATUS.PARTNER_PENDING, { label: "Chờ xác nhận đổi ca", variant: "warning" }],
+  [APPLICATION_STATUS.APPROVED, { label: "Đã duyệt", variant: "success" }],
+  [APPLICATION_STATUS.REJECTED, { label: "Không duyệt", variant: "danger" }],
+  [APPLICATION_STATUS.CANCELLED, { label: "Đã hủy", variant: "neutral" }],
+])
 
-interface ApplicationListProps {
+const APPLICATION_TYPE_MAP = new Map<string, string>(
+  Object.entries(APPLICATION_TYPE_LABELS),
+)
+
+export interface ApplicationListProps {
   mode: "mine" | "manage" | "all"
+  title: string
+  description?: string
+  primaryAction?: {
+    label: string
+    icon?: LucideIcon
+    onClick: () => void
+  }
+  subHeader?: ReactNode
+  extraContent?: ReactNode
   onRowClick: (app: IApplicationListItem) => void
   hookState:
     | ReturnType<typeof useMyApplications>
@@ -57,10 +60,19 @@ interface ApplicationListProps {
 }
 
 /**
- * Standardized ApplicationList component.
- * Features 400ms debounced search, integer-aligned table cells, and pinned pagination.
+ * Enterprise ApplicationList component powered by DataTablePage master primitive.
+ * Locks viewport height to guarantee sticky headers and persistent pinned pagination.
  */
-export function ApplicationList({ mode, onRowClick, hookState }: ApplicationListProps) {
+export function ApplicationList({
+  mode,
+  title,
+  description,
+  primaryAction,
+  subHeader,
+  extraContent,
+  onRowClick,
+  hookState,
+}: ApplicationListProps) {
   const currentHooks = hookState
   const {
     applications,
@@ -97,275 +109,241 @@ export function ApplicationList({ mode, onRowClick, hookState }: ApplicationList
     }
   }, [isLoading, isRefreshing])
 
-  /** Hides stale rows while a new list query is being requested. */
   const beginTransition = () => {
     setIsTransitionLoading(true)
   }
 
-  const STATUS_TABS = [
-    { value: "all", label: "Tất cả", count: stats.total },
-    { value: "pending", label: "Chờ duyệt", count: stats.pending },
-    { value: "approved", label: "Đã duyệt", count: stats.approved },
-    { value: "rejected", label: "Không duyệt", count: stats.rejected },
-  ] as const
+  const statusTabs = useMemo(() => [
+    { id: "all", label: "Tất cả", count: stats.total },
+    { id: "pending", label: "Chờ duyệt", count: stats.pending },
+    { id: "approved", label: "Đã duyệt", count: stats.approved },
+    { id: "rejected", label: "Không duyệt", count: stats.rejected },
+  ], [stats])
 
-  const thClass = "h-10 px-4 py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider align-middle select-none whitespace-nowrap"
-  const tdClass = "h-[60px] px-4 py-2.5 text-sm align-middle"
+  const columns: DataTableColumn<IApplicationListItem>[] = useMemo(() => {
+    const cols: DataTableColumn<IApplicationListItem>[] = [
+      {
+        id: "id",
+        header: "Mã đơn",
+        width: `${TABLE_COL_WIDTH.CODE}px`,
+        minWidth: `${TABLE_COL_WIDTH.CODE}px`,
+        sticky: true,
+        cell: (app) => (
+          <span className={cn(TYPOGRAPHY.CELL_CODE, "font-semibold")}>
+            {app.id.substring(0, 8).toUpperCase()}
+          </span>
+        ),
+      },
+    ]
+
+    if (mode === "manage" || mode === "all") {
+      cols.push(
+        {
+          id: "employeeFullName",
+          header: "Họ và tên",
+          width: `${TABLE_COL_WIDTH.EMPLOYEE}px`,
+          minWidth: `${TABLE_COL_WIDTH.EMPLOYEE}px`,
+          sticky: true,
+          cell: (app) => (
+            <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "truncate")} title={app.employee?.fullName}>
+              {app.employee?.fullName || "N/A"}
+            </span>
+          ),
+        },
+        {
+          id: "employeeCode",
+          header: "Mã nhân sự",
+          width: `${TABLE_COL_WIDTH.CODE}px`,
+          minWidth: `${TABLE_COL_WIDTH.CODE}px`,
+          cell: (app) => (
+            <span className={cn(TYPOGRAPHY.CELL_CODE, "text-primary")}>
+              {app.employeeId.substring(0, 10)}
+            </span>
+          ),
+        },
+      )
+    }
+
+    cols.push(
+      {
+        id: "type",
+        header: "Loại đơn",
+        width: `${TABLE_COL_WIDTH.TYPE}px`,
+        minWidth: `${TABLE_COL_WIDTH.TYPE}px`,
+        cell: (app) => (
+          <span className={TYPOGRAPHY.CELL_PRIMARY}>
+            {APPLICATION_TYPE_MAP.get(app.type) || app.type}
+          </span>
+        ),
+      },
+      {
+        id: "status",
+        header: "Trạng thái",
+        width: `${TABLE_COL_WIDTH.STATUS}px`,
+        minWidth: `${TABLE_COL_WIDTH.STATUS}px`,
+        cell: (app) => {
+          const s = STATUS_MAP.get(app.status)
+          return (
+            <StatusPill
+              label={s?.label || app.status}
+              variant={s?.variant || "neutral"}
+            />
+          )
+        },
+      },
+      {
+        id: "createdAt",
+        header: "Ngày tạo",
+        width: `${TABLE_COL_WIDTH.DATE}px`,
+        minWidth: `${TABLE_COL_WIDTH.DATE}px`,
+        cell: (app) => (
+          <span className={TYPOGRAPHY.CELL_DATE}>
+            {new Date(app.createdAt).toLocaleDateString("vi-VN")}
+          </span>
+        ),
+      },
+      {
+        id: "createdBy",
+        header: "Người tạo",
+        width: "160px",
+        minWidth: "160px",
+        cell: (app) => (
+          <div className="flex flex-col">
+            <span className={cn(TYPOGRAPHY.CELL_CODE, "text-primary font-medium")}>
+              {app.employeeId.substring(0, 10)}
+            </span>
+            <span className={cn(TYPOGRAPHY.CELL_SECONDARY, "truncate max-w-40")} title={app.employee?.fullName}>
+              {app.employee?.fullName || "N/A"}
+            </span>
+          </div>
+        ),
+      },
+      {
+        id: "approvedBy",
+        header: "Người duyệt",
+        width: "160px",
+        minWidth: "160px",
+        cell: (app) => (
+          <span className={cn(TYPOGRAPHY.CELL_SECONDARY, "whitespace-nowrap")}>
+            {app.approvedBy?.fullName || app.assignedTo?.fullName || "—"}
+          </span>
+        ),
+      },
+    )
+
+    return cols
+  }, [mode])
+
+  const filterControls = (
+    <div className="flex items-center gap-3">
+      <div className="min-w-[180px]">
+        <Select
+          value={typeFilter}
+          onValueChange={(value) => {
+            beginTransition()
+            setTypeFilter(value)
+            setPage(1)
+          }}
+        >
+          <SelectTrigger
+            aria-label="Lọc theo loại đơn"
+            className="bg-background border-border shadow-none rounded-full h-10 text-sm font-medium"
+          >
+            <SelectValue placeholder="Loại đơn" />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            <SelectItem value="all">Tất cả loại đơn</SelectItem>
+            {Object.values(APPLICATION_TYPES).map((t) => (
+              <SelectItem key={t.LABEL} value={t.LABEL}>
+                {t.DESCRIPTION}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Button
+        type="button"
+        variant="outline"
+        onClick={() => {
+          beginTransition()
+          setKeyword("")
+          setTypeFilter("all")
+          setPage(1)
+        }}
+        className="h-10 gap-1.5 rounded-full text-sm font-medium"
+      >
+        <RotateCcw className="size-4" />
+        Đặt lại
+      </Button>
+    </div>
+  )
 
   return (
-    <div className="flex w-full flex-col animate-in fade-in duration-300">
-      {/* Top Tabs */}
-      {mode !== "manage" && (
-        <nav className="flex items-center gap-1 border-b border-border bg-card px-0 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink-0 relative">
-          {STATUS_TABS.map((tab) => {
-            const isActive = statusFilter === tab.value
-            return (
-              <button
-                key={tab.value}
-                type="button"
-                onClick={() => {
-                  beginTransition()
-                  setStatusFilter(
-                    tab.value as "all" | "pending" | "approved" | "rejected" | "cancelled",
-                  )
-                  setPage(1)
-                }}
-                className={cn(
-                  "relative flex min-h-11 items-center gap-2 px-4 py-2.5 text-sm font-medium leading-5 transition-colors whitespace-nowrap cursor-pointer",
-                  isActive
-                    ? "text-primary font-semibold"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <span>{tab.label}</span>
-                <span
-                  className={cn(
-                    "rounded-full h-5 min-w-5 px-2 flex items-center justify-center text-xs font-semibold border leading-none",
-                    isActive
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-muted text-muted-foreground border-border",
-                  )}
-                >
-                  {tab.count}
-                </span>
-                {isActive && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
-                )}
-              </button>
-            )
-          })}
-        </nav>
-      )}
-
-      {/* Filters and Actions Toolbar */}
-      {mode !== "manage" && (
-        <div className="flex flex-col gap-2.5 border-b border-border px-4 py-3 sm:flex-row sm:items-center justify-between bg-card shrink-0">
-          <div className="flex flex-1 flex-wrap items-center gap-3">
-            <SearchInput
-              value={keyword}
-              onSearch={(val) => {
+    <DataTablePage<IApplicationListItem>
+      title={title}
+      description={description}
+      primaryAction={primaryAction}
+      subHeader={subHeader}
+      variant="viewport"
+      tabs={
+        mode !== "manage"
+          ? {
+              items: statusTabs,
+              activeTab: statusFilter,
+              onTabChange: (id) => {
+                beginTransition()
+                setStatusFilter(id as "all" | "pending" | "approved" | "rejected" | "cancelled")
+                setPage(1)
+              },
+            }
+          : undefined
+      }
+      search={
+        mode !== "manage"
+          ? {
+              placeholder: "Tìm theo tên, người duyệt hoặc mã…",
+              value: keyword,
+              onSearch: (val) => {
                 beginTransition()
                 setKeyword(val)
                 setPage(1)
-              }}
-              onClear={() => {
+              },
+              onClear: () => {
                 beginTransition()
                 setKeyword("")
                 setPage(1)
-              }}
-              placeholder="Tìm theo tên, người duyệt hoặc mã…"
-              className="w-full sm:max-w-xs"
-            />
-
-            <div className="min-w-[180px]">
-              <Select
-                value={typeFilter}
-                onValueChange={(value) => {
-                  beginTransition()
-                  setTypeFilter(value)
-                  setPage(1)
-                }}
-              >
-                <SelectTrigger aria-label="Lọc theo loại đơn" className="bg-background border-border shadow-none rounded-full text-sm font-semibold">
-                  <SelectValue placeholder="Loại đơn" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl">
-                  <SelectItem value="all">Tất cả loại đơn</SelectItem>
-                  {Object.values(APPLICATION_TYPES).map((t) => (
-                    <SelectItem key={t.LABEL} value={t.LABEL}>
-                      {t.DESCRIPTION}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                beginTransition()
-                setKeyword("")
-                setTypeFilter("all")
-                setPage(1)
-              }}
-              className="gap-1.5 rounded-full text-sm font-semibold"
-            >
-              <RotateCcw className="size-4" />
-              Đặt lại
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Table Area */}
-      <div className="relative flex-1 min-h-0 overflow-auto overscroll-contain app-scrollbar">
-        <table className="w-full border-separate border-spacing-0 text-left">
-          <colgroup>
-            <col style={{ width: "120px" }} />
-            {(mode === "manage" || mode === "all") && <col style={{ width: "200px" }} />}
-            {(mode === "manage" || mode === "all") && <col style={{ width: "130px" }} />}
-            <col style={{ width: "160px" }} />
-            <col style={{ width: "150px" }} />
-            <col style={{ width: "130px" }} />
-            <col style={{ width: "160px" }} />
-            <col style={{ width: "160px" }} />
-          </colgroup>
-          <thead className="bg-card">
-            <tr>
-              <th className={cn(thClass, "sticky top-0 z-20 lg:z-30 lg:sticky lg:left-0 border-b border-border bg-card whitespace-nowrap")}>
-                Mã đơn
-              </th>
-              {(mode === "manage" || mode === "all") && (
-                <th className={cn(thClass, "sticky top-0 z-20 lg:z-30 lg:sticky lg:left-[120px] border-b border-border bg-card whitespace-nowrap lg:border-r lg:border-border")}>
-                  Họ và tên
-                </th>
-              )}
-              {(mode === "manage" || mode === "all") && (
-                <th className={cn(thClass, "sticky top-0 z-20 border-b border-border bg-card whitespace-nowrap")}>
-                  Mã nhân sự
-                </th>
-              )}
-              <th className={cn(thClass, "sticky top-0 z-20 border-b border-border bg-card whitespace-nowrap")}>
-                Loại đơn
-              </th>
-              <th className={cn(thClass, "sticky top-0 z-20 border-b border-border bg-card whitespace-nowrap")}>
-                Trạng thái
-              </th>
-              <th className={cn(thClass, "sticky top-0 z-20 border-b border-border bg-card whitespace-nowrap")}>
-                Ngày tạo
-              </th>
-              <th className={cn(thClass, "sticky top-0 z-20 border-b border-border bg-card whitespace-nowrap")}>
-                Người tạo
-              </th>
-              <th className={cn(thClass, "sticky top-0 z-20 border-b border-border bg-card whitespace-nowrap")}>
-                Người duyệt
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {showLoading ? (
-              Array.from({ length: 6 }).map((_, rIdx) => (
-                <tr key={`loading-row-${rIdx}`} className="border-b border-border">
-                  {Array.from({ length: mode === "manage" || mode === "all" ? 8 : 6 }).map((_, cIdx) => (
-                    <td key={`loading-cell-${cIdx}`} className={cn(tdClass, "border-b border-border")}>
-                      <Skeleton className="h-4 w-4/5 rounded-full" />
-                    </td>
-                  ))}
-                </tr>
-              ))
-            ) : applications.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={mode === "manage" || mode === "all" ? 8 : 6}
-                  className="py-12 px-4 text-center border-b border-border"
-                >
-                  <EmptyState
-                    icon={FileText}
-                    title="Không tìm thấy đơn phù hợp"
-                    description="Không có đơn từ nào phù hợp với bộ lọc hoặc từ khóa tìm kiếm hiện tại."
-                  />
-                </td>
-              </tr>
-            ) : (
-              applications.map((app) => (
-                <tr
-                  key={app.id}
-                  onClick={() => {
-                    onRowClick(app)
-                  }}
-                  tabIndex={0}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") onRowClick(app)
-                  }}
-                  className="group hover:bg-muted/25 transition-colors cursor-pointer border-b border-border"
-                >
-                  <td className={cn(tdClass, "border-b border-border font-medium text-foreground lg:sticky lg:left-0 lg:z-10 bg-card group-hover:bg-muted whitespace-nowrap")}>
-                    {app.id.substring(0, 8).toUpperCase()}
-                  </td>
-                  {(mode === "manage" || mode === "all") && (
-                    <td className={cn(tdClass, "border-b border-border font-medium text-foreground whitespace-nowrap lg:sticky lg:left-[120px] lg:z-10 bg-card group-hover:bg-muted lg:border-r lg:border-border")}>
-                      {app.employee?.fullName || "N/A"}
-                    </td>
-                  )}
-                  {(mode === "manage" || mode === "all") && (
-                    <td className={cn(tdClass, "border-b border-border text-primary font-medium group-hover:underline whitespace-nowrap")}>
-                      {app.employeeId.substring(0, 10)}
-                    </td>
-                  )}
-                  <td className={cn(tdClass, "border-b border-border text-foreground font-medium whitespace-nowrap")}>
-                    {APPLICATION_TYPE_LABELS[app.type] || app.type}
-                  </td>
-                  <td className={cn(tdClass, "border-b border-border whitespace-nowrap")}>
-                    <StatusPill
-                      label={STATUS_LABELS[app.status]?.label || app.status}
-                      variant={STATUS_LABELS[app.status]?.variant || "neutral"}
-                    />
-                  </td>
-                  <td className={cn(tdClass, "border-b border-border text-muted-foreground whitespace-nowrap")}>
-                    {new Date(app.createdAt).toLocaleDateString("vi-VN")}
-                  </td>
-                  <td className={cn(tdClass, "border-b border-border")}>
-                    <div className="flex flex-col">
-                      <span className="text-primary font-medium text-xs">
-                        {app.employeeId.substring(0, 10)}
-                      </span>
-                      <span className="text-muted-foreground text-xs truncate max-w-40">
-                        {app.employee?.fullName || "N/A"}
-                      </span>
-                    </div>
-                  </td>
-                  <td className={cn(tdClass, "border-b border-border text-muted-foreground whitespace-nowrap")}>
-                    {app.approvedBy?.fullName || app.assignedTo?.fullName || "—"}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Footer Pagination */}
-      {!showLoading && applications.length > 0 && (
-        <div className="shrink-0 border-t border-border bg-card">
-          <AppPagination
-            currentPage={page}
-            totalPages={totalPages}
-            totalItems={total}
-            itemsPerPage={pageSize}
-            onPageChange={(nextPage) => {
-              beginTransition()
-              setPage(nextPage)
-            }}
-            onItemsPerPageChange={(nextPageSize) => {
-              if (![10, 20, 50].includes(nextPageSize)) return
-              beginTransition()
-              setPageSize(nextPageSize)
-              setPage(1)
-            }}
-          />
-        </div>
-      )}
-    </div>
+              },
+            }
+          : undefined
+      }
+      filters={mode !== "manage" ? filterControls : undefined}
+      columns={columns}
+      data={applications}
+      isLoading={showLoading}
+      onRowClick={(app) => { onRowClick(app) }}
+      emptyState={{
+        icon: FileText,
+        title: "Không tìm thấy đơn phù hợp",
+        description: "Không có đơn từ nào phù hợp với bộ lọc hoặc từ khóa tìm kiếm hiện tại.",
+      }}
+      pagination={{
+        currentPage: page,
+        totalPages: totalPages || 1,
+        totalItems: total,
+        itemsPerPage: pageSize,
+        onPageChange: (nextPage) => {
+          beginTransition()
+          setPage(nextPage)
+        },
+        onItemsPerPageChange: (nextPageSize) => {
+          beginTransition()
+          setPageSize(nextPageSize)
+          setPage(1)
+        },
+        pageSizeOptions: [10, 20, 50],
+      }}
+      extraContent={extraContent}
+    />
   )
 }

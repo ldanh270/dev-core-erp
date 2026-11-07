@@ -57,6 +57,7 @@ export interface DataTablePageProps<T> {
       }
     | ReactNode
   headerActions?: ReactNode
+  subHeader?: ReactNode
   variant?: "viewport" | "fluid"
   density?: "normal" | "compact"
   tabs?: {
@@ -78,6 +79,7 @@ export interface DataTablePageProps<T> {
   data: T[]
   keyExtractor?: (item: T, index: number) => string | number
   renderRows?: () => ReactNode
+  onRowClick?: (item: T, index: number) => void
   isLoading?: boolean
   loadingRowsCount?: number
   emptyState?: {

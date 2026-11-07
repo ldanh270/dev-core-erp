@@ -38,6 +38,7 @@ export function DataTablePage<T>({
   backLabel,
   primaryAction,
   headerActions,
+  subHeader,
   variant = "viewport",
   density = "normal",
   tabs,
@@ -48,6 +49,7 @@ export function DataTablePage<T>({
   data,
   keyExtractor,
   renderRows,
+  onRowClick,
   isLoading = false,
   loadingRowsCount = 8,
   emptyState,
@@ -139,6 +141,8 @@ export function DataTablePage<T>({
           </div>
         }
       />
+
+      {subHeader}
 
       {/* Table container */}
       <PageCard
@@ -322,7 +326,22 @@ export function DataTablePage<T>({
                 data.map((item, idx) => (
                   <tr
                     key={keyExtractor ? keyExtractor(item, idx) : idx}
-                    className="group hover:bg-muted/25"
+                    className={cn(
+                      "group hover:bg-muted/25",
+                      onRowClick && "cursor-pointer",
+                    )}
+                    onClick={onRowClick ? () => { onRowClick(item, idx) } : undefined}
+                    tabIndex={onRowClick ? 0 : undefined}
+                    onKeyDown={
+                      onRowClick
+                        ? (e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault()
+                              onRowClick(item, idx)
+                            }
+                          }
+                        : undefined
+                    }
                   >
                     {visibleColumns.map((col) => {
                       const stickyProps = getStickyCellProps(col, stickyLayout, { isDesktop: isLg })
