@@ -4,8 +4,10 @@ import {
   StatusPill,
 } from "@/components/common"
 import { SYSTEM_CONFIG } from "@/config/system.config"
+import { TABLE_COL_WIDTH } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
-import { formatCurrency } from "@/lib/utils"
+import { cn, formatCurrency } from "@/lib/utils"
 import type { Employee } from "@/types/employee.types"
 
 import { useMemo } from "react"
@@ -62,8 +64,8 @@ export default function InsurancePage() {
       {
         id: "employee",
         header: "Nhân sự",
-        width: "240px",
-        minWidth: "240px",
+        width: `${TABLE_COL_WIDTH.EMPLOYEE}px`,
+        minWidth: `${TABLE_COL_WIDTH.EMPLOYEE}px`,
         sticky: true,
         cell: (employee) => (
           <div className="flex items-center gap-3 min-w-0">
@@ -71,10 +73,10 @@ export default function InsurancePage() {
               <User className="size-4 text-muted-foreground" />
             </div>
             <div className="min-w-0 flex-1 flex flex-col justify-center">
-              <p className="font-semibold text-sm leading-5 text-foreground truncate" title={employee.fullName}>
+              <p className={cn(TYPOGRAPHY.CELL_PRIMARY, "leading-5 truncate")} title={employee.fullName}>
                 {employee.fullName}
               </p>
-              <p className="text-xs leading-4 text-muted-foreground truncate" title={employee.username}>
+              <p className={cn(TYPOGRAPHY.CELL_SECONDARY, "leading-4 truncate")} title={employee.username}>
                 {employee.username}
               </p>
             </div>
@@ -84,8 +86,8 @@ export default function InsurancePage() {
       {
         id: "code",
         header: "Mã NV",
-        width: "110px",
-        minWidth: "110px",
+        width: `${TABLE_COL_WIDTH.CODE}px`,
+        minWidth: `${TABLE_COL_WIDTH.CODE}px`,
         sticky: true,
         cell: (employee) => (
           <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-muted text-muted-foreground inline-block truncate">
@@ -96,10 +98,10 @@ export default function InsurancePage() {
       {
         id: "socialInsurance",
         header: "Số sổ BHXH",
-        width: "160px",
-        minWidth: "160px",
+        width: `${TABLE_COL_WIDTH.TYPE}px`,
+        minWidth: `${TABLE_COL_WIDTH.TYPE}px`,
         cell: (employee) => (
-          <span className="font-mono text-xs text-muted-foreground">
+          <span className={TYPOGRAPHY.CELL_CODE}>
             {employee.nationalId ? `79${employee.nationalId.slice(0, 8)}` : "—"}
           </span>
         ),
@@ -107,10 +109,10 @@ export default function InsurancePage() {
       {
         id: "healthInsurance",
         header: "Mã BHYT",
-        width: "160px",
-        minWidth: "160px",
+        width: `${TABLE_COL_WIDTH.TYPE}px`,
+        minWidth: `${TABLE_COL_WIDTH.TYPE}px`,
         cell: (employee) => (
-          <span className="font-mono text-xs text-muted-foreground">
+          <span className={TYPOGRAPHY.CELL_CODE}>
             {employee.nationalId ? `DN4${employee.nationalId.slice(0, 10)}` : "—"}
           </span>
         ),
@@ -119,10 +121,10 @@ export default function InsurancePage() {
         id: "salary",
         header: "Lương đóng BH",
         align: "right",
-        width: "150px",
-        minWidth: "150px",
+        width: `${TABLE_COL_WIDTH.CURRENCY}px`,
+        minWidth: `${TABLE_COL_WIDTH.CURRENCY}px`,
         cell: () => (
-          <span className="font-mono font-medium text-foreground whitespace-nowrap">
+          <span className={cn(TYPOGRAPHY.CELL_CURRENCY, "whitespace-nowrap")}>
             {formatCurrency(5000000)}
           </span>
         ),
@@ -130,8 +132,8 @@ export default function InsurancePage() {
       {
         id: "status",
         header: "Trạng thái",
-        width: "150px",
-        minWidth: "150px",
+        width: `${TABLE_COL_WIDTH.STATUS}px`,
+        minWidth: `${TABLE_COL_WIDTH.STATUS}px`,
         cell: () => (
           <StatusPill label="Đang đóng BHXH" variant="success" />
         ),
@@ -179,28 +181,24 @@ export default function InsurancePage() {
       onResetFilters={() => {
         setSearchParams(new URLSearchParams())
       }}
-      pagination={
-        filteredEmployees.length > 0
-          ? {
-              currentPage: page,
-              totalPages: totalPages || 1,
-              totalItems: filteredEmployees.length,
-              itemsPerPage: limit,
-              onPageChange: (newPage) => {
-                const params = new URLSearchParams(searchParams)
-                params.set("page", newPage.toString())
-                setSearchParams(params)
-              },
-              onItemsPerPageChange: (newLimit) => {
-                const params = new URLSearchParams(searchParams)
-                params.set("limit", newLimit.toString())
-                params.set("page", "1")
-                setSearchParams(params)
-              },
-              pageSizeOptions: [10, 20, 50, 100],
-            }
-          : undefined
-      }
+      pagination={{
+        currentPage: page,
+        totalPages: totalPages || 1,
+        totalItems: filteredEmployees.length,
+        itemsPerPage: limit,
+        onPageChange: (newPage) => {
+          const params = new URLSearchParams(searchParams)
+          params.set("page", newPage.toString())
+          setSearchParams(params)
+        },
+        onItemsPerPageChange: (newLimit) => {
+          const params = new URLSearchParams(searchParams)
+          params.set("limit", newLimit.toString())
+          params.set("page", "1")
+          setSearchParams(params)
+        },
+        pageSizeOptions: [10, 20, 50, 100],
+      }}
     />
   )
 }

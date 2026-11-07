@@ -300,23 +300,19 @@ export default function ActivityLogs() {
         handleFilterChange("fromDate", undefined)
         handleFilterChange("toDate", undefined)
       }}
-      pagination={
-        data && data.meta.total > 0
-          ? {
-              currentPage,
-              totalPages,
-              totalItems: data.meta.total,
-              itemsPerPage: pageSize,
-              onPageChange: (p) => {
-                setQuery((prev) => ({ ...prev, page: p }))
-              },
-              onItemsPerPageChange: (limit) => {
-                setQuery((prev) => ({ ...prev, limit, page: 1 }))
-              },
-              pageSizeOptions: [10, 20, 50, 100],
-            }
-          : undefined
-      }
+      pagination={{
+        currentPage,
+        totalPages: totalPages || 1,
+        totalItems: data?.meta.total ?? 0,
+        itemsPerPage: pageSize,
+        onPageChange: (p) => {
+          setQuery((prev) => ({ ...prev, page: p }))
+        },
+        onItemsPerPageChange: (limit) => {
+          setQuery((prev) => ({ ...prev, limit, page: 1 }))
+        },
+        pageSizeOptions: [10, 20, 50, 100],
+      }}
       extraContent={
         <ActivityLogDetailDrawer
           logId={viewingLogId}

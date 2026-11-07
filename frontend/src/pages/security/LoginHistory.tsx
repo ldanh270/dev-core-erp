@@ -56,15 +56,18 @@ export default function LoginHistory() {
             hideEmployee={true}
           />
 
-          <div className="px-4 py-3 border-t border-border bg-card shrink-0">
-            <AppPagination
-              currentPage={query.page || 1}
-              totalPages={data?.meta.totalPages || 1}
-              onPageChange={(page: number) => {
-                setQuery((prev) => ({ ...prev, page }))
-              }}
-            />
-          </div>
+          <AppPagination
+            currentPage={query.page || 1}
+            totalPages={data?.meta.totalPages || 1}
+            totalItems={data?.meta.total ?? 0}
+            itemsPerPage={query.limit || 10}
+            onPageChange={(page: number) => {
+              setQuery((prev) => ({ ...prev, page }))
+            }}
+            onItemsPerPageChange={(limit: number) => {
+              setQuery((prev) => ({ ...prev, limit, page: 1 }))
+            }}
+          />
         </div>
       </PageCard>
 
