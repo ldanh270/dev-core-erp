@@ -35,11 +35,14 @@ import {
 } from "@/hooks/recruitment/use-recruitment-queries"
 import { usePermission } from "@/hooks/use-permission"
 import { ROUTES } from "@/config/routes.config"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
+import { cn } from "@/lib/utils"
 import type { ApplicantImportResult } from "@/types/recruitment.types"
 
 import { useMemo, useRef, useState } from "react"
 
-import { FileSpreadsheet, Upload } from "lucide-react"
+import { FileSpreadsheet, Inbox, Upload } from "lucide-react"
 import { toast } from "sonner"
 
 const SOURCE_OPTIONS = [
@@ -106,7 +109,7 @@ export default function ApplicantIntakePage() {
   }
 
   return (
-    <PageContainer className="flex flex-col gap-6">
+    <PageContainer variant="default" className="flex flex-col gap-6">
       <PageHeader
         backHref={ROUTES.RECRUITMENT.CANDIDATES}
         title="Tiếp nhận ứng viên"
@@ -120,7 +123,7 @@ export default function ApplicantIntakePage() {
           />
           <div className="grid gap-5 md:grid-cols-2">
             <div className="grid gap-2">
-              <Label>Yêu cầu tuyển dụng</Label>
+              <Label className={TYPOGRAPHY.FORM_LABEL}>Yêu cầu tuyển dụng</Label>
               {isLoadingRequisitions ? (
                 <Skeleton className="h-10 w-full rounded-full" />
               ) : (
@@ -146,7 +149,7 @@ export default function ApplicantIntakePage() {
               )}
             </div>
             <div className="grid gap-2">
-              <Label>Điểm đăng tuyển</Label>
+              <Label className={TYPOGRAPHY.FORM_LABEL}>Điểm đăng tuyển</Label>
               {isLoadingPostings ? (
                 <Skeleton className="h-10 w-full rounded-full" />
               ) : (
@@ -166,7 +169,7 @@ export default function ApplicantIntakePage() {
               )}
             </div>
             <div className="grid gap-2 md:col-span-2">
-              <Label>Nguồn Application</Label>
+              <Label className={TYPOGRAPHY.FORM_LABEL}>Nguồn Application</Label>
               <Select value={source} onValueChange={setSource} disabled={Boolean(postingId)}>
                 <SelectTrigger className="w-full rounded-full">
                   <SelectValue placeholder="Chọn nguồn" />
@@ -179,7 +182,7 @@ export default function ApplicantIntakePage() {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">
+              <p className={TYPOGRAPHY.FORM_HELPER}>
                 Khi chọn điểm đăng, nguồn được lấy từ kênh và không thể đổi thủ công.
               </p>
             </div>
@@ -232,38 +235,75 @@ export default function ApplicantIntakePage() {
           <Table>
             <TableHeader className="sticky top-0 bg-muted/40">
               <TableRow>
-                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground px-4 py-2">
+                <TableHead
+                  className={cn("h-10 px-4 py-2", TYPOGRAPHY.TABLE_HEADER)}
+                  style={{ width: getTableColWidthPx("TITLE") }}
+                >
                   Họ tên
                 </TableHead>
-                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground px-4 py-2">
+                <TableHead
+                  className={cn("h-10 px-4 py-2", TYPOGRAPHY.TABLE_HEADER)}
+                  style={{ width: getTableColWidthPx("CONTACT") }}
+                >
                   Email
                 </TableHead>
-                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground px-4 py-2">
+                <TableHead
+                  className={cn("h-10 px-4 py-2", TYPOGRAPHY.TABLE_HEADER)}
+                  style={{ width: getTableColWidthPx("CONTACT") }}
+                >
                   Điện thoại
                 </TableHead>
-                <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground px-4 py-2">
+                <TableHead className={cn("h-10 px-4 py-2", TYPOGRAPHY.TABLE_HEADER)}>
                   CV
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {rows.slice(0, 50).map((row, index) => (
-                <TableRow
-                  key={`${row.email}-${index}`}
-                  className="transition-colors duration-100 hover:bg-muted/25"
-                >
-                  <TableCell className="h-[60px] px-4 py-3 font-medium text-foreground">
-                    {row.fullName}
-                  </TableCell>
-                  <TableCell className="h-[60px] px-4 py-3">{row.email}</TableCell>
-                  <TableCell className="h-[60px] px-4 py-3 text-muted-foreground">
-                    {row.phone || "—"}
-                  </TableCell>
-                  <TableCell className="h-[60px] px-4 py-3 max-w-52 truncate text-muted-foreground">
-                    {row.cvUrl || "—"}
+              {rows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-44 text-center">
+                    <div className="flex flex-col items-center justify-center py-6 text-muted-foreground">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/50 border border-border/60 text-muted-foreground shadow-2xs mb-3">
+                        <Inbox className="h-6 w-6 text-muted-foreground/80" />
+                      </div>
+                      <p className="text-sm font-semibold text-foreground">
+                        Chưa có dữ liệu ứng viên để xem trước
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+                        Dán dữ liệu CSV vào ô phía trên hoặc chọn file Excel / CSV để tải lên.
+                      </p>
+                    </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                rows.slice(0, 50).map((row, index) => (
+                  <TableRow
+                    key={`${row.email}-${index}`}
+                    className="transition-colors duration-100 hover:bg-muted/25"
+                  >
+                    <TableCell
+                      className={cn("h-[60px] px-4 py-3", TYPOGRAPHY.CELL_PRIMARY)}
+                    >
+                      {row.fullName}
+                    </TableCell>
+                    <TableCell
+                      className={cn("h-[60px] px-4 py-3", TYPOGRAPHY.CELL_SECONDARY)}
+                    >
+                      {row.email}
+                    </TableCell>
+                    <TableCell
+                      className={cn("h-[60px] px-4 py-3", TYPOGRAPHY.CELL_SECONDARY)}
+                    >
+                      {row.phone || "—"}
+                    </TableCell>
+                    <TableCell
+                      className={cn("h-[60px] px-4 py-3 max-w-52 truncate", TYPOGRAPHY.CELL_SECONDARY)}
+                    >
+                      {row.cvUrl || "—"}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
@@ -342,7 +382,7 @@ function Result({ label, value }: { label: string; value: number }) {
 function CardHeading({ title, description }: { title: string; description?: string }) {
   return (
     <div className="mb-2">
-      <h2 className="text-base font-semibold">{title}</h2>
+      <h2 className="text-base font-semibold text-foreground">{title}</h2>
       {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
     </div>
   )

@@ -24,13 +24,16 @@ import {
 } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { POSTING_CHANNELS } from "@/config/entities/recruitment.config"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import {
   useDeleteOAuthAccount,
   useOAuthAccounts,
 } from "@/hooks/recruitment/use-recruitment-queries"
 import apiClient from "@/lib/api-client"
+import { cn } from "@/lib/utils"
 
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { Filter, Link2, Plus, RefreshCw, RotateCcw, Trash2 } from "lucide-react"
 import { useSearchParams } from "react-router-dom"
@@ -176,19 +179,22 @@ export default function OAuthAccountsPage() {
     }
   }
 
-  const handleDelete = async (id: string, name?: string) => {
-    const isConfirmed = await confirm({
-      title: "Hủy liên kết tài khoản",
-      description: `Bạn có chắc muốn hủy liên kết tài khoản "${name || id}"? Các biểu mẫu hay tác vụ đồng bộ liên quan có thể bị ảnh hưởng.`,
-      confirmText: "Hủy liên kết",
-      cancelText: "Giữ lại",
-      variant: "destructive",
-    })
+  const handleDelete = useCallback(
+    async (id: string, name?: string) => {
+      const isConfirmed = await confirm({
+        title: "Hủy liên kết tài khoản",
+        description: `Bạn có chắc muốn hủy liên kết tài khoản "${name || id}"? Các biểu mẫu hay tác vụ đồng bộ liên quan có thể bị ảnh hưởng.`,
+        confirmText: "Hủy liên kết",
+        cancelText: "Giữ lại",
+        variant: "destructive",
+      })
 
-    if (isConfirmed) {
-      deleteMutation.mutate(id)
-    }
-  }
+      if (isConfirmed) {
+        deleteMutation.mutate(id)
+      }
+    },
+    [confirm, deleteMutation],
+  )
 
   const getChannelLabel = (channel: string) => {
     return POSTING_CHANNELS.find((ch) => ch.value === channel)?.label || channel
@@ -199,16 +205,16 @@ export default function OAuthAccountsPage() {
       {
         id: "account",
         header: "Tên tài khoản / Mã ID",
-        minWidth: "260px",
+        minWidth: getTableColWidthPx("TITLE"),
         sticky: true,
         cell: (account) => (
           <div className="flex items-center gap-2.5">
             <Link2 className="h-4 w-4 text-primary shrink-0" />
             <div className="min-w-0">
-              <div className="font-medium text-foreground text-sm truncate">
+              <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "truncate")}>
                 {account.name || "Default Account"}
               </div>
-              <div className="font-mono text-xs text-muted-foreground mt-0.5 truncate">
+              <div className={cn(TYPOGRAPHY.CELL_CODE, "mt-0.5 truncate")}>
                 ID: {account.id}
               </div>
             </div>
@@ -218,9 +224,9 @@ export default function OAuthAccountsPage() {
       {
         id: "channel",
         header: "Kênh tuyển dụng",
-        minWidth: "160px",
+        minWidth: getTableColWidthPx("TYPE"),
         cell: (account) => (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-muted text-foreground border border-border">
+          <span className={cn(TYPOGRAPHY.STATUS_PILL, "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-foreground border border-border")}>
             {getChannelLabel(account.channel)}
           </span>
         ),
@@ -228,7 +234,7 @@ export default function OAuthAccountsPage() {
       {
         id: "status",
         header: "Trạng thái",
-        minWidth: "140px",
+        minWidth: getTableColWidthPx("STATUS"),
         cell: (account) => {
           const isConnected = account.hasRefreshToken
           return (
@@ -242,10 +248,10 @@ export default function OAuthAccountsPage() {
       {
         id: "createdAt",
         header: "Ngày kết nối",
-        minWidth: "160px",
+        minWidth: getTableColWidthPx("DATE"),
         hideBelow: "md",
         cell: (account) => (
-          <span className="text-xs text-muted-foreground">
+          <span className={TYPOGRAPHY.CELL_DATE}>
             {new Date(account.createdAt).toLocaleDateString("vi-VN", {
               year: "numeric",
               month: "2-digit",
@@ -259,7 +265,7 @@ export default function OAuthAccountsPage() {
       {
         id: "actions",
         header: "",
-        width: "140px",
+        width: getTableColWidthPx("ACTIONS"),
         align: "right",
         cell: (account) => {
           const isConnected = account.hasRefreshToken
@@ -302,7 +308,7 @@ export default function OAuthAccountsPage() {
         },
       },
     ],
-    [confirm, deleteMutation],
+    [handleDelete],
   )
 
   const tabsConfig = useMemo(
@@ -385,7 +391,6 @@ export default function OAuthAccountsPage() {
           </div>
         }
         emptyState={{
-          icon: Link2,
           title: hasActiveFilters
             ? "Không tìm thấy tài khoản OAuth nào phù hợp với bộ lọc"
             : "Chưa có tài khoản OAuth nào được liên kết",
@@ -407,10 +412,10 @@ export default function OAuthAccountsPage() {
       />
 
       <Dialog open={isConnectModalOpen} onOpenChange={setIsConnectModalOpen}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
+        <DialogContent className="sm:max-w-md rounded-xl">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">Kết nối tài khoản kênh mới</DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
+            <DialogTitle className={TYPOGRAPHY.MODAL_TITLE}>Kết nối tài khoản kênh mới</DialogTitle>
+            <DialogDescription className={TYPOGRAPHY.MODAL_DESCRIPTION}>
               Đăng nhập ủy quyền qua OAuth2 để hệ thống tự động xuất bản tin hoặc đồng bộ hồ sơ ứng
               viên.
             </DialogDescription>
@@ -418,9 +423,9 @@ export default function OAuthAccountsPage() {
 
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Kênh ứng tuyển</Label>
+              <Label className={TYPOGRAPHY.FORM_LABEL}>Kênh ứng tuyển</Label>
               <Select value={selectedChannel} onValueChange={setSelectedChannel}>
-                <SelectTrigger className="w-full h-10 text-xs rounded-xl">
+                <SelectTrigger className="w-full h-10 text-xs rounded-full">
                   <SelectValue placeholder="Chọn kênh" />
                 </SelectTrigger>
                 <SelectContent>
@@ -434,16 +439,16 @@ export default function OAuthAccountsPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium">
+              <Label className={TYPOGRAPHY.FORM_LABEL}>
                 Tên nhận diện tài khoản <span className="text-destructive">*</span>
               </Label>
               <Input
                 placeholder="Ví dụ: Google HR Team, LinkedIn Tuyển dụng..."
                 value={accountName}
                 onChange={(e) => { setAccountName(e.target.value); }}
-                className="h-10 text-xs rounded-xl"
+                className="h-10 text-xs rounded-full"
               />
-              <p className="text-[11px] text-muted-foreground">
+              <p className={TYPOGRAPHY.FORM_HELPER}>
                 Đặt tên giúp bạn phân biệt nếu liên kết nhiều tài khoản trong cùng một kênh.
               </p>
             </div>

@@ -22,6 +22,8 @@ import {
   REQUISITION_STATUS,
   REQUISITION_STATUS_LABELS,
 } from "@/config/entities/recruitment.config"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import {
   useApproveRequisition,
   useRequisitions,
@@ -30,6 +32,7 @@ import {
 import { usePersonalEmployeeId } from "@/hooks/attendance/use-personal-employee-id"
 import { usePermission } from "@/hooks/use-permission"
 import { routerNavigate } from "@/lib/router-navigator"
+import { cn } from "@/lib/utils"
 import type { JobRequisition } from "@/types/recruitment.types"
 
 import { useMemo, useState } from "react"
@@ -177,7 +180,7 @@ function RequisitionRowActions({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full text-emerald-600 hover:text-emerald-700 hover:bg-emerald-500/10 h-8 w-8"
+                  className="rounded-full text-success hover:text-success hover:bg-success/10 h-8 w-8"
                   aria-label={`Duyệt ${requisition.code}`}
                   onClick={() => {
                     approve.mutate({ id: requisition.id, data: { approved: true } })
@@ -309,13 +312,13 @@ export default function RequisitionsPage() {
       {
         id: "code",
         header: "Mã YC",
-        width: "110px",
-        minWidth: "110px",
+        width: getTableColWidthPx("CODE"),
+        minWidth: getTableColWidthPx("CODE"),
         sticky: true,
         cell: (requisition) => (
           <button
             onClick={() => { routerNavigate(`/recruitment/requisitions/${requisition.id}/overview`); }}
-            className="font-mono text-xs font-semibold text-primary hover:underline focus-visible:outline-none text-left"
+            className={cn(TYPOGRAPHY.CELL_CODE, "text-primary hover:underline focus-visible:outline-none text-left")}
           >
             {requisition.code}
           </button>
@@ -324,19 +327,19 @@ export default function RequisitionsPage() {
       {
         id: "title",
         header: "Vị trí tuyển",
-        width: "280px",
-        minWidth: "280px",
+        width: getTableColWidthPx("TITLE"),
+        minWidth: getTableColWidthPx("TITLE"),
         sticky: true,
         cell: (requisition) => (
-          <div className="min-w-0 max-w-[260px]">
+          <div className="min-w-0 max-w-[240px]">
             <button
               onClick={() => { routerNavigate(`/recruitment/requisitions/${requisition.id}/overview`); }}
-              className="font-medium text-foreground text-left hover:text-primary hover:underline transition-colors focus-visible:outline-none block truncate w-full"
+              className={cn(TYPOGRAPHY.CELL_PRIMARY, "text-left hover:text-primary hover:underline transition-colors focus-visible:outline-none block truncate w-full")}
               title={requisition.title}
             >
               {requisition.title}
             </button>
-            <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground truncate">
+            <div className={cn(TYPOGRAPHY.CELL_SECONDARY, "mt-1 flex items-center gap-1.5")}>
               <span className="truncate">{requisition.department || "Chưa có phòng ban"}</span>
               {requisition.positionLevel && (
                 <>
@@ -357,21 +360,21 @@ export default function RequisitionsPage() {
       {
         id: "salary",
         header: "Ngân sách",
-        width: "200px",
-        minWidth: "200px",
+        width: "180px",
+        minWidth: "180px",
         hideBelow: "lg",
         cell: (requisition) => (
-          <span className="text-sm text-foreground whitespace-nowrap font-medium">{formatCurrencyRange(requisition)}</span>
+          <span className={TYPOGRAPHY.CELL_CURRENCY}>{formatCurrencyRange(requisition)}</span>
         ),
       },
       {
         id: "targetHireDate",
         header: "Hạn tuyển",
-        width: "130px",
-        minWidth: "130px",
+        width: getTableColWidthPx("DATE"),
+        minWidth: getTableColWidthPx("DATE"),
         hideBelow: "xl",
         cell: (requisition) => (
-          <span className="text-sm text-muted-foreground whitespace-nowrap">
+          <span className={TYPOGRAPHY.CELL_DATE}>
             {formatDate(requisition.targetHireDate)}
           </span>
         ),
@@ -379,23 +382,23 @@ export default function RequisitionsPage() {
       {
         id: "approver",
         header: "Người duyệt",
-        width: "180px",
-        minWidth: "180px",
+        width: getTableColWidthPx("EMPLOYEE"),
+        minWidth: getTableColWidthPx("EMPLOYEE"),
         hideBelow: "md",
         cell: (requisition) => (
           <div className="min-w-0 truncate">
-            <p className="text-sm font-medium text-foreground truncate">
+            <p className={TYPOGRAPHY.CELL_PRIMARY}>
               {requisition.approver?.fullName ?? "Chưa chỉ định"}
             </p>
-            <p className="text-xs text-muted-foreground truncate">{requisition.approver?.position ?? ""}</p>
+            <p className={TYPOGRAPHY.CELL_SECONDARY}>{requisition.approver?.position ?? ""}</p>
           </div>
         ),
       },
       {
         id: "status",
         header: "Trạng thái",
-        width: "140px",
-        minWidth: "140px",
+        width: getTableColWidthPx("STATUS"),
+        minWidth: getTableColWidthPx("STATUS"),
         cell: (requisition) => (
           <StatusPill
             label={REQUISITION_STATUS_LABELS[requisition.status]}
@@ -406,8 +409,8 @@ export default function RequisitionsPage() {
       {
         id: "actions",
         header: "",
-        width: "120px",
-        minWidth: "120px",
+        width: getTableColWidthPx("ACTIONS"),
+        minWidth: getTableColWidthPx("ACTIONS"),
         align: "right",
         cell: (requisition) => (
           <RequisitionRowActions

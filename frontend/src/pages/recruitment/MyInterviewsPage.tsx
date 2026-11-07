@@ -27,8 +27,14 @@ import {
   ArrowUpRight,
 } from "lucide-react"
 
-import { StatusPill } from "@/components/common/status-pill"
-import { PageContainer } from "@/components/common"
+import {
+  BoardCard,
+  BoardColumn,
+  BoardColumnHeader,
+  BoardView,
+  PageContainer,
+  StatusPill,
+} from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -38,9 +44,11 @@ import {
   INTERVIEW_FORMAT_LABELS,
   INTERVIEW_RESULT_LABELS,
 } from "@/config/entities/recruitment.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { interviewApi } from "@/lib/api/recruitment.api"
-import type { InterviewRound } from "@/types/recruitment.types"
 import { routerNavigate } from "@/lib/router-navigator"
+import { cn } from "@/lib/utils"
+import type { InterviewRound } from "@/types/recruitment.types"
 
 const WEEKDAY_NAMES = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"]
 
@@ -99,17 +107,17 @@ export default function MyInterviewsPage() {
   )
 
   return (
-    <PageContainer className="flex h-full flex-col space-y-6">
+    <PageContainer variant="table" className="gap-4">
       {/* ── Page Header ───────────────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-5">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-4 shrink-0">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-2xs">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-2xs">
               <CalendarDays className="size-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground">Lịch phỏng vấn của tôi</h1>
-              <p className="text-xs text-muted-foreground">Theo dõi thời khóa biểu và gửi đánh giá ứng viên các vòng phỏng vấn</p>
+              <h1 className={TYPOGRAPHY.PAGE_TITLE}>Lịch phỏng vấn của tôi</h1>
+              <p className={TYPOGRAPHY.PAGE_SUBTITLE}>Theo dõi thời khóa biểu và gửi đánh giá ứng viên các vòng phỏng vấn</p>
             </div>
           </div>
         </div>
@@ -138,59 +146,60 @@ export default function MyInterviewsPage() {
       </div>
 
       {/* ── Metric Summary Cards ─────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-border/60 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-xs space-y-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 shrink-0">
+        <div className="rounded-xl border border-border/60 bg-card p-3.5 transition-all hover:border-primary/40 hover:shadow-xs space-y-1.5">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider">Tổng số buổi PV</span>
+            <span className={TYPOGRAPHY.TABLE_HEADER}>Tổng số buổi PV</span>
             <Layers className="size-4 text-primary" />
           </div>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-black text-foreground">{interviews.length}</span>
-            <span className="text-[11px] font-semibold text-muted-foreground">Tất cả các vòng</span>
+            <span className="text-2xl font-bold text-foreground">{interviews.length}</span>
+            <span className="text-xs font-medium text-muted-foreground">Tất cả các vòng</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border/60 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-xs space-y-2">
+        <div className="rounded-xl border border-border/60 bg-card p-3.5 transition-all hover:border-warning/40 hover:shadow-xs space-y-1.5">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider">Hôm nay</span>
-            <Clock className="size-4 text-amber-500" />
+            <span className={TYPOGRAPHY.TABLE_HEADER}>Hôm nay</span>
+            <Clock className="size-4 text-warning" />
           </div>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-black text-amber-600 dark:text-amber-400">{todayCount}</span>
-            <span className="text-[11px] font-semibold text-muted-foreground">Buổi phỏng vấn</span>
+            <span className="text-2xl font-bold text-warning">{todayCount}</span>
+            <span className="text-xs font-medium text-muted-foreground">Buổi phỏng vấn</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border/60 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-xs space-y-2">
+        <div className="rounded-xl border border-border/60 bg-card p-3.5 transition-all hover:border-info/40 hover:shadow-xs space-y-1.5">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider">Sắp diễn ra</span>
-            <CalendarIcon className="size-4 text-blue-500" />
+            <span className={TYPOGRAPHY.TABLE_HEADER}>Sắp diễn ra</span>
+            <CalendarIcon className="size-4 text-info" />
           </div>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-black text-blue-600 dark:text-blue-400">{pendingCount}</span>
-            <span className="text-[11px] font-semibold text-muted-foreground">Chờ đánh giá</span>
+            <span className="text-2xl font-bold text-info">{pendingCount}</span>
+            <span className="text-xs font-medium text-muted-foreground">Chờ đánh giá</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border/60 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-xs space-y-2">
+        <div className="rounded-xl border border-border/60 bg-card p-3.5 transition-all hover:border-success/40 hover:shadow-xs space-y-1.5">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider">Đã hoàn thành</span>
-            <CheckCircle2 className="size-4 text-emerald-500" />
+            <span className={TYPOGRAPHY.TABLE_HEADER}>Đã hoàn thành</span>
+            <CheckCircle2 className="size-4 text-success" />
           </div>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{completedCount}</span>
-            <span className="text-[11px] font-semibold text-muted-foreground">Đã ghi nhận</span>
+            <span className="text-2xl font-bold text-success">{completedCount}</span>
+            <span className="text-xs font-medium text-muted-foreground">Đã ghi nhận</span>
           </div>
         </div>
       </div>
 
       {/* ── Main View Content ────────────────────────────────────────────────────── */}
       {viewMode === "calendar" ? (
-        /* ── CALENDAR GRID VIEW (Attendance Copy Style) ────────────────────────── */
-        <div className="rounded-3xl border border-border/60 bg-card p-6 shadow-xs space-y-6">
-          {/* Calendar Header with Navigation */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-4">
-            <div className="flex items-center gap-3">
+        /* ── CALENDAR BOARD VIEW WITH BUILT-IN HORIZONTAL & VERTICAL SCROLLBARS ───── */
+        <BoardView
+          layout="stretch"
+          scrollType="always"
+          toolbarLeft={
+            <>
               <Button
                 variant="outline"
                 size="sm"
@@ -221,10 +230,10 @@ export default function MyInterviewsPage() {
               <span className="text-sm font-bold text-foreground">
                 Tuần: {format(weekDays[0], "dd/MM/yyyy")} — {format(weekDays[6], "dd/MM/yyyy")}
               </span>
-            </div>
-
-            {/* Filter Search */}
-            <div className="relative w-full max-w-xs">
+            </>
+          }
+          toolbarRight={
+            <div className="relative w-full sm:w-64">
               <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Lọc ứng viên..."
@@ -233,132 +242,112 @@ export default function MyInterviewsPage() {
                 onChange={(e) => { setSearchQuery(e.target.value); }}
               />
             </div>
-          </div>
-
-          {/* 7-Day Weekly Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-7 gap-3">
-            {weekDays.map((day, idx) => {
-              const dayIsToday = isToday(day)
-              const dayInterviews = filteredInterviews.filter(
-                (i) => i.scheduledAt && isSameDay(new Date(i.scheduledAt), day)
-              )
-
-              return (
-                <div
-                  key={day.toISOString()}
-                  className={`flex flex-col min-h-[220px] rounded-2xl border p-3 transition-all duration-200 ${
-                    dayIsToday
-                      ? "border-primary/50 bg-primary/5 shadow-xs"
-                      : "border-border/60 bg-background/50 hover:border-border"
-                  }`}
-                >
-                  {/* Day Header */}
-                  <div className="flex items-center justify-between border-b border-border/40 pb-2 mb-2">
-                    <span className="text-xs font-bold text-muted-foreground">{WEEKDAY_NAMES[idx % WEEKDAY_NAMES.length]}</span>
-                    <span
-                      className={`flex size-6 items-center justify-center rounded-full text-xs font-bold ${
-                        dayIsToday
-                          ? "bg-primary text-primary-foreground shadow-xs"
-                          : "text-foreground"
-                      }`}
-                    >
-                      {format(day, "d")}
-                    </span>
-                  </div>
-
-                  {/* Day Interview Events */}
-                  <div className="flex-1 space-y-2 overflow-y-auto max-h-[360px] pr-0.5">
-                    {isLoading ? (
-                      <div className="py-4 text-center text-[11px] text-muted-foreground">Tải...</div>
-                    ) : dayInterviews.length === 0 ? (
-                      <div className="h-full flex items-center justify-center py-6 text-[11px] text-muted-foreground/60 italic">
-                        Không có lịch
-                      </div>
-                    ) : (
-                      dayInterviews.map((interview) => (
-                        <div
-                          key={interview.id}
-                          onClick={() => { setSelectedInterview(interview); }}
-                          className="group relative cursor-pointer rounded-xl border border-border/70 bg-card p-2.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-md space-y-1.5"
-                        >
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="text-[11px] font-bold text-primary truncate max-w-[100px]">
-                              {interview.title}
-                            </span>
-                            <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground shrink-0">
-                              <Clock className="size-3 text-amber-500" />
-                              <span>{interview.scheduledAt ? format(new Date(interview.scheduledAt), "HH:mm") : "--:--"}</span>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-1.5">
-                            <div className="flex size-5 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary shrink-0">
-                              {interview.application?.candidate?.fullName?.charAt(0) ?? "U"}
-                            </div>
-                            <span className="text-xs font-bold text-foreground truncate">
-                              {interview.application?.candidate?.fullName}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 border-t border-border/30">
-                            <div className="flex items-center gap-1">
-                              {interview.format === "video_call" ? (
-                                <Video className="size-3 text-blue-500" />
-                              ) : (
-                                <MapPin className="size-3 text-emerald-500" />
-                              )}
-                              <span>{INTERVIEW_FORMAT_LABELS[interview.format] ?? interview.format}</span>
-                            </div>
-                            <Badge
-                              variant="outline"
-                              className={`text-[9px] px-1.5 py-0 rounded-full font-bold ${
-                                interview.status === "completed"
-                                  ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                                  : interview.status === "cancelled"
-                                    ? "bg-rose-500/10 text-rose-600 border-rose-500/20"
-                                    : "bg-blue-500/10 text-blue-600 border-blue-500/20"
-                              }`}
-                            >
-                              {interview.status === "completed" ? "Đã xong" : interview.status === "cancelled" ? "Hủy" : "Chờ"}
-                            </Badge>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          {/* Calendar Legend Bar */}
-          <div className="flex flex-wrap items-center justify-between border-t border-border/40 pt-4 text-xs text-muted-foreground gap-4">
-            <div className="flex items-center gap-4">
+          }
+          legend={
+            <>
               <span className="font-bold text-foreground">Ghi chú:</span>
               <div className="flex items-center gap-1.5">
-                <span className="size-2.5 rounded-full bg-blue-500" />
+                <span className="size-2.5 rounded-full bg-info" />
                 <span>Sắp diễn ra</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="size-2.5 rounded-full bg-emerald-500" />
+                <span className="size-2.5 rounded-full bg-success" />
                 <span>Đã hoàn thành</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="size-2.5 rounded-full bg-rose-500" />
+                <span className="size-2.5 rounded-full bg-destructive" />
                 <span>Đã hủy</span>
               </div>
-            </div>
+            </>
+          }
+          footerText="Bấm vào bất kỳ thẻ phỏng vấn nào để mở phiếu đánh giá ứng viên"
+        >
+          {weekDays.map((day, idx) => {
+            const dayIsToday = isToday(day)
+            const dayInterviews = filteredInterviews.filter(
+              (i) => i.scheduledAt && isSameDay(new Date(i.scheduledAt), day)
+            )
 
-            <p className="text-xs text-muted-foreground italic">
-              Bấm vào bất kỳ thẻ phỏng vấn nào để mở phiếu đánh giá ứng viên
-            </p>
-          </div>
-        </div>
+            return (
+              <BoardColumn
+                key={day.toISOString()}
+                isHighlighted={dayIsToday}
+                scrollType="always"
+                className="flex-1 min-w-44 h-full"
+                header={
+                  <BoardColumnHeader
+                    title={WEEKDAY_NAMES[idx % WEEKDAY_NAMES.length]}
+                    actions={
+                      <span
+                        className={cn(
+                          "flex size-6 items-center justify-center rounded-full text-xs font-bold shrink-0",
+                          dayIsToday
+                            ? "bg-primary text-primary-foreground shadow-xs"
+                            : "text-foreground"
+                        )}
+                      >
+                        {format(day, "d")}
+                      </span>
+                    }
+                  />
+                }
+                isEmpty={!isLoading && dayInterviews.length === 0}
+                emptyState={<span>Không có lịch</span>}
+              >
+                {isLoading ? (
+                  <div className="py-4 text-center text-xs text-muted-foreground">Tải...</div>
+                ) : (
+                  dayInterviews.map((interview) => (
+                    <BoardCard
+                      key={interview.id}
+                      onClick={() => { setSelectedInterview(interview); }}
+                      className="p-2.5 space-y-2"
+                    >
+                      <div className="flex items-center justify-between gap-1">
+                        <span className={cn(TYPOGRAPHY.BOARD_CARD_SUB, "font-semibold text-primary truncate max-w-[120px]")}>
+                          {interview.title}
+                        </span>
+                        <div className={cn(TYPOGRAPHY.BOARD_CARD_TIME, "flex items-center gap-1 text-muted-foreground shrink-0")}>
+                          <Clock className="size-3 text-warning shrink-0" />
+                          <span>{interview.scheduledAt ? format(new Date(interview.scheduledAt), "HH:mm") : "--:--"}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <div className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary shrink-0">
+                          {interview.application?.candidate?.fullName?.charAt(0) ?? "U"}
+                        </div>
+                        <span className={cn(TYPOGRAPHY.BOARD_CARD_TITLE, "truncate")}>
+                          {interview.application?.candidate?.fullName}
+                        </span>
+                      </div>
+
+                      <div className={cn(TYPOGRAPHY.BOARD_CARD_SUB, "flex items-center justify-between pt-1.5 border-t border-border/30")}>
+                        <div className="flex items-center gap-1 min-w-0">
+                          {interview.format === "video_call" ? (
+                            <Video className="size-3 text-info shrink-0" />
+                          ) : (
+                            <MapPin className="size-3 text-success shrink-0" />
+                          )}
+                          <span className="truncate">{INTERVIEW_FORMAT_LABELS[interview.format] ?? interview.format}</span>
+                        </div>
+                        <StatusPill
+                          label={interview.status === "completed" ? "Đã xong" : interview.status === "cancelled" ? "Hủy" : "Chờ"}
+                          variant={interview.status === "completed" ? "success" : interview.status === "cancelled" ? "danger" : "info"}
+                        />
+                      </div>
+                    </BoardCard>
+                  ))
+                )}
+              </BoardColumn>
+            )
+          })}
+        </BoardView>
       ) : (
         /* ── LIST VIEW ────────────────────────────────────────────────────────── */
         <div className="space-y-4">
           {/* Controls Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 bg-card border border-border/60 p-4 rounded-2xl">
+          <div className="flex flex-wrap items-center justify-between gap-4 bg-card border border-border/60 p-4 rounded-xl">
             <div className="relative w-full max-w-sm">
               <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -388,7 +377,7 @@ export default function MyInterviewsPage() {
           {isLoading ? (
             <div className="py-12 text-center text-sm text-muted-foreground">Đang tải lịch phỏng vấn...</div>
           ) : filteredInterviews.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-border/60 py-16 text-center space-y-3 bg-card/40">
+            <div className="rounded-xl border border-dashed border-border/60 py-16 text-center space-y-3 bg-card/40">
               <CalendarXIcon className="mx-auto size-8 text-muted-foreground/50" />
               <p className="text-sm font-medium text-muted-foreground">Không tìm thấy lịch phỏng vấn nào.</p>
             </div>
@@ -436,9 +425,9 @@ function InterviewCard({
   const candidate = interview.application?.candidate
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-border/60 bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-4 rounded-xl border border-border/60 bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-start gap-4">
-        <div className="flex size-12 items-center justify-center rounded-2xl border border-border/50 bg-primary/10 text-lg font-bold text-primary overflow-hidden shrink-0 shadow-2xs">
+        <div className="flex size-12 items-center justify-center rounded-full border border-border/50 bg-primary/10 text-lg font-bold text-primary overflow-hidden shrink-0 shadow-2xs">
           {candidate?.avatarUrl ? (
             <img src={candidate.avatarUrl} alt={candidate.fullName ?? "Ứng viên"} className="size-full object-cover" />
           ) : (
@@ -447,7 +436,7 @@ function InterviewCard({
         </div>
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <h4 className="font-bold text-foreground text-base">{candidate?.fullName || "Ứng viên chưa cập nhật"}</h4>
+            <h4 className={cn(TYPOGRAPHY.BOARD_CARD_TITLE, "text-base")}>{candidate?.fullName || "Ứng viên chưa cập nhật"}</h4>
             <Badge variant="outline" className="rounded-full bg-primary/10 text-primary border-primary/20 font-bold text-xs">
               Vòng {interview.roundNumber}: {interview.title}
             </Badge>
@@ -459,15 +448,15 @@ function InterviewCard({
           <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground">
             <div className="flex items-center gap-1.5 rounded-full bg-secondary/50 px-3 py-1 text-foreground font-semibold">
               <CalendarIcon className="size-3.5 text-primary" />
-              <span>
+              <span className="font-mono">
                 {interview.scheduledAt ? format(new Date(interview.scheduledAt), "HH:mm, dd/MM/yyyy") : "Chưa xếp lịch"}
               </span>
             </div>
             <div className="flex items-center gap-1.5 rounded-full bg-secondary/50 px-3 py-1 text-foreground font-semibold">
               {interview.format === "video_call" ? (
-                <Video className="size-3.5 text-blue-500" />
+                <Video className="size-3.5 text-info" />
               ) : (
-                <MapPin className="size-3.5 text-emerald-500" />
+                <MapPin className="size-3.5 text-success" />
               )}
               <span>{INTERVIEW_FORMAT_LABELS[interview.format] ?? interview.format}</span>
             </div>
