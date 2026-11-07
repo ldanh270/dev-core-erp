@@ -1,7 +1,5 @@
 /**
- * Standard Typography Scale & Text Styling Constants
- * Single Source of Truth for text sizes, font weights, and typography hierarchy across all 51 ERP modules.
- * Adheres strictly to docs/frontend-design-spec.md (Inter for UI, Fira Code for Technical IDs/Data).
+ * Typography Scale & Text Styling Constants
  */
 
 export const TYPOGRAPHY = {
@@ -46,6 +44,18 @@ export const TYPOGRAPHY = {
   FORM_HELPER: "text-xs text-muted-foreground",
   /** Form validation error message (12px, Medium, Destructive red) */
   FORM_ERROR: "text-xs font-medium text-destructive",
+
+  // ── 5. Board & Kanban Typography ─────────────────────────
+  /** Column Header primary title (14px, Semibold) */
+  BOARD_COLUMN_TITLE: "text-sm font-semibold text-foreground",
+  /** Column Header secondary date / subtext (12px, Medium, Muted) */
+  BOARD_COLUMN_SUB: "text-xs font-medium text-muted-foreground",
+  /** Card primary title / task name / candidate name (14px, Semibold) */
+  BOARD_CARD_TITLE: "text-sm font-semibold text-foreground leading-snug",
+  /** Card secondary subtext / role / department (12px, Muted) */
+  BOARD_CARD_SUB: "text-xs text-muted-foreground truncate",
+  /** Card technical time or date value (12px, Monospace, Tabular numbers) */
+  BOARD_CARD_TIME: "font-mono text-xs font-medium tabular-nums",
 } as const
 
 export type TypographyToken = keyof typeof TYPOGRAPHY
