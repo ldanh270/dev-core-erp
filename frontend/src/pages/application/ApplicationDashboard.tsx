@@ -172,121 +172,45 @@ export default function ApplicationDashboard() {
     )
   }
 
-  return (
-    <PageContainer variant="default" className="space-y-6">
-      {/* Header */}
-      <div className="space-y-4">
-        <PageHeader
-          title={activeTab === "manage" ? "Bạn duyệt" : activeTab === "mine" ? "Đơn của tôi" : "Đơn thư"}
-          description={
-            activeTab === "manage"
-              ? "Theo dõi và xử lý các đơn đang chờ bạn duyệt."
-              : activeTab === "mine"
-                ? "Tra cứu, theo dõi và quản lý đơn từ cá nhân."
-                : "Tra cứu, theo dõi và quản lý toàn bộ đơn từ của công ty."
-          }
-          actions={
-            <Button size="default" className="rounded-full shadow-xs gap-2 font-semibold"
-              onClick={() => {
-                setCreateType(undefined)
-                setShowSubmitModal(true)
-              }}
-            >
-              <Plus size={15} strokeWidth={2.5} />
-              Tạo đơn
-            </Button>
-          }
-        />
-
-        {activeTab === "mine" && (
-          <div className="flex items-center gap-6 border-b border-border mt-2">
-            <button
-              onClick={() => {
-                setMineSubTab("list")
-              }}
-              type="button"
-              className={`relative flex items-center px-1 py-2.5 font-medium text-sm transition-colors cursor-pointer ${
-
-                mineSubTab === "list"
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Danh sách đơn
-              {mineSubTab === "list" && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
-              )}
-            </button>
-            <button
-              onClick={() => {
-                setMineSubTab("leaves")
-              }}
-              type="button"
-              className={`relative flex items-center px-1 py-2.5 font-medium text-sm transition-colors cursor-pointer ${
-
-                mineSubTab === "leaves"
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Tổng phép
-              {mineSubTab === "leaves" && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
-              )}
-            </button>
-          </div>
+  const subHeader = activeTab === "mine" ? (
+    <div className="flex items-center gap-6 border-b border-border px-1 shrink-0">
+      <button
+        onClick={() => {
+          setMineSubTab("list")
+        }}
+        type="button"
+        className={`relative flex items-center px-1 py-2.5 font-medium text-sm transition-colors cursor-pointer ${
+          mineSubTab === "list"
+            ? "text-primary"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        Danh sách đơn
+        {mineSubTab === "list" && (
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
         )}
-      </div>
+      </button>
+      <button
+        onClick={() => {
+          setMineSubTab("leaves")
+        }}
+        type="button"
+        className={`relative flex items-center px-1 py-2.5 font-medium text-sm transition-colors cursor-pointer ${
+          mineSubTab === "leaves"
+            ? "text-primary"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        Tổng phép
+        {mineSubTab === "leaves" && (
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+        )}
+      </button>
+    </div>
+  ) : undefined
 
-      {mineSubTab === "list" || activeTab === "manage" || activeTab === "all" ? (
-        <PageCard className="min-w-0 overflow-hidden p-0" noBorder={false}>
-          <ApplicationList
-            key={activeTab}
-            mode={activeTab}
-            onRowClick={(app) => {
-              void handleRowClick(app)
-            }}
-            hookState={
-              activeTab === "mine" ? myApps : activeTab === "manage" ? manageApps : allApps
-            }
-          />
-        </PageCard>
-      ) : (
-        <PageCard className="min-w-0 overflow-hidden p-0 rounded-xl" noBorder={false}>
-          <div className="overflow-x-auto p-4">
-            <Table className="text-sm">
-              <TableHeader className="bg-muted/40">
-                <TableRow className="hover:bg-transparent border-b">
-                  <TableHead className="text-center font-semibold text-foreground text-xs uppercase">
-                    Số phép
-                  </TableHead>
-                  <TableHead className="text-center font-semibold text-foreground text-xs uppercase">
-                    Đã dùng
-                  </TableHead>
-                  <TableHead className="text-center font-semibold text-foreground text-xs uppercase">
-                    Còn lại
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow className="hover:bg-transparent border-b-0">
-                  <TableCell className="py-6 text-center font-mono font-medium text-foreground text-lg">
-                    7
-                  </TableCell>
-                  <TableCell className="py-6 text-center font-mono font-medium text-foreground text-lg">
-                    0
-                  </TableCell>
-                  <TableCell className="py-6 text-center font-mono font-bold text-primary text-lg">
-                    7
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </div>
-        </PageCard>
-      )}
-
-      {/* Modals */}
+  const modals = (
+    <>
       {showSubmitModal && (
         <SubmitApplicationModal
           onClose={() => {
@@ -339,6 +263,98 @@ export default function ApplicationDashboard() {
           optionalReason={true}
         />
       )}
-    </PageContainer>
+    </>
+  )
+
+  if (activeTab === "mine" && mineSubTab === "leaves") {
+    return (
+      <PageContainer variant="table">
+        <PageHeader
+          title="Đơn của tôi"
+          description="Tra cứu, theo dõi và quản lý đơn từ cá nhân."
+          actions={
+            <Button
+              size="default"
+              className="rounded-full shadow-xs gap-2 font-medium"
+              onClick={() => {
+                setCreateType(undefined)
+                setShowSubmitModal(true)
+              }}
+            >
+              <Plus size={15} strokeWidth={2.5} />
+              Tạo đơn
+            </Button>
+          }
+        />
+        {subHeader}
+        <PageCard
+          padding="none"
+          className="flex-1 min-h-0 flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-xs"
+        >
+          <div className="overflow-x-auto p-4">
+            <Table className="text-sm">
+              <TableHeader className="bg-muted/40">
+                <TableRow className="hover:bg-transparent border-b">
+                  <TableHead className="text-center font-semibold text-foreground text-xs uppercase">
+                    Số phép
+                  </TableHead>
+                  <TableHead className="text-center font-semibold text-foreground text-xs uppercase">
+                    Đã dùng
+                  </TableHead>
+                  <TableHead className="text-center font-semibold text-foreground text-xs uppercase">
+                    Còn lại
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow className="hover:bg-transparent border-b-0">
+                  <TableCell className="py-6 text-center font-mono font-medium text-foreground text-lg">
+                    7
+                  </TableCell>
+                  <TableCell className="py-6 text-center font-mono font-medium text-foreground text-lg">
+                    0
+                  </TableCell>
+                  <TableCell className="py-6 text-center font-mono font-bold text-primary text-lg">
+                    7
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        </PageCard>
+        {modals}
+      </PageContainer>
+    )
+  }
+
+  return (
+    <ApplicationList
+      key={activeTab}
+      mode={activeTab}
+      title={activeTab === "manage" ? "Bạn duyệt" : activeTab === "mine" ? "Đơn của tôi" : "Đơn thư"}
+      description={
+        activeTab === "manage"
+          ? "Theo dõi và xử lý các đơn đang chờ bạn duyệt."
+          : activeTab === "mine"
+            ? "Tra cứu, theo dõi và quản lý đơn từ cá nhân."
+            : "Tra cứu, theo dõi và quản lý toàn bộ đơn từ của công ty."
+      }
+      primaryAction={{
+        label: "Tạo đơn",
+        icon: Plus,
+        onClick: () => {
+          setCreateType(undefined)
+          setShowSubmitModal(true)
+        },
+      }}
+      subHeader={subHeader}
+      onRowClick={(app) => {
+        void handleRowClick(app)
+      }}
+      hookState={
+        activeTab === "mine" ? myApps : activeTab === "manage" ? manageApps : allApps
+      }
+      extraContent={modals}
+    />
   )
 }
