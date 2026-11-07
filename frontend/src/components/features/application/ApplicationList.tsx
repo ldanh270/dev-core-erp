@@ -25,7 +25,7 @@ import { useMyApplications } from "@/hooks/application/useMyApplications"
 import type { IApplicationListItem } from "@/lib/api/application.api"
 
 import { type ReactNode, useEffect, useMemo, useState } from "react"
-import { FileText, type LucideIcon, RotateCcw } from "lucide-react"
+import { type LucideIcon, RotateCcw } from "lucide-react"
 
 type StatusVariant = "success" | "warning" | "danger" | "neutral"
 
@@ -323,7 +323,6 @@ export function ApplicationList({
       isLoading={showLoading}
       onRowClick={(app) => { onRowClick(app) }}
       emptyState={{
-        icon: FileText,
         title: "Không tìm thấy đơn phù hợp",
         description: "Không có đơn từ nào phù hợp với bộ lọc hoặc từ khóa tìm kiếm hiện tại.",
       }}

@@ -31,7 +31,7 @@ import { formatCurrency } from "@/lib/utils"
 import type { IContract } from "@/types/employee-contract.types"
 
 import { useCallback, useMemo, useState } from "react"
-import { FileText, MoreHorizontal, Plus } from "lucide-react"
+import { MoreHorizontal, Plus } from "lucide-react"
 import { useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 
@@ -362,7 +362,6 @@ export default function ContractsPage() {
       data={pagedContracts}
       isLoading={isLoading}
       emptyState={{
-        icon: FileText,
         title: "Chưa có hợp đồng nào",
         description: "Bắt đầu tạo hợp đồng lao động đầu tiên cho nhân sự.",
       }}

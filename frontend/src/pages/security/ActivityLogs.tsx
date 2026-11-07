@@ -29,7 +29,6 @@ import { useMemo } from "react"
 import {
   Activity,
   Eye,
-  FileText,
   Filter,
   Globe,
   Key,
@@ -290,7 +289,6 @@ export default function ActivityLogs() {
       data={data?.data || []}
       isLoading={isLoading}
       emptyState={{
-        icon: FileText,
         title: "Không có bản ghi nhật ký",
         description: "Không tìm thấy nhật ký hoạt động nào trong khoảng thời gian này.",
       }}

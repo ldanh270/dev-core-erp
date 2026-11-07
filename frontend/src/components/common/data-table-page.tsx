@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 
 import { useMemo } from "react"
 
-import { RotateCcw, SearchX } from "lucide-react"
+import { Inbox } from "lucide-react"
 
 import { computeStickyLayout, getStickyCellProps } from "./data-table-sticky"
 import type { DataTablePageProps } from "./data-table.types"
@@ -55,7 +55,6 @@ export function DataTablePage<T>({
   emptyState,
   pagination,
   extraContent,
-  onResetFilters,
 }: DataTablePageProps<T>) {
   const isCompact = density === "compact"
   // In W3C CSS Table Model, 'height' on th/td natively acts as minimum height (never clips, auto-expands on multi-line)
@@ -87,18 +86,6 @@ export function DataTablePage<T>({
   const stickyLayout = useMemo(() => computeStickyLayout(visibleColumns), [visibleColumns])
 
   const hasActiveSearch = Boolean(search?.value && search.value.trim().length > 0)
-
-  const handleResetSearchAndFilters = () => {
-    if (search?.onClear) {
-      search.onClear()
-    }
-    if (search?.onSearch) {
-      search.onSearch("")
-    }
-    if (onResetFilters) {
-      onResetFilters()
-    }
-  }
 
   const renderPrimaryAction = () => {
     if (!primaryAction) return null
@@ -220,6 +207,7 @@ export function DataTablePage<T>({
             className={cn(
               "w-full border-separate border-spacing-0 text-left",
               stickyLayout.totalMinWidth && "table-fixed",
+              !isLoading && data.length === 0 && "min-h-full",
             )}
             style={
               stickyLayout.totalMinWidth
@@ -260,7 +248,7 @@ export function DataTablePage<T>({
               </tr>
             </thead>
             {/* Table body */}
-            <tbody className="divide-y divide-border">
+            <tbody className={cn("divide-y divide-border", !isLoading && data.length === 0 && "h-full")}>
               {isLoading ? (
                 /* Loading skeleton */
                 Array.from({ length: loadingRowsCount }).map((_, rIdx) => (
@@ -285,29 +273,18 @@ export function DataTablePage<T>({
                 ))
               ) : data.length === 0 ? (
                 /* Smart Context-Aware Empty State */
-                <tr>
-                  <td colSpan={visibleColumns.length} className="py-12 px-4">
+                <tr className="h-full">
+                  <td colSpan={visibleColumns.length} className="h-full p-4">
+                    <div className="flex h-full min-h-[360px] items-center justify-center">
                     {hasActiveSearch ? (
                       <EmptyState
-                        icon={SearchX}
+                        icon={emptyState?.icon || Inbox}
                         title="Không tìm thấy kết quả phù hợp"
                         description={`Không có bản ghi nào khớp với từ khóa "${search?.value}".`}
-                        action={
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={handleResetSearchAndFilters}
-                            className="rounded-full gap-1.5"
-                          >
-                            <RotateCcw className="size-3.5" />
-                            <span>Đặt lại bộ lọc</span>
-                          </Button>
-                        }
                       />
                     ) : (
                       <EmptyState
-                        icon={emptyState?.icon}
+                        icon={emptyState?.icon || Inbox}
                         title={emptyState?.title || "Không có dữ liệu"}
                         description={
                           emptyState?.description ||
@@ -316,6 +293,7 @@ export function DataTablePage<T>({
                         action={emptyState?.action}
                       />
                     )}
+                    </div>
                   </td>
                 </tr>
               ) : renderRows ? (
@@ -367,7 +345,7 @@ export function DataTablePage<T>({
                             if (col.truncate) {
                               return (
                                 <div
-                                  className="min-w-0 truncate"
+                                   className="min-w-0 truncate"
                                   title={typeof content === "string" ? content : undefined}
                                 >
                                   {content}
