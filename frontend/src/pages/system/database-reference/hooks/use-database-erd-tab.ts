@@ -14,7 +14,6 @@ export interface UseDatabaseErdTabParams {
   allTables: TableDef[]
   selectedModule: string
   selectedTableName: string | null
-  limitNodes: boolean
 }
 
 /**
@@ -25,7 +24,6 @@ export function useDatabaseErdTab({
   allTables,
   selectedModule,
   selectedTableName,
-  limitNodes,
 }: UseDatabaseErdTabParams) {
   const [showCrossModuleRelations, setShowCrossModuleRelations] = useState(true)
   const [fullscreenTarget, setFullscreenTarget] = useState<HTMLElement | null>(null)
@@ -67,7 +65,6 @@ export function useDatabaseErdTab({
   const viewport = useDatabaseErdViewport(
     graphTables,
     selectedTableName,
-    limitNodes,
     fullscreenTarget,
   )
 

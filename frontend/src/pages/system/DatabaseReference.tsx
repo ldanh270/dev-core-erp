@@ -97,7 +97,6 @@ export default function DatabaseReference() {
             modules={dbSchema.modules}
             selectedModule={state.selectedModule}
             onModuleChange={actions.handleModuleChange}
-            limitNodes={state.selectedModule === "ALL"}
             selectedTableName={state.selectedTable?.name ?? null}
             onSelectTable={actions.handleSelectTable}
           />
