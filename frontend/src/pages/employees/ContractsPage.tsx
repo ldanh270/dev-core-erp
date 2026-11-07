@@ -2,6 +2,7 @@ import {
   DataTablePage,
   type DataTableColumn,
   StatusPill,
+  TABLE_COL_WIDTH,
   useConfirm,
 } from "@/components/common"
 import {
@@ -160,8 +161,8 @@ export default function ContractsPage() {
         id: "index",
         header: "#",
         align: "center",
-        width: "60px",
-        minWidth: "60px",
+        width: `${TABLE_COL_WIDTH.INDEX}px`,
+        minWidth: `${TABLE_COL_WIDTH.INDEX}px`,
         sticky: true,
         cell: (_contract, index) => (
           <span className="text-muted-foreground text-xs">
@@ -172,8 +173,8 @@ export default function ContractsPage() {
       {
         id: "contract",
         header: "Hợp đồng",
-        width: "240px",
-        minWidth: "240px",
+        width: `${TABLE_COL_WIDTH.TITLE}px`,
+        minWidth: `${TABLE_COL_WIDTH.TITLE}px`,
         sticky: true,
         cell: (contract) => (
           <div className="flex flex-col justify-center min-w-0">
@@ -196,8 +197,8 @@ export default function ContractsPage() {
       {
         id: "type",
         header: "Loại HĐ",
-        width: "160px",
-        minWidth: "160px",
+        width: `${TABLE_COL_WIDTH.TYPE}px`,
+        minWidth: `${TABLE_COL_WIDTH.TYPE}px`,
         cell: (contract) => (
           <span className="text-foreground whitespace-nowrap">
             {CONTRACT_TYPE_LABELS[contract.contractType] || contract.contractType}
@@ -207,8 +208,9 @@ export default function ContractsPage() {
       {
         id: "startDate",
         header: "Ngày bắt đầu",
-        width: "130px",
-        minWidth: "130px",
+        width: `${TABLE_COL_WIDTH.DATE}px`,
+        minWidth: `${TABLE_COL_WIDTH.DATE}px`,
+        hideBelow: "lg",
         cell: (contract) => (
           <span className="text-muted-foreground whitespace-nowrap">
             {formatDate(contract.startDate)}
@@ -218,8 +220,9 @@ export default function ContractsPage() {
       {
         id: "endDate",
         header: "Ngày kết thúc",
-        width: "130px",
-        minWidth: "130px",
+        width: `${TABLE_COL_WIDTH.DATE}px`,
+        minWidth: `${TABLE_COL_WIDTH.DATE}px`,
+        hideBelow: "lg",
         cell: (contract) => (
           <span className="text-muted-foreground whitespace-nowrap">
             {contract.endDate ? formatDate(contract.endDate) : "Không thời hạn"}
@@ -230,8 +233,8 @@ export default function ContractsPage() {
         id: "salary",
         header: "Mức lương",
         align: "right",
-        width: "140px",
-        minWidth: "140px",
+        width: `${TABLE_COL_WIDTH.CURRENCY}px`,
+        minWidth: `${TABLE_COL_WIDTH.CURRENCY}px`,
         cell: (contract) => (
           <span className="font-mono font-medium text-foreground whitespace-nowrap">
             {formatCurrency(contract.salary)}
@@ -241,8 +244,8 @@ export default function ContractsPage() {
       {
         id: "status",
         header: "Trạng thái",
-        width: "140px",
-        minWidth: "140px",
+        width: `${TABLE_COL_WIDTH.STATUS}px`,
+        minWidth: `${TABLE_COL_WIDTH.STATUS}px`,
         cell: (contract) => (
           <StatusPill
             label={CONTRACT_STATUS_LABELS[contract.status] || contract.status}
@@ -254,8 +257,8 @@ export default function ContractsPage() {
         id: "actions",
         header: "Thao tác",
         align: "center",
-        width: "80px",
-        minWidth: "80px",
+        width: `${TABLE_COL_WIDTH.ACTIONS}px`,
+        minWidth: `${TABLE_COL_WIDTH.ACTIONS}px`,
         cell: (contract) => (
           <div className="flex justify-center">
             <DropdownMenu>

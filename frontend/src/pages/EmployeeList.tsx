@@ -1,4 +1,4 @@
-import { DataTablePage, type DataTableColumn, StatusPill } from "@/components/common"
+import { DataTablePage, type DataTableColumn, StatusPill, TABLE_COL_WIDTH } from "@/components/common"
 import { EmployeeCreateModal } from "@/components/features/employees/EmployeeCreateModal"
 import { EmployeeDetailsDrawer } from "@/components/features/employees/EmployeeDetailsDrawer"
 import { EmployeeEditDrawer } from "@/components/features/employees/EmployeeEditDrawer"
@@ -61,14 +61,14 @@ const TAB_DEFINITIONS: TabDefinition[] = [
 ]
 
 const COL_WIDTH = {
-  employee: 220,
-  code: 100,
-  position: 160,
-  contact: 220,
-  startDate: 130,
-  contract: 160,
-  status: 140,
-  actions: 100,
+  employee: TABLE_COL_WIDTH.EMPLOYEE,
+  code: TABLE_COL_WIDTH.CODE,
+  position: TABLE_COL_WIDTH.POSITION,
+  contact: TABLE_COL_WIDTH.CONTACT,
+  startDate: TABLE_COL_WIDTH.DATE,
+  contract: TABLE_COL_WIDTH.TYPE,
+  status: TABLE_COL_WIDTH.STATUS,
+  actions: TABLE_COL_WIDTH.ACTIONS,
 } as const
 
 /**
