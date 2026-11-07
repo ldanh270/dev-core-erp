@@ -1,5 +1,6 @@
 import {
   DataTablePage,
+  StatusPill,
   useConfirm,
   type DataTableColumn,
 } from "@/components/common"
@@ -7,12 +8,14 @@ import { SalaryVariableFormPage } from "@/components/features/payroll/salary-var
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { SALARY_VARIABLE_DESCRIPTIONS } from "@/config/messages/payroll.message"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { useDeleteSalaryVariable, useSalaryVariables } from "@/hooks/payroll/use-salary-variable"
 import type { ISalaryVariable } from "@/hooks/payroll/use-salary-variable"
+import { cn } from "@/lib/utils"
 
-import { useMemo, useState } from "react"
-
-import { Pencil, Plus, SlidersHorizontal, Trash2 } from "lucide-react"
+import { useCallback, useMemo, useState } from "react"
+import { Inbox, Pencil, Plus, Trash2 } from "lucide-react"
 
 type VariableRow = Omit<ISalaryVariable, "value"> & {
   value: number | string
@@ -113,6 +116,11 @@ const PART_TIME_SYSTEM_VARIABLES: VariableRow[] = [
   },
 ]
 
+/**
+ * SalaryVariablesPage — Standardized payroll system and custom variables management.
+ * Powered by DataTablePage master component with viewport-locked internal scrolling,
+ * sticky header, standardized column widths, and pinned pagination footer.
+ */
 export default function SalaryVariablesPage() {
   const confirm = useConfirm()
   const { data: variables, isLoading } = useSalaryVariables()
@@ -133,7 +141,8 @@ export default function SalaryVariablesPage() {
   }, [variables])
 
   const filteredVariables = useMemo(() => {
-    const s = searchTerm.toLowerCase()
+    const s = searchTerm.toLowerCase().trim()
+    if (!s) return combinedVariables
     return combinedVariables.filter(
       (v) => v.code.toLowerCase().includes(s) || v.name.toLowerCase().includes(s),
     )
@@ -143,57 +152,71 @@ export default function SalaryVariablesPage() {
     return filteredVariables.slice((page - 1) * limit, page * limit)
   }, [filteredVariables, page, limit])
 
-  const totalPages = Math.ceil(filteredVariables.length / limit)
+  const totalPages = Math.ceil(filteredVariables.length / limit) || 1
 
-  const handleOpenCreate = () => {
+  const handleOpenCreate = useCallback(() => {
     setSelectedItem(null)
     setView("create")
-  }
+  }, [])
 
-  const handleOpenEdit = (variable: ISalaryVariable) => {
+  const handleOpenEdit = useCallback((variable: ISalaryVariable) => {
     setSelectedItem(variable)
     setView("edit")
-  }
+  }, [])
 
-  const handleCloseForm = () => {
+  const handleCloseForm = useCallback(() => {
     setView("list")
     setSelectedItem(null)
-  }
+  }, [])
 
-  const handleDelete = async (id: string) => {
-    const isConfirmed = await confirm({
-      title: SALARY_VARIABLE_DESCRIPTIONS.DELETE_TITLE,
-      description:
-        "Bạn có chắc chắn muốn xóa biến số tính lương này không? Hành động này không thể hoàn tác.",
-      confirmText: "Xóa",
-      cancelText: "Hủy bỏ",
-      variant: "destructive",
-    })
-    if (isConfirmed) {
-      await deleteMutation.mutateAsync(id)
-    }
-  }
+  const handleSearch = useCallback((val: string) => {
+    setSearchTerm(val)
+    setPage(1)
+  }, [])
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      const isConfirmed = await confirm({
+        title: SALARY_VARIABLE_DESCRIPTIONS.DELETE_TITLE,
+        description:
+          "Bạn có chắc chắn muốn xóa biến số tính lương này không? Hành động này không thể hoàn tác.",
+        confirmText: "Xóa",
+        cancelText: "Hủy bỏ",
+        variant: "destructive",
+      })
+      if (isConfirmed) {
+        await deleteMutation.mutateAsync(id)
+      }
+    },
+    [confirm, deleteMutation],
+  )
 
   const columns: DataTableColumn<VariableRow>[] = useMemo(
     () => [
       {
         id: "index",
         header: "#",
-        width: "60px",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
         align: "center",
         sticky: true,
         cell: (_, index) => (
-          <span className="text-muted-foreground">{(page - 1) * limit + index + 1}</span>
+          <span className={TYPOGRAPHY.CELL_CODE}>
+            {(page - 1) * limit + index + 1}
+          </span>
         ),
       },
       {
         id: "code",
         header: "Mã biến (Code)",
+        width: getTableColWidthPx("TITLE"),
         minWidth: "180px",
         sticky: true,
         cell: (item) => (
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-semibold text-primary">{item.code}</span>
+            <span className={cn(TYPOGRAPHY.CELL_CODE, "font-semibold text-primary")}>
+              {item.code}
+            </span>
             {item.isSystem && (
               <Badge variant="outline" className="text-[10px] bg-muted/50 rounded-full font-normal">
                 Hệ thống
@@ -205,11 +228,17 @@ export default function SalaryVariablesPage() {
       {
         id: "name",
         header: "Tên biến",
-        minWidth: "180px",
+        width: getTableColWidthPx("TITLE"),
+        minWidth: "220px",
         cell: (item) => (
           <div>
-            <div className="font-medium text-foreground">{item.name}</div>
-            <div className="text-xs text-muted-foreground truncate max-w-72" title={item.description}>
+            <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-medium text-foreground")}>
+              {item.name}
+            </div>
+            <div
+              className={cn(TYPOGRAPHY.CELL_SECONDARY, "truncate max-w-72 mt-0.5")}
+              title={item.description}
+            >
               {item.description}
             </div>
           </div>
@@ -218,10 +247,11 @@ export default function SalaryVariablesPage() {
       {
         id: "value",
         header: "Giá trị mặc định",
+        width: getTableColWidthPx("TYPE"),
         minWidth: "160px",
         hideBelow: "md",
         cell: (item) => (
-          <span className="font-mono text-xs text-foreground bg-muted/40 px-2 py-1 rounded-md">
+          <span className={cn(TYPOGRAPHY.CELL_CODE, "text-foreground bg-muted/50 px-2.5 py-1 rounded-md inline-block font-mono text-xs")}>
             {item.value}
           </span>
         ),
@@ -229,24 +259,20 @@ export default function SalaryVariablesPage() {
       {
         id: "status",
         header: "Trạng thái",
-        minWidth: "120px",
+        width: getTableColWidthPx("STATUS"),
+        minWidth: "130px",
         cell: (item) => (
-          <Badge
-            variant={item.isActive ? "default" : "secondary"}
-            className={`rounded-full text-xs font-normal ${
-              item.isActive
-                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                : "bg-muted text-muted-foreground border border-border"
-            }`}
-          >
-            {item.isActive ? "Hoạt động" : "Tạm khóa"}
-          </Badge>
+          <StatusPill
+            label={item.isActive ? "Hoạt động" : "Tạm khóa"}
+            variant={item.isActive ? "success" : "neutral"}
+          />
         ),
       },
       {
         id: "actions",
         header: "Thao tác",
-        width: "90px",
+        width: getTableColWidthPx("ACTIONS"),
+        minWidth: "90px",
         align: "right",
         cell: (item) => {
           if (item.isSystem) {
@@ -258,27 +284,33 @@ export default function SalaryVariablesPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-full"
-                onClick={() => { handleOpenEdit(item as ISalaryVariable); }}
+                className="size-8 rounded-full text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  handleOpenEdit(item as ISalaryVariable)
+                }}
                 title="Chỉnh sửa biến"
+                aria-label="Chỉnh sửa biến"
               >
-                <Pencil className="h-4 w-4 text-muted-foreground" />
+                <Pencil className="size-3.5" />
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10"
-                onClick={() => handleDelete(item.id)}
+                className="size-8 rounded-full text-destructive/80 hover:text-destructive hover:bg-destructive/10"
+                onClick={() => {
+                  void handleDelete(item.id)
+                }}
                 title="Xóa biến"
+                aria-label="Xóa biến"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="size-3.5" />
               </Button>
             </div>
           )
         },
       },
     ],
-    [page, limit],
+    [page, limit, handleOpenEdit, handleDelete],
   )
 
   if (view !== "list") {
@@ -302,10 +334,8 @@ export default function SalaryVariablesPage() {
       keyExtractor={(item) => item.id}
       search={{
         value: searchTerm,
-        onSearch: (val: string) => {
-          setSearchTerm(val)
-          setPage(1)
-        },
+        debounceMs: 400,
+        onSearch: handleSearch,
         placeholder: "Tìm kiếm mã biến, tên biến...",
       }}
       primaryAction={{
@@ -314,25 +344,24 @@ export default function SalaryVariablesPage() {
         onClick: handleOpenCreate,
       }}
       emptyState={{
-        icon: SlidersHorizontal,
-        title: "Không tìm thấy biến",
-        description: "Không có biến tính lương nào phù hợp với từ khóa tìm kiếm.",
+        icon: Inbox,
+        title: searchTerm.trim() ? "Không tìm thấy biến" : "Chưa có biến tính lương",
+        description: searchTerm.trim()
+          ? `Không có biến tính lương nào phù hợp với từ khóa "${searchTerm}".`
+          : "Chưa có biến số tính lương nào được thiết lập.",
       }}
-      pagination={
-        filteredVariables.length > 0
-          ? {
-              currentPage: page,
-              totalPages,
-              totalItems: filteredVariables.length,
-              itemsPerPage: limit,
-              onPageChange: setPage,
-              onItemsPerPageChange: (newLimit) => {
-                setLimit(newLimit)
-                setPage(1)
-              },
-            }
-          : undefined
-      }
+      pagination={{
+        currentPage: page,
+        totalPages,
+        totalItems: filteredVariables.length,
+        itemsPerPage: limit,
+        onPageChange: setPage,
+        onItemsPerPageChange: (newLimit: number) => {
+          setLimit(newLimit)
+          setPage(1)
+        },
+        pageSizeOptions: [10, 20, 50],
+      }}
     />
   )
 }

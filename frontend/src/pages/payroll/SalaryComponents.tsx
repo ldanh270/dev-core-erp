@@ -1,5 +1,6 @@
 import {
   DataTablePage,
+  StatusPill,
   type DataTableColumn,
 } from "@/components/common"
 import { SalaryComponentFormPage } from "@/components/features/payroll/salary-component-form-page"
@@ -11,16 +12,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
+  COMPONENT_TYPE,
   COMPONENT_TYPE_LABELS,
   COMPONENT_VALUE_TYPE_LABELS,
 } from "@/config/entities/payroll.config"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { useSalaryComponents } from "@/hooks/payroll/use-salary-components"
+import { cn } from "@/lib/utils"
 import type { ISalaryComponent } from "@/types/payroll.types"
 
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
+import { Inbox, MoreHorizontal, Pencil, Plus } from "lucide-react"
 
-import { Calculator, MoreHorizontal, Plus } from "lucide-react"
-
+/**
+ * SalaryComponents — Standardized salary components management page.
+ * Powered by DataTablePage master component with viewport-locked internal scrolling,
+ * sticky header, standardized column widths, and pinned pagination footer.
+ */
 export default function SalaryComponents() {
   const { data: components, isLoading } = useSalaryComponents()
 
@@ -30,9 +39,30 @@ export default function SalaryComponents() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
 
+  const handleCreate = useCallback(() => {
+    setSelectedComponent(null)
+    setView("create")
+  }, [])
+
+  const handleEdit = useCallback((comp: ISalaryComponent) => {
+    setSelectedComponent(comp)
+    setView("edit")
+  }, [])
+
+  const handleCloseForm = useCallback(() => {
+    setView("list")
+    setSelectedComponent(null)
+  }, [])
+
+  const handleSearch = useCallback((val: string) => {
+    setSearchTerm(val)
+    setPage(1)
+  }, [])
+
   const filteredComponents = useMemo(() => {
     if (!components) return []
-    const s = searchTerm.toLowerCase()
+    const s = searchTerm.toLowerCase().trim()
+    if (!s) return components
     return components.filter(
       (c) => c.name.toLowerCase().includes(s) || c.formula.toLowerCase().includes(s),
     )
@@ -42,45 +72,39 @@ export default function SalaryComponents() {
     return filteredComponents.slice((page - 1) * limit, page * limit)
   }, [filteredComponents, page, limit])
 
-  const totalPages = Math.ceil(filteredComponents.length / limit)
-
-  const handleCreate = () => {
-    setSelectedComponent(null)
-    setView("create")
-  }
-
-  const handleEdit = (comp: ISalaryComponent) => {
-    setSelectedComponent(comp)
-    setView("edit")
-  }
-
-  const handleCloseForm = () => {
-    setView("list")
-    setSelectedComponent(null)
-  }
+  const totalPages = Math.ceil(filteredComponents.length / limit) || 1
 
   const columns: DataTableColumn<ISalaryComponent>[] = useMemo(
     () => [
       {
         id: "index",
         header: "#",
-        width: "60px",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
         align: "center",
         sticky: true,
         cell: (_, index) => (
-          <span className="text-muted-foreground">{(page - 1) * limit + index + 1}</span>
+          <span className={TYPOGRAPHY.CELL_CODE}>
+            {(page - 1) * limit + index + 1}
+          </span>
         ),
       },
       {
         id: "name",
         header: "Tên thành phần",
-        minWidth: "200px",
+        width: getTableColWidthPx("TITLE"),
+        minWidth: "220px",
         sticky: true,
         cell: (comp) => (
           <button
             type="button"
-            onClick={() => { handleEdit(comp); }}
-            className="font-medium text-foreground hover:text-primary hover:underline text-left transition-colors"
+            onClick={() => {
+              handleEdit(comp)
+            }}
+            className={cn(
+              TYPOGRAPHY.CELL_PRIMARY,
+              "font-medium text-foreground hover:text-primary hover:underline text-left cursor-pointer transition-colors block truncate max-w-full",
+            )}
           >
             {comp.name}
           </button>
@@ -89,18 +113,23 @@ export default function SalaryComponents() {
       {
         id: "type",
         header: "Loại thành phần",
+        width: getTableColWidthPx("TYPE"),
         minWidth: "140px",
         cell: (comp) => (
-          <span className="text-muted-foreground">{COMPONENT_TYPE_LABELS[comp.type]}</span>
+          <StatusPill
+            label={COMPONENT_TYPE_LABELS[comp.type]}
+            variant={comp.type === COMPONENT_TYPE.ADDITION ? "success" : "danger"}
+          />
         ),
       },
       {
         id: "valueType",
         header: "Kiểu giá trị",
-        minWidth: "140px",
+        width: getTableColWidthPx("TYPE"),
+        minWidth: "130px",
         hideBelow: "md",
         cell: (comp) => (
-          <span className="text-muted-foreground">
+          <span className={TYPOGRAPHY.CELL_SECONDARY}>
             {COMPONENT_VALUE_TYPE_LABELS[comp.valueType]}
           </span>
         ),
@@ -108,9 +137,16 @@ export default function SalaryComponents() {
       {
         id: "formula",
         header: "Công thức / Giá trị",
-        minWidth: "200px",
+        width: getTableColWidthPx("TITLE"),
+        minWidth: "240px",
         cell: (comp) => (
-          <span className="font-mono text-xs text-foreground bg-muted/50 px-2 py-1 rounded-md">
+          <span
+            className={cn(
+              TYPOGRAPHY.CELL_CODE,
+              "text-foreground bg-muted/60 px-2.5 py-1 rounded-md block truncate max-w-full font-mono text-xs",
+            )}
+            title={comp.formula}
+          >
             {comp.formula}
           </span>
         ),
@@ -118,27 +154,40 @@ export default function SalaryComponents() {
       {
         id: "description",
         header: "Mô tả",
-        minWidth: "180px",
+        width: getTableColWidthPx("TITLE"),
+        minWidth: "200px",
         hideBelow: "md",
         truncate: true,
         cell: (comp) => (
-          <span className="text-muted-foreground">{comp.description || "—"}</span>
+          <span className={TYPOGRAPHY.CELL_SECONDARY}>{comp.description || "—"}</span>
         ),
       },
       {
         id: "actions",
         header: "",
-        width: "60px",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
         align: "center",
         cell: (comp) => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0 rounded-full">
-                <MoreHorizontal className="h-4 w-4" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8 rounded-full"
+                aria-label="Thao tác"
+              >
+                <MoreHorizontal className="size-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="rounded-xl text-xs">
-              <DropdownMenuItem onClick={() => { handleEdit(comp); }}>
+            <DropdownMenuContent align="end" className="w-36 rounded-xl text-xs">
+              <DropdownMenuItem
+                onClick={() => {
+                  handleEdit(comp)
+                }}
+                className="gap-2"
+              >
+                <Pencil className="size-3.5" />
                 Sửa thành phần
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -146,7 +195,7 @@ export default function SalaryComponents() {
         ),
       },
     ],
-    [page, limit],
+    [page, limit, handleEdit],
   )
 
   if (view !== "list") {
@@ -170,10 +219,8 @@ export default function SalaryComponents() {
       keyExtractor={(comp) => comp.id}
       search={{
         value: searchTerm,
-        onSearch: (val: string) => {
-          setSearchTerm(val)
-          setPage(1)
-        },
+        debounceMs: 400,
+        onSearch: handleSearch,
         placeholder: "Tìm kiếm tên, công thức...",
       }}
       primaryAction={{
@@ -182,25 +229,26 @@ export default function SalaryComponents() {
         onClick: handleCreate,
       }}
       emptyState={{
-        icon: Calculator,
-        title: "Chưa có thành phần lương",
-        description: "Chưa có thành phần thu nhập hay khoản khấu trừ nào được thiết lập.",
+        icon: Inbox,
+        title: searchTerm.trim()
+          ? "Không tìm thấy thành phần lương"
+          : "Chưa có thành phần lương",
+        description: searchTerm.trim()
+          ? `Không có thành phần lương nào khớp với từ khóa "${searchTerm}".`
+          : "Chưa có thành phần thu nhập hay khoản khấu trừ nào được thiết lập.",
       }}
-      pagination={
-        filteredComponents.length > 0
-          ? {
-              currentPage: page,
-              totalPages,
-              totalItems: filteredComponents.length,
-              itemsPerPage: limit,
-              onPageChange: setPage,
-              onItemsPerPageChange: (newLimit) => {
-                setLimit(newLimit)
-                setPage(1)
-              },
-            }
-          : undefined
-      }
+      pagination={{
+        currentPage: page,
+        totalPages,
+        totalItems: filteredComponents.length,
+        itemsPerPage: limit,
+        onPageChange: setPage,
+        onItemsPerPageChange: (newLimit: number) => {
+          setLimit(newLimit)
+          setPage(1)
+        },
+        pageSizeOptions: [10, 20, 50],
+      }}
     />
   )
 }
