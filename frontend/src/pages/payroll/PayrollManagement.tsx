@@ -16,20 +16,22 @@ import {
   PAYROLL_STATUS,
   PAYROLL_STATUS_LABELS,
 } from "@/config/entities/payroll.config"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import {
   useApprovePayroll,
   usePayrolls,
   useRejectPayroll,
 } from "@/hooks/payroll/use-payrolls"
+import { cn, formatCurrency } from "@/lib/utils"
 import type { IPayroll } from "@/types/payroll.types"
 import { exportPayrollsToCSV } from "@/utils/export.util"
 
-import { useMemo, useState } from "react"
-
+import { useCallback, useMemo, useState } from "react"
 import {
   CheckCircle2,
-  Clock,
   Download,
+  Inbox,
   MoreHorizontal,
   XCircle,
 } from "lucide-react"
@@ -47,6 +49,11 @@ const getPayrollStatusVariant = (status: string): "info" | "success" | "danger" 
   }
 }
 
+/**
+ * PayrollManagement — Enterprise payroll cycles management page.
+ * Powered by DataTablePage master component with viewport-locked internal scrolling,
+ * sticky header, standardized column widths, and pinned pagination footer.
+ */
 export default function PayrollManagement() {
   const [filters] = useState<{ status?: string; year?: number }>({})
   const { data: payrolls, isLoading } = usePayrolls(filters)
@@ -58,26 +65,38 @@ export default function PayrollManagement() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
 
-  const handleExport = () => {
-    if (payrolls) {
+  const handleExport = useCallback(() => {
+    if (payrolls && payrolls.length > 0) {
       exportPayrollsToCSV(payrolls, `payroll_export_${Date.now()}.csv`)
     }
-  }
+  }, [payrolls])
 
-  const handleApprove = (id: string) => {
-    approvePayroll(id)
-  }
+  const handleApprove = useCallback(
+    (id: string) => {
+      approvePayroll(id)
+    },
+    [approvePayroll],
+  )
 
-  const handleReject = (id: string) => {
-    const reason = window.prompt("Nhập lý do từ chối:")
-    if (reason) {
-      rejectPayroll({ id, reason })
-    }
-  }
+  const handleReject = useCallback(
+    (id: string) => {
+      const reason = window.prompt("Nhập lý do từ chối:")
+      if (reason) {
+        rejectPayroll({ id, reason })
+      }
+    },
+    [rejectPayroll],
+  )
+
+  const handleSearch = useCallback((val: string) => {
+    setSearchTerm(val)
+    setPage(1)
+  }, [])
 
   const filteredPayrolls = useMemo(() => {
     if (!payrolls) return []
-    const s = searchTerm.toLowerCase()
+    const s = searchTerm.toLowerCase().trim()
+    if (!s) return payrolls
     return payrolls.filter((p) => {
       const periodStr = `${p.periodMonth}/${p.periodYear}`
       const periodStrZero = `${String(p.periodMonth).padStart(2, "0")}/${p.periodYear}`
@@ -91,34 +110,43 @@ export default function PayrollManagement() {
     })
   }, [payrolls, searchTerm])
 
+  const totalPages = Math.ceil(filteredPayrolls.length / limit) || 1
+
   const paginatedPayrolls = useMemo(() => {
     return filteredPayrolls.slice((page - 1) * limit, page * limit)
   }, [filteredPayrolls, page, limit])
-
-  const totalPages = Math.ceil(filteredPayrolls.length / limit)
 
   const columns: DataTableColumn<IPayroll>[] = useMemo(
     () => [
       {
         id: "index",
         header: "#",
-        width: "60px",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
         align: "center",
         sticky: true,
         cell: (_, index) => (
-          <span className="text-muted-foreground">{(page - 1) * limit + index + 1}</span>
+          <span className={TYPOGRAPHY.CELL_CODE}>
+            {(page - 1) * limit + index + 1}
+          </span>
         ),
       },
       {
         id: "id",
         header: "Mã bảng lương",
+        width: getTableColWidthPx("CODE"),
         minWidth: "160px",
         sticky: true,
         cell: (payroll) => (
           <button
             type="button"
-            onClick={() => { setSelectedPayrollId(payroll.id); }}
-            className="font-mono font-medium text-primary hover:underline text-left"
+            onClick={() => {
+              setSelectedPayrollId(payroll.id)
+            }}
+            className={cn(
+              TYPOGRAPHY.CELL_CODE,
+              "font-medium text-primary hover:underline text-left cursor-pointer",
+            )}
           >
             PAY-{payroll.id.substring(payroll.id.length - 8).toUpperCase()}
           </button>
@@ -127,9 +155,10 @@ export default function PayrollManagement() {
       {
         id: "period",
         header: "Kỳ lương",
-        minWidth: "120px",
+        width: getTableColWidthPx("DATE"),
+        minWidth: "130px",
         cell: (payroll) => (
-          <span className="font-medium">
+          <span className={cn(TYPOGRAPHY.CELL_SECONDARY, "font-medium text-foreground")}>
             Tháng {payroll.periodMonth}/{payroll.periodYear}
           </span>
         ),
@@ -137,19 +166,18 @@ export default function PayrollManagement() {
       {
         id: "totalAmount",
         header: "Tổng chi trả",
+        width: getTableColWidthPx("CURRENCY"),
         minWidth: "160px",
         cell: (payroll) => (
-          <span className="font-semibold text-foreground">
-            {new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(payroll.totalAmount)}
+          <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-semibold text-foreground")}>
+            {formatCurrency(payroll.totalAmount)}
           </span>
         ),
       },
       {
         id: "status",
         header: "Trạng thái",
+        width: getTableColWidthPx("STATUS"),
         minWidth: "140px",
         cell: (payroll) => (
           <StatusPill
@@ -161,10 +189,11 @@ export default function PayrollManagement() {
       {
         id: "createdAt",
         header: "Ngày tạo",
-        minWidth: "140px",
+        width: getTableColWidthPx("DATE"),
+        minWidth: "130px",
         hideBelow: "md",
         cell: (payroll) => (
-          <span className="text-muted-foreground">
+          <span className={TYPOGRAPHY.CELL_DATE}>
             {new Intl.DateTimeFormat("vi-VN", {
               month: "short",
               day: "numeric",
@@ -176,7 +205,8 @@ export default function PayrollManagement() {
       {
         id: "actions",
         header: "",
-        width: "60px",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
         align: "center",
         cell: (payroll) => {
           const isDraft = payroll.status === PAYROLL_STATUS.DRAFT
@@ -185,17 +215,32 @@ export default function PayrollManagement() {
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0 rounded-full">
-                  <MoreHorizontal className="h-4 w-4" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 rounded-full"
+                  aria-label="Thao tác bảng lương"
+                >
+                  <MoreHorizontal className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40 rounded-xl">
-                <DropdownMenuItem onClick={() => { handleApprove(payroll.id); }}>
-                  <CheckCircle2 className="mr-2 h-4 w-4 text-emerald-600" />
+                <DropdownMenuItem
+                  onClick={() => {
+                    handleApprove(payroll.id)
+                  }}
+                  className="gap-2 text-xs"
+                >
+                  <CheckCircle2 className="size-4 text-emerald-600" />
                   <span>Duyệt</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => { handleReject(payroll.id); }}>
-                  <XCircle className="mr-2 h-4 w-4 text-destructive" />
+                <DropdownMenuItem
+                  onClick={() => {
+                    handleReject(payroll.id)
+                  }}
+                  className="gap-2 text-xs text-destructive focus:text-destructive"
+                >
+                  <XCircle className="size-4 text-destructive" />
                   <span>Từ chối</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -204,7 +249,7 @@ export default function PayrollManagement() {
         },
       },
     ],
-    [page, limit],
+    [page, limit, handleApprove, handleReject],
   )
 
   return (
@@ -219,10 +264,8 @@ export default function PayrollManagement() {
         keyExtractor={(p) => p.id}
         search={{
           value: searchTerm,
-          onSearch: (val: string) => {
-            setSearchTerm(val)
-            setPage(1)
-          },
+          debounceMs: 400,
+          onSearch: handleSearch,
           placeholder: "Tìm kiếm mã, tháng/năm, trạng thái...",
         }}
         primaryAction={<GeneratePayrollModal />}
@@ -231,37 +274,38 @@ export default function PayrollManagement() {
             variant="outline"
             onClick={handleExport}
             disabled={!payrolls || payrolls.length === 0}
-            className="rounded-full font-semibold"
+            className="rounded-full shadow-xs gap-1.5 font-semibold"
           >
-            <Download className="w-4 h-4 mr-2" />
+            <Download className="size-4" />
             Xuất CSV
           </Button>
         }
         emptyState={{
-          icon: Clock,
-          title: "Chưa có bảng lương nào",
-          description: "Chưa có chu kỳ tính lương nào được ghi nhận. Hãy bấm 'Tạo bảng lương' để bắt đầu.",
+          icon: Inbox,
+          title: searchTerm.trim() ? "Không tìm thấy bảng lương nào" : "Chưa có bảng lương nào",
+          description: searchTerm.trim()
+            ? `Không tìm thấy bảng lương nào khớp với từ khóa "${searchTerm}".`
+            : "Chưa có chu kỳ tính lương nào được ghi nhận. Hãy bấm 'Tạo bảng lương' để bắt đầu.",
         }}
-        pagination={
-          filteredPayrolls.length > 0
-            ? {
-                currentPage: page,
-                totalPages,
-                totalItems: filteredPayrolls.length,
-                itemsPerPage: limit,
-                onPageChange: setPage,
-                onItemsPerPageChange: (newLimit) => {
-                  setLimit(newLimit)
-                  setPage(1)
-                },
-              }
-            : undefined
-        }
+        pagination={{
+          currentPage: page,
+          totalPages,
+          totalItems: filteredPayrolls.length,
+          itemsPerPage: limit,
+          onPageChange: setPage,
+          onItemsPerPageChange: (newLimit: number) => {
+            setLimit(newLimit)
+            setPage(1)
+          },
+          pageSizeOptions: [10, 20, 50],
+        }}
       />
 
       <PayrollDetailSheet
         payrollId={selectedPayrollId}
-        onClose={() => { setSelectedPayrollId(null); }}
+        onClose={() => {
+          setSelectedPayrollId(null)
+        }}
       />
     </>
   )

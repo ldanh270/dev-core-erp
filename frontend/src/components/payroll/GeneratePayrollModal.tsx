@@ -29,7 +29,7 @@ import { useState } from "react"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CalendarDays } from "lucide-react"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { z } from "zod"
 
 const generatePayrollSchema = z.object({
@@ -40,7 +40,15 @@ const generatePayrollSchema = z.object({
 
 type GeneratePayrollFormData = z.infer<typeof generatePayrollSchema>
 
-export function GeneratePayrollModal() {
+export interface GeneratePayrollModalProps {
+  triggerLabel?: string
+  trigger?: React.ReactNode
+}
+
+export function GeneratePayrollModal({
+  triggerLabel = "Tạo bảng lương",
+  trigger,
+}: GeneratePayrollModalProps = {}) {
   const [open, setOpen] = useState(false)
   const { mutateAsync: generatePayroll, isPending } = useGeneratePayroll()
 
@@ -54,6 +62,11 @@ export function GeneratePayrollModal() {
       year: currentYear.toString(),
       name: "",
     },
+  })
+
+  const [watchMonth, watchYear] = useWatch({
+    control: form.control,
+    name: ["month", "year"],
   })
 
   const onSubmit = async (data: GeneratePayrollFormData) => {
@@ -73,10 +86,12 @@ export function GeneratePayrollModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="rounded-full">
-          <CalendarDays className="w-4 h-4 mr-2" />
-          Generate Payroll
-        </Button>
+        {trigger ?? (
+          <Button className="rounded-full shadow-xs gap-1.5 font-semibold">
+            <CalendarDays className="size-4" />
+            {triggerLabel}
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[480px] p-8 border border-border bg-background shadow-none rounded-xl gap-0">
         <DialogHeader className="mb-6">
@@ -158,7 +173,7 @@ export function GeneratePayrollModal() {
                   <FormLabel className="text-sm font-medium text-foreground">Payroll Name (Optional)</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder={`e.g. Bảng lương tháng ${form.watch("month")}/${form.watch("year")}`} 
+                      placeholder={`e.g. Bảng lương tháng ${watchMonth ?? currentMonth}/${watchYear ?? currentYear}`} 
                       className="rounded-full border-border h-11 bg-card focus-visible:ring-1 focus-visible:ring-primary shadow-none"
                       {...field} 
                     />

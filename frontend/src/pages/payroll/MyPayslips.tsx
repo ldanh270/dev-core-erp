@@ -1,23 +1,49 @@
 import {
   DataTablePage,
+  StatusPill,
   type DataTableColumn,
 } from "@/components/common"
 import { PayslipDetailPage } from "@/components/features/payroll/payslip-detail-page"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
-  PAYROLL_STATUS_BADGE,
+  PAYROLL_STATUS,
   PAYROLL_STATUS_LABELS,
+  PAYSLIP_RECEIPT_STATUS,
   PAYSLIP_RECEIPT_STATUS_LABELS,
 } from "@/config/entities/payroll.config"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { useMyPayslips } from "@/hooks/payroll/use-my-payslips"
-import { formatCurrency } from "@/lib/utils"
+import { cn, formatCurrency } from "@/lib/utils"
 import type { IPayslip } from "@/types/payroll.types"
 
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
+import { CalendarDays, ChevronRight, Inbox } from "lucide-react"
 
-import { CalendarDays, ChevronRight, FileText } from "lucide-react"
+const getPayrollStatusVariant = (status?: string): "info" | "success" | "danger" | "neutral" => {
+  switch (status) {
+    case PAYROLL_STATUS.APPROVED:
+    case PAYROLL_STATUS.PAID:
+      return "success"
+    case PAYROLL_STATUS.PENDING_APPROVAL:
+      return "info"
+    case PAYROLL_STATUS.REJECTED:
+      return "danger"
+    default:
+      return "neutral"
+  }
+}
 
+const getReceiptStatusVariant = (receiptStatus?: string): "success" | "neutral" => {
+  return receiptStatus === PAYSLIP_RECEIPT_STATUS.RECEIVED ? "success" : "neutral"
+}
+
+/**
+ * MyPayslips — Employee personal payslip preview and history page.
+ * Powered by DataTablePage master component with viewport-locked internal scrolling,
+ * sticky header, standardized column widths, and pinned pagination footer.
+ */
 export default function MyPayslips() {
   const { data: payslips, isLoading } = useMyPayslips()
 
@@ -27,13 +53,29 @@ export default function MyPayslips() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
 
+  const handleCloseForm = useCallback(() => {
+    setView("list")
+    setSelectedPayslip(null)
+  }, [])
+
+  const handleSelect = useCallback((payslip: IPayslip) => {
+    setSelectedPayslip(payslip)
+    setView("detail")
+  }, [])
+
+  const handleSearch = useCallback((val: string) => {
+    setSearchTerm(val)
+    setPage(1)
+  }, [])
+
   const filteredPayslips = useMemo(() => {
     if (!payslips) return []
-    const s = searchTerm.toLowerCase()
+    const s = searchTerm.toLowerCase().trim()
+    if (!s) return payslips
     return payslips.filter((p) => {
       const periodStr = `${p.periodMonth}/${p.periodYear}`
       const periodStrZero = `${String(p.periodMonth).padStart(2, "0")}/${p.periodYear}`
-      const statusStr = p.status ? PAYROLL_STATUS_LABELS[p.status].toLowerCase() : ""
+      const statusStr = p.status ? (PAYROLL_STATUS_LABELS[p.status] ?? "").toLowerCase() : ""
       return periodStr.includes(s) || periodStrZero.includes(s) || statusStr.includes(s)
     })
   }, [payslips, searchTerm])
@@ -42,115 +84,118 @@ export default function MyPayslips() {
     return filteredPayslips.slice((page - 1) * limit, page * limit)
   }, [filteredPayslips, page, limit])
 
-  const totalPages = Math.ceil(filteredPayslips.length / limit)
-
-  const handleCloseForm = () => {
-    setView("list")
-    setSelectedPayslip(null)
-  }
-
-  const handleSelect = (payslip: IPayslip) => {
-    setSelectedPayslip(payslip)
-    setView("detail")
-  }
+  const totalPages = Math.ceil(filteredPayslips.length / limit) || 1
 
   const columns: DataTableColumn<IPayslip>[] = useMemo(
     () => [
       {
         id: "index",
         header: "#",
-        width: "60px",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
         align: "center",
         sticky: true,
         cell: (_, index) => (
-          <span className="text-muted-foreground">{(page - 1) * limit + index + 1}</span>
+          <span className={TYPOGRAPHY.CELL_CODE}>
+            {(page - 1) * limit + index + 1}
+          </span>
         ),
       },
       {
         id: "period",
         header: "Kỳ lương",
+        width: getTableColWidthPx("TITLE"),
         minWidth: "220px",
         sticky: true,
         cell: (payslip) => (
-          <div
-            className="flex items-center gap-3 cursor-pointer group"
-            onClick={() => { handleSelect(payslip); }}
+          <button
+            type="button"
+            className="flex items-center gap-3 cursor-pointer group text-left focus:outline-none"
+            onClick={() => {
+              handleSelect(payslip)
+            }}
           >
-            <div className="h-9 w-9 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-              <CalendarDays className="h-4.5 w-4.5" />
+            <div className="size-8 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+              <CalendarDays className="size-4" />
             </div>
-            <div>
-              <div className="font-semibold text-foreground group-hover:text-primary transition-colors">
+            <div className="min-w-0">
+              <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-semibold text-foreground group-hover:text-primary transition-colors")}>
                 Tháng {payslip.periodMonth}/{payslip.periodYear}
               </div>
-              <div className="text-[11px] text-muted-foreground flex items-center gap-2 mt-0.5">
+              <div className={cn(TYPOGRAPHY.CELL_SECONDARY, "flex items-center gap-2 mt-0.5 text-xs")}>
                 <span>Kỳ lương định kỳ</span>
                 {payslip.isPreview ? (
-                  <Badge variant="secondary" className="rounded-full text-[10px] px-1.5 py-0 shadow-none">
+                  <Badge variant="secondary" className="rounded-full text-[10px] px-2 py-0 shadow-none font-normal">
                     Xem trước
                   </Badge>
                 ) : null}
               </div>
             </div>
-          </div>
+          </button>
         ),
       },
       {
         id: "workingDays",
         header: "Ngày công",
-        minWidth: "110px",
+        width: getTableColWidthPx("CODE"),
+        minWidth: "100px",
         align: "center",
         hideBelow: "md",
         cell: (payslip) => (
-          <span className="font-medium text-foreground">
-            {payslip.workingDays} <span className="text-xs font-normal text-muted-foreground">ngày</span>
+          <span className={TYPOGRAPHY.CELL_SECONDARY}>
+            <span className="font-semibold text-foreground">{payslip.workingDays}</span> ngày
           </span>
         ),
       },
       {
         id: "overtimeMinutes",
         header: "Tăng ca",
-        minWidth: "110px",
+        width: getTableColWidthPx("CODE"),
+        minWidth: "100px",
         align: "center",
         hideBelow: "md",
         cell: (payslip) => (
-          <span className="font-medium text-foreground">
-            {payslip.overtimeMinutes} <span className="text-xs font-normal text-muted-foreground">phút</span>
+          <span className={TYPOGRAPHY.CELL_SECONDARY}>
+            <span className="font-semibold text-foreground">{payslip.overtimeMinutes}</span> phút
           </span>
         ),
       },
       {
         id: "status",
         header: "Duyệt lương",
-        minWidth: "130px",
+        width: getTableColWidthPx("STATUS"),
+        minWidth: "140px",
         cell: (payslip) => (
-          <Badge
-            variant={payslip.status ? PAYROLL_STATUS_BADGE[payslip.status] : "default"}
-            className="rounded-full shadow-none font-medium px-2.5 py-0.5 text-xs"
-          >
-            {payslip.status ? PAYROLL_STATUS_LABELS[payslip.status] : "Không rõ"}
-          </Badge>
+          <StatusPill
+            label={payslip.status ? PAYROLL_STATUS_LABELS[payslip.status] : "Không rõ"}
+            variant={getPayrollStatusVariant(payslip.status)}
+          />
         ),
       },
       {
         id: "receiptStatus",
         header: "Nhận lương",
-        minWidth: "130px",
+        width: getTableColWidthPx("STATUS"),
+        minWidth: "140px",
         cell: (payslip) => (
-          <Badge variant="outline" className="rounded-full shadow-none font-medium px-2.5 py-0.5 text-xs">
-            {payslip.receiptStatus
-              ? PAYSLIP_RECEIPT_STATUS_LABELS[payslip.receiptStatus]
-              : "Chưa nhận"}
-          </Badge>
+          <StatusPill
+            label={
+              payslip.receiptStatus
+                ? PAYSLIP_RECEIPT_STATUS_LABELS[payslip.receiptStatus]
+                : "Chưa nhận"
+            }
+            variant={getReceiptStatusVariant(payslip.receiptStatus)}
+          />
         ),
       },
       {
         id: "netSalary",
         header: "Thực lãnh",
+        width: getTableColWidthPx("CURRENCY"),
         minWidth: "140px",
         align: "right",
         cell: (payslip) => (
-          <span className="font-bold text-primary text-sm">
+          <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-bold text-primary text-sm")}>
             {formatCurrency(payslip.netSalary)}
           </span>
         ),
@@ -158,21 +203,25 @@ export default function MyPayslips() {
       {
         id: "action",
         header: "",
-        width: "50px",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
         align: "center",
         cell: (payslip) => (
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-full"
-            onClick={() => { handleSelect(payslip); }}
+            className="size-8 rounded-full text-muted-foreground hover:text-foreground"
+            onClick={() => {
+              handleSelect(payslip)
+            }}
+            aria-label="Xem chi tiết phiếu lương"
           >
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            <ChevronRight className="size-4" />
           </Button>
         ),
       },
     ],
-    [page, limit],
+    [page, limit, handleSelect],
   )
 
   if (view !== "list") {
@@ -190,32 +239,29 @@ export default function MyPayslips() {
       keyExtractor={(payslip) => payslip.id}
       search={{
         value: searchTerm,
-        onSearch: (val: string) => {
-          setSearchTerm(val)
-          setPage(1)
-        },
+        debounceMs: 400,
+        onSearch: handleSearch,
         placeholder: "Tìm kiếm theo tháng/năm, trạng thái...",
       }}
       emptyState={{
-        icon: FileText,
-        title: "Bạn chưa có phiếu lương nào",
-        description: "Khi hệ thống tạo và gửi phiếu lương hàng tháng, bạn sẽ theo dõi được tại đây.",
+        icon: Inbox,
+        title: searchTerm.trim() ? "Không tìm thấy phiếu lương" : "Bạn chưa có phiếu lương nào",
+        description: searchTerm.trim()
+          ? `Không có phiếu lương nào phù hợp với từ khóa "${searchTerm}".`
+          : "Khi hệ thống tạo và gửi phiếu lương hàng tháng, bạn sẽ theo dõi được tại đây.",
       }}
-      pagination={
-        filteredPayslips.length > 0
-          ? {
-              currentPage: page,
-              totalPages,
-              totalItems: filteredPayslips.length,
-              itemsPerPage: limit,
-              onPageChange: setPage,
-              onItemsPerPageChange: (newLimit) => {
-                setLimit(newLimit)
-                setPage(1)
-              },
-            }
-          : undefined
-      }
+      pagination={{
+        currentPage: page,
+        totalPages,
+        totalItems: filteredPayslips.length,
+        itemsPerPage: limit,
+        onPageChange: setPage,
+        onItemsPerPageChange: (newLimit: number) => {
+          setLimit(newLimit)
+          setPage(1)
+        },
+        pageSizeOptions: [10, 20, 50],
+      }}
     />
   )
 }
