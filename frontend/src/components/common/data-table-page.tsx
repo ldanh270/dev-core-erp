@@ -369,7 +369,7 @@ export function DataTablePage<T>({
 
         {/* Pagination */}
         {pagination && (
-          <div className="shrink-0 bg-card border-t border-border">
+          <div className="shrink-0 bg-card">
             <AppPagination
               currentPage={pagination.currentPage}
               totalPages={pagination.totalPages}

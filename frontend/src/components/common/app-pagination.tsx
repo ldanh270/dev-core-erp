@@ -24,9 +24,10 @@ export interface AppPaginationProps {
   itemsPerPage?: number
   onItemsPerPageChange?: (limit: number) => void
   pageSizeOptions?: number[]
+  className?: string
 }
 
-/** Renders shared pagination controls with optional page-size selection. */
+/** Renders shared pagination controls with optional page-size selection. Always visible across all states. */
 export function AppPagination({
   currentPage,
   totalPages,
@@ -35,15 +36,18 @@ export function AppPagination({
   itemsPerPage = 10,
   onItemsPerPageChange,
   pageSizeOptions = [10, 20, 50, 100],
+  className,
 }: AppPaginationProps) {
-  if (totalPages <= 1 && !totalItems) return null
+  const effectiveTotalPages = Math.max(1, totalPages || 1)
+  const safeCurrentPage = Math.min(Math.max(1, currentPage || 1), effectiveTotalPages)
+  const safeTotalItems = totalItems ?? 0
 
   // Build page number array (maximum 5 pages around the current page)
   const getPageNumbers = () => {
     const pages: (number | "ellipsis")[] = []
 
-    if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) {
+    if (effectiveTotalPages <= 5) {
+      for (let i = 1; i <= effectiveTotalPages; i++) {
         pages.push(i)
       }
       return pages
@@ -51,37 +55,45 @@ export function AppPagination({
 
     pages.push(1)
 
-    if (currentPage > 3) {
+    if (safeCurrentPage > 3) {
       pages.push("ellipsis")
     }
 
-    const start = Math.max(2, currentPage - 1)
-    const end = Math.min(totalPages - 1, currentPage + 1)
+    const start = Math.max(2, safeCurrentPage - 1)
+    const end = Math.min(effectiveTotalPages - 1, safeCurrentPage + 1)
 
     for (let i = start; i <= end; i++) {
       pages.push(i)
     }
 
-    if (currentPage < totalPages - 2) {
+    if (safeCurrentPage < effectiveTotalPages - 2) {
       pages.push("ellipsis")
     }
 
-    if (totalPages > 1) {
-      pages.push(totalPages)
+    if (effectiveTotalPages > 1) {
+      pages.push(effectiveTotalPages)
     }
 
     return pages
   }
 
-  const startItemIndex = totalItems ? (currentPage - 1) * itemsPerPage + 1 : 0
-  const endItemIndex = totalItems ? Math.min(currentPage * itemsPerPage, totalItems) : 0
+  const startItemIndex = safeTotalItems > 0 ? (safeCurrentPage - 1) * itemsPerPage + 1 : 0
+  const endItemIndex = safeTotalItems > 0 ? Math.min(safeCurrentPage * itemsPerPage, safeTotalItems) : 0
 
   const effectivePageSizeOptions = Array.from(
     new Set([...pageSizeOptions, itemsPerPage]),
   ).sort((a, b) => a - b)
 
+  const isPrevDisabled = safeCurrentPage <= 1
+  const isNextDisabled = safeCurrentPage >= effectiveTotalPages
+
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-border text-xs text-muted-foreground">
+    <div
+      className={cn(
+        "flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-border text-xs text-muted-foreground shrink-0 bg-card",
+        className,
+      )}
+    >
       {/* Page size selector & total items counter */}
       <div className="flex flex-col sm:flex-row items-center gap-3 text-muted-foreground">
         {onItemsPerPageChange && (
@@ -109,14 +121,14 @@ export function AppPagination({
 
         {totalItems !== undefined && (
           <div className="text-center sm:text-left text-xs font-medium text-muted-foreground">
-            {totalItems === 0 ? "0" : `${startItemIndex}-${endItemIndex}`} trên{" "}
-            <span className="font-semibold text-foreground">{totalItems}</span>
+            {safeTotalItems === 0 ? "0" : `${startItemIndex}-${endItemIndex}`} trên{" "}
+            <span className="font-semibold text-foreground">{safeTotalItems}</span>
           </div>
         )}
       </div>
 
-      {/* Page navigation controls */}
-      <div className={totalPages <= 1 ? "hidden sm:block opacity-0 pointer-events-none" : ""}>
+      {/* Page navigation controls - always visible for structural consistency */}
+      <div className="flex items-center">
         <Pagination className="justify-end">
           <PaginationContent className="gap-1">
             <PaginationItem>
@@ -126,13 +138,13 @@ export function AppPagination({
                 aria-label="Đi đến trang trước"
                 onClick={(e) => {
                   e.preventDefault()
-                  if (currentPage > 1) onPageChange(currentPage - 1)
+                  if (!isPrevDisabled) onPageChange(safeCurrentPage - 1)
                 }}
                 className={cn(
                   "text-xs font-medium text-muted-foreground hover:text-foreground",
-                  currentPage <= 1 && "opacity-50 cursor-not-allowed",
+                  isPrevDisabled && "opacity-50 pointer-events-none cursor-not-allowed",
                 )}
-                aria-disabled={currentPage <= 1}
+                aria-disabled={isPrevDisabled}
                 title="Trang trước"
               />
             </PaginationItem>
@@ -146,19 +158,21 @@ export function AppPagination({
                 )
               }
 
+              const isPageActive = page === safeCurrentPage
+
               return (
                 <PaginationItem key={`page-${page}`}>
                   <PaginationLink
                     href="#"
-                    isActive={page === currentPage}
+                    isActive={isPageActive}
                     size="icon"
                     onClick={(e) => {
                       e.preventDefault()
-                      onPageChange(page)
+                      if (page !== safeCurrentPage) onPageChange(page)
                     }}
                     className={cn(
                       "aspect-square min-w-8 min-h-8 p-1.5 rounded-full text-xs flex items-center justify-center transition-colors",
-                      page === currentPage
+                      isPageActive
                         ? "bg-primary text-primary-foreground font-semibold hover:bg-primary/90"
                         : "font-medium text-muted-foreground hover:text-foreground hover:bg-muted",
                     )}
@@ -176,13 +190,13 @@ export function AppPagination({
                 aria-label="Đi đến trang sau"
                 onClick={(e) => {
                   e.preventDefault()
-                  if (currentPage < totalPages) onPageChange(currentPage + 1)
+                  if (!isNextDisabled) onPageChange(safeCurrentPage + 1)
                 }}
                 className={cn(
                   "text-xs font-medium text-muted-foreground hover:text-foreground",
-                  currentPage >= totalPages && "opacity-50 cursor-not-allowed",
+                  isNextDisabled && "opacity-50 pointer-events-none cursor-not-allowed",
                 )}
-                aria-disabled={currentPage >= totalPages}
+                aria-disabled={isNextDisabled}
                 title="Trang sau"
               />
             </PaginationItem>
