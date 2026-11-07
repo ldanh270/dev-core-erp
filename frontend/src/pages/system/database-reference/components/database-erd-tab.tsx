@@ -10,7 +10,6 @@ interface DatabaseErdTabProps {
   modules: ModuleDef[]
   selectedModule: string
   onModuleChange: (moduleId: string) => void
-  limitNodes?: boolean
   selectedTableName: string | null
   onSelectTable: (table: TableDef) => void
 }
@@ -25,7 +24,6 @@ export function DatabaseErdTab({
   modules,
   selectedModule,
   onModuleChange,
-  limitNodes = false,
   selectedTableName,
   onSelectTable,
 }: DatabaseErdTabProps) {
@@ -41,7 +39,6 @@ export function DatabaseErdTab({
     allTables,
     selectedModule,
     selectedTableName,
-    limitNodes,
   })
 
   return (
@@ -51,7 +48,7 @@ export function DatabaseErdTab({
       className={`relative flex flex-col overflow-hidden border border-border bg-card ${
         viewport.isFullscreen
           ? "fixed inset-0 z-40 h-dvh rounded-none p-3"
-          : "h-[calc(100dvh-240px)] min-h-120 rounded-xl"
+          : "flex-1 min-h-0 h-full rounded-xl shadow-xs"
       }`}
     >
       <DatabaseErdControls

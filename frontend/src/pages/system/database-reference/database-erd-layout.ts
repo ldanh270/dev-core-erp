@@ -51,7 +51,6 @@ const NODE_LINKED_ROW_HEIGHT = 26
 const MIN_NODE_GAP_X = 180
 const NODE_GAP_Y = 84
 const CANVAS_MARGIN = 64
-const MAX_ALL_MODULE_NODES = 24
 const ALTERNATING_COLUMN_STAGGER_Y = 36
 
 // Return all primary/foreign key and referenced target columns without truncation.
@@ -77,11 +76,10 @@ export function getNodeHeight(table: TableDef): number {
 export function createErdLayout(
   tables: TableDef[],
   selectedTableName: string | null,
-  limitNodes: boolean,
   minWidth = 0,
   positionOverrides: ReadonlyMap<string, ErdPoint> = new Map(),
 ): ErdLayout {
-  const visibleTables = limitNodes ? tables.slice(0, MAX_ALL_MODULE_NODES) : tables
+  const visibleTables = tables
   const visibleNames = new Set(visibleTables.map((table) => table.name))
   const tableByName = new Map(visibleTables.map((table) => [table.name, table]))
   const dependencies = createDependencyMaps(visibleTables, visibleNames)
