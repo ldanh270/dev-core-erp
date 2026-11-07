@@ -59,10 +59,10 @@ const getActionIcon = (actionType: string) => {
   return <Activity className="size-4" />
 }
 
+const ACTION_VARIANT_MAP = new Map<string, string>(Object.entries(ACTIVITY_ACTION_VARIANTS))
+
 const getActionIconColor = (actionType: string) => {
-  const variant = Object.prototype.hasOwnProperty.call(ACTIVITY_ACTION_VARIANTS, actionType)
-    ? ACTIVITY_ACTION_VARIANTS[actionType]
-    : "neutral"
+  const variant = ACTION_VARIANT_MAP.get(actionType) ?? "neutral"
   switch (variant) {
     case "success":
       return "text-emerald-500"
