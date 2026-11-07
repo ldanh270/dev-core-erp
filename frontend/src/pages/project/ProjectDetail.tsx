@@ -17,6 +17,7 @@ import { useAuthStore } from "@/store/auth-store"
 
 import { extractErrorMessage } from "@/utils/error-helper"
 import { PageContainer, useConfirm } from "@/components/common"
+import { cn } from "@/lib/utils"
 
 // Sub-components imports
 import { ProjectHeader } from "./components/project-header"
@@ -272,7 +273,10 @@ export default function ProjectDetail() {
   activitiesList.sort((a, b) => b.date.getTime() - a.date.getTime())
 
   return (
-    <PageContainer variant="default" className="space-y-6">
+    <PageContainer
+      variant={activeTab === PROJECT_TABS.KANBAN ? "table" : "default"}
+      className={cn("space-y-6", activeTab === PROJECT_TABS.KANBAN && "space-y-4 gap-4 p-4 md:p-6")}
+    >
       {/* Top Header Section */}
       <ProjectHeader
         projectId={projectId}
@@ -292,8 +296,12 @@ export default function ProjectDetail() {
       />
 
       {/* Tabs navigation panel: switches between Overview, Issues, and Activity views */}
-      <Tabs value={activeTab} onValueChange={(newTab) => { navigate(`/project/${projectId}/${newTab}`); }} className="space-y-6">
-        <TabsList className="bg-secondary rounded-full p-1 border border-border/40 inline-flex">
+      <Tabs
+        value={activeTab}
+        onValueChange={(newTab) => { navigate(`/project/${projectId}/${newTab}`); }}
+        className={cn("space-y-6", activeTab === PROJECT_TABS.KANBAN && "flex-1 min-h-0 flex flex-col space-y-4")}
+      >
+        <TabsList className="bg-secondary rounded-full p-1 border border-border/40 inline-flex shrink-0 self-start">
           <TabsTrigger
             value={PROJECT_TABS.OVERVIEW}
             className="rounded-full px-5 py-2 text-xs font-semibold data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
@@ -381,7 +389,7 @@ export default function ProjectDetail() {
         </TabsContent>
 
         {/* KANBAN TAB */}
-        <TabsContent value={PROJECT_TABS.KANBAN}>
+        <TabsContent value={PROJECT_TABS.KANBAN} className="flex-1 min-h-0 h-full flex flex-col m-0 data-[state=inactive]:hidden">
           <ProjectKanbanTab
             projectId={projectId}
             members={projectMembers}

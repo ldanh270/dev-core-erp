@@ -7,7 +7,7 @@ import { ProjectCapacityBoard } from "@/pages/project/components/project-capacit
 
 export default function ProjectCapacityBoardPage() {
   return (
-    <PageContainer variant="fluid" className="space-y-6">
+    <PageContainer variant="table">
       <PageHeader
         title="Dự báo capacity"
         description="Theo dõi project thiếu/dư capacity theo tuần để hỗ trợ điều phối nhân sự."

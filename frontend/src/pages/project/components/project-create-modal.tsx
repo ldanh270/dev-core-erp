@@ -19,7 +19,9 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { TASK_CREATION_POLICIES } from "@/config/entities/project.config"
 import { CAPACITY_COPILOT_RULES } from "@/config/rules/capacity-copilot.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { projectApi } from "@/lib/api/project.api"
+import { cn } from "@/lib/utils"
 import { extractErrorMessage } from "@/utils/error-helper"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -133,8 +135,8 @@ export function ProjectCreateModal({
     }}>
       <DialogContent className="sm:max-w-[600px] rounded-xl bg-background border-border p-6 shadow-lg">
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold text-foreground">Tạo dự án mới</DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground">
+          <DialogTitle className={TYPOGRAPHY.MODAL_TITLE}>Tạo dự án mới</DialogTitle>
+          <DialogDescription className={TYPOGRAPHY.MODAL_DESCRIPTION}>
             Nhập các thông tin chi tiết để thiết lập dự án mới trong phân hệ quản lý.
           </DialogDescription>
         </DialogHeader>
@@ -147,7 +149,7 @@ export function ProjectCreateModal({
           )}
 
           <div className="space-y-1.5">
-            <Label htmlFor="projName" className="text-xs font-semibold text-muted-foreground">
+            <Label htmlFor="projName" className={TYPOGRAPHY.FORM_LABEL}>
               Tên dự án <span className="text-destructive">*</span>
             </Label>
             <Input
@@ -163,7 +165,7 @@ export function ProjectCreateModal({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="projDesc" className="text-xs font-semibold text-muted-foreground">
+            <Label htmlFor="projDesc" className={TYPOGRAPHY.FORM_LABEL}>
               Mô tả dự án
             </Label>
             <Textarea
@@ -179,7 +181,7 @@ export function ProjectCreateModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label htmlFor="projStart" className="text-xs font-semibold text-muted-foreground">
+              <Label htmlFor="projStart" className={TYPOGRAPHY.FORM_LABEL}>
                 Ngày bắt đầu
               </Label>
               <DatePicker
@@ -193,7 +195,7 @@ export function ProjectCreateModal({
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="projEnd" className="text-xs font-semibold text-muted-foreground">
+              <Label htmlFor="projEnd" className={TYPOGRAPHY.FORM_LABEL}>
                 Ngày dự kiến kết thúc
               </Label>
               <DatePicker
@@ -209,7 +211,7 @@ export function ProjectCreateModal({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="projDealTarget" className="text-xs font-semibold text-muted-foreground">
+            <Label htmlFor="projDealTarget" className={TYPOGRAPHY.FORM_LABEL}>
               Cam kết tuần/milestone (Deal target %)
             </Label>
             <Input
@@ -224,16 +226,16 @@ export function ProjectCreateModal({
               }}
               className="rounded-full bg-background border-border"
             />
-            <p className="text-[10px] text-muted-foreground">
+            <p className={TYPOGRAPHY.FORM_HELPER}>
               Dùng cho Capacity Copilot để so sánh dự đoán tuần tới với cam kết khách hàng.
             </p>
           </div>
 
           <div className="space-y-1.5 relative">
-            <Label className="text-xs font-semibold text-muted-foreground">
+            <Label className={TYPOGRAPHY.FORM_LABEL}>
               Các loại yêu cầu được phép hoạt động
             </Label>
-            <p className="text-[10px] text-muted-foreground mt-0.5 mb-2">
+            <p className={cn(TYPOGRAPHY.FORM_HELPER, "mt-0.5 mb-2")}>
               Chỉ chọn các loại yêu cầu được phép tạo trong dự án này (để trống nếu cho phép tất cả).
             </p>
 
@@ -267,7 +269,7 @@ export function ProjectCreateModal({
               {isCreateDropdownOpen && (
                 <div className="absolute left-0 mt-1 w-full bg-popover border border-border rounded-xl p-3 shadow-lg z-50 space-y-2">
                   <div className="flex items-center justify-between border-b border-border pb-1.5 mb-1.5">
-                    <span className="text-[10px] font-bold text-muted-foreground">
+                    <span className="text-xs font-semibold text-muted-foreground">
                       Chọn loại công việc
                     </span>
                     <div className="flex gap-2">
@@ -276,7 +278,7 @@ export function ProjectCreateModal({
                         onClick={() => {
                           setNewProjectTrackers(trackersList.map((t) => t.key))
                         }}
-                        className="text-[9px] font-extrabold text-primary hover:underline cursor-pointer"
+                        className="text-xs font-semibold text-primary hover:underline cursor-pointer"
                       >
                         Tất cả
                       </button>
@@ -285,7 +287,7 @@ export function ProjectCreateModal({
                         onClick={() => {
                           setNewProjectTrackers([])
                         }}
-                        className="text-[9px] font-extrabold text-muted-foreground hover:text-red-500 hover:underline cursor-pointer"
+                        className="text-xs font-semibold text-muted-foreground hover:text-destructive hover:underline cursor-pointer"
                       >
                         Xóa tất cả
                       </button>
@@ -330,7 +332,7 @@ export function ProjectCreateModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label htmlFor="projLeader" className="text-xs font-semibold text-muted-foreground">
+              <Label htmlFor="projLeader" className={TYPOGRAPHY.FORM_LABEL}>
                 Trưởng nhóm (Team Leader)
               </Label>
               <Select value={newProjectLeader} onValueChange={(val) => {
@@ -356,7 +358,7 @@ export function ProjectCreateModal({
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="projPolicy" className="text-xs font-semibold text-muted-foreground">
+              <Label htmlFor="projPolicy" className={TYPOGRAPHY.FORM_LABEL}>
                 Quyền tạo công việc
               </Label>
               <Select value={newProjectPolicy} onValueChange={(val) => {
@@ -380,7 +382,7 @@ export function ProjectCreateModal({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="projTech" className="text-xs font-semibold text-muted-foreground">
+            <Label htmlFor="projTech" className={TYPOGRAPHY.FORM_LABEL}>
               Công nghệ sử dụng (Tech Stack)
             </Label>
             <Input

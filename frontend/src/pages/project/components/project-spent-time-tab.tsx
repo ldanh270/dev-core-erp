@@ -152,7 +152,7 @@ export function ProjectSpentTimeTab({
           {SPENT_TIME_UI.EMPTY_PROJECT_LIST}
         </p>
       ) : (
-        <div className="relative overflow-auto app-scrollbar max-h-[calc(100vh-280px)] rounded-lg border border-border">
+        <div className="relative overflow-auto max-h-[calc(100vh-280px)] rounded-lg border border-border">
           <Table>
             <TableHeader className="sticky top-0 z-20 bg-background shadow-xs">
               <TableRow className="hover:bg-transparent h-10">

@@ -1,16 +1,16 @@
 // Import layout containers and custom UI elements
-import { AppPagination, PageCard, PageContainer, PageHeader, StatusPill } from "@/components/common"
+import {
+  DataTablePage,
+  type DataTableColumn,
+  PageCard,
+  PageContainer,
+  PageHeader,
+  StatusPill,
+} from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-// Import custom UI tables
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { TYPOGRAPHY } from "@/config/typography.config"
+import { cn } from "@/lib/utils"
 // Import project and task API wrappers
 import { projectApi } from "@/lib/api/project.api"
 import { taskApi } from "@/lib/api/task.api"
@@ -19,11 +19,19 @@ import { useAuthStore } from "@/store/auth-store"
 // Import TanStack Query hooks for client state cache and mutations
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 // Import Lucide icons for layouts
-import { ClipboardList, ExternalLink, Inbox, Folder, User, Plus } from "lucide-react"
+import {
+  ClipboardList,
+  ExternalLink,
+  Inbox,
+  Folder,
+  User,
+  Plus,
+  MoreHorizontal,
+} from "lucide-react"
 // Import React Router Navigation link
 import { Link, useNavigate } from "react-router-dom"
 // Import standard React hooks
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 // Import Toast notifications provider
 import { toast } from "sonner"
 // Import Spent Time log modal feature component
@@ -65,20 +73,21 @@ export default function ProjectDashboard() {
 
   // State to handle pagination bounds for the two task tables
   const [assignedPage, setAssignedPage] = useState(1)
+  const [assignedLimit, setAssignedLimit] = useState(10)
   const [reportedPage, setReportedPage] = useState(1)
-  const tasksLimit = 10 // Max tasks per page
+  const [reportedLimit, setReportedLimit] = useState(10)
 
   // 1. Query hook to fetch tasks assigned to the current employee
   const { data: assignedTasksData, isLoading: isLoadingAssigned } = useQuery({
-    queryKey: ["tasks", "assigned", user?.id, assignedPage],
-    queryFn: () => taskApi.list({ assigneeId: user?.id, page: assignedPage, limit: tasksLimit }),
+    queryKey: ["tasks", "assigned", user?.id, assignedPage, assignedLimit],
+    queryFn: () => taskApi.list({ assigneeId: user?.id, page: assignedPage, limit: assignedLimit }),
     enabled: !!user?.id,
   })
 
   // 2. Query hook to fetch tasks created/reported by the current employee
   const { data: reportedTasksData, isLoading: isLoadingReported } = useQuery({
-    queryKey: ["tasks", "reported", user?.id, reportedPage],
-    queryFn: () => taskApi.list({ createdById: user?.id, page: reportedPage, limit: tasksLimit }),
+    queryKey: ["tasks", "reported", user?.id, reportedPage, reportedLimit],
+    queryFn: () => taskApi.list({ createdById: user?.id, page: reportedPage, limit: reportedLimit }),
     enabled: !!user?.id,
   })
 
@@ -195,195 +204,178 @@ export default function ProjectDashboard() {
     return "neutral"
   }
 
-  // Helper method to render task table representation or show an empty statement
-  const renderTaskTable = (tasks: typeof assignedTasks, emptyMessage: string) => {
-    // Render fallback screen if table data is empty
-    if (tasks.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="rounded-full bg-secondary p-3 mb-3 text-muted-foreground">
-            <Inbox className="size-6" />
-          </div>
-          <p className="text-sm text-muted-foreground">{emptyMessage}</p>
-        </div>
-      )
-    }
+  // Columns configuration for tasks DataTablePage
+  const taskColumns = useMemo<DataTableColumn<Task>[]>(
+    () => [
+      {
+        id: "id",
+        header: "ID",
+        width: "60px",
+        cell: (task) => (
+          <span className={TYPOGRAPHY.CELL_CODE}>
+            #{task.id.substring(0, 5)}
+          </span>
+        ),
+      },
+      {
+        id: "project",
+        header: "Dự án",
+        width: "130px",
+        truncate: true,
+        cell: (task) => (
+          <span className={cn(TYPOGRAPHY.CELL_SECONDARY, "truncate")}>
+            {task.project?.name || "N/A"}
+          </span>
+        ),
+      },
+      {
+        id: "tracker",
+        header: "Tracker",
+        width: "90px",
+        cell: (task) => {
+          let trackerColor = "bg-secondary text-secondary-foreground"
+          if (task.tracker === "bug") {
+            trackerColor = "bg-destructive/10 text-destructive border-destructive/20"
+          } else if (task.tracker === "feature") {
+            trackerColor = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400"
+          } else if (task.tracker === "support") {
+            trackerColor = "bg-sky-500/10 text-sky-600 border-sky-500/20 dark:text-sky-400"
+          }
 
-    return (
-      <div className="relative max-h-[420px] overflow-auto app-scrollbar rounded-lg border border-border bg-card">
-        <Table>
-          <TableHeader className="sticky top-0 z-10 bg-card shadow-xs">
-            <TableRow className="hover:bg-transparent h-12">
-              <TableHead className="w-16 font-semibold">ID</TableHead>
-              <TableHead className="font-semibold">Dự án</TableHead>
-              <TableHead className="w-24 font-semibold">Tracker</TableHead>
-              <TableHead className="font-semibold">Tiêu đề</TableHead>
-              <TableHead className="w-24 font-semibold">Trạng thái</TableHead>
-              <TableHead className="w-24 font-semibold">Độ ưu tiên</TableHead>
-              <TableHead className="w-16 text-right font-semibold">%</TableHead>
-              <TableHead className="w-10" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {tasks.map((task) => {
-              // Calculate custom styling based on task priority
-              let priorityColor = "bg-secondary text-secondary-foreground"
-              if (task.priority === "urgent") priorityColor = "bg-destructive/10 text-destructive border-destructive/20"
-              else if (task.priority === "high") priorityColor = "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:text-amber-500"
-              else if (task.priority === "medium") priorityColor = "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400"
+          return (
+            <Badge
+              variant="outline"
+              className={cn("rounded-full px-2 py-0.5 text-xs font-semibold uppercase", trackerColor)}
+            >
+              {task.tracker}
+            </Badge>
+          )
+        },
+      },
+      {
+        id: "title",
+        header: "Tiêu đề",
+        minWidth: "180px",
+        truncate: true,
+        cell: (task) => (
+          <Link
+            to={`/project/task/${task.id}`}
+            className={cn(
+              TYPOGRAPHY.CELL_PRIMARY,
+              "text-primary hover:underline inline-flex items-center gap-1 group truncate",
+            )}
+          >
+            <span className="truncate">{task.title}</span>
+            <ExternalLink className="size-3 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Link>
+        ),
+      },
+      {
+        id: "status",
+        header: "Trạng thái",
+        width: "110px",
+        cell: (task) => (
+          <StatusPill
+            label={
+              task.status === "todo"
+                ? "Đang mở"
+                : task.status === "reopened"
+                  ? "Mở lại"
+                  : task.status === "in_progress"
+                    ? "Đang làm"
+                    : task.status === "in_review"
+                      ? "Đánh giá"
+                      : task.status === "done"
+                        ? "Hoàn thành"
+                        : "Đã hủy"
+            }
+            variant={
+              task.status === "done"
+                ? "success"
+                : task.status === "in_progress"
+                  ? "warning"
+                  : task.status === "reopened" || task.status === "in_review"
+                    ? "info"
+                    : task.status === "cancelled"
+                      ? "danger"
+                      : "neutral"
+            }
+          />
+        ),
+      },
+      {
+        id: "priority",
+        header: "Độ ưu tiên",
+        width: "100px",
+        cell: (task) => {
+          let priorityColor = "bg-secondary text-secondary-foreground"
+          if (task.priority === "urgent") {
+            priorityColor = "bg-destructive/10 text-destructive border-destructive/20"
+          } else if (task.priority === "high") {
+            priorityColor = "bg-warning/10 text-warning border-warning/20"
+          } else if (task.priority === "medium") {
+            priorityColor = "bg-info/10 text-info border-info/20"
+          }
 
-              // Calculate custom styling based on task tracker (type)
-              let trackerColor = "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
-              if (task.tracker === "bug") trackerColor = "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300"
-              else if (task.tracker === "feature") trackerColor = "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-              else if (task.tracker === "support") trackerColor = "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
-
-              // Check if context menu is currently active and focused on this task row
-              const isMenuOpenForTask = contextMenu.isOpen && contextMenu.task?.id === task.id
-
-              return (
-                <TableRow
-                  key={task.id}
-                  // Attach row level context menu capture
-                  onContextMenu={(e) => { handleRowContextMenu(e, task); }}
-                  className={`h-14 hover:bg-muted/50 transition-colors cursor-default ${
-                    isMenuOpenForTask ? "bg-blue-600/15 hover:bg-blue-600/20 dark:bg-blue-950/30" : ""
-                  }`}
-                >
-                  {/* Shortened Task ID */}
-                  <TableCell className="font-mono text-xs font-semibold text-muted-foreground">
-                    #{task.id.substring(0, 5)}
-                  </TableCell>
-                  {/* Project name reference */}
-                  <TableCell className="font-medium max-w-[120px] truncate">
-                    {task.project?.name || "N/A"}
-                  </TableCell>
-                  {/* Tracker type label */}
-                  <TableCell>
-                    <Badge variant="outline" className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${trackerColor}`}>
-                      {task.tracker}
-                    </Badge>
-                  </TableCell>
-                  {/* Task subject title with direct link to details page */}
-                  <TableCell className="max-w-[200px] truncate">
-                    <Link
-                      to={`/project/task/${task.id}`}
-                      className="text-primary font-medium hover:underline inline-flex items-center gap-1 group"
-                    >
-                      {task.title}
-                      <ExternalLink className="size-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Link>
-                  </TableCell>
-                  {/* Translated Status indicator pill */}
-                  <TableCell>
-                    <StatusPill
-                      label={
-                        task.status === "todo"
-                          ? "Đang mở"
-                          : task.status === "reopened"
-                            ? "Mở lại"
-                            : task.status === "in_progress"
-                              ? "Đang làm"
-                              : task.status === "in_review"
-                                ? "Đánh giá"
-                                : task.status === "done"
-                                  ? "Hoàn thành"
-                                  : "Đã hủy"
-                      }
-                      variant={
-                        task.status === "done"
-                          ? "success"
-                          : task.status === "in_progress"
-                            ? "warning"
-                            : task.status === "reopened"
-                              ? "info"
-                              : task.status === "in_review"
-                                ? "info"
-                                : task.status === "cancelled"
-                                  ? "danger"
-                                  : "neutral"
-                      }
-                    />
-                  </TableCell>
-                  {/* Translated Priority badge */}
-                  <TableCell>
-                    <Badge variant="outline" className={`rounded-full text-[10px] ${priorityColor}`}>
-                      {task.priority === "urgent"
-                        ? "Khẩn cấp"
-                        : task.priority === "high"
-                          ? "Cao"
-                          : task.priority === "medium"
-                            ? "Trung bình"
-                            : "Thấp"}
-                    </Badge>
-                  </TableCell>
-                  {/* Progress percent integer */}
-                  <TableCell className="text-right font-semibold text-xs">
-                    {task.progress}%
-                  </TableCell>
-                  {/* Action trigger button to open right-click context menu by left-click */}
-                  <TableCell className="text-right pr-4">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        const rect = e.currentTarget.getBoundingClientRect()
-                        setContextMenu({
-                          isOpen: true,
-                          x: rect.left - 120,
-                          y: rect.bottom + 5,
-                          task,
-                        })
-                      }}
-                      className="text-muted-foreground hover:text-foreground font-black text-sm p-1 rounded hover:bg-muted/40 transition-colors cursor-pointer"
-                    >
-                      •••
-                    </button>
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </div>
-    )
-  }
-
-  // Renders skeleton layouts during data fetching states
-  const renderSkeleton = () => (
-    <div className="space-y-4">
-      <Skeleton className="h-10 w-full rounded-full" />
-      <Skeleton className="h-12 w-full rounded-xl" />
-      <Skeleton className="h-12 w-full rounded-xl" />
-      <Skeleton className="h-12 w-full rounded-xl" />
-    </div>
+          return (
+            <Badge
+              variant="outline"
+              className={cn("rounded-full text-xs font-semibold px-2 py-0.5", priorityColor)}
+            >
+              {task.priority === "urgent"
+                ? "Khẩn cấp"
+                : task.priority === "high"
+                  ? "Cao"
+                  : task.priority === "medium"
+                    ? "Trung bình"
+                    : "Thấp"}
+            </Badge>
+          )
+        },
+      },
+      {
+        id: "progress",
+        header: "%",
+        align: "right",
+        width: "50px",
+        cell: (task) => (
+          <span className={cn(TYPOGRAPHY.CELL_SECONDARY, "font-semibold")}>
+            {task.progress}%
+          </span>
+        ),
+      },
+      {
+        id: "actions",
+        header: "",
+        align: "right",
+        width: "44px",
+        cell: (task) => (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              const rect = e.currentTarget.getBoundingClientRect()
+              setContextMenu({
+                isOpen: true,
+                x: rect.left - 120,
+                y: rect.bottom + 5,
+                task,
+              })
+            }}
+            className="rounded-full p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors cursor-pointer"
+            aria-label="Thao tác"
+          >
+            <MoreHorizontal className="size-4" />
+          </button>
+        ),
+      },
+    ],
+    [],
   )
 
-  // Reusable pagination layout handler using AppPagination
-  const renderPagination = (
-    currentPage: number,
-    totalPages: number,
-    totalItems: number,
-    _itemsOnPage: number,
-    onPageChange: (page: number) => void
-  ) => {
-    if (totalPages <= 1) return null
-
-    return (
-      <div className="pt-2 border-t border-border mt-4">
-        <AppPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          itemsPerPage={tasksLimit}
-          onPageChange={onPageChange}
-        />
-      </div>
-    )
-  }
-
   return (
-    <PageContainer variant="default" className="space-y-6">
+    <PageContainer variant="table">
       {/* Page header title details */}
       <PageHeader
         title="Tổng quan của tôi (My Page)"
@@ -391,13 +383,13 @@ export default function ProjectDashboard() {
       />
 
       {/* 1. Projects Section - Grid representing active user projects */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 border-b border-border pb-3">
+      <div className="shrink-0 space-y-2">
+        <div className="flex items-center gap-2 border-b border-border pb-2">
           <div className="rounded-full bg-primary/10 p-2 text-primary">
-            <Folder className="size-5" />
+            <Folder className="size-4" />
           </div>
           <div>
-            <h3 className="font-bold text-base text-foreground">
+            <h3 className="font-bold text-sm text-foreground">
               Dự án của tôi ({projects.length})
             </h3>
             <p className="text-xs text-muted-foreground">Các dự án bạn tham gia hoặc quản lý</p>
@@ -406,22 +398,22 @@ export default function ProjectDashboard() {
 
         {/* Fetching loading state for projects */}
         {isLoadingProjects ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-            <Skeleton className="h-32 w-full rounded-xl" />
-            <Skeleton className="h-32 w-full rounded-xl" />
-            <Skeleton className="h-32 w-full rounded-xl" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+            <Skeleton className="h-28 w-full rounded-xl" />
+            <Skeleton className="h-28 w-full rounded-xl" />
+            <Skeleton className="h-28 w-full rounded-xl" />
           </div>
         ) : projects.length === 0 ? (
           // Empty state fallback visual
-          <div className="flex flex-col items-center justify-center py-12 text-center bg-card rounded-xl border border-border">
-            <div className="rounded-full bg-secondary p-3 mb-3 text-muted-foreground">
-              <Folder className="size-6" />
+          <div className="flex flex-col items-center justify-center py-6 text-center bg-card rounded-xl border border-border">
+            <div className="rounded-full bg-secondary p-2.5 mb-2 text-muted-foreground">
+              <Folder className="size-5" />
             </div>
-            <p className="text-sm text-muted-foreground">Bạn chưa được tham gia vào dự án nào.</p>
+            <p className="text-xs text-muted-foreground">Bạn chưa được tham gia vào dự án nào.</p>
           </div>
         ) : (
           // Projects grid display list
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 max-h-[160px] overflow-y-auto pr-1">
             {projects.map((proj) => {
               const isLeader = proj.teamLeaderId === user?.id
               const isAdminOrGM = hasAnyPermission(["project.update", "project.task.approve"])
@@ -432,24 +424,24 @@ export default function ProjectDashboard() {
               let roleBadgeColor = "bg-secondary text-secondary-foreground"
               if (isLeader) {
                 memberRole = "Trưởng nhóm"
-                roleBadgeColor = "bg-indigo-500/10 text-indigo-600 border-indigo-500/20 dark:text-indigo-400"
+                roleBadgeColor = "bg-primary/10 text-primary border-primary/20"
               } else if (isAdminOrGM) {
                 memberRole = "Quản trị viên"
-                roleBadgeColor = "bg-red-500/10 text-red-600 border-red-500/20 dark:text-red-400"
+                roleBadgeColor = "bg-destructive/10 text-destructive border-destructive/20"
               }
 
               return (
                 <PageCard
                   key={proj.id}
-                  className="hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 border border-border/85 flex flex-col justify-between p-5 min-h-[140px] space-y-4 hover:border-primary/50 cursor-pointer group"
+                  className="hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 border border-border/85 flex flex-col justify-between p-4 min-h-[120px] space-y-3 hover:border-primary/50 cursor-pointer group"
                   onClick={() => {
                     sessionStorage.setItem("activeProjectId", proj.id)
                     navigate(`/project/${proj.id}/overview`)
                   }}
                 >
-                  <div className="space-y-2">
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="font-bold text-base text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                  <div className="space-y-1.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="font-bold text-sm text-foreground group-hover:text-primary transition-colors line-clamp-1">
                         {proj.name}
                       </span>
                       <StatusPill
@@ -457,29 +449,31 @@ export default function ProjectDashboard() {
                         variant={getProjectStatusVariant(proj.status)}
                       />
                     </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2 min-h-[32px]">
+                    <p className="text-xs text-muted-foreground line-clamp-1">
                       {proj.description || "Không có mô tả dự án."}
                     </p>
                   </div>
 
-                  <div className="border-t border-border/40 pt-3 flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground font-medium flex items-center gap-1">
-                      <User className="size-3.5" />
-                      Trưởng nhóm: <span className="font-semibold text-foreground">{proj.teamLeader?.fullName || "Chưa có"}</span>
+                  <div className="border-t border-border/40 pt-2 flex items-center justify-between text-xs gap-2">
+                    <span className="text-muted-foreground font-medium flex items-center gap-1 min-w-0 truncate">
+                      <User className="size-3.5 shrink-0" />
+                      <span className="truncate">
+                        Trưởng nhóm: <span className="font-semibold text-foreground">{proj.teamLeader?.fullName || "Chưa có"}</span>
+                      </span>
                     </span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       {/* Show create task shortcut link if current user matches creation policies */}
                       {canCreateInProj && (
                         <Link
                           to={`/project/${proj.id}/task/new`}
                           onClick={(e) => { e.stopPropagation(); sessionStorage.setItem("activeProjectId", proj.id); }}
-                          className="rounded-full bg-primary/10 hover:bg-primary/20 text-primary px-2.5 py-1 font-bold text-[10px] flex items-center gap-1 transition-all duration-200 cursor-pointer"
+                          className="rounded-full bg-primary/10 hover:bg-primary/20 text-primary px-2.5 py-0.5 font-semibold text-xs flex items-center gap-1 transition-all duration-200 cursor-pointer"
                         >
                           <Plus className="size-3" />
                           Tạo CV
                         </Link>
                       )}
-                      <Badge variant="outline" className={`rounded-full text-[9px] font-black px-2 py-0.5 ${roleBadgeColor}`}>
+                      <Badge variant="outline" className={cn("rounded-full text-xs font-semibold px-2 py-0.5", roleBadgeColor)}>
                         {memberRole}
                       </Badge>
                     </div>
@@ -492,69 +486,82 @@ export default function ProjectDashboard() {
       </div>
 
       {/* 2. Tasks Grid - Split display panel for Assigned Tasks (left) and Reported Tasks (right) */}
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-12 gap-6 flex-1 min-h-0">
         {/* Left Column - Assigned Tasks */}
-        <div className="col-span-12 xl:col-span-6 space-y-4">
-          <PageCard className="p-6">
-            <div className="flex items-center gap-2 mb-4 border-b border-border pb-3">
-              <div className="rounded-full bg-primary/10 p-2 text-primary">
-                <ClipboardList className="size-5" />
-              </div>
-              <div>
-                <h3 className="font-bold text-base text-foreground">
-                  Công việc được giao cho tôi ({assignedTasksData?.meta.total || 0})
-                </h3>
-                <p className="text-xs text-muted-foreground">Các nhiệm vụ bạn cần thực hiện</p>
-              </div>
-            </div>
-
-            {isLoadingAssigned
-              ? renderSkeleton()
-              : (
-                  <>
-                    {renderTaskTable(assignedTasks, "Không có công việc nào được giao cho bạn.")}
-                    {renderPagination(
-                      assignedPage,
-                      assignedTasksData?.meta.totalPages || 0,
-                      assignedTasksData?.meta.total || 0,
-                      assignedTasks.length,
-                      setAssignedPage
-                    )}
-                  </>
-                )}
-          </PageCard>
+        <div className="col-span-12 xl:col-span-6 flex flex-col min-w-0 h-full">
+          <DataTablePage<Task>
+            variant="card"
+            className="h-full"
+            cardIcon={ClipboardList}
+            title={`Công việc được giao cho tôi (${assignedTasksData?.meta.total || 0})`}
+            description="Các nhiệm vụ bạn cần thực hiện"
+            columns={taskColumns}
+            data={assignedTasks}
+            isLoading={isLoadingAssigned}
+            keyExtractor={(task) => task.id}
+            onRowContextMenu={handleRowContextMenu}
+            rowClassName={(task) =>
+              contextMenu.isOpen && contextMenu.task?.id === task.id
+                ? "bg-primary/10 hover:bg-primary/15"
+                : undefined
+            }
+            emptyState={{
+              icon: Inbox,
+              title: "Không có công việc nào",
+              description: "Không có công việc nào được giao cho bạn.",
+            }}
+            pagination={{
+              currentPage: assignedPage,
+              totalPages: assignedTasksData?.meta.totalPages || 0,
+              totalItems: assignedTasksData?.meta.total || 0,
+              itemsPerPage: assignedLimit,
+              onPageChange: setAssignedPage,
+              onItemsPerPageChange: (newLimit) => {
+                setAssignedLimit(newLimit)
+                setAssignedPage(1)
+              },
+              pageSizeOptions: [10, 20, 50],
+            }}
+          />
         </div>
 
         {/* Right Column - Reported Tasks */}
-        <div className="col-span-12 xl:col-span-6 space-y-4">
-          <PageCard className="p-6">
-            <div className="flex items-center gap-2 mb-4 border-b border-border pb-3">
-              <div className="rounded-full bg-indigo-500/10 p-2 text-indigo-500">
-                <ClipboardList className="size-5" />
-              </div>
-              <div>
-                <h3 className="font-bold text-base text-foreground">
-                  Công việc tôi đã tạo / báo cáo ({reportedTasksData?.meta.total || 0})
-                </h3>
-                <p className="text-xs text-muted-foreground">Các nhiệm vụ do bạn báo cáo hoặc tạo ra</p>
-              </div>
-            </div>
-
-            {isLoadingReported
-              ? renderSkeleton()
-              : (
-                  <>
-                    {renderTaskTable(reportedTasks, "Bạn chưa tạo hoặc báo cáo công việc nào.")}
-                    {renderPagination(
-                      reportedPage,
-                      reportedTasksData?.meta.totalPages || 0,
-                      reportedTasksData?.meta.total || 0,
-                      reportedTasks.length,
-                      setReportedPage
-                    )}
-                  </>
-                )}
-          </PageCard>
+        <div className="col-span-12 xl:col-span-6 flex flex-col min-w-0 h-full">
+          <DataTablePage<Task>
+            variant="card"
+            className="h-full"
+            cardIcon={ClipboardList}
+            cardIconClassName="bg-indigo-500/10 text-indigo-500"
+            title={`Công việc tôi đã tạo / báo cáo (${reportedTasksData?.meta.total || 0})`}
+            description="Các nhiệm vụ do bạn báo cáo hoặc tạo ra"
+            columns={taskColumns}
+            data={reportedTasks}
+            isLoading={isLoadingReported}
+            keyExtractor={(task) => task.id}
+            onRowContextMenu={handleRowContextMenu}
+            rowClassName={(task) =>
+              contextMenu.isOpen && contextMenu.task?.id === task.id
+                ? "bg-primary/10 hover:bg-primary/15"
+                : undefined
+            }
+            emptyState={{
+              icon: Inbox,
+              title: "Không có công việc nào",
+              description: "Bạn chưa tạo hoặc báo cáo công việc nào.",
+            }}
+            pagination={{
+              currentPage: reportedPage,
+              totalPages: reportedTasksData?.meta.totalPages || 0,
+              totalItems: reportedTasksData?.meta.total || 0,
+              itemsPerPage: reportedLimit,
+              onPageChange: setReportedPage,
+              onItemsPerPageChange: (newLimit) => {
+                setReportedLimit(newLimit)
+                setReportedPage(1)
+              },
+              pageSizeOptions: [10, 20, 50],
+            }}
+          />
         </div>
       </div>
 
