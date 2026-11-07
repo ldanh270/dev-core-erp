@@ -11,7 +11,7 @@ import { cn, formatCurrency } from "@/lib/utils"
 import type { Employee } from "@/types/employee.types"
 
 import { useMemo } from "react"
-import { Plus, ShieldAlert, User } from "lucide-react"
+import { Plus, User } from "lucide-react"
 import { useSearchParams } from "react-router-dom"
 
 const EMPTY_EMPLOYEES: Employee[] = []
@@ -174,7 +174,6 @@ export default function InsurancePage() {
       data={paginatedEmployees}
       isLoading={isLoading}
       emptyState={{
-        icon: ShieldAlert,
         title: "Chưa có dữ liệu bảo hiểm",
         description: "Bắt đầu khai báo hồ sơ bảo hiểm cho nhân sự công ty.",
       }}

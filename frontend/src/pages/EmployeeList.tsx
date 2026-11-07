@@ -35,7 +35,6 @@ import {
   Trash2,
   Unlock,
   User,
-  UserX,
 } from "lucide-react"
 
 type ActiveTab =
@@ -384,7 +383,6 @@ export default function EmployeeList() {
       data={data?.data || []}
       isLoading={isLoading || isFetching}
       emptyState={{
-        icon: UserX,
         title: "Chưa có nhân sự nào",
         description: "Bắt đầu tạo hồ sơ nhân sự mới cho công ty.",
       }}
