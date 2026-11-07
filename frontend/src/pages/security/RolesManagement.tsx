@@ -12,6 +12,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { EMPLOYEE_STATUS_VARIANTS, ROLE_LABELS } from "@/config/entities/employee.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
+import { cn } from "@/lib/utils"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import {
   useRoles,
@@ -34,6 +36,7 @@ import {
   Plus,
   Edit2,
   Trash2,
+  Inbox,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -225,35 +228,35 @@ export default function RolesManagement() {
                       <div className="p-2 rounded-lg bg-primary/10 text-primary">
                         <IconComponent size={20} />
                       </div>
-                      <span className="font-mono text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                      <span className="font-mono text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
                         {role.name}
                       </span>
                     </div>
                     <div className="flex items-center justify-between flex-wrap gap-1">
-                      <h3 className="text-sm font-bold text-foreground mb-1">
+                      <h3 className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-bold text-foreground mb-1")}>
                         {ROLE_LABELS[role.name] || role.name}
                       </h3>
                       <div className="flex items-center gap-1">
                         {role.isDefault && (
-                          <span className="text-[9px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-px rounded">
+                          <span className="text-xs font-semibold bg-success/10 text-success border border-success/20 px-2 py-0.5 rounded-full">
                             Mặc định
                           </span>
                         )}
                         {isSystem && (
-                          <span className="text-[9px] font-semibold text-blue-600 bg-blue-50 px-1.5 py-px rounded">
+                          <span className="text-xs font-semibold bg-info/10 text-info border border-info/20 px-2 py-0.5 rounded-full">
                             Hệ thống
                           </span>
                         )}
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground line-clamp-3 mb-4 mt-1">
+                    <p className={cn(TYPOGRAPHY.CELL_SECONDARY, "line-clamp-3 mb-4 mt-1")}>
                       {role.description || "Chưa có mô tả cho vai trò này."}
                     </p>
                   </div>
 
                   <div className="border-t border-border/60 pt-4 flex items-center justify-between">
                     <div className="flex flex-col">
-                      <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+                      <span className={cn(TYPOGRAPHY.TABLE_HEADER, "text-[10px] uppercase font-bold tracking-wider")}>
                         Nhân sự
                       </span>
                       <span className="text-lg font-extrabold text-foreground">{count}</span>
@@ -263,7 +266,7 @@ export default function RolesManagement() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:text-primary"
+                          className="h-8 w-8 rounded-full text-muted-foreground hover:text-primary"
                           onClick={() => {
                             handleOpenEdit(role)
                           }}
@@ -276,7 +279,7 @@ export default function RolesManagement() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                          className="h-8 w-8 rounded-full text-muted-foreground hover:text-destructive"
                           onClick={() => {
                             handleDeleteRole(role.id)
                           }}
@@ -288,7 +291,7 @@ export default function RolesManagement() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="gap-1.5 h-8 px-2.5 text-xs text-primary hover:text-primary hover:bg-primary/5"
+                        className="gap-1.5 h-8 px-2.5 rounded-full text-xs text-primary hover:text-primary hover:bg-primary/5"
                         onClick={() => {
                           handleOpenRoleDetail(role)
                         }}
@@ -313,11 +316,11 @@ export default function RolesManagement() {
             <div className="mb-6 pt-6">
               <div className="flex items-center gap-2 mb-1">
                 <FolderLock className="h-5 w-5 text-primary" />
-                <h2 className="text-lg font-bold text-foreground">
+                <h2 className={cn(TYPOGRAPHY.MODAL_TITLE, "text-foreground")}>
                   Nhân sự: {selectedRole ? ROLE_LABELS[selectedRole.name] || selectedRole.name : ""}
                 </h2>
               </div>
-              <p className="text-xs text-muted-foreground leading-normal">
+              <p className={cn(TYPOGRAPHY.MODAL_DESCRIPTION, "mt-1")}>
                 {selectedRole?.description || "Không có mô tả."}
               </p>
             </div>
@@ -329,19 +332,21 @@ export default function RolesManagement() {
                   <p className="text-xs text-muted-foreground mt-3">Đang tải danh sách nhân sự...</p>
                 </div>
               ) : isErrorUsers ? (
-                <div className="py-12 text-center bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900 rounded-xl p-5">
-                  <AlertTriangle className="h-8 w-8 text-rose-500 mx-auto mb-2" />
-                  <h4 className="text-sm font-bold text-rose-600 dark:text-rose-400">Không thể tải dữ liệu</h4>
-                  <p className="text-xs text-muted-foreground mt-1">Đã có lỗi xảy ra khi truy xuất thông tin.</p>
-                  <Button variant="outline" size="sm" className="mt-3 h-8 text-xs" onClick={() => { refetchUsers(); }}>
+                <div className="py-12 text-center bg-destructive/10 border border-destructive/20 rounded-xl p-5">
+                  <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-2" />
+                  <h4 className="text-sm font-bold text-destructive">Không thể tải dữ liệu</h4>
+                  <p className={cn(TYPOGRAPHY.CELL_SECONDARY, "mt-1")}>Đã có lỗi xảy ra khi truy xuất thông tin.</p>
+                  <Button variant="outline" size="sm" className="mt-3 h-8 text-xs rounded-full" onClick={() => { refetchUsers(); }}>
                     Thử lại
                   </Button>
                 </div>
               ) : roleUsers?.data.length === 0 ? (
-                <div className="py-20 text-center border border-dashed border-border rounded-xl p-6">
-                  <Users className="h-10 w-10 text-muted-foreground/60 mx-auto mb-3" />
+                <div className="py-16 text-center border border-dashed border-border rounded-xl p-6 flex flex-col items-center justify-center">
+                  <div className="rounded-full bg-secondary p-3 mb-3 text-muted-foreground">
+                    <Inbox className="size-6" />
+                  </div>
                   <h4 className="text-sm font-bold text-foreground">Trống</h4>
-                  <p className="text-xs text-muted-foreground mt-1">Không có nhân sự nào giữ vai trò này.</p>
+                  <p className={cn(TYPOGRAPHY.CELL_SECONDARY, "mt-1")}>Không có nhân sự nào giữ vai trò này.</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -420,14 +425,14 @@ export default function RolesManagement() {
         <DialogContent className="sm:max-w-[425px] rounded-xl">
           <form onSubmit={handleCreateRole}>
             <DialogHeader>
-              <DialogTitle className="text-base font-bold">Thêm vai trò mới</DialogTitle>
-              <DialogDescription className="text-xs text-muted-foreground">
+              <DialogTitle className={cn(TYPOGRAPHY.MODAL_TITLE)}>Thêm vai trò mới</DialogTitle>
+              <DialogDescription className={cn(TYPOGRAPHY.MODAL_DESCRIPTION)}>
                 Nhập các thông tin cơ bản để tạo vai trò truy cập mới.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="create-name" className="text-xs font-semibold">Tên vai trò (bằng tiếng Anh, viết liền hoặc dùng dấu gạch dưới)</Label>
+                <Label htmlFor="create-name" className={cn(TYPOGRAPHY.FORM_LABEL)}>Tên vai trò (bằng tiếng Anh, viết liền hoặc dùng dấu gạch dưới)</Label>
                 <Input
                   id="create-name"
                   placeholder="e.g. hr_assistant, project_viewer"
@@ -438,13 +443,13 @@ export default function RolesManagement() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="create-desc" className="text-xs font-semibold">Mô tả</Label>
+                <Label htmlFor="create-desc" className={cn(TYPOGRAPHY.FORM_LABEL)}>Mô tả</Label>
                 <Textarea
                   id="create-desc"
                   placeholder="Nhập mô tả chi tiết chức năng của vai trò này..."
                   value={roleDesc}
                   onChange={(e) => { setRoleDesc(e.target.value); }}
-                  className="text-xs min-h-[80px]"
+                  className="text-xs min-h-[80px] rounded-xl"
                 />
               </div>
               <div className="flex items-center gap-2 pt-1">
@@ -477,14 +482,14 @@ export default function RolesManagement() {
         <DialogContent className="sm:max-w-[425px] rounded-xl">
           <form onSubmit={handleUpdateRole}>
             <DialogHeader>
-              <DialogTitle className="text-base font-bold">Chỉnh sửa vai trò</DialogTitle>
-              <DialogDescription className="text-xs text-muted-foreground">
+              <DialogTitle className={cn(TYPOGRAPHY.MODAL_TITLE)}>Chỉnh sửa vai trò</DialogTitle>
+              <DialogDescription className={cn(TYPOGRAPHY.MODAL_DESCRIPTION)}>
                 Cập nhật thông tin vai trò truy cập hệ thống.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="edit-name" className="text-xs font-semibold">Tên vai trò</Label>
+                <Label htmlFor="edit-name" className={cn(TYPOGRAPHY.FORM_LABEL)}>Tên vai trò</Label>
                 <Input
                   id="edit-name"
                   value={roleName}
@@ -495,12 +500,12 @@ export default function RolesManagement() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="edit-desc" className="text-xs font-semibold">Mô tả</Label>
+                <Label htmlFor="edit-desc" className={cn(TYPOGRAPHY.FORM_LABEL)}>Mô tả</Label>
                 <Textarea
                   id="edit-desc"
                   value={roleDesc}
                   onChange={(e) => { setRoleDesc(e.target.value); }}
-                  className="text-xs min-h-[80px]"
+                  className="text-xs min-h-[80px] rounded-xl"
                 />
               </div>
               <div className="flex items-center gap-2 pt-1">

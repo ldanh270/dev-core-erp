@@ -40,7 +40,7 @@ export function ActivityLogsTable({
   hideEmployee = false,
 }: ActivityLogsTableProps) {
   return (
-    <div className="flex-1 min-h-0 overflow-auto app-scrollbar w-full">
+    <div className="flex-1 min-h-0 overflow-auto w-full">
       <table className="w-full border-separate border-spacing-0 text-sm">
         <thead className="sticky top-0 z-20 bg-background border-b border-border shadow-xs">
           <tr>
