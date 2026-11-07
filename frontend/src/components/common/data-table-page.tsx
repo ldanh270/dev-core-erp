@@ -24,10 +24,7 @@ export type {
 } from "./data-table.types"
 
 /**
- * Master Enterprise Data Table Page component.
- * Combines viewport-locked internal scrolling, sticky thead, sticky left columns (>= lg),
- * 400ms debounced search, smart context-aware empty state, and pinned pagination into a single reusable Clean Architecture primitive.
- * Strictly adheres to 4px multiples design tokens (docs/component-sizing-standard.md).
+ * Data Table Page component with viewport scrolling and pagination.
  */
 export function DataTablePage<T>({
   title,
@@ -40,6 +37,9 @@ export function DataTablePage<T>({
   headerActions,
   subHeader,
   variant = "viewport",
+  cardIcon: CardIcon,
+  cardIconClassName,
+  className,
   density = "normal",
   tabs,
   search,
@@ -50,6 +50,8 @@ export function DataTablePage<T>({
   keyExtractor,
   renderRows,
   onRowClick,
+  onRowContextMenu,
+  rowClassName,
   isLoading = false,
   loadingRowsCount = 8,
   emptyState,
@@ -57,13 +59,11 @@ export function DataTablePage<T>({
   extraContent,
 }: DataTablePageProps<T>) {
   const isCompact = density === "compact"
-  // In W3C CSS Table Model, 'height' on th/td natively acts as minimum height (never clips, auto-expands on multi-line)
-  // while guaranteeing clean integer rendering (exact 40px for header, 60px for data rows) in DevTools.
+  // Row height tokens: 40px/60px (normal), 40px/48px (compact)
   const thClass = isCompact
     ? "h-10 px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider align-middle"
     : "h-10 px-4 py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider align-middle"
 
-  // Standard row cell height: 60px standard, 48px compact
   const tdClass = isCompact ? "h-12 px-3 py-2 text-sm align-middle" : "h-[60px] px-4 py-2.5 text-sm align-middle"
 
   // Responsive breakpoint hooks for progressive column visibility
@@ -71,8 +71,7 @@ export function DataTablePage<T>({
   const isLg = useMediaQuery("(min-width: 1024px)")
   const isXl = useMediaQuery("(min-width: 1280px)")
 
-  // Sticky Column Integrity Law: Columns hidden by breakpoints are filtered out
-  // BEFORE computing sticky offsets, colgroup, and totalMinWidth
+  // Filter out columns hidden by current breakpoint before computing layout
   const visibleColumns = useMemo(() => {
     return columns.filter((col) => {
       if (col.hideBelow === "md" && !isMd) return false
@@ -112,31 +111,40 @@ export function DataTablePage<T>({
     return primaryAction
   }
 
-  return (
-    <PageContainer variant={variant === "viewport" ? "table" : "default"}>
-      <PageHeader
-        title={title}
-        description={description}
-        backHref={backHref}
-        fallbackHref={fallbackHref}
-        onBack={onBack}
-        backLabel={backLabel}
-        actions={
-          <div className="flex items-center gap-3">
-            {headerActions}
-            {renderPrimaryAction()}
+  const cardElement = (
+    <PageCard
+      padding="none"
+      className={cn(
+        "flex-1 min-h-0 flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-xs",
+        className,
+      )}
+    >
+      {/* Header section when rendered as an embedded card */}
+      {variant === "card" && (title || headerActions) && (
+        <div className="flex items-center justify-between border-b border-border px-5 py-3.5 bg-card shrink-0">
+          <div className="flex items-center gap-2.5">
+            {CardIcon && (
+              <div
+                className={cn(
+                  "rounded-full p-2 text-primary bg-primary/10",
+                  cardIconClassName,
+                )}
+              >
+                <CardIcon className="size-4" />
+              </div>
+            )}
+            <div>
+              <h3 className="font-bold text-sm text-foreground">{title}</h3>
+              {description && (
+                <p className="text-xs text-muted-foreground">{description}</p>
+              )}
+            </div>
           </div>
-        }
-      />
+          {headerActions}
+        </div>
+      )}
 
-      {subHeader}
-
-      {/* Table container */}
-      <PageCard
-        padding="none"
-        className="flex-1 min-h-0 flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-xs"
-      >
-        {/* Tab navigation */}
+      {/* Tab navigation */}
         {tabs && (
           <nav className="flex items-center gap-1 border-b border-border bg-card px-0 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink-0 relative">
             {tabs.items.map((tab) => {
@@ -202,7 +210,7 @@ export function DataTablePage<T>({
         )}
 
         {/* Table viewport */}
-        <div className="relative flex-1 min-h-0 overflow-auto overscroll-contain app-scrollbar">
+        <div className="relative flex-1 min-h-0 overflow-auto overscroll-contain">
           <table
             className={cn(
               "w-full border-separate border-spacing-0 text-left",
@@ -307,8 +315,16 @@ export function DataTablePage<T>({
                     className={cn(
                       "group hover:bg-muted/25",
                       onRowClick && "cursor-pointer",
+                      rowClassName ? rowClassName(item, idx) : undefined,
                     )}
                     onClick={onRowClick ? () => { onRowClick(item, idx) } : undefined}
+                    onContextMenu={
+                      onRowContextMenu
+                        ? (e) => {
+                            onRowContextMenu(e, item, idx)
+                          }
+                        : undefined
+                    }
                     tabIndex={onRowClick ? 0 : undefined}
                     onKeyDown={
                       onRowClick
@@ -379,6 +395,32 @@ export function DataTablePage<T>({
           </div>
         )}
       </PageCard>
+    )
+
+  if (variant === "card") {
+    return cardElement
+  }
+
+  return (
+    <PageContainer variant={variant === "viewport" ? "table" : "default"}>
+      <PageHeader
+        title={title}
+        description={description}
+        backHref={backHref}
+        fallbackHref={fallbackHref}
+        onBack={onBack}
+        backLabel={backLabel}
+        actions={
+          <div className="flex items-center gap-3">
+            {headerActions}
+            {renderPrimaryAction()}
+          </div>
+        }
+      />
+
+      {subHeader}
+
+      {cardElement}
 
       {extraContent}
     </PageContainer>

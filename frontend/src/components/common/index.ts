@@ -28,5 +28,19 @@ export { AppPagination, type AppPaginationProps } from "./app-pagination"
 export { SafeHtml } from "./safe-html"
 export { DatePicker, DateRangePicker } from "./date-picker"
 export { TimePicker, type TimePickerProps } from "./time-picker"
+export {
+  BoardContainer,
+  BoardColumn,
+  BoardColumnHeader,
+  BoardCard,
+  BoardAddColumnCard,
+  BoardView,
+  type BoardContainerProps,
+  type BoardColumnProps,
+  type BoardColumnHeaderProps,
+  type BoardCardProps,
+  type BoardAddColumnCardProps,
+  type BoardViewProps,
+} from "./board"
 export { TABLE_COL_WIDTH, getTableColWidthPx, type TableColWidthKey } from "@/config/table-columns.config"
 export { TYPOGRAPHY, type TypographyToken } from "@/config/typography.config"
