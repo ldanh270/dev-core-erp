@@ -12,7 +12,7 @@ export interface ViewportSize {
   height: number
 }
 
-export const MIN_SCALE = 0.15
+export const MIN_SCALE = 0.05
 export const MAX_SCALE = 3
 export const ZOOM_STEP = 1.15
 const FIT_VIEWPORT_PADDING = 48
@@ -21,7 +21,6 @@ const FIT_VIEWPORT_PADDING = 48
 export function useDatabaseErdViewport(
   tables: TableDef[],
   selectedTableName: string | null,
-  limitNodes: boolean,
   fullscreenTarget: HTMLElement | null,
 ) {
   const [scale, setScale] = useState(1)
@@ -34,8 +33,8 @@ export function useDatabaseErdViewport(
 
   // Recompute ERD layout whenever visible tables, viewport width, or dragged node overrides change.
   const graph = useMemo(
-    () => createErdLayout(tables, selectedTableName, limitNodes, viewport.width, nodePositions),
-    [tables, selectedTableName, limitNodes, viewport.width, nodePositions],
+    () => createErdLayout(tables, selectedTableName, viewport.width, nodePositions),
+    [tables, selectedTableName, viewport.width, nodePositions],
   )
 
   // Observe ERD container size changes to fit and center the diagram accurately.
