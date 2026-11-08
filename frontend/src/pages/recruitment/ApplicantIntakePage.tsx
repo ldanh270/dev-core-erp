@@ -1,4 +1,10 @@
-import { PageCard, PageContainer, PageHeader } from "@/components/common"
+import {
+  EmptyState,
+  PageCard,
+  PageContainer,
+  PageHeader,
+  SectionHeader,
+} from "@/components/common"
 import {
   parseApplicantCsv,
   validateApplicantRows,
@@ -117,7 +123,7 @@ export default function ApplicantIntakePage() {
       />
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <PageCard className="min-w-0">
-          <CardHeading
+          <SectionHeader
             title="Nguồn hồ sơ"
             description="Chọn Yêu cầu tuyển dụng trước, sau đó chọn bài đăng để tự nhận diện nguồn."
           />
@@ -189,7 +195,7 @@ export default function ApplicantIntakePage() {
           </div>
         </PageCard>
         <PageCard>
-          <CardHeading
+          <SectionHeader
             title="Import Excel / CSV"
             description="Đọc sheet đầu tiên, dòng đầu là tiêu đề cột."
           />
@@ -217,9 +223,10 @@ export default function ApplicantIntakePage() {
       </div>
       <PageCard padding="sm" className="p-0 overflow-hidden">
         <div className="p-4 border-b border-border">
-          <CardHeading
+          <SectionHeader
             title={`Dữ liệu xem trước (${rows.length} hồ sơ)`}
             description="Có thể dán trực tiếp dữ liệu CSV vào ô bên dưới."
+            className="border-b-0 pb-0 mb-0"
           />
         </div>
         <div className="p-4">
@@ -262,17 +269,12 @@ export default function ApplicantIntakePage() {
               {rows.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={4} className="h-44 text-center">
-                    <div className="flex flex-col items-center justify-center py-6 text-muted-foreground">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/50 border border-border/60 text-muted-foreground shadow-2xs mb-3">
-                        <Inbox className="h-6 w-6 text-muted-foreground/80" />
-                      </div>
-                      <p className="text-sm font-semibold text-foreground">
-                        Chưa có dữ liệu ứng viên để xem trước
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                        Dán dữ liệu CSV vào ô phía trên hoặc chọn file Excel / CSV để tải lên.
-                      </p>
-                    </div>
+                    <EmptyState
+                      compact
+                      icon={Inbox}
+                      title="Chưa có dữ liệu ứng viên để xem trước"
+                      description="Dán dữ liệu CSV vào ô phía trên hoặc chọn file Excel / CSV để tải lên."
+                    />
                   </TableCell>
                 </TableRow>
               ) : (
@@ -347,7 +349,7 @@ export default function ApplicantIntakePage() {
       </PageCard>
       {result && (
         <PageCard>
-          <CardHeading title="Kết quả import" />
+          <SectionHeader title="Kết quả import" />
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
             <Result label="Tổng" value={result.total} />
             <Result label="Application mới" value={result.applicationsCreated} />
@@ -375,15 +377,6 @@ function Result({ label, value }: { label: string; value: number }) {
     <div className="rounded-xl border border-border bg-muted/20 p-4">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="mt-1 text-2xl font-semibold">{value}</p>
-    </div>
-  )
-}
-
-function CardHeading({ title, description }: { title: string; description?: string }) {
-  return (
-    <div className="mb-2">
-      <h2 className="text-base font-semibold text-foreground">{title}</h2>
-      {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
     </div>
   )
 }
