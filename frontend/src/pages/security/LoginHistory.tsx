@@ -1,7 +1,6 @@
-import { PageCard } from "@/components/common"
+import { AppPagination, PageCard, PageContainer, PageHeader } from "@/components/common"
 import { ActivityLogDetailDrawer } from "@/components/features/security/ActivityLogDetailDrawer"
 import { ActivityLogsTable } from "@/components/features/security/ActivityLogsTable"
-import { AppPagination } from "@/components/common/app-pagination"
 import { Button } from "@/components/ui/button"
 import { useLoginHistoryMaster } from "@/hooks/security/use-login-history-master"
 import { History, RefreshCw } from "lucide-react"
@@ -22,29 +21,31 @@ export default function LoginHistory() {
   } = useLoginHistoryMaster()
 
   return (
-    <div className="flex flex-col gap-6 py-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold tracking-tight">Lịch sử đăng nhập</h1>
-        <p className="text-muted-foreground">Theo dõi các phiên đăng nhập và bảo mật tài khoản của bạn.</p>
-      </div>
+    <PageContainer variant="table">
+      <PageHeader
+        title="Lịch sử đăng nhập"
+        description="Theo dõi các phiên đăng nhập và bảo mật tài khoản của bạn."
+      />
 
-      <PageCard>
-        <div className="flex flex-col">
-          <div className="flex items-center justify-between p-5 border-b border-border">
+      <PageCard padding="none" className="flex-1 min-h-0 flex flex-col overflow-hidden">
+        <div className="flex flex-col flex-1 min-h-0">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card shrink-0">
             <div className="flex items-center gap-2">
-              <History className="h-5 w-5 text-primary" />
-              <h2 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+              <History className="size-4 text-primary" />
+              <h2 className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">
                 Nhật ký hoạt động
               </h2>
             </div>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => { void refetch() }}
+              onClick={() => {
+                void refetch()
+              }}
               disabled={isLoading || isFetching}
-              className="gap-2"
+              className="gap-2 rounded-full"
             >
-              <RefreshCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`} />
+              <RefreshCw className={`size-3.5 ${isFetching ? "animate-spin" : ""}`} />
               Làm mới
             </Button>
           </div>
@@ -55,22 +56,29 @@ export default function LoginHistory() {
             hideEmployee={true}
           />
 
-          <div className="p-5 border-t border-border bg-muted/5">
-            <AppPagination
-              currentPage={query.page || 1}
-              totalPages={data?.meta.totalPages || 1}
-              onPageChange={(page: number) => { setQuery((prev) => ({ ...prev, page })) }}
-            />
-          </div>
+          <AppPagination
+            currentPage={query.page || 1}
+            totalPages={data?.meta.totalPages || 1}
+            totalItems={data?.meta.total ?? 0}
+            itemsPerPage={query.limit || 10}
+            onPageChange={(page: number) => {
+              setQuery((prev) => ({ ...prev, page }))
+            }}
+            onItemsPerPageChange={(limit: number) => {
+              setQuery((prev) => ({ ...prev, limit, page: 1 }))
+            }}
+          />
         </div>
       </PageCard>
 
       {/* Detail Drawer */}
       <ActivityLogDetailDrawer
         logId={viewingLogId}
-        onClose={() => { setViewingLogId(null); }}
+        onClose={() => {
+          setViewingLogId(null)
+        }}
         scope="me"
       />
-    </div>
+    </PageContainer>
   )
 }

@@ -1,4 +1,8 @@
-import { AppPagination, DataTableToolbar, EmptyState, PageCard, PageHeader } from "@/components/common"
+import {
+  DataTablePage,
+  StatusPill,
+  type DataTableColumn,
+} from "@/components/common"
 import { SalaryComponentFormPage } from "@/components/features/payroll/salary-component-form-page"
 import { Button } from "@/components/ui/button"
 import {
@@ -8,26 +12,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
+  COMPONENT_TYPE,
   COMPONENT_TYPE_LABELS,
   COMPONENT_VALUE_TYPE_LABELS,
 } from "@/config/entities/payroll.config"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { useSalaryComponents } from "@/hooks/payroll/use-salary-components"
+import { cn } from "@/lib/utils"
 import type { ISalaryComponent } from "@/types/payroll.types"
 
-import { useState } from "react"
+import { useCallback, useMemo, useState } from "react"
+import { Inbox, MoreHorizontal, Pencil, Plus } from "lucide-react"
 
-import { Calculator, Loader2, MoreHorizontal, Plus } from "lucide-react"
-
+/**
+ * SalaryComponents — Standardized salary components management page.
+ * Powered by DataTablePage master component with viewport-locked internal scrolling,
+ * sticky header, standardized column widths, and pinned pagination footer.
+ */
 export default function SalaryComponents() {
-  const { data: components, isLoading, isError } = useSalaryComponents()
+  const { data: components, isLoading } = useSalaryComponents()
 
   const [view, setView] = useState<"list" | "create" | "edit">("list")
   const [selectedComponent, setSelectedComponent] = useState<ISalaryComponent | null>(null)
@@ -35,29 +39,164 @@ export default function SalaryComponents() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
 
-  const filteredComponents =
-    components?.filter((c) => {
-      const s = searchTerm.toLowerCase()
-      return c.name.toLowerCase().includes(s) || c.formula.toLowerCase().includes(s)
-    }) || []
-
-  const paginatedComponents = filteredComponents.slice((page - 1) * limit, page * limit)
-  const totalPages = Math.ceil(filteredComponents.length / limit)
-
-  const handleCreate = () => {
+  const handleCreate = useCallback(() => {
     setSelectedComponent(null)
     setView("create")
-  }
+  }, [])
 
-  const handleEdit = (comp: ISalaryComponent) => {
+  const handleEdit = useCallback((comp: ISalaryComponent) => {
     setSelectedComponent(comp)
     setView("edit")
-  }
+  }, [])
 
-  const handleCloseForm = () => {
+  const handleCloseForm = useCallback(() => {
     setView("list")
     setSelectedComponent(null)
-  }
+  }, [])
+
+  const handleSearch = useCallback((val: string) => {
+    setSearchTerm(val)
+    setPage(1)
+  }, [])
+
+  const filteredComponents = useMemo(() => {
+    if (!components) return []
+    const s = searchTerm.toLowerCase().trim()
+    if (!s) return components
+    return components.filter(
+      (c) => c.name.toLowerCase().includes(s) || c.formula.toLowerCase().includes(s),
+    )
+  }, [components, searchTerm])
+
+  const paginatedComponents = useMemo(() => {
+    return filteredComponents.slice((page - 1) * limit, page * limit)
+  }, [filteredComponents, page, limit])
+
+  const totalPages = Math.ceil(filteredComponents.length / limit) || 1
+
+  const columns: DataTableColumn<ISalaryComponent>[] = useMemo(
+    () => [
+      {
+        id: "index",
+        header: "#",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
+        align: "center",
+        sticky: true,
+        cell: (_, index) => (
+          <span className={TYPOGRAPHY.CELL_CODE}>
+            {(page - 1) * limit + index + 1}
+          </span>
+        ),
+      },
+      {
+        id: "name",
+        header: "Tên thành phần",
+        width: getTableColWidthPx("TITLE"),
+        minWidth: "220px",
+        sticky: true,
+        cell: (comp) => (
+          <button
+            type="button"
+            onClick={() => {
+              handleEdit(comp)
+            }}
+            className={cn(
+              TYPOGRAPHY.CELL_PRIMARY,
+              "font-medium text-foreground hover:text-primary hover:underline text-left cursor-pointer transition-colors block truncate max-w-full",
+            )}
+          >
+            {comp.name}
+          </button>
+        ),
+      },
+      {
+        id: "type",
+        header: "Loại thành phần",
+        width: getTableColWidthPx("TYPE"),
+        minWidth: "140px",
+        cell: (comp) => (
+          <StatusPill
+            label={COMPONENT_TYPE_LABELS[comp.type]}
+            variant={comp.type === COMPONENT_TYPE.ADDITION ? "success" : "danger"}
+          />
+        ),
+      },
+      {
+        id: "valueType",
+        header: "Kiểu giá trị",
+        width: getTableColWidthPx("TYPE"),
+        minWidth: "130px",
+        hideBelow: "md",
+        cell: (comp) => (
+          <span className={TYPOGRAPHY.CELL_SECONDARY}>
+            {COMPONENT_VALUE_TYPE_LABELS[comp.valueType]}
+          </span>
+        ),
+      },
+      {
+        id: "formula",
+        header: "Công thức / Giá trị",
+        width: getTableColWidthPx("TITLE"),
+        minWidth: "240px",
+        cell: (comp) => (
+          <span
+            className={cn(
+              TYPOGRAPHY.CELL_CODE,
+              "text-foreground bg-muted/60 px-2.5 py-1 rounded-md block truncate max-w-full font-mono text-xs",
+            )}
+            title={comp.formula}
+          >
+            {comp.formula}
+          </span>
+        ),
+      },
+      {
+        id: "description",
+        header: "Mô tả",
+        width: getTableColWidthPx("TITLE"),
+        minWidth: "200px",
+        hideBelow: "md",
+        truncate: true,
+        cell: (comp) => (
+          <span className={TYPOGRAPHY.CELL_SECONDARY}>{comp.description || "—"}</span>
+        ),
+      },
+      {
+        id: "actions",
+        header: "",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
+        align: "center",
+        cell: (comp) => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8 rounded-full"
+                aria-label="Thao tác"
+              >
+                <MoreHorizontal className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-36 rounded-xl text-xs">
+              <DropdownMenuItem
+                onClick={() => {
+                  handleEdit(comp)
+                }}
+                className="gap-2"
+              >
+                <Pencil className="size-3.5" />
+                Sửa thành phần
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ),
+      },
+    ],
+    [page, limit, handleEdit],
+  )
 
   if (view !== "list") {
     return (
@@ -70,140 +209,46 @@ export default function SalaryComponents() {
   }
 
   return (
-    <div className="container px-3 sm:px-6 py-4 sm:py-6">
-      <PageHeader
-        title="Thành phần lương"
-        description="Định nghĩa các thành phần thu nhập, khấu trừ và công thức tính lương."
-        actions={
-          <Button className="gap-2 rounded-full font-semibold" onClick={handleCreate}>
-            <Plus size={16} /> Thêm thành phần
-          </Button>
-        }
-      />
-
-      <PageCard className="overflow-hidden p-0" noBorder={false}>
-        <DataTableToolbar
-          searchQuery={searchTerm}
-          onSearchChange={(val) => {
-            setSearchTerm(val)
-            setPage(1)
-          }}
-          searchPlaceholder="Tìm kiếm tên, công thức..."
-        />
-
-        <div className="overflow-x-auto">
-          <Table className="text-sm">
-            <TableHeader className="bg-muted/40">
-              <TableRow className="hover:bg-transparent border-b">
-                <TableHead className="min-w-12.5 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-center">
-                  #
-                </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Tên thành phần
-                </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Loại thành phần
-                </TableHead>
-                <TableHead className="hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Kiểu giá trị
-                </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Công thức / Giá trị tĩnh
-                </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase hidden md:table-cell whitespace-nowrap">
-                  Mô tả
-                </TableHead>
-                <TableHead className="min-w-12.5 px-4 py-3"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="divide-y divide-border">
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
-                    <Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground" />
-                  </TableCell>
-                </TableRow>
-              ) : isError ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center text-destructive">
-                    Lỗi khi tải danh sách thành phần lương.
-                  </TableCell>
-                </TableRow>
-              ) : paginatedComponents.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="p-8">
-                    <EmptyState
-                      icon={Calculator}
-                      title="Chưa có thành phần lương"
-                      description="Chưa có thành phần thu nhập hay khoản khấu trừ nào được thiết lập."
-                    />
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginatedComponents.map((comp, index) => (
-                  <TableRow key={comp.id} className="cursor-pointer hover:bg-muted/30">
-                    <TableCell className="px-4 py-3 text-muted-foreground text-center">
-                      {(page - 1) * limit + index + 1}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-foreground font-medium whitespace-nowrap">
-                      <button
-                        onClick={() => handleEdit(comp)}
-                        className="hover:text-primary hover:underline focus:outline-none"
-                      >
-                        {comp.name}
-                      </button>
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-muted-foreground whitespace-nowrap">
-                      {COMPONENT_TYPE_LABELS[comp.type]}
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell px-4 py-3 text-muted-foreground whitespace-nowrap">
-                      {COMPONENT_VALUE_TYPE_LABELS[comp.valueType]}
-                    </TableCell>
-                    <TableCell
-                      className="px-4 py-3 truncate font-mono text-xs"
-                      title={comp.formula}
-                    >
-                      {comp.formula}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 hidden md:table-cell text-muted-foreground  truncate">
-                      {comp.description || "-"}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0 rounded-full">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="rounded-xl">
-                          <DropdownMenuItem onClick={() => handleEdit(comp)}>
-                            Sửa thành phần
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        {filteredComponents.length > 0 && (
-          <AppPagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-            totalItems={filteredComponents.length}
-            itemsPerPage={limit}
-            onItemsPerPageChange={(newLimit) => {
-              setLimit(newLimit)
-              setPage(1)
-            }}
-          />
-        )}
-      </PageCard>
-    </div>
+    <DataTablePage<ISalaryComponent>
+      title="Thành phần lương"
+      description="Định nghĩa các thành phần thu nhập, khấu trừ và công thức tính lương."
+      variant="viewport"
+      data={paginatedComponents}
+      columns={columns}
+      isLoading={isLoading}
+      keyExtractor={(comp) => comp.id}
+      search={{
+        value: searchTerm,
+        debounceMs: 400,
+        onSearch: handleSearch,
+        placeholder: "Tìm kiếm tên, công thức...",
+      }}
+      primaryAction={{
+        label: "Thêm thành phần",
+        icon: Plus,
+        onClick: handleCreate,
+      }}
+      emptyState={{
+        icon: Inbox,
+        title: searchTerm.trim()
+          ? "Không tìm thấy thành phần lương"
+          : "Chưa có thành phần lương",
+        description: searchTerm.trim()
+          ? `Không có thành phần lương nào khớp với từ khóa "${searchTerm}".`
+          : "Chưa có thành phần thu nhập hay khoản khấu trừ nào được thiết lập.",
+      }}
+      pagination={{
+        currentPage: page,
+        totalPages,
+        totalItems: filteredComponents.length,
+        itemsPerPage: limit,
+        onPageChange: setPage,
+        onItemsPerPageChange: (newLimit: number) => {
+          setLimit(newLimit)
+          setPage(1)
+        },
+        pageSizeOptions: [10, 20, 50],
+      }}
+    />
   )
 }

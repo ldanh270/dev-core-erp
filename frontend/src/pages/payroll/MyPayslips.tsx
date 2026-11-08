@@ -1,30 +1,51 @@
-import { AppPagination, DataTableToolbar, PageCard, PageHeader } from "@/components/common"
+import {
+  DataTablePage,
+  StatusPill,
+  type DataTableColumn,
+} from "@/components/common"
 import { PayslipDetailPage } from "@/components/features/payroll/payslip-detail-page"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  PAYROLL_STATUS_BADGE,
+  PAYROLL_STATUS,
   PAYROLL_STATUS_LABELS,
+  PAYSLIP_RECEIPT_STATUS,
   PAYSLIP_RECEIPT_STATUS_LABELS,
 } from "@/config/entities/payroll.config"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { useMyPayslips } from "@/hooks/payroll/use-my-payslips"
-import { formatCurrency } from "@/lib/utils"
+import { cn, formatCurrency } from "@/lib/utils"
 import type { IPayslip } from "@/types/payroll.types"
 
-import { useState } from "react"
+import { useCallback, useMemo, useState } from "react"
+import { CalendarDays, ChevronRight, Inbox } from "lucide-react"
 
-import { CalendarDays, ChevronRight, FileText, Loader2 } from "lucide-react"
+const getPayrollStatusVariant = (status?: string): "info" | "success" | "danger" | "neutral" => {
+  switch (status) {
+    case PAYROLL_STATUS.APPROVED:
+    case PAYROLL_STATUS.PAID:
+      return "success"
+    case PAYROLL_STATUS.PENDING_APPROVAL:
+      return "info"
+    case PAYROLL_STATUS.REJECTED:
+      return "danger"
+    default:
+      return "neutral"
+  }
+}
 
+const getReceiptStatusVariant = (receiptStatus?: string): "success" | "neutral" => {
+  return receiptStatus === PAYSLIP_RECEIPT_STATUS.RECEIVED ? "success" : "neutral"
+}
+
+/**
+ * MyPayslips — Employee personal payslip preview and history page.
+ * Powered by DataTablePage master component with viewport-locked internal scrolling,
+ * sticky header, standardized column widths, and pinned pagination footer.
+ */
 export default function MyPayslips() {
-  const { data: payslips, isLoading, isError } = useMyPayslips()
+  const { data: payslips, isLoading } = useMyPayslips()
 
   const [view, setView] = useState<"list" | "detail">("list")
   const [selectedPayslip, setSelectedPayslip] = useState<IPayslip | null>(null)
@@ -32,192 +53,215 @@ export default function MyPayslips() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
 
-  const filteredPayslips =
-    payslips?.filter((p) => {
-      const s = searchTerm.toLowerCase()
-      const periodStr = `${p.periodMonth}/${p.periodYear}`
-      const periodStrZero = `${String(p.periodMonth).padStart(2, "0")}/${p.periodYear}`
-      const statusStr = p.status ? PAYROLL_STATUS_LABELS[p.status].toLowerCase() : ""
-      return periodStr.includes(s) || periodStrZero.includes(s) || statusStr.includes(s)
-    }) || []
-
-  const paginatedPayslips = filteredPayslips.slice((page - 1) * limit, page * limit)
-  const totalPages = Math.ceil(filteredPayslips.length / limit)
-
-  const handleCloseForm = () => {
+  const handleCloseForm = useCallback(() => {
     setView("list")
     setSelectedPayslip(null)
-  }
+  }, [])
+
+  const handleSelect = useCallback((payslip: IPayslip) => {
+    setSelectedPayslip(payslip)
+    setView("detail")
+  }, [])
+
+  const handleSearch = useCallback((val: string) => {
+    setSearchTerm(val)
+    setPage(1)
+  }, [])
+
+  const filteredPayslips = useMemo(() => {
+    if (!payslips) return []
+    const s = searchTerm.toLowerCase().trim()
+    if (!s) return payslips
+    return payslips.filter((p) => {
+      const periodStr = `${p.periodMonth}/${p.periodYear}`
+      const periodStrZero = `${String(p.periodMonth).padStart(2, "0")}/${p.periodYear}`
+      const statusStr = p.status ? (PAYROLL_STATUS_LABELS[p.status] ?? "").toLowerCase() : ""
+      return periodStr.includes(s) || periodStrZero.includes(s) || statusStr.includes(s)
+    })
+  }, [payslips, searchTerm])
+
+  const paginatedPayslips = useMemo(() => {
+    return filteredPayslips.slice((page - 1) * limit, page * limit)
+  }, [filteredPayslips, page, limit])
+
+  const totalPages = Math.ceil(filteredPayslips.length / limit) || 1
+
+  const columns: DataTableColumn<IPayslip>[] = useMemo(
+    () => [
+      {
+        id: "index",
+        header: "#",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
+        align: "center",
+        sticky: true,
+        cell: (_, index) => (
+          <span className={TYPOGRAPHY.CELL_CODE}>
+            {(page - 1) * limit + index + 1}
+          </span>
+        ),
+      },
+      {
+        id: "period",
+        header: "Kỳ lương",
+        width: getTableColWidthPx("TITLE"),
+        minWidth: "220px",
+        sticky: true,
+        cell: (payslip) => (
+          <button
+            type="button"
+            className="flex items-center gap-3 cursor-pointer group text-left focus:outline-none"
+            onClick={() => {
+              handleSelect(payslip)
+            }}
+          >
+            <div className="size-8 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+              <CalendarDays className="size-4" />
+            </div>
+            <div className="min-w-0">
+              <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-semibold text-foreground group-hover:text-primary transition-colors")}>
+                Tháng {payslip.periodMonth}/{payslip.periodYear}
+              </div>
+              <div className={cn(TYPOGRAPHY.CELL_SECONDARY, "flex items-center gap-2 mt-0.5 text-xs")}>
+                <span>Kỳ lương định kỳ</span>
+                {payslip.isPreview ? (
+                  <Badge variant="secondary" className="rounded-full text-[10px] px-2 py-0 shadow-none font-normal">
+                    Xem trước
+                  </Badge>
+                ) : null}
+              </div>
+            </div>
+          </button>
+        ),
+      },
+      {
+        id: "workingDays",
+        header: "Ngày công",
+        width: getTableColWidthPx("CODE"),
+        minWidth: "100px",
+        align: "center",
+        hideBelow: "md",
+        cell: (payslip) => (
+          <span className={TYPOGRAPHY.CELL_SECONDARY}>
+            <span className="font-semibold text-foreground">{payslip.workingDays}</span> ngày
+          </span>
+        ),
+      },
+      {
+        id: "overtimeMinutes",
+        header: "Tăng ca",
+        width: getTableColWidthPx("CODE"),
+        minWidth: "100px",
+        align: "center",
+        hideBelow: "md",
+        cell: (payslip) => (
+          <span className={TYPOGRAPHY.CELL_SECONDARY}>
+            <span className="font-semibold text-foreground">{payslip.overtimeMinutes}</span> phút
+          </span>
+        ),
+      },
+      {
+        id: "status",
+        header: "Duyệt lương",
+        width: getTableColWidthPx("STATUS"),
+        minWidth: "140px",
+        cell: (payslip) => (
+          <StatusPill
+            label={payslip.status ? PAYROLL_STATUS_LABELS[payslip.status] : "Không rõ"}
+            variant={getPayrollStatusVariant(payslip.status)}
+          />
+        ),
+      },
+      {
+        id: "receiptStatus",
+        header: "Nhận lương",
+        width: getTableColWidthPx("STATUS"),
+        minWidth: "140px",
+        cell: (payslip) => (
+          <StatusPill
+            label={
+              payslip.receiptStatus
+                ? PAYSLIP_RECEIPT_STATUS_LABELS[payslip.receiptStatus]
+                : "Chưa nhận"
+            }
+            variant={getReceiptStatusVariant(payslip.receiptStatus)}
+          />
+        ),
+      },
+      {
+        id: "netSalary",
+        header: "Thực lãnh",
+        width: getTableColWidthPx("CURRENCY"),
+        minWidth: "140px",
+        align: "right",
+        cell: (payslip) => (
+          <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-bold text-primary text-sm")}>
+            {formatCurrency(payslip.netSalary)}
+          </span>
+        ),
+      },
+      {
+        id: "action",
+        header: "",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
+        align: "center",
+        cell: (payslip) => (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8 rounded-full text-muted-foreground hover:text-foreground"
+            onClick={() => {
+              handleSelect(payslip)
+            }}
+            aria-label="Xem chi tiết phiếu lương"
+          >
+            <ChevronRight className="size-4" />
+          </Button>
+        ),
+      },
+    ],
+    [page, limit, handleSelect],
+  )
 
   if (view !== "list") {
     return <PayslipDetailPage payslip={selectedPayslip} onClose={handleCloseForm} />
   }
 
   return (
-    <div className="container px-3 sm:px-6 py-4 sm:py-6">
-      <PageHeader
-        title="Lương của tôi"
-        description="Xem trước lương sắp nhận, lịch sử và chi tiết các phiếu lương của bạn."
-      />
-
-      <PageCard className="overflow-hidden p-0" noBorder={false}>
-        <DataTableToolbar
-          searchQuery={searchTerm}
-          onSearchChange={(val) => {
-            setSearchTerm(val)
-            setPage(1)
-          }}
-          searchPlaceholder="Tìm kiếm theo tháng/năm, trạng thái..."
-        />
-
-        <div className="overflow-x-auto">
-          <Table className="text-sm">
-            <TableHeader className="bg-muted/40">
-              <TableRow className="hover:bg-transparent border-b">
-                <TableHead className="min-w-12.5 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-center">
-                  #
-                </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Kỳ lương
-                </TableHead>
-                <TableHead className="hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap text-center">
-                  Ngày công
-                </TableHead>
-                <TableHead className="hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap text-center">
-                  Tăng ca
-                </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Duyệt lương
-                </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Nhận lương
-                </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap text-right">
-                  Thực lãnh
-                </TableHead>
-                <TableHead className="px-4 py-3"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="divide-y divide-border">
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="h-32 text-center">
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
-                  </TableCell>
-                </TableRow>
-              ) : isError ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="h-32 text-center">
-                    <div className="flex flex-col items-center justify-center space-y-2">
-                      <div className="h-10 w-10 rounded-full bg-destructive/10 flex items-center justify-center">
-                        <FileText className="h-5 w-5 text-destructive" />
-                      </div>
-                      <p className="text-destructive font-medium text-sm">
-                        Lỗi khi tải dữ liệu phiếu lương
-                      </p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : paginatedPayslips.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="h-32 text-center">
-                    <div className="flex flex-col items-center justify-center space-y-2">
-                      <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-                        <FileText className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                      <p className="text-muted-foreground text-sm">Bạn chưa có phiếu lương nào.</p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginatedPayslips.map((payslip, index) => (
-                  <TableRow
-                    key={payslip.id}
-                    className="hover:bg-muted/30 cursor-pointer transition-colors group"
-                    onClick={() => {
-                      setSelectedPayslip(payslip)
-                      setView("detail")
-                    }}
-                  >
-                    <TableCell className="px-4 py-3 text-muted-foreground text-center">
-                      {(page - 1) * limit + index + 1}
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 sm:h-10 sm:w-10 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                          <CalendarDays className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-foreground">
-                            Tháng {payslip.periodMonth}/{payslip.periodYear}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1 flex flex-wrap items-center gap-2">
-                            <span>Kỳ lương định kỳ</span>
-                            {payslip.isPreview ? (
-                              <Badge variant="secondary" className="rounded-full shadow-none">
-                                Xem trước
-                              </Badge>
-                            ) : null}
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell px-4 py-3 text-center font-medium text-muted-foreground">
-                      {payslip.workingDays} <span className="text-xs font-normal">ngày</span>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell px-4 py-3 text-center font-medium text-muted-foreground">
-                      {payslip.overtimeMinutes} <span className="text-xs font-normal">phút</span>
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
-                      <Badge
-                        variant={payslip.status ? PAYROLL_STATUS_BADGE[payslip.status] : "default"}
-                        className="rounded-full shadow-none font-medium px-2.5 py-0.5"
-                      >
-                        {payslip.status ? PAYROLL_STATUS_LABELS[payslip.status] : "Không rõ"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
-                      <Badge variant="outline" className="rounded-full shadow-none font-medium px-2.5 py-0.5">
-                        {payslip.receiptStatus
-                          ? PAYSLIP_RECEIPT_STATUS_LABELS[payslip.receiptStatus]
-                          : "Chưa nhận"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-right">
-                      <div className="font-bold text-primary text-base">
-                        {formatCurrency(payslip.netSalary)}
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        {filteredPayslips.length > 0 && (
-          <AppPagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-            totalItems={filteredPayslips.length}
-            itemsPerPage={limit}
-            onItemsPerPageChange={(newLimit) => {
-              setLimit(newLimit)
-              setPage(1)
-            }}
-          />
-        )}
-      </PageCard>
-    </div>
+    <DataTablePage<IPayslip>
+      title="Lương của tôi"
+      description="Xem trước lương sắp nhận, lịch sử và chi tiết các phiếu lương của bạn."
+      variant="viewport"
+      data={paginatedPayslips}
+      columns={columns}
+      isLoading={isLoading}
+      keyExtractor={(payslip) => payslip.id}
+      search={{
+        value: searchTerm,
+        debounceMs: 400,
+        onSearch: handleSearch,
+        placeholder: "Tìm kiếm theo tháng/năm, trạng thái...",
+      }}
+      emptyState={{
+        icon: Inbox,
+        title: searchTerm.trim() ? "Không tìm thấy phiếu lương" : "Bạn chưa có phiếu lương nào",
+        description: searchTerm.trim()
+          ? `Không có phiếu lương nào phù hợp với từ khóa "${searchTerm}".`
+          : "Khi hệ thống tạo và gửi phiếu lương hàng tháng, bạn sẽ theo dõi được tại đây.",
+      }}
+      pagination={{
+        currentPage: page,
+        totalPages,
+        totalItems: filteredPayslips.length,
+        itemsPerPage: limit,
+        onPageChange: setPage,
+        onItemsPerPageChange: (newLimit: number) => {
+          setLimit(newLimit)
+          setPage(1)
+        },
+        pageSizeOptions: [10, 20, 50],
+      }}
+    />
   )
 }

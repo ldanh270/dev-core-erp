@@ -61,7 +61,14 @@ export function AppModal({
   const shouldShowClose = showCloseButton ?? true
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          onClose()
+        }
+      }}
+    >
       <DialogContent
         showCloseButton={false}
         className={cn(

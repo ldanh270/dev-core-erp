@@ -94,12 +94,12 @@ export function SalaryComponentSelectModal({
     const selected = salaryComponents.filter((c) => selectedIds.has(c.id))
     onSelect(selected)
     onOpenChange(false)
-    setTimeout(() => setSelectedIds(new Set()), 200)
+    setTimeout(() => { setSelectedIds(new Set()); }, 200)
   }
 
   const handleCancel = () => {
     onOpenChange(false)
-    setTimeout(() => setSelectedIds(new Set()), 200)
+    setTimeout(() => { setSelectedIds(new Set()); }, 200)
   }
 
   const handleReset = () => {
@@ -108,7 +108,14 @@ export function SalaryComponentSelectModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={(val) => !val && handleCancel()}>
+    <Dialog
+      open={open}
+      onOpenChange={(val) => {
+        if (!val) {
+          handleCancel()
+        }
+      }}
+    >
       <DialogContent className="w-full max-w-5xl max-h-[90vh] flex flex-col p-0 mx-auto overflow-hidden bg-background border border-border shadow-lg rounded-xl">
         <DialogHeader className="p-6 border-b border-border text-center shrink-0">
           <DialogTitle className="text-xl font-semibold tracking-tight text-foreground">
@@ -124,7 +131,7 @@ export function SalaryComponentSelectModal({
                 <Input
                   placeholder="Tìm kiếm mã thành phần, tên thành phần"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => { setSearchTerm(e.target.value); }}
                   className="pl-9 rounded-full border-border shadow-none"
                 />
               </div>
@@ -213,7 +220,7 @@ export function SalaryComponentSelectModal({
                             type="checkbox"
                             className="w-4 h-4 rounded border-border cursor-pointer"
                             checked={selectedIds.has(comp.id)}
-                            onChange={() => handleToggleSelect(comp.id)}
+                            onChange={() => { handleToggleSelect(comp.id); }}
                           />
                         </TableCell>
                         <TableCell className="text-foreground font-medium">{comp.name}</TableCell>

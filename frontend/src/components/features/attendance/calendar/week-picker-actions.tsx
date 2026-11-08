@@ -26,7 +26,7 @@ export function WeekPickerActions({
         <DatePicker
           value={weekStartIso}
           minDate={minWeekStartIso}
-          size="sm"
+          size="default"
           clearable={false}
           placeholder={weekRangeLabel}
           onChange={(val) => {
@@ -36,8 +36,7 @@ export function WeekPickerActions({
         />
       </div>
       <Button
-        size="sm"
-        className="h-9 rounded-full px-4"
+        className="rounded-full px-4 h-10 font-semibold text-sm"
         onClick={() => {
           onWeekStartChange(defaultWeekStart ?? getWeekStart(new Date()))
         }}

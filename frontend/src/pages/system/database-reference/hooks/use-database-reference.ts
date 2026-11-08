@@ -70,7 +70,7 @@ export function useDatabaseReference({
     try {
       await navigator.clipboard.writeText(text)
       setCopiedTableName(selectedTable?.name ?? null)
-      window.setTimeout(() => setCopiedTableName(null), CLIPBOARD_FEEDBACK_DURATION_MS)
+      window.setTimeout(() => { setCopiedTableName(null); }, CLIPBOARD_FEEDBACK_DURATION_MS)
     } catch {
       toast.error("Không thể sao chép metadata. Hãy kiểm tra quyền truy cập clipboard.")
     }

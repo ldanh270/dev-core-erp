@@ -48,7 +48,7 @@ export function useDatabaseErdViewport(
       }
     })
     observer.observe(element)
-    return () => observer.disconnect()
+    return () => { observer.disconnect(); }
   }, [isFullscreen])
 
   // Support Ctrl/Cmd + wheel zoom anchored at cursor position and wheel/Shift+wheel panning.
@@ -86,7 +86,7 @@ export function useDatabaseErdViewport(
     if (!element) return
 
     element.addEventListener("wheel", handleWheel, { passive: false })
-    return () => element.removeEventListener("wheel", handleWheel)
+    return () => { element.removeEventListener("wheel", handleWheel); }
   }, [handleWheel])
 
   // Toggle browser fullscreen mode on the ERD section element.
@@ -118,7 +118,7 @@ export function useDatabaseErdViewport(
     }
 
     document.addEventListener("fullscreenchange", handleFullscreenChange)
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange)
+    return () => { document.removeEventListener("fullscreenchange", handleFullscreenChange); }
   }, [fullscreenTarget])
 
   // Fit and center the entire graph within the current viewport dimensions.
@@ -159,7 +159,7 @@ export function useDatabaseErdViewport(
     })
 
   // Clear manual drag overrides and restore automatic topological layout positions.
-  const resetNodePositions = () => setNodePositions(new Map())
+  const resetNodePositions = () => { setNodePositions(new Map()); }
 
   // Zoom in or out relative to the center of the viewport.
   const zoomBy = (factor: number) => {

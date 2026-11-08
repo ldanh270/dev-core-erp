@@ -120,7 +120,7 @@ export default function ResetPassword() {
             onClick={() => {
               navigate(ROUTES.AUTH.LOGIN)
             }}
-            className="w-full h-12 rounded-full"
+            className="w-full rounded-full"
           >
             Quay lại đăng nhập
           </Button>
@@ -198,7 +198,7 @@ export default function ResetPassword() {
 
             <Button
               type="submit"
-              className="w-full h-12 text-base font-semibold rounded-full"
+              className="w-full text-sm font-semibold rounded-full"
               disabled={isResettingPassword}
             >
               {isResettingPassword ? (
@@ -217,7 +217,7 @@ export default function ResetPassword() {
               onClick={() => {
                 navigate(ROUTES.AUTH.LOGIN)
               }}
-              className="w-full h-12 text-sm font-semibold flex items-center justify-center gap-2 rounded-full"
+              className="w-full text-sm font-semibold flex items-center justify-center gap-2 rounded-full"
             >
               Quay lại đăng nhập
             </Button>

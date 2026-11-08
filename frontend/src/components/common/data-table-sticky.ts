@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react"
+
 import type { DataTableColumn } from "./data-table.types"
 
 export interface StickyLayoutResult {
@@ -77,9 +78,14 @@ export function computeStickyLayout<T>(columns: DataTableColumn<T>[]): StickyLay
   return {
     offsets,
     lastStickyId,
-    totalMinWidth: allColumnsHavePx && accumulatedTotalWidth > 0 ? accumulatedTotalWidth : undefined,
+    totalMinWidth:
+      allColumnsHavePx && accumulatedTotalWidth > 0 ? accumulatedTotalWidth : undefined,
     stickyColIds,
   }
+}
+
+export type StickyCellStyle = CSSProperties & {
+  [key: `--${string}`]: string | number | undefined
 }
 
 /**
@@ -89,38 +95,42 @@ export function computeStickyLayout<T>(columns: DataTableColumn<T>[]): StickyLay
 export function getStickyCellProps<T>(
   col: DataTableColumn<T>,
   layout: StickyLayoutResult,
-  options?: { isHeader?: boolean },
-): { className?: string; style?: CSSProperties } {
+  options?: { isHeader?: boolean; isDesktop?: boolean },
+): { className?: string; style?: StickyCellStyle } {
   const isSticky = layout.stickyColIds.has(col.id)
   const isHeader = options?.isHeader ?? false
+  const isDesktop = options?.isDesktop ?? true
+  const effectiveWidth = col.width || col.minWidth
 
-  if (!isSticky) {
+  if (!isSticky || !isDesktop) {
     if (isHeader) {
       return {
         className: "sticky top-0 z-20 bg-card",
         style: {
-          width: col.width,
+          width: effectiveWidth,
           minWidth: col.minWidth || col.width,
         },
       }
     }
     return {
       style: {
-        width: col.width,
+        width: effectiveWidth,
         minWidth: col.minWidth || col.width,
       },
     }
   }
 
   const isLast = col.id === layout.lastStickyId
+  const offsetPx = layout.offsets[col.id] ?? 0
 
-  // Header cells stick vertically (top: 0) and horizontally (left: offset) with highest z-index (z-30).
-  // Body cells stick horizontally (left: offset) with z-10.
+  // Direct GPU hardware-accelerated pinning:
+  // - Direct numeric pixel `left: ${offsetPx}px` instead of CSS variable to allow
+  //   the compositor thread to handle horizontal scroll without frame-lag / stuttering.
+  // - `translate3d(0, 0, 0)` to promote sticky cells to an isolated composite layer.
   const baseClass = isHeader
-    ? "sticky top-0 z-30 bg-card"
-    : "sticky z-10 bg-card group-hover:bg-muted"
+    ? "sticky top-0 z-30 bg-card [will-change:transform]"
+    : "sticky z-10 bg-card group-hover:bg-muted [will-change:transform]"
 
-  // Separator border and subtle drop shadow on the right edge of the last pinned column.
   const shadowClass = isLast
     ? "border-r border-border shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)] dark:shadow-[4px_0_6px_-4px_rgba(0,0,0,0.5)]"
     : ""
@@ -128,10 +138,12 @@ export function getStickyCellProps<T>(
   return {
     className: `${baseClass} ${shadowClass}`.trim(),
     style: {
-      width: col.width,
+      width: effectiveWidth,
       minWidth: col.minWidth || col.width,
-      maxWidth: col.width,
-      left: `${layout.offsets[col.id] ?? 0}px`,
+      maxWidth: effectiveWidth,
+      left: `${offsetPx}px`,
+      transform: "translate3d(0, 0, 0)",
+      backfaceVisibility: "hidden",
     },
   }
 }

@@ -1,3 +1,4 @@
+import { PageContainer } from "@/components/common"
 import { ApplicationDetailPanel } from "@/components/features/recruitment/application-detail-panel"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -146,8 +147,8 @@ export default function KanbanPage({
     }
   })
 
-  return (
-    <div className={embedded ? "space-y-6" : "container space-y-6 px-3 py-4 sm:px-6 sm:py-6"}>
+  const content = (
+    <div className="space-y-6">
       <div className="flex flex-col gap-4 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <div className="rounded-full bg-primary/10 p-2 text-primary">
@@ -440,6 +441,9 @@ export default function KanbanPage({
       />
     </div>
   )
+
+  if (embedded) return content
+  return <PageContainer variant="fluid">{content}</PageContainer>
 }
 
 function CandidateCard({

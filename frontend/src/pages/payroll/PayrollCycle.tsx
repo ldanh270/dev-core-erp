@@ -1,5 +1,6 @@
-import { EntityFormPage, PageHeader } from "@/components/common"
+import { PageContainer, PageHeader } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import {
   Form,
@@ -20,26 +21,27 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { ROUTES } from "@/config/routes.config"
 import {
   type SettingsFormValues,
   usePayrollCycleForm,
 } from "@/hooks/payroll/use-payroll-cycle-form"
 import { usePayrollSettings } from "@/hooks/payroll/use-payroll-settings"
+import { routerNavigate } from "@/lib/router-navigator"
 import type { IPayrollSettings } from "@/types/payroll.types"
 
 import { CalendarCheck, CalendarClock, Info, Settings2 } from "lucide-react"
 import { type Control, useWatch } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
 
 // --- Sub-components ---
 
 function CycleContextPanel() {
   return (
-    <div className="p-8 md:p-10 border-b xl:border-b-0 xl:border-r border-border bg-muted/20 xl:w-80 shrink-0 flex flex-col gap-6">
+    <div className="w-full lg:w-96 shrink-0 border-b lg:border-b-0 lg:border-r border-border bg-muted/20 p-6 md:p-8 flex flex-col gap-6">
       <div>
         <div className="flex items-center gap-2 mb-4">
-          <div className="h-8 w-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
-            <Settings2 className="h-4 w-4 text-primary" strokeWidth={2} />
+          <div className="size-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <Settings2 className="size-4 text-primary" strokeWidth={2} />
           </div>
           <h3 className="text-lg font-medium tracking-tight">Cấu hình hệ thống</h3>
         </div>
@@ -51,16 +53,16 @@ function CycleContextPanel() {
       <Separator className="bg-border/50" />
 
       <div className="flex items-start gap-3">
-        <CalendarClock className="h-4 w-4 text-muted-foreground mt-0.5" strokeWidth={2} />
+        <CalendarClock className="size-4 text-muted-foreground mt-0.5" strokeWidth={2} />
         <div>
           <div className="flex items-center gap-1.5 mb-1">
             <h4 className="text-sm font-medium text-foreground">Tự động hóa</h4>
             <TooltipProvider delayDuration={200}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                  <Info className="size-3.5 text-muted-foreground cursor-help" />
                 </TooltipTrigger>
-                <TooltipContent side="right" className="max-w-62.5 text-xs">
+                <TooltipContent side="right" className="max-w-xs text-xs">
                   Quy trình này chạy background job để tạo payroll trước, sau đó tự duyệt theo
                   lịch phát lương đã cấu hình.
                 </TooltipContent>
@@ -135,7 +137,7 @@ function ScheduleTimeField({
                 value={field.value?.toString()}
               >
                 <FormControl>
-                  <SelectTrigger className="w-full rounded-full border-border h-10 px-4 shadow-sm transition-shadow hover:shadow-md focus:shadow-md">
+                  <SelectTrigger className="w-full rounded-full border-border h-10 px-4 shadow-xs">
                     <SelectValue placeholder="Giờ" />
                   </SelectTrigger>
                 </FormControl>
@@ -164,7 +166,7 @@ function ScheduleTimeField({
                 value={field.value?.toString()}
               >
                 <FormControl>
-                  <SelectTrigger className="w-full rounded-full border-border h-10 px-4 shadow-sm transition-shadow hover:shadow-md focus:shadow-md">
+                  <SelectTrigger className="w-full rounded-full border-border h-10 px-4 shadow-xs">
                     <SelectValue placeholder="Phút" />
                   </SelectTrigger>
                 </FormControl>
@@ -218,7 +220,7 @@ function ScheduleDayField({
             value={field.value?.toString()}
           >
             <FormControl>
-              <SelectTrigger className="w-full max-w-sm rounded-full border-border h-10 px-4 shadow-sm transition-shadow hover:shadow-md focus:shadow-md">
+              <SelectTrigger className="w-full max-w-sm rounded-full border-border h-10 px-4 shadow-xs">
                 <SelectValue placeholder="Chọn ngày (1-28)" />
               </SelectTrigger>
             </FormControl>
@@ -239,57 +241,71 @@ function ScheduleDayField({
 
 function PayrollCycleSkeleton() {
   return (
-    <div className="container px-3 sm:px-6 py-4 sm:py-6 max-w-5xl">
+    <PageContainer variant="default" className="space-y-6">
       <PageHeader
-        title="Chu kỳ lương"
-        description="Quản lý lịch trình tổng hợp và xử lý lương của doanh nghiệp."
+        title="Thiết lập Chu kỳ lương"
+        description="Quản lý lịch trình tự động tổng hợp và xử lý lương của tổ chức."
+        backHref={ROUTES.PAYROLL.LIST}
+        backLabel="Kỳ lương"
       />
-      <Card className="rounded-xl border-border overflow-hidden p-0 mt-6">
-        <div className="flex flex-col md:flex-row">
-          <div className="p-8 md:w-1/3 border-b md:border-b-0 md:border-r border-border">
+      <Card className="w-full rounded-xl border-border overflow-hidden p-0 shadow-xs">
+        <div className="flex flex-col lg:flex-row">
+          <div className="p-6 md:p-8 lg:w-96 border-b lg:border-b-0 lg:border-r border-border bg-muted/20">
             <Skeleton className="h-6 w-3/4 mb-4 rounded-lg" />
             <Skeleton className="h-4 w-full mb-2 rounded-lg" />
             <Skeleton className="h-4 w-5/6 rounded-lg" />
           </div>
-          <div className="p-8 md:w-2/3">
+          <div className="p-6 md:p-8 lg:p-10 flex-1">
             <Skeleton className="h-8 w-1/3 mb-8 rounded-lg" />
-            <Skeleton className="h-10 w-full max-w-xs mb-8 rounded-full" />
-            <Skeleton className="h-10 w-full max-w-sm rounded-full" />
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <Skeleton className="h-64 rounded-xl" />
+              <Skeleton className="h-64 rounded-xl" />
+            </div>
           </div>
         </div>
       </Card>
-    </div>
+    </PageContainer>
   )
 }
 
 // --- Main Components ---
 
 function PayrollCycleForm({ settings }: { settings: IPayrollSettings }) {
-  const navigate = useNavigate()
   const { form, isPending, onSubmit } = usePayrollCycleForm({
     initialData: settings,
   })
 
+  const isDirty = form.formState.isDirty
+
+  const handleCancel = () => {
+    form.reset({
+      triggerDay: settings.triggerDay,
+      triggerHour: settings.triggerHour,
+      triggerMinute: settings.triggerMinute,
+      approvalDay: settings.approvalDay,
+      approvalHour: settings.approvalHour,
+      approvalMinute: settings.approvalMinute,
+    })
+    routerNavigate(ROUTES.PAYROLL.LIST)
+  }
+
   return (
-    <EntityFormPage
-      title="Thiết lập Chu kỳ lương"
-      formId="payroll-cycle-form"
-      isReadOnly={false}
-      onBack={() => {
-        navigate(-1)
-      }}
-      isPending={isPending}
-      isDirty={form.formState.isDirty}
-      submitLabel="Lưu thay đổi"
-    >
+    <PageContainer variant="default" className="space-y-6">
+      <PageHeader
+        title="Thiết lập Chu kỳ lương"
+        description="Quản lý lịch trình tự động tổng hợp và xử lý lương của tổ chức."
+        backHref={ROUTES.PAYROLL.LIST}
+        backLabel="Kỳ lương"
+      />
+
       <Form {...form}>
-        <form id="payroll-cycle-form" onSubmit={onSubmit} className="h-full">
-          <Card className="rounded-xl shadow-sm border-border overflow-hidden p-0">
-            <div className="flex flex-col xl:flex-row">
+        <form id="payroll-cycle-form" onSubmit={onSubmit} className="w-full">
+          <Card className="w-full rounded-xl shadow-xs border-border overflow-hidden p-0">
+            <div className="flex flex-col lg:flex-row">
               <CycleContextPanel />
 
-              <div className="p-6 md:p-8 xl:p-10 xl:flex-1 bg-background min-w-0">
-                <div className="space-y-8">
+              <div className="p-6 md:p-8 lg:p-10 flex-1 bg-background min-w-0">
+                <div className="space-y-6">
                   <div className="flex items-center justify-between flex-wrap gap-4">
                     <h3 className="text-lg font-medium tracking-tight">Chi tiết lịch trình</h3>
                     <SchedulePreviewBadge control={form.control} />
@@ -300,8 +316,8 @@ function PayrollCycleForm({ settings }: { settings: IPayrollSettings }) {
                   <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                     <div className="rounded-xl border border-border bg-card/40 p-6 flex flex-col justify-between space-y-6">
                       <div className="flex items-center gap-3 pb-3 border-b border-border/50">
-                        <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-                          <CalendarClock className="h-4 w-4 text-primary" />
+                        <div className="size-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                          <CalendarClock className="size-4 text-primary" />
                         </div>
                         <div>
                           <h4 className="font-semibold text-sm text-foreground">Tự động tạo payroll</h4>
@@ -326,8 +342,8 @@ function PayrollCycleForm({ settings }: { settings: IPayrollSettings }) {
 
                     <div className="rounded-xl border border-border bg-card/40 p-6 flex flex-col justify-between space-y-6">
                       <div className="flex items-center gap-3 pb-3 border-b border-border/50">
-                        <div className="h-9 w-9 rounded-lg bg-success/10 border border-success/20 flex items-center justify-center shrink-0">
-                          <CalendarCheck className="h-4 w-4 text-success" />
+                        <div className="size-9 rounded-lg bg-success/10 border border-success/20 flex items-center justify-center shrink-0">
+                          <CalendarCheck className="size-4 text-success" />
                         </div>
                         <div>
                           <h4 className="font-semibold text-sm text-foreground">Tự động duyệt payroll</h4>
@@ -353,10 +369,29 @@ function PayrollCycleForm({ settings }: { settings: IPayrollSettings }) {
                 </div>
               </div>
             </div>
+
+            {/* Attached Card Footer */}
+            <div className="flex items-center justify-end gap-3 border-t border-border bg-muted/10 px-6 md:px-8 py-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full px-6 font-semibold shadow-xs"
+                onClick={handleCancel}
+              >
+                Huỷ bỏ
+              </Button>
+              <Button
+                type="submit"
+                className="rounded-full px-8 font-semibold shadow-xs"
+                disabled={isPending || !isDirty}
+              >
+                {isPending ? "Đang xử lý..." : "Lưu thay đổi"}
+              </Button>
+            </div>
           </Card>
         </form>
       </Form>
-    </EntityFormPage>
+    </PageContainer>
   )
 }
 

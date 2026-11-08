@@ -272,21 +272,28 @@
   }
 }
 
-.app-scrollbar {
+/* Global scrollbar styling */
+* {
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }
 
-@supports not (scrollbar-width: thin) {
-  .app-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  .app-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .app-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 9999px;
-  }
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+.app-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }

@@ -1,7 +1,6 @@
-import { WeeklyScheduleTemplateDialog } from "@/components/features/attendance/weekly-schedules/weekly-schedule-template-dialog"
 import { ApplyWeeklyScheduleTemplateDialog } from "@/components/features/attendance/weekly-schedules/apply-weekly-schedule-template-dialog"
-import { PageCard, PageHeader } from "@/components/common"
-import { StatusPill } from "@/components/common/status-pill"
+import { WeeklyScheduleTemplateDialog } from "@/components/features/attendance/weekly-schedules/weekly-schedule-template-dialog"
+import { DataTablePage, type DataTableColumn, StatusPill } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -10,24 +9,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import {
   useDeleteWeeklyScheduleTemplate,
   useWeeklyScheduleTemplates,
 } from "@/hooks/attendance/use-weekly-schedule-templates"
 import { usePermission } from "@/hooks/use-permission"
+import { cn } from "@/lib/utils"
 import type { IWeeklyScheduleTemplate } from "@/types/attendance.types"
 
-import { useState } from "react"
-
-import { Loader2, MoreHorizontal, Plus } from "lucide-react"
+import { useCallback, useMemo, useState } from "react"
+import { MoreHorizontal, Plus } from "lucide-react"
 import { toast } from "sonner"
 
 function countAssignedDays(template: IWeeklyScheduleTemplate): number {
@@ -37,159 +30,232 @@ function countAssignedDays(template: IWeeklyScheduleTemplate): number {
   )
 }
 
+/**
+ * Standardized Weekly Schedules Template page.
+ * Powered by DataTablePage master component with viewport-locked internal scrolling,
+ * sticky header, sticky actions, and seamless responsive design.
+ */
 export default function WeeklySchedules() {
   const { hasPermission } = usePermission()
   const canReadSchedules = hasPermission("attendance.weekly_schedule.read")
 
-  const { data: templates = [], isLoading, isError } = useWeeklyScheduleTemplates()
+  const { data: templates = [], isLoading } = useWeeklyScheduleTemplates()
   const deleteMutation = useDeleteWeeklyScheduleTemplate()
+  const [searchQuery, setSearchQuery] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editing, setEditing] = useState<IWeeklyScheduleTemplate | null>(null)
-  // Non-null means the apply dialog owns the selected template until it closes.
   const [applying, setApplying] = useState<IWeeklyScheduleTemplate | null>(null)
 
-  const handleCreate = () => {
+  const handleCreate = useCallback(() => {
     setEditing(null)
     setDialogOpen(true)
-  }
+  }, [])
 
-  const handleEdit = (template: IWeeklyScheduleTemplate) => {
+  const handleEdit = useCallback((template: IWeeklyScheduleTemplate) => {
     setEditing(template)
     setDialogOpen(true)
-  }
+  }, [])
 
-  const handleDelete = (id: string) => {
-    if (!window.confirm("Xác nhận xoá template này?")) return
-    deleteMutation.mutate(id, {
-      onSuccess: () => toast.success("Đã xoá template"),
-    })
-  }
+  const handleDelete = useCallback(
+    (id: string) => {
+      if (!window.confirm("Xác nhận xoá template này?")) return
+      deleteMutation.mutate(id, {
+        onSuccess: () => {
+          toast.success("Đã xoá template")
+        },
+      })
+    },
+    [deleteMutation],
+  )
+
+  const handleSearch = useCallback((value: string) => {
+    setSearchQuery(value)
+    setCurrentPage(1)
+  }, [])
+
+  const filteredTemplates = useMemo(() => {
+    if (!canReadSchedules) return []
+    if (!searchQuery.trim()) return templates
+    const query = searchQuery.toLowerCase().trim()
+    return templates.filter(
+      (template) =>
+        template.name.toLowerCase().includes(query) ||
+        (template.description && template.description.toLowerCase().includes(query)),
+    )
+  }, [canReadSchedules, templates, searchQuery])
+
+  const totalItems = filteredTemplates.length
+  const totalPages = Math.ceil(totalItems / pageSize) || 1
+
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize
+    return filteredTemplates.slice(startIndex, startIndex + pageSize)
+  }, [filteredTemplates, currentPage, pageSize])
+
+  const columns: DataTableColumn<IWeeklyScheduleTemplate>[] = useMemo(
+    () => [
+      {
+        id: "name",
+        header: "Tên",
+        width: getTableColWidthPx("TITLE"),
+        minWidth: "220px",
+        sticky: true,
+        cell: (template) => (
+          <div className="min-w-0">
+            <button
+              type="button"
+              onClick={() => {
+                handleEdit(template)
+              }}
+              className={cn(
+                TYPOGRAPHY.CELL_PRIMARY,
+                "rounded-full text-left hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring block max-w-full",
+              )}
+            >
+              {template.name}
+            </button>
+            {template.description && (
+              <p
+                className={cn("mt-0.5", TYPOGRAPHY.CELL_SECONDARY)}
+                title={template.description}
+              >
+                {template.description}
+              </p>
+            )}
+          </div>
+        ),
+      },
+      {
+        id: "cycleWeeks",
+        header: "Chu kỳ",
+        width: getTableColWidthPx("STATUS"),
+        minWidth: "120px",
+        cell: (template) => (
+          <span className={TYPOGRAPHY.CELL_PRIMARY}>{template.cycleWeeks} tuần</span>
+        ),
+      },
+      {
+        id: "assignedDays",
+        header: "Ca đã gán",
+        width: getTableColWidthPx("STATUS"),
+        minWidth: "120px",
+        cell: (template) => (
+          <span className={TYPOGRAPHY.CELL_PRIMARY}>{countAssignedDays(template)} ô ca</span>
+        ),
+      },
+      {
+        id: "status",
+        header: "Trạng thái",
+        width: getTableColWidthPx("STATUS"),
+        minWidth: "130px",
+        cell: (template) => (
+          <StatusPill
+            label={template.isActive ? "Đang dùng" : "Tắt"}
+            variant={template.isActive ? "success" : "neutral"}
+          />
+        ),
+      },
+      {
+        id: "actions",
+        header: "",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
+        align: "right",
+        cell: (template) => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="size-8 rounded-full">
+                <MoreHorizontal className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  handleEdit(template)
+                }}
+              >
+                Sửa
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setApplying(template)
+                }}
+              >
+                Áp dụng
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => {
+                  handleDelete(template.id)
+                }}
+              >
+                Xoá
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ),
+      },
+    ],
+    [handleDelete, handleEdit],
+  )
 
   return (
-    <div className="container px-6 py-6 space-y-6">
-      <PageHeader
-        title="Lịch hàng tuần"
-        description="Tạo và quản lý template ca xoay tuần."
-        actions={
-          <Button onClick={handleCreate} className="rounded-full">
-            <Plus className="h-4 w-4 mr-2" />
-            Tạo template
-          </Button>
-        }
-      />
-
-      {canReadSchedules && (
-        <PageCard className="overflow-hidden p-0" noBorder={false}>
-          <Table>
-            <TableHeader className="bg-muted/40">
-              <TableRow className="hover:bg-transparent">
-                <TableHead>Tên</TableHead>
-                <TableHead>Chu kỳ</TableHead>
-                <TableHead>Ca đã gán</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead className="w-12" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
-                    <Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground" />
-                  </TableCell>
-                </TableRow>
-              ) : isError ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center text-destructive">
-                    Lỗi khi tải danh sách template.
-                  </TableCell>
-                </TableRow>
-              ) : templates.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                    Chưa có template. Tạo template đầu tiên.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                templates.map((template) => (
-                  <TableRow key={template.id}>
-                    <TableCell>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleEdit(template)
-                        }}
-                        className="rounded-full text-left font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      >
-                        {template.name}
-                      </button>
-                      {template.description ? (
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {template.description}
-                        </p>
-                      ) : null}
-                    </TableCell>
-                    <TableCell>{template.cycleWeeks} tuần</TableCell>
-                    <TableCell>{countAssignedDays(template)} ô ca</TableCell>
-                    <TableCell>
-                      <StatusPill
-                        label={template.isActive ? "Đang dùng" : "Tắt"}
-                        variant={template.isActive ? "success" : "neutral"}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => {
-                              handleEdit(template)
-                            }}
-                          >
-                            Sửa
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setApplying(template)
-                            }}
-                          >
-                            Áp dụng
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => {
-                              handleDelete(template.id)
-                            }}
-                          >
-                            Xoá
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </PageCard>
-      )}
-
-      <WeeklyScheduleTemplateDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        editing={editing}
-      />
-      <ApplyWeeklyScheduleTemplateDialog
-        open={Boolean(applying)}
-        onOpenChange={(open) => {
-          if (!open) setApplying(null)
-        }}
-        template={applying}
-      />
-    </div>
+    <DataTablePage<IWeeklyScheduleTemplate>
+      title="Lịch hàng tuần"
+      description="Tạo và quản lý template ca xoay tuần."
+      primaryAction={{
+        label: "Tạo template",
+        icon: Plus,
+        onClick: handleCreate,
+      }}
+      search={{
+        placeholder: "Tìm kiếm template theo tên...",
+        value: searchQuery,
+        onSearch: handleSearch,
+        onClear: () => {
+          handleSearch("")
+        },
+      }}
+      columns={columns}
+      data={paginatedData}
+      isLoading={isLoading}
+      keyExtractor={(item) => item.id}
+      emptyState={{
+        title: searchQuery ? "Không tìm thấy template" : "Chưa có template nào",
+        description: searchQuery
+          ? `Không tìm thấy template nào phù hợp với từ khóa "${searchQuery}".`
+          : "Tạo template lịch xoay ca đầu tiên cho nhân sự.",
+      }}
+      pagination={{
+        currentPage,
+        totalPages,
+        totalItems,
+        itemsPerPage: pageSize,
+        onPageChange: setCurrentPage,
+        onItemsPerPageChange: (limit) => {
+          setPageSize(limit)
+          setCurrentPage(1)
+        },
+      }}
+      extraContent={
+        <>
+          <WeeklyScheduleTemplateDialog
+            open={dialogOpen}
+            onOpenChange={setDialogOpen}
+            editing={editing}
+          />
+          <ApplyWeeklyScheduleTemplateDialog
+            open={Boolean(applying)}
+            onOpenChange={(open) => {
+              if (!open) setApplying(null)
+            }}
+            template={applying}
+          />
+        </>
+      }
+    />
   )
 }

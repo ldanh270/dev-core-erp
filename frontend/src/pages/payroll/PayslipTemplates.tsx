@@ -1,4 +1,7 @@
-import { AppPagination, DataTableToolbar, PageCard, PageHeader } from "@/components/common"
+import {
+  DataTablePage,
+  type DataTableColumn,
+} from "@/components/common"
 import { BulkAssignPayslipTemplateDialog } from "@/components/features/payroll/bulk-assign-payslip-template-dialog"
 import { CreatePayslipTemplateForm } from "@/components/payroll/CreatePayslipTemplateForm"
 import { Button } from "@/components/ui/button"
@@ -14,28 +17,28 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { PAYROLL_MESSAGES } from "@/config/messages/payroll.message"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import {
   useDeletePayslipTemplate,
   usePayslipTemplates,
 } from "@/hooks/payroll/use-payslip-templates"
+import { cn, formatDate } from "@/lib/utils"
 import type { IPayslipTemplate } from "@/types/payroll.types"
 
-import { useState } from "react"
-
-import { MoreHorizontal, Plus } from "lucide-react"
+import { useCallback, useMemo, useState } from "react"
+import { Inbox, MoreHorizontal, Pencil, Plus, Trash2, Users } from "lucide-react"
 import { toast } from "sonner"
 
+/**
+ * PayslipTemplates — Standardized payslip template management page.
+ * Powered by DataTablePage master component with viewport-locked internal scrolling,
+ * sticky header, standardized column widths, and pinned pagination footer.
+ */
 export default function PayslipTemplates() {
   const [view, setView] = useState<"list" | "create" | "edit" | "view">("list")
   const [selectedTemplate, setSelectedTemplate] = useState<IPayslipTemplate | null>(null)
@@ -48,7 +51,7 @@ export default function PayslipTemplates() {
   const { data: templates, isLoading } = usePayslipTemplates()
   const { mutateAsync: deleteTemplate, isPending: isDeleting } = useDeletePayslipTemplate()
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     if (!templateToDelete) return
     try {
       await deleteTemplate(templateToDelete.id)
@@ -57,22 +60,168 @@ export default function PayslipTemplates() {
     } catch {
       toast.error(PAYROLL_MESSAGES.ERRORS.DELETE_PAYSLIP_TEMPLATE)
     }
-  }
+  }, [templateToDelete, deleteTemplate])
 
-  const handleOpenCreate = () => {
+  const handleOpenCreate = useCallback(() => {
     setSelectedTemplate(null)
     setView("create")
-  }
+  }, [])
 
-  const handleOpenEdit = (template: IPayslipTemplate) => {
+  const handleOpenEdit = useCallback((template: IPayslipTemplate) => {
     setSelectedTemplate(template)
     setView("edit")
-  }
+  }, [])
 
-  const handleOpenView = (template: IPayslipTemplate) => {
+  const handleOpenView = useCallback((template: IPayslipTemplate) => {
     setSelectedTemplate(template)
     setView("view")
-  }
+  }, [])
+
+  const handleSearch = useCallback((val: string) => {
+    setSearchTerm(val)
+    setPage(1)
+  }, [])
+
+  const filteredTemplates = useMemo(() => {
+    if (!templates) return []
+    const s = searchTerm.toLowerCase().trim()
+    if (!s) return templates
+    return templates.filter((template) =>
+      template.name.toLowerCase().includes(s),
+    )
+  }, [templates, searchTerm])
+
+  const paginatedTemplates = useMemo(() => {
+    return filteredTemplates.slice((page - 1) * limit, page * limit)
+  }, [filteredTemplates, page, limit])
+
+  const totalPages = Math.ceil(filteredTemplates.length / limit) || 1
+
+  const columns: DataTableColumn<IPayslipTemplate>[] = useMemo(
+    () => [
+      {
+        id: "index",
+        header: "#",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
+        align: "center",
+        sticky: true,
+        cell: (_, index) => (
+          <span className={TYPOGRAPHY.CELL_CODE}>
+            {(page - 1) * limit + index + 1}
+          </span>
+        ),
+      },
+      {
+        id: "name",
+        header: "Tên mẫu phiếu lương",
+        width: getTableColWidthPx("TITLE"),
+        minWidth: "220px",
+        sticky: true,
+        cell: (template) => (
+          <button
+            type="button"
+            onClick={() => {
+              handleOpenView(template)
+            }}
+            className={cn(
+              TYPOGRAPHY.CELL_PRIMARY,
+              "font-medium text-foreground hover:text-primary hover:underline text-left cursor-pointer transition-colors block truncate max-w-full",
+            )}
+          >
+            {template.name}
+          </button>
+        ),
+      },
+      {
+        id: "createdAt",
+        header: "Ngày tạo",
+        width: getTableColWidthPx("DATE"),
+        minWidth: "130px",
+        hideBelow: "md",
+        cell: (template) => (
+          <span className={TYPOGRAPHY.CELL_DATE}>
+            {template.createdAt ? formatDate(template.createdAt) : "—"}
+          </span>
+        ),
+      },
+      {
+        id: "createdBy",
+        header: "Người tạo",
+        width: getTableColWidthPx("TYPE"),
+        minWidth: "160px",
+        hideBelow: "md",
+        cell: (template) => (
+          <span className={TYPOGRAPHY.CELL_SECONDARY}>
+            {template.createdBy?.fullName || "Hệ thống"}
+          </span>
+        ),
+      },
+      {
+        id: "description",
+        header: "Mô tả",
+        width: getTableColWidthPx("TITLE"),
+        minWidth: "200px",
+        hideBelow: "md",
+        truncate: true,
+        cell: (template) => (
+          <span className={TYPOGRAPHY.CELL_SECONDARY}>{template.description || "—"}</span>
+        ),
+      },
+      {
+        id: "actions",
+        header: "",
+        width: getTableColWidthPx("INDEX"),
+        minWidth: "60px",
+        align: "center",
+        cell: (template) => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8 rounded-full"
+                aria-label="Thao tác"
+              >
+                <MoreHorizontal className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-44 text-xs rounded-xl">
+              <DropdownMenuItem
+                onClick={() => {
+                  setTemplateToAssign(template)
+                }}
+                className="gap-2"
+              >
+                <Users className="size-3.5" />
+                Gán cho nhân viên
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  handleOpenEdit(template)
+                }}
+                className="gap-2"
+              >
+                <Pencil className="size-3.5" />
+                Chỉnh sửa
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="gap-2 text-destructive focus:bg-destructive/10 focus:text-destructive"
+                onClick={() => {
+                  setTemplateToDelete(template)
+                }}
+              >
+                <Trash2 className="size-3.5" />
+                Xoá mẫu
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ),
+      },
+    ],
+    [page, limit, handleOpenView, handleOpenEdit],
+  )
 
   if (view !== "list") {
     return (
@@ -96,168 +245,49 @@ export default function PayslipTemplates() {
     )
   }
 
-  // Simple client-side filtering for demonstration
-  const filteredTemplates =
-    templates?.filter((template) =>
-      template.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    ) || []
-
-  const paginatedTemplates = filteredTemplates.slice((page - 1) * limit, page * limit)
-  const totalPages = Math.ceil(filteredTemplates.length / limit)
-
   return (
-    <div className="container px-3 sm:px-6 py-4 sm:py-6">
-      <PageHeader
+    <>
+      <DataTablePage<IPayslipTemplate>
         title="Mẫu phiếu lương"
         description="Quản lý mẫu phiếu lương và gán nhanh cho nhiều nhân viên."
-        actions={
-          <Button onClick={handleOpenCreate} className="gap-2">
-            <Plus size={16} /> Tạo mới mẫu phiếu lương
-          </Button>
-        }
-      />
-
-      <PageCard className="overflow-hidden p-0" noBorder={false}>
-        <DataTableToolbar
-          searchQuery={searchTerm}
-          onSearchChange={(val) => {
-            setSearchTerm(val)
+        variant="viewport"
+        data={paginatedTemplates}
+        columns={columns}
+        isLoading={isLoading}
+        keyExtractor={(template) => template.id}
+        search={{
+          value: searchTerm,
+          debounceMs: 400,
+          onSearch: handleSearch,
+          placeholder: "Tìm kiếm mã mẫu, tên mẫu...",
+        }}
+        primaryAction={{
+          label: "Tạo mới mẫu phiếu lương",
+          icon: Plus,
+          onClick: handleOpenCreate,
+        }}
+        emptyState={{
+          icon: Inbox,
+          title: searchTerm.trim()
+            ? "Không tìm thấy mẫu phiếu lương"
+            : "Chưa có mẫu phiếu lương",
+          description: searchTerm.trim()
+            ? `Không có mẫu phiếu lương nào khớp với từ khóa "${searchTerm}".`
+            : "Tạo mẫu phiếu lương đầu tiên để gán cho các nhân sự trong tổ chức.",
+        }}
+        pagination={{
+          currentPage: page,
+          totalPages,
+          totalItems: filteredTemplates.length,
+          itemsPerPage: limit,
+          onPageChange: setPage,
+          onItemsPerPageChange: (newLimit: number) => {
+            setLimit(newLimit)
             setPage(1)
-          }}
-          searchPlaceholder="Tìm kiếm mã mẫu, tên mẫu..."
-          actions={
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setSearchTerm("")
-                setPage(1)
-              }}
-            >
-              Thiết lập lại
-            </Button>
-          }
-        />
-
-        <div className="overflow-x-auto">
-          <Table className="text-sm">
-            <TableHeader className="bg-muted/40">
-              <TableRow className="hover:bg-transparent border-b">
-                <TableHead className="min-w-12.5 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-center">
-                  #
-                </TableHead>
-                <TableHead className="px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Tên mẫu phiếu lương
-                </TableHead>
-                <TableHead className="hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Ngày tạo
-                </TableHead>
-                <TableHead className="hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Người tạo
-                </TableHead>
-                <TableHead className="hidden md:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
-                  Mô tả
-                </TableHead>
-                <TableHead className="min-w-12.5 px-4 py-3"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="divide-y divide-border">
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    Đang tải dữ liệu...
-                  </TableCell>
-                </TableRow>
-              ) : paginatedTemplates.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="text-center py-8 text-muted-foreground border-dashed"
-                  >
-                    Không tìm thấy mẫu phiếu lương nào.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginatedTemplates.map((template, index) => (
-                  <TableRow key={template.id} className="hover:bg-muted/50 transition-colors">
-                    <TableCell className="text-center px-4 py-3 text-muted-foreground">
-                      {(page - 1) * limit + index + 1}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-foreground font-medium whitespace-nowrap">
-                      <button
-                        onClick={() => {
-                          handleOpenView(template)
-                        }}
-                        className="hover:text-primary hover:underline focus:outline-none"
-                      >
-                        {template.name}
-                      </button>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell px-4 py-3 text-muted-foreground whitespace-nowrap">
-                      {template.createdAt
-                        ? new Date(template.createdAt).toLocaleDateString("vi-VN")
-                        : "N/A"}
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell px-4 py-3 text-muted-foreground whitespace-nowrap">
-                      {template.createdBy?.fullName || "Hệ thống"}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell px-4 py-3 text-muted-foreground max-w-50 truncate">
-                      {template.description || "N/A"}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-center">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setTemplateToAssign(template)
-                            }}
-                          >
-                            Gán cho nhân viên
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => {
-                              handleOpenEdit(template)
-                            }}
-                          >
-                            Chỉnh sửa
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-destructive focus:bg-destructive/10 focus:text-destructive"
-                            onClick={() => {
-                              setTemplateToDelete(template)
-                            }}
-                          >
-                            Xoá
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        {filteredTemplates.length > 0 && (
-          <AppPagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-            totalItems={filteredTemplates.length}
-            itemsPerPage={limit}
-            onItemsPerPageChange={(newLimit) => {
-              setLimit(newLimit)
-              setPage(1)
-            }}
-          />
-        )}
-      </PageCard>
+          },
+          pageSizeOptions: [10, 20, 50],
+        }}
+      />
 
       <Dialog
         open={!!templateToDelete}
@@ -265,7 +295,7 @@ export default function PayslipTemplates() {
           setTemplateToDelete(null)
         }}
       >
-        <DialogContent className="sm:max-w-106.25 rounded-xl border border-border">
+        <DialogContent className="sm:max-w-md rounded-xl border border-border">
           <DialogHeader>
             <DialogTitle className="text-foreground text-xl">Xác nhận xoá</DialogTitle>
             <DialogDescription className="text-muted-foreground mt-4 text-base">
@@ -283,7 +313,7 @@ export default function PayslipTemplates() {
               }}
               disabled={isDeleting}
             >
-              Huỷ bỏ
+              Huỷ
             </Button>
             <Button
               variant="destructive"
@@ -291,19 +321,21 @@ export default function PayslipTemplates() {
               onClick={handleDelete}
               disabled={isDeleting}
             >
-              {isDeleting ? "Đang xoá..." : "Xác nhận xoá"}
+              {isDeleting ? "Đang xoá..." : "Xoá"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <BulkAssignPayslipTemplateDialog
-        template={templateToAssign}
-        open={!!templateToAssign}
-        onOpenChange={(open) => {
-          if (!open) setTemplateToAssign(null)
-        }}
-      />
-    </div>
+      {templateToAssign && (
+        <BulkAssignPayslipTemplateDialog
+          open={!!templateToAssign}
+          onOpenChange={(open) => {
+            if (!open) setTemplateToAssign(null)
+          }}
+          template={templateToAssign}
+        />
+      )}
+    </>
   )
 }

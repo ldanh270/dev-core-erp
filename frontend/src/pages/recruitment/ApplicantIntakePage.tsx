@@ -1,4 +1,10 @@
-import { PageCard, PageHeader } from "@/components/common"
+import {
+  EmptyState,
+  PageCard,
+  PageContainer,
+  PageHeader,
+  SectionHeader,
+} from "@/components/common"
 import {
   parseApplicantCsv,
   validateApplicantRows,
@@ -34,11 +40,15 @@ import {
   useRequisitions,
 } from "@/hooks/recruitment/use-recruitment-queries"
 import { usePermission } from "@/hooks/use-permission"
+import { ROUTES } from "@/config/routes.config"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
+import { cn } from "@/lib/utils"
 import type { ApplicantImportResult } from "@/types/recruitment.types"
 
 import { useMemo, useRef, useState } from "react"
 
-import { FileSpreadsheet, Upload } from "lucide-react"
+import { FileSpreadsheet, Inbox, Upload } from "lucide-react"
 import { toast } from "sonner"
 
 const SOURCE_OPTIONS = [
@@ -105,20 +115,21 @@ export default function ApplicantIntakePage() {
   }
 
   return (
-    <div className="container flex flex-col gap-6 px-3 py-4 sm:px-6 sm:py-6">
+    <PageContainer variant="default" className="flex flex-col gap-6">
       <PageHeader
+        backHref={ROUTES.RECRUITMENT.CANDIDATES}
         title="Tiếp nhận ứng viên"
         description="Import hồ sơ vào đúng Yêu cầu tuyển dụng và khóa nguồn tuyển ngay khi tạo Application."
       />
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <PageCard className="min-w-0">
-          <CardHeading
+          <SectionHeader
             title="Nguồn hồ sơ"
             description="Chọn Yêu cầu tuyển dụng trước, sau đó chọn bài đăng để tự nhận diện nguồn."
           />
           <div className="grid gap-5 md:grid-cols-2">
             <div className="grid gap-2">
-              <Label>Yêu cầu tuyển dụng</Label>
+              <Label className={TYPOGRAPHY.FORM_LABEL}>Yêu cầu tuyển dụng</Label>
               {isLoadingRequisitions ? (
                 <Skeleton className="h-10 w-full rounded-full" />
               ) : (
@@ -144,7 +155,7 @@ export default function ApplicantIntakePage() {
               )}
             </div>
             <div className="grid gap-2">
-              <Label>Điểm đăng tuyển</Label>
+              <Label className={TYPOGRAPHY.FORM_LABEL}>Điểm đăng tuyển</Label>
               {isLoadingPostings ? (
                 <Skeleton className="h-10 w-full rounded-full" />
               ) : (
@@ -164,7 +175,7 @@ export default function ApplicantIntakePage() {
               )}
             </div>
             <div className="grid gap-2 md:col-span-2">
-              <Label>Nguồn Application</Label>
+              <Label className={TYPOGRAPHY.FORM_LABEL}>Nguồn Application</Label>
               <Select value={source} onValueChange={setSource} disabled={Boolean(postingId)}>
                 <SelectTrigger className="w-full rounded-full">
                   <SelectValue placeholder="Chọn nguồn" />
@@ -177,14 +188,14 @@ export default function ApplicantIntakePage() {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">
+              <p className={TYPOGRAPHY.FORM_HELPER}>
                 Khi chọn điểm đăng, nguồn được lấy từ kênh và không thể đổi thủ công.
               </p>
             </div>
           </div>
         </PageCard>
         <PageCard>
-          <CardHeading
+          <SectionHeader
             title="Import Excel / CSV"
             description="Đọc sheet đầu tiên, dòng đầu là tiêu đề cột."
           />
@@ -212,9 +223,10 @@ export default function ApplicantIntakePage() {
       </div>
       <PageCard padding="sm" className="p-0 overflow-hidden">
         <div className="p-4 border-b border-border">
-          <CardHeading
+          <SectionHeader
             title={`Dữ liệu xem trước (${rows.length} hồ sơ)`}
             description="Có thể dán trực tiếp dữ liệu CSV vào ô bên dưới."
+            className="border-b-0 pb-0 mb-0"
           />
         </div>
         <div className="p-4">
@@ -230,38 +242,70 @@ export default function ApplicantIntakePage() {
           <Table>
             <TableHeader className="sticky top-0 bg-muted/40">
               <TableRow>
-                <TableHead className="px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                <TableHead
+                  className={cn("h-10 px-4 py-2", TYPOGRAPHY.TABLE_HEADER)}
+                  style={{ width: getTableColWidthPx("TITLE") }}
+                >
                   Họ tên
                 </TableHead>
-                <TableHead className="px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                <TableHead
+                  className={cn("h-10 px-4 py-2", TYPOGRAPHY.TABLE_HEADER)}
+                  style={{ width: getTableColWidthPx("CONTACT") }}
+                >
                   Email
                 </TableHead>
-                <TableHead className="px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                <TableHead
+                  className={cn("h-10 px-4 py-2", TYPOGRAPHY.TABLE_HEADER)}
+                  style={{ width: getTableColWidthPx("CONTACT") }}
+                >
                   Điện thoại
                 </TableHead>
-                <TableHead className="px-4 py-3 text-xs font-medium uppercase text-muted-foreground">
+                <TableHead className={cn("h-10 px-4 py-2", TYPOGRAPHY.TABLE_HEADER)}>
                   CV
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {rows.slice(0, 50).map((row, index) => (
-                <TableRow
-                  key={`${row.email}-${index}`}
-                  className="transition-colors duration-100 hover:bg-muted/25"
-                >
-                  <TableCell className="px-4 py-3 font-medium text-foreground">
-                    {row.fullName}
-                  </TableCell>
-                  <TableCell className="px-4 py-3">{row.email}</TableCell>
-                  <TableCell className="px-4 py-3 text-muted-foreground">
-                    {row.phone || "—"}
-                  </TableCell>
-                  <TableCell className="px-4 py-3 max-w-52 truncate text-muted-foreground">
-                    {row.cvUrl || "—"}
+              {rows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-44 text-center">
+                    <EmptyState
+                      compact
+                      icon={Inbox}
+                      title="Chưa có dữ liệu ứng viên để xem trước"
+                      description="Dán dữ liệu CSV vào ô phía trên hoặc chọn file Excel / CSV để tải lên."
+                    />
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                rows.slice(0, 50).map((row, index) => (
+                  <TableRow
+                    key={`${row.email}-${index}`}
+                    className="transition-colors duration-100 hover:bg-muted/25"
+                  >
+                    <TableCell
+                      className={cn("h-[60px] px-4 py-3", TYPOGRAPHY.CELL_PRIMARY)}
+                    >
+                      {row.fullName}
+                    </TableCell>
+                    <TableCell
+                      className={cn("h-[60px] px-4 py-3", TYPOGRAPHY.CELL_SECONDARY)}
+                    >
+                      {row.email}
+                    </TableCell>
+                    <TableCell
+                      className={cn("h-[60px] px-4 py-3", TYPOGRAPHY.CELL_SECONDARY)}
+                    >
+                      {row.phone || "—"}
+                    </TableCell>
+                    <TableCell
+                      className={cn("h-[60px] px-4 py-3 max-w-52 truncate", TYPOGRAPHY.CELL_SECONDARY)}
+                    >
+                      {row.cvUrl || "—"}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
@@ -305,7 +349,7 @@ export default function ApplicantIntakePage() {
       </PageCard>
       {result && (
         <PageCard>
-          <CardHeading title="Kết quả import" />
+          <SectionHeader title="Kết quả import" />
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
             <Result label="Tổng" value={result.total} />
             <Result label="Application mới" value={result.applicationsCreated} />
@@ -324,7 +368,7 @@ export default function ApplicantIntakePage() {
           )}
         </PageCard>
       )}
-    </div>
+    </PageContainer>
   )
 }
 
@@ -333,15 +377,6 @@ function Result({ label, value }: { label: string; value: number }) {
     <div className="rounded-xl border border-border bg-muted/20 p-4">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="mt-1 text-2xl font-semibold">{value}</p>
-    </div>
-  )
-}
-
-function CardHeading({ title, description }: { title: string; description?: string }) {
-  return (
-    <div className="mb-2">
-      <h2 className="text-base font-semibold">{title}</h2>
-      {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
     </div>
   )
 }

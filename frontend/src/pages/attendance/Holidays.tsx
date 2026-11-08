@@ -1,4 +1,10 @@
-import { PageCard, PageHeader } from "@/components/common"
+import {
+  EmptyState,
+  PageCard,
+  PageContainer,
+  PageHeader,
+  StatusPill,
+} from "@/components/common"
 import { HolidayFormDialog } from "@/components/features/attendance/holiday-form-dialog"
 import {
   AlertDialog,
@@ -17,16 +23,25 @@ import {
   ATTENDANCE_QUERY_KEYS,
   type IHolidayScope,
 } from "@/config/entities/attendance.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import { usePermission } from "@/hooks/use-permission"
 import { holidaysApi } from "@/lib/api/attendance.api"
-import { formatDate } from "@/lib/utils"
+import { cn, formatDate } from "@/lib/utils"
 import type { IHoliday, IHolidayPayload } from "@/types/attendance.types"
 import { getHolidayTypeLabel } from "@/utils/attendance/get-holiday-type-label"
 
 import { useState } from "react"
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { CalendarDays, ChevronLeft, ChevronRight, Loader2, Pencil, Plus, Trash2 } from "lucide-react"
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Inbox,
+  Loader2,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-react"
 import { toast } from "sonner"
 import { isAxiosError } from "axios"
 
@@ -50,6 +65,7 @@ function getScopeLabel(holiday: IHoliday): string {
 
 /**
  * Holidays admin page — company-wide or scoped date-range holidays.
+ * Standardized Card Grid layout adhering to DevCore design tokens, Pill rule, and StatusPill.
  */
 export default function Holidays() {
   const { hasPermission } = usePermission()
@@ -127,99 +143,131 @@ export default function Holidays() {
   }
 
   return (
-    <div className="container px-6 py-6 space-y-6">
+    <PageContainer variant="default" className="space-y-6">
       <PageHeader
         title="Ngày lễ"
         description="Quản lý ngày nghỉ lễ áp dụng cho lịch làm việc nhân viên."
       />
 
       <PageCard className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
-            <span className="font-semibold">Năm {year}</span>
+            <CalendarDays className="size-4 text-muted-foreground" />
+            <span className="font-semibold text-foreground">Năm {year}</span>
           </div>
           <div className="flex items-center gap-2">
             {isAdmin ? (
-              <Button size="sm" className="h-8 px-4 rounded-full" onClick={openCreateDialog}>
-                <Plus className="h-4 w-4" />
+              <Button
+                size="default"
+                className="rounded-full shadow-xs gap-1.5 font-semibold"
+                onClick={openCreateDialog}
+              >
+                <Plus className="size-4" />
                 Thêm ngày lễ
               </Button>
             ) : null}
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8 rounded-full"
+              className="size-9 rounded-full"
               onClick={() => {
                 setYear((y) => y - 1)
               }}
+              aria-label="Năm trước"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="size-4" />
             </Button>
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8 rounded-full"
+              className="size-9 rounded-full"
               onClick={() => {
                 setYear((y) => y + 1)
               }}
+              aria-label="Năm sau"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="size-4" />
             </Button>
           </div>
         </div>
 
         {isLoading ? (
           <div className="flex h-40 items-center justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <Loader2 className="size-6 animate-spin text-primary" />
           </div>
         ) : holidays?.length ? (
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5">
             {holidays.map((holiday) => (
-              <div key={holiday.id} className="rounded-lg border border-border bg-secondary/30 p-4">
+              <div
+                key={holiday.id}
+                className="flex flex-col justify-between rounded-xl border border-border bg-card p-4 shadow-2xs transition-all hover:border-primary/30"
+              >
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{holiday.name}</p>
-                    <p className="mt-1 text-xs font-medium text-muted-foreground">
+                  <div className="min-w-0 flex-1">
+                    <p className={cn(TYPOGRAPHY.CELL_PRIMARY, "truncate font-semibold text-foreground")}>
+                      {holiday.name}
+                    </p>
+                    <p className={cn(TYPOGRAPHY.CELL_DATE, "mt-1")}>
                       {formatDate(holiday.date)}
                     </p>
-                    <p className="mt-1 text-xs text-muted-foreground">{getScopeLabel(holiday)}</p>
+                    <p className={cn(TYPOGRAPHY.CELL_SECONDARY, "mt-1 truncate")}>
+                      {getScopeLabel(holiday)}
+                    </p>
                   </div>
                   {isAdmin ? (
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 shrink-0">
                       <Button
                         variant="ghost"
                         size="icon-xs"
+                        className="size-7 rounded-full text-muted-foreground hover:text-foreground"
                         aria-label="Sửa ngày lễ"
                         onClick={() => {
                           openEditDialog(holiday)
                         }}
                       >
-                        <Pencil className="h-3.5 w-3.5" />
+                        <Pencil className="size-3.5" />
                       </Button>
                       <Button
-                        variant="destructive"
+                        variant="ghost"
                         size="icon-xs"
+                        className="size-7 rounded-full text-destructive/80 hover:bg-destructive/10 hover:text-destructive"
                         aria-label="Xóa ngày lễ"
                         onClick={() => {
                           setDeletingHoliday(holiday)
                         }}
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="size-3.5" />
                       </Button>
                     </div>
                   ) : null}
                 </div>
-                <p className="mt-3 w-fit rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
-                  {getHolidayTypeLabel(holiday.type)}
-                </p>
+                <div className="mt-4 pt-1">
+                  <StatusPill
+                    label={getHolidayTypeLabel(holiday.type)}
+                    variant={holiday.type === "national" ? "success" : "neutral"}
+                  />
+                </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-            Chưa có ngày lễ nào trong năm {year}.
-          </div>
+          <EmptyState
+            icon={Inbox}
+            title={`Chưa có ngày lễ nào trong năm ${year}`}
+            description="Tạo ngày lễ để thiết lập ngày nghỉ áp dụng cho lịch làm việc nhân viên."
+            action={
+              isAdmin ? (
+                <Button
+                  size="default"
+                  className="rounded-full shadow-xs gap-1.5 font-semibold"
+                  onClick={openCreateDialog}
+                >
+                  <Plus className="size-4" />
+                  Thêm ngày lễ
+                </Button>
+              ) : undefined
+            }
+          />
         )}
       </PageCard>
 
@@ -269,6 +317,6 @@ export default function Holidays() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </PageContainer>
   )
 }

@@ -1,8 +1,13 @@
-import { DateRangePicker, PageCard } from "@/components/common"
+import {
+  type DataTableColumn,
+  DataTablePage,
+  DateRangePicker,
+  StatusPill,
+  TABLE_COL_WIDTH,
+  TYPOGRAPHY,
+} from "@/components/common"
 import { ActivityLogDetailDrawer } from "@/components/features/security/ActivityLogDetailDrawer"
-import { ActivityLogsTable } from "@/components/features/security/ActivityLogsTable"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -10,21 +15,70 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  ACTIVITY_ACTION_LABELS,
+  ACTIVITY_ACTION_VARIANTS,
+  SECURITY_CATEGORY_VARIANTS,
+} from "@/config/entities/security.config"
+import { COMMON_TEXTS } from "@/config/system.config"
 import { useActivityLogsMaster } from "@/hooks/security/use-activity-logs-master"
 import { cn } from "@/lib/utils"
+import type { ActivityLogItem } from "@/types/security.types"
 
+import { useMemo } from "react"
 import {
-  AlertTriangle,
+  Activity,
+  Eye,
   Filter,
-  Loader2,
+  Globe,
+  Key,
+  Lock,
   RefreshCw,
-  Search,
-  X,
+  Shield,
+  Unlock,
+  User,
 } from "lucide-react"
 
+const getActionIcon = (actionType: string) => {
+  if (actionType.includes("ROLE") || actionType.includes("PERMISSION"))
+    return <Shield className="size-4" />
+  if (actionType.includes("EMPLOYEE")) return <User className="size-4" />
+  if (
+    actionType.includes("password") ||
+    actionType.includes("login") ||
+    actionType.includes("logout")
+  )
+    return <Key className="size-4" />
+  if (actionType.includes("lock"))
+    return actionType.includes("unlocked") ? (
+      <Unlock className="size-4" />
+    ) : (
+      <Lock className="size-4" />
+    )
+  return <Activity className="size-4" />
+}
+
+const ACTION_VARIANT_MAP = new Map<string, string>(Object.entries(ACTIVITY_ACTION_VARIANTS))
+
+const getActionIconColor = (actionType: string) => {
+  const variant = ACTION_VARIANT_MAP.get(actionType) ?? "neutral"
+  switch (variant) {
+    case "success":
+      return "text-emerald-500"
+    case "danger":
+      return "text-rose-500"
+    case "warning":
+      return "text-amber-500"
+    case "info":
+      return "text-blue-500"
+    default:
+      return "text-muted-foreground"
+  }
+}
+
 /**
- * ActivityLogs Component.
- * Renders a full audit trail of system activities with filtering and detail view.
+ * Standardized ActivityLogs component powered by DataTablePage master component.
+ * Integrates internal viewport scrolling, debounced search, responsive filters, and pinned pagination.
  */
 export default function ActivityLogs() {
   const {
@@ -38,190 +92,233 @@ export default function ActivityLogs() {
     data,
     isLoading,
     isFetching,
-    isError,
     refetch,
   } = useActivityLogsMaster()
 
-  // Derived pagination calculations
+  const currentPage = query.page || 1
+  const pageSize = query.limit || 20
   const totalPages = data?.meta.totalPages ?? 0
-  const pageStart = ((query.page || 1) - 1) * (query.limit || 20) + (data?.data.length ? 1 : 0)
-  const pageEnd = ((query.page || 1) - 1) * (query.limit || 20) + (data?.data.length || 0)
 
-  // Visible pages calculation (simple array)
-  const visiblePages = Array.from({ length: totalPages }, (_, i) => i + 1).slice(
-    Math.max(0, (query.page || 1) - 3),
-    Math.min(totalPages, (query.page || 1) + 2),
+  const columns: DataTableColumn<ActivityLogItem>[] = useMemo(
+    () => [
+      {
+        id: "action",
+        header: "Hành động",
+        width: `${TABLE_COL_WIDTH.TITLE}px`,
+        minWidth: `${TABLE_COL_WIDTH.TITLE}px`,
+        sticky: true,
+        cell: (log) => (
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className={cn("shrink-0", getActionIconColor(log.actionType))}>
+              {getActionIcon(log.actionType)}
+            </div>
+            <span
+              className={cn("font-semibold", TYPOGRAPHY.CELL_PRIMARY)}
+              title={ACTIVITY_ACTION_LABELS[log.actionType] ?? log.actionType}
+            >
+              {ACTIVITY_ACTION_LABELS[log.actionType] ?? log.actionType}
+            </span>
+          </div>
+        ),
+      },
+      {
+        id: "employee",
+        header: "Nhân viên",
+        width: `${TABLE_COL_WIDTH.EMPLOYEE}px`,
+        minWidth: `${TABLE_COL_WIDTH.EMPLOYEE}px`,
+        cell: (log) => (
+          <div className="min-w-0 flex flex-col justify-center">
+            <p
+              className={TYPOGRAPHY.CELL_PRIMARY}
+              title={log.employeeName || COMMON_TEXTS.SYSTEM}
+            >
+              {log.employeeName || (
+                <span className="text-muted-foreground italic">{COMMON_TEXTS.SYSTEM}</span>
+              )}
+            </p>
+            <p className={TYPOGRAPHY.CELL_CODE}>
+              {log.employeeId || COMMON_TEXTS.NOT_AVAILABLE}
+            </p>
+          </div>
+        ),
+      },
+      {
+        id: "category",
+        header: "Danh mục",
+        align: "center",
+        width: `${TABLE_COL_WIDTH.TYPE}px`,
+        minWidth: `${TABLE_COL_WIDTH.TYPE}px`,
+        cell: (log) => (
+          <StatusPill
+            label={log.category}
+            variant={SECURITY_CATEGORY_VARIANTS[log.category] ?? "neutral"}
+            className="px-3 py-0.5 font-bold uppercase"
+          />
+        ),
+      },
+      {
+        id: "ipAddress",
+        header: "Địa chỉ IP",
+        width: "150px",
+        minWidth: "150px",
+        hideBelow: "lg",
+        cell: (log) => (
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-muted/50 rounded-full border border-border/40 text-xs font-mono text-muted-foreground">
+            <Globe className="size-3.5 opacity-50 shrink-0" />
+            <span>{log.ipAddress || "—"}</span>
+          </div>
+        ),
+      },
+      {
+        id: "time",
+        header: "Thời gian",
+        width: `${TABLE_COL_WIDTH.DATE}px`,
+        minWidth: `${TABLE_COL_WIDTH.DATE}px`,
+        cell: (log) => (
+          <div className="min-w-0 flex flex-col justify-center">
+            <p className={TYPOGRAPHY.CELL_DATE}>
+              {new Date(log.createdAt).toLocaleDateString("vi-VN")}
+            </p>
+            <p className={TYPOGRAPHY.CELL_TIME}>
+              {new Date(log.createdAt).toLocaleTimeString("vi-VN", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
+          </div>
+        ),
+      },
+      {
+        id: "actions",
+        header: "Chi tiết",
+        align: "center",
+        width: `${TABLE_COL_WIDTH.ACTIONS}px`,
+        minWidth: `${TABLE_COL_WIDTH.ACTIONS}px`,
+        cell: (log) => (
+          <div className="flex justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setViewingLogId(log.id)
+              }}
+              className="rounded-full text-muted-foreground hover:text-foreground"
+              title="Xem chi tiết"
+              aria-label="Xem chi tiết"
+            >
+              <Eye className="size-4" />
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [setViewingLogId],
   )
 
-
-  if (isLoading) {
-    return (
-      <div className="container px-6 py-8 flex flex-col items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        <p className="text-sm text-muted-foreground mt-4">Đang tải dữ liệu nhật ký...</p>
-      </div>
-    )
-  }
-
-  if (isError || !data) {
-    return (
-      <div className="container px-6 py-8">
-        <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-6 text-center">
-          <AlertTriangle className="h-10 w-10 text-destructive mx-auto mb-4" />
-          <h2 className="text-lg font-bold text-destructive">Lỗi tải dữ liệu</h2>
-          <p className="text-sm text-muted-foreground mt-2">
-            Không thể tải nhật ký hoạt động. Vui lòng thử lại sau.
-          </p>
-          <Button variant="outline" className="mt-4 rounded-full text-xs font-semibold" onClick={() => { refetch(); }}>
-            Thử lại
-          </Button>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="container max-w-7xl px-6 py-8">
-      {/* ── Page header ───────────────────────────────────────────── */}
-      <div className="flex items-start justify-between mb-7">
-        <div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-foreground leading-snug">
-            Nhật ký hoạt động
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Truy vết toàn bộ hoạt động bảo mật và thay đổi dữ liệu trong hệ thống.
-          </p>
-        </div>
+    <DataTablePage<ActivityLogItem>
+      title="Nhật ký hoạt động"
+      description="Truy vết toàn bộ hoạt động bảo mật và thay đổi dữ liệu trong hệ thống."
+      headerActions={
         <Button
           variant="outline"
-          size="sm"
-          onClick={() => { refetch(); }}
-          className="gap-1.5 h-8 px-3 text-xs rounded-full font-semibold"
+          onClick={() => {
+            void refetch()
+          }}
+          className="gap-1.5 rounded-full text-sm font-semibold"
         >
-          <RefreshCw className={cn("h-3 w-3", isFetching && "animate-spin")} />
+          <RefreshCw className={cn("size-4", isFetching && "animate-spin")} />
           Làm mới
         </Button>
-      </div>
-
-      <PageCard className="overflow-hidden" padding="sm">
-        {/* ── Toolbar ──────────────────────────────────────────────── */}
-        <div className="px-5 py-4 flex flex-wrap items-center justify-between gap-4 border-b border-border bg-muted/10">
-          <div className="flex items-center gap-3 flex-1 min-w-[300px]">
-            <div className="relative w-full max-w-xs">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-              <Input
-                size="sm"
-                placeholder="Tìm theo ID nhân viên..."
-                className="pl-8 bg-background border-border/80 focus:border-primary"
-                value={searchTerm}
-                onChange={handleSearch}
-              />
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Filter size={14} className="text-muted-foreground" />
-              <Select
-                value={query.category || "all"}
-                onValueChange={(val) => {
-                  handleFilterChange("category", val === "all" ? undefined : val)
-                }}
-              >
-                <SelectTrigger size="sm" className="w-[170px] bg-background border-border/80 font-semibold">
-                  <SelectValue placeholder="Tất cả danh mục" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả danh mục</SelectItem>
-                  <SelectItem value="role">Vai trò</SelectItem>
-                  <SelectItem value="permission">Quyền hạn</SelectItem>
-                  <SelectItem value="employee">Nhân sự</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {query.actionType && (
-              <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 h-9 rounded-full text-xs font-semibold border border-primary/20">
-                Hành động: {query.actionType}
-                <button
-                  onClick={() => { handleFilterChange("actionType", undefined); }}
-                  className="hover:bg-primary hover:text-white rounded-full p-0.5 transition-colors flex items-center justify-center"
-                >
-                  <X size={12} />
-                </button>
-              </span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground font-medium">Lọc theo ngày:</span>
-            <DateRangePicker
-              startDate={query.fromDate || null}
-              endDate={query.toDate || null}
-              onChange={({ startDate, endDate }) => {
-                handleFilterChange("fromDate", startDate || undefined);
-                handleFilterChange("toDate", endDate || undefined);
-              }}
-              size="sm"
-              placeholder="Chọn khoảng ngày..."
-            />
-          </div>
-        </div>
-
-        {/* ── Table ────────────────────────────────────────────────── */}
-        <ActivityLogsTable logs={data.data} onViewDetail={setViewingLogId} />
-
-        {/* ── Pagination ───────────────────────────────────────────── */}
-        <div className="px-5 py-4 border-t border-border flex items-center justify-between bg-muted/5">
-          <p className="text-[12px] text-muted-foreground">
-            Hiển thị {pageStart}–{pageEnd} trong tổng số{" "}
-            <span className="text-foreground font-bold">{data?.meta.total ?? 0}</span> bản ghi
-          </p>
-
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 text-xs rounded-full"
-              disabled={query.page === 1}
-              onClick={() => {
-                setQuery((prev) => ({ ...prev, page: Math.max(1, (prev.page || 1) - 1) }))
-              }}
+      }
+      search={{
+        placeholder: "Tìm theo ID nhân viên...",
+        value: searchTerm,
+        onSearch: handleSearch,
+        onClear: () => {
+          handleSearch("")
+        },
+      }}
+      filters={
+        <div className="flex items-center gap-2 shrink-0">
+          <Filter className="size-4 text-muted-foreground shrink-0" />
+          <Select
+            value={query.category || "ALL"}
+            onValueChange={(val) => {
+              handleFilterChange("category", val)
+            }}
+          >
+            <SelectTrigger
+              className={cn(
+                "w-[155px] rounded-full bg-background",
+                TYPOGRAPHY.TOOLBAR_CONTROL,
+              )}
             >
-              ←
-            </Button>
-
-            {visiblePages.map((p) => (
-              <button
-                key={p}
-                onClick={() => { setQuery((prev) => ({ ...prev, page: p })) }}
-                className={[
-                  "w-8 h-8 rounded-full text-xs font-semibold flex items-center justify-center transition-all duration-200 border",
-                  query.page === p
-                    ? "bg-primary text-primary-foreground font-bold border-primary shadow-sm"
-                    : "bg-background text-muted-foreground hover:bg-muted border-border hover:border-muted-foreground/30",
-                ].join(" ")}
-              >
-                {p}
-              </button>
-            ))}
-
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 text-xs rounded-full"
-              disabled={!data || query.page === totalPages || totalPages === 0}
-              onClick={() => { setQuery((prev) => ({ ...prev, page: (prev.page || 1) + 1 })) }}
-            >
-              →
-            </Button>
-          </div>
+              <SelectValue placeholder="Danh mục" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Tất cả danh mục</SelectItem>
+              <SelectItem value="AUTH">Xác thực</SelectItem>
+              <SelectItem value="HRM">Nhân sự</SelectItem>
+              <SelectItem value="SECURITY">Bảo mật</SelectItem>
+              <SelectItem value="ATTENDANCE">Chấm công</SelectItem>
+              <SelectItem value="SYSTEM">Hệ thống</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-      </PageCard>
-
-      {/* Detail Drawer */}
-      <ActivityLogDetailDrawer
-        logId={viewingLogId}
-        onClose={() => { setViewingLogId(null); }}
-      />
-    </div>
+      }
+      toolbarActions={
+        <div className="flex items-center gap-2 shrink-0">
+          <span className={TYPOGRAPHY.TOOLBAR_LABEL}>
+            Lọc theo ngày:
+          </span>
+          <DateRangePicker
+            startDate={query.fromDate || null}
+            endDate={query.toDate || null}
+            onChange={({ startDate, endDate }) => {
+              handleFilterChange("fromDate", startDate || undefined)
+              handleFilterChange("toDate", endDate || undefined)
+            }}
+            size="default"
+            placeholder="Chọn khoảng ngày..."
+            className="w-[210px] rounded-full shrink-0"
+          />
+        </div>
+      }
+      columns={columns}
+      data={data?.data || []}
+      isLoading={isLoading}
+      emptyState={{
+        title: "Không có bản ghi nhật ký",
+        description: "Không tìm thấy nhật ký hoạt động nào trong khoảng thời gian này.",
+      }}
+      onResetFilters={() => {
+        handleSearch("")
+        handleFilterChange("category", "ALL")
+        handleFilterChange("fromDate", undefined)
+        handleFilterChange("toDate", undefined)
+      }}
+      pagination={{
+        currentPage,
+        totalPages: totalPages || 1,
+        totalItems: data?.meta.total ?? 0,
+        itemsPerPage: pageSize,
+        onPageChange: (p) => {
+          setQuery((prev) => ({ ...prev, page: p }))
+        },
+        onItemsPerPageChange: (limit) => {
+          setQuery((prev) => ({ ...prev, limit, page: 1 }))
+        },
+        pageSizeOptions: [10, 20, 50, 100],
+      }}
+      extraContent={
+        <ActivityLogDetailDrawer
+          logId={viewingLogId}
+          onClose={() => {
+            setViewingLogId(null)
+          }}
+        />
+      }
+    />
   )
 }

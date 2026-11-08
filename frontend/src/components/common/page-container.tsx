@@ -7,7 +7,7 @@ export const pageContainerVariants = cva("w-full flex flex-col min-w-0", {
   variants: {
     variant: {
       // Standard layout for general dashboard and analytics pages
-      default: "max-w-7xl mx-auto px-4 md:px-6 py-6 gap-6",
+      default: "w-full px-4 md:px-6 py-6 gap-6",
 
       // Viewport-locked layout for data tables (matches attendance matrix pattern)
       // Locks viewport height on desktop, eliminates window-level scrolling
@@ -18,7 +18,7 @@ export const pageContainerVariants = cva("w-full flex flex-col min-w-0", {
       centered: "max-w-4xl mx-auto px-4 md:px-6 py-6 gap-6",
 
       // Full-width/height canvas for horizontal drag boards (Kanban, Gantt, Timesheet)
-      fluid: "w-full p-4 md:p-6 h-full",
+      fluid: "w-full p-4 md:p-6 h-full flex flex-col min-w-0",
     },
   },
   defaultVariants: {

@@ -17,8 +17,10 @@ export interface DataTableColumn<T> {
   stickyLeft?: boolean
   /** Optional manual left offset override. If omitted, offset is automatically calculated. */
   stickyLeftOffset?: string
-  /** Hides column below specified breakpoint (if applicable). */
+  /** Hides column below specified breakpoint */
   hideBelow?: "md" | "lg" | "xl"
+  /** Enables text truncation with ellipsis and native tooltip on cell text */
+  truncate?: boolean
 }
 
 export interface DataTableTabItem {
@@ -55,7 +57,11 @@ export interface DataTablePageProps<T> {
       }
     | ReactNode
   headerActions?: ReactNode
-  variant?: "viewport" | "fluid"
+  subHeader?: ReactNode
+  variant?: "viewport" | "fluid" | "card"
+  cardIcon?: LucideIcon
+  cardIconClassName?: string
+  className?: string
   density?: "normal" | "compact"
   tabs?: {
     items: DataTableTabItem[]
@@ -67,13 +73,18 @@ export interface DataTablePageProps<T> {
     value?: string
     debounceMs?: number
     onSearch: (value: string) => void
+    onClear?: () => void
   }
+  onResetFilters?: () => void
   filters?: ReactNode
   toolbarActions?: ReactNode
   columns: DataTableColumn<T>[]
   data: T[]
   keyExtractor?: (item: T, index: number) => string | number
   renderRows?: () => ReactNode
+  onRowClick?: (item: T, index: number) => void
+  onRowContextMenu?: (e: React.MouseEvent, item: T, index: number) => void
+  rowClassName?: (item: T, index: number) => string | undefined
   isLoading?: boolean
   loadingRowsCount?: number
   emptyState?: {

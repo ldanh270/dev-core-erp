@@ -30,12 +30,23 @@ import {
 
 interface AttendanceSummaryContentProps {
   employeeId?: string
+  year?: number
+  month?: number
 }
 
-export function AttendanceSummaryContent({ employeeId }: AttendanceSummaryContentProps) {
+export function AttendanceSummaryContent({
+  employeeId,
+  year: propYear,
+  month: propMonth,
+}: AttendanceSummaryContentProps) {
   const now = new Date()
-  const [year, setYear] = useState(now.getFullYear())
-  const [month, setMonth] = useState(now.getMonth())
+  const [internalYear, setInternalYear] = useState(now.getFullYear())
+  const [internalMonth, setInternalMonth] = useState(now.getMonth())
+
+  const year = propYear ?? internalYear
+  const month = propMonth ?? internalMonth
+  const isExternalControl = propYear !== undefined && propMonth !== undefined
+
   const { startDate, endDate } = getMonthRange(year, month)
   const { data: profile } = useProfile()
   const { data: selectedEmployee } = useEmployee(employeeId ?? "")
@@ -86,90 +97,92 @@ export function AttendanceSummaryContent({ employeeId }: AttendanceSummaryConten
   const isLoading = isRecordsLoading || isScheduleLoading || isHolidaysLoading
 
   const goToPrev = () => {
-    if (month === 0) {
-      setYear((currentYear) => currentYear - 1)
-      setMonth(11)
+    if (internalMonth === 0) {
+      setInternalYear((currentYear) => currentYear - 1)
+      setInternalMonth(11)
       return
     }
-
-    setMonth((currentMonth) => currentMonth - 1)
+    setInternalMonth((currentMonth) => currentMonth - 1)
   }
 
   const goToNext = () => {
-    if (month === 11) {
-      setYear((currentYear) => currentYear + 1)
-      setMonth(0)
+    if (internalMonth === 11) {
+      setInternalYear((currentYear) => currentYear + 1)
+      setInternalMonth(0)
       return
     }
-
-    setMonth((currentMonth) => currentMonth + 1)
+    setInternalMonth((currentMonth) => currentMonth + 1)
   }
 
   return (
-    <>
-      <AttendanceMonthPicker year={year} month={month} onPrev={goToPrev} onNext={goToNext} />
+    <div className="space-y-4">
+      {!isExternalControl && (
+        <div className="flex items-center justify-end">
+          <AttendanceMonthPicker
+            year={internalYear}
+            month={internalMonth}
+            onPrev={goToPrev}
+            onNext={goToNext}
+          />
+        </div>
+      )}
 
       {isLoading ? (
         <PageCard className="flex h-40 items-center justify-center">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
         </PageCard>
       ) : (
-        <>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <AttendanceSummaryStatCard
-              title="Tổng giờ làm"
-              value={formatHours(totalWorkMinutes)}
-              description="Tổng thời gian đã ghi nhận"
-              icon={Clock}
-            />
-            <AttendanceSummaryStatCard
-              title="Số ca được phân"
-              value={scheduledShiftCount}
-              description="Không tính ngày nghỉ lễ"
-              icon={BriefcaseBusiness}
-            />
-            <AttendanceSummaryStatCard
-              title="Số ca đã làm"
-              value={workedShiftCount}
-              description={`${completionRate}% so với ca được phân`}
-              icon={CalendarCheck}
-            />
-            <AttendanceSummaryStatCard
-              title="Trung bình mỗi ca"
-              value={formatHours(averageWorkMinutes)}
-              description="Tính trên ca có check-in/out"
-              icon={TimerReset}
-            />
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <AttendanceSummaryStatCard
-              title="Đúng giờ"
-              value={onTimeCount}
-              description="Số lần chấm công đúng giờ"
-              icon={CalendarCheck}
-            />
-            <AttendanceSummaryStatCard
-              title="Đi muộn"
-              value={lateCount}
-              description="Số lần bị ghi nhận đi muộn"
-              icon={AlarmClock}
-            />
-            <AttendanceSummaryStatCard
-              title="Vắng mặt"
-              value={absentCount}
-              description="Số ngày không có mặt"
-              icon={CalendarX2}
-            />
-            <AttendanceSummaryStatCard
-              title="OT / Về sớm"
-              value={`${overtimeCount} / ${earlyLeaveCount}`}
-              description="Lượt tăng ca và về sớm"
-              icon={TimerReset}
-            />
-          </div>
-        </>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <AttendanceSummaryStatCard
+            title="Tổng giờ làm"
+            value={formatHours(totalWorkMinutes)}
+            description="Tổng thời gian đã ghi nhận"
+            icon={Clock}
+          />
+          <AttendanceSummaryStatCard
+            title="Số ca được phân"
+            value={scheduledShiftCount}
+            description="Không tính ngày nghỉ lễ"
+            icon={BriefcaseBusiness}
+          />
+          <AttendanceSummaryStatCard
+            title="Số ca đã làm"
+            value={workedShiftCount}
+            description={`${completionRate}% so với ca được phân`}
+            icon={CalendarCheck}
+          />
+          <AttendanceSummaryStatCard
+            title="Trung bình mỗi ca"
+            value={formatHours(averageWorkMinutes)}
+            description="Tính trên ca có check-in/out"
+            icon={TimerReset}
+          />
+          <AttendanceSummaryStatCard
+            title="Đúng giờ"
+            value={onTimeCount}
+            description="Số lần chấm công đúng giờ"
+            icon={CalendarCheck}
+          />
+          <AttendanceSummaryStatCard
+            title="Đi muộn"
+            value={lateCount}
+            description="Số lần bị ghi nhận đi muộn"
+            icon={AlarmClock}
+          />
+          <AttendanceSummaryStatCard
+            title="Vắng mặt"
+            value={absentCount}
+            description="Số ngày không có mặt"
+            icon={CalendarX2}
+          />
+          <AttendanceSummaryStatCard
+            title="OT / Về sớm"
+            value={`${overtimeCount} / ${earlyLeaveCount}`}
+            description="Lượt tăng ca và về sớm"
+            icon={TimerReset}
+          />
+        </div>
       )}
-    </>
+    </div>
   )
 }

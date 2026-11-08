@@ -166,7 +166,7 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
         try {
           const data = JSON.parse(matched.queryData)
           if (data && Array.isArray(data.activeFilterKeys) && data.filterStates) {
-// eslint-disable-next-line react-hooks/set-state-in-effect
+ 
             setActiveFilterKeys(data.activeFilterKeys)
             setFilterStates(data.filterStates)
             setAppliedFilterKeys(data.activeFilterKeys)

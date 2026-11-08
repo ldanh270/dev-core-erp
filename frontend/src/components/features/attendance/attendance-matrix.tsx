@@ -1,8 +1,6 @@
-/** Interactive admin workforce matrix for weekly and monthly attendance review. */
-import { DatePicker, PageCard } from "@/components/common"
+import { DatePicker, DataTablePage, type DataTableColumn } from "@/components/common"
 import { AttendanceMatrixCell } from "@/components/features/attendance/attendance-matrix-cell"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   ATTENDANCE_MATRIX_VIEW,
   ATTENDANCE_MATRIX_VIEW_VALUES,
@@ -10,24 +8,27 @@ import {
 } from "@/config/entities/attendance.config"
 import { ATTENDANCE_MATRIX_UI } from "@/config/rules/attendance.config"
 import { useAttendanceMatrix } from "@/hooks/attendance/use-attendance"
+import type { IAttendanceMatrixEmployee } from "@/types/attendance.types"
 import { getMatrixDates } from "@/utils/attendance/attendance-matrix.util"
 
 import { useMemo, useState } from "react"
 
 import dayjs from "dayjs"
-import { ChevronLeft, ChevronRight, Loader2, Search } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
-/** Admin workforce attendance matrix with synchronized week/month navigation. */
+/** Admin workforce attendance matrix powered by enterprise master primitive DataTablePage. */
 export function AttendanceMatrix() {
   const [view, setView] = useState<IAttendanceMatrixView>(ATTENDANCE_MATRIX_VIEW.WEEK)
   const [anchor, setAnchor] = useState(() => dayjs().format("YYYY-MM-DD"))
   const [search, setSearch] = useState("")
+
   const query = useMemo(
-    () => ({ view, anchor, search: search || undefined }),
+    () => ({ view, anchor, search: search.trim() || undefined }),
     [view, anchor, search],
   )
-  const { data, isLoading, isError } = useAttendanceMatrix(query)
-  const dates = data ? getMatrixDates(data.rangeStart, data.rangeEnd) : []
+  const { data, isLoading } = useAttendanceMatrix(query)
+  const dates = useMemo(() => (data ? getMatrixDates(data.rangeStart, data.rangeEnd) : []), [data])
+
   const periodLabel = data
     ? view === ATTENDANCE_MATRIX_VIEW.MONTH
       ? `Tháng ${dayjs(data.rangeStart).format("MM/YYYY")}`
@@ -47,31 +48,110 @@ export function AttendanceMatrix() {
     setAnchor(view === ATTENDANCE_MATRIX_VIEW.MONTH ? `${value}-01` : value)
   }
 
+  const columns = useMemo<DataTableColumn<IAttendanceMatrixEmployee>[]>(() => {
+    const fixedCols: DataTableColumn<IAttendanceMatrixEmployee>[] = [
+      {
+        id: "employeeCode",
+        header: "Mã nhân sự",
+        width: "112px",
+        sticky: true,
+        cell: (emp) => (
+          <span className="font-mono text-xs text-primary truncate block" title={emp.employeeCode}>
+            {emp.employeeCode}
+          </span>
+        ),
+      },
+      {
+        id: "fullName",
+        header: "Họ và tên",
+        width: "192px",
+        sticky: true,
+        cell: (emp) => (
+          <div>
+            <p className="truncate font-medium text-foreground" title={emp.fullName}>
+              {emp.fullName}
+            </p>
+            <p className="truncate text-xs font-normal text-muted-foreground" title={emp.email}>
+              {emp.email}
+            </p>
+          </div>
+        ),
+      },
+      {
+        id: "position",
+        header: "Vị trí",
+        width: "160px",
+        sticky: true,
+        cell: (emp) => (
+          <span className="truncate block text-muted-foreground" title={emp.position}>
+            {emp.position ?? "—"}
+          </span>
+        ),
+      },
+    ]
+
+    const dateCols: DataTableColumn<IAttendanceMatrixEmployee>[] = dates.map((date) => ({
+      id: date,
+      header: (
+        <div className="text-center">
+          <span className="block text-xs font-semibold uppercase text-muted-foreground">
+            {ATTENDANCE_MATRIX_UI.WEEKDAY_LABELS[dayjs(date).day()]}
+          </span>
+          <span className="font-semibold text-foreground">
+            {dayjs(date).format(view === ATTENDANCE_MATRIX_VIEW.MONTH ? "DD" : "DD/MM")}
+          </span>
+        </div>
+      ),
+      width: view === ATTENDANCE_MATRIX_VIEW.WEEK ? "144px" : "160px",
+      align: "center",
+      className: "align-top p-2",
+      cell: (emp) => (
+        <AttendanceMatrixCell
+          collapseMultiple={view === ATTENDANCE_MATRIX_VIEW.MONTH}
+          shifts={emp.days.find((day) => day.date === date)?.shifts ?? []}
+        />
+      ),
+    }))
+
+    return [...fixedCols, ...dateCols]
+  }, [dates, view])
 
   return (
-    <PageCard className="flex h-full min-h-0 flex-col overflow-hidden p-0">
-      <div className="flex flex-col gap-3 border-b p-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h2 className="font-semibold">Bảng chấm công</h2>
-          <p className="text-sm text-muted-foreground">Check-in, checkout và độ lệch theo ca.</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative min-w-60 flex-1">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              aria-label="Tìm nhân viên"
-              className="pl-10 rounded-full h-9 bg-background border-border/80 text-xs"
-              placeholder="Tìm họ tên hoặc email"
-              value={search}
-              onChange={(event) => {
-                setSearch(event.target.value)
+    <DataTablePage<IAttendanceMatrixEmployee>
+      title="Bảng chấm công"
+      description="Check-in, checkout và độ lệch theo ca."
+      variant="viewport"
+      search={{
+        placeholder: "Tìm họ tên hoặc email...",
+        value: search,
+        onSearch: setSearch,
+        onClear: () => {
+          setSearch("")
+        },
+      }}
+      filters={
+        <div className="flex h-10 items-center rounded-full border border-border/80 p-1 bg-secondary/40">
+          {ATTENDANCE_MATRIX_VIEW_VALUES.map((item) => (
+            <Button
+              key={item}
+              size="sm"
+              className="rounded-full text-xs font-semibold px-3.5 h-8"
+              variant={view === item ? "default" : "ghost"}
+              onClick={() => {
+                setView(item)
               }}
-            />
-          </div>
+            >
+              {item === ATTENDANCE_MATRIX_VIEW.WEEK ? "Theo tuần" : "Theo tháng"}
+            </Button>
+          ))}
+        </div>
+      }
+      toolbarActions={
+        <div className="flex items-center gap-2 shrink-0">
           <Button
             variant="outline"
             size="icon"
-            className="rounded-full size-8 shrink-0"
+            className="rounded-full size-10 shrink-0"
             aria-label="Kỳ trước"
             onClick={() => {
               movePeriod(-1)
@@ -79,21 +159,23 @@ export function AttendanceMatrix() {
           >
             <ChevronLeft className="size-4" />
           </Button>
-          <div className="w-40">
+          <div className="w-44">
             <DatePicker
               value={anchor}
-              size="sm"
+              size="default"
               clearable={false}
               onChange={(val) => {
                 if (val) handlePeriodChange(val)
               }}
             />
           </div>
-          <span className="min-w-44 text-center text-sm font-medium">{periodLabel}</span>
+          <div className="flex h-10 items-center justify-center min-w-44 px-4 rounded-full border border-border bg-muted/30 text-sm font-semibold text-foreground shadow-xs">
+            {periodLabel}
+          </div>
           <Button
             variant="outline"
             size="icon"
-            className="rounded-full size-8 shrink-0"
+            className="rounded-full size-10 shrink-0"
             aria-label="Kỳ sau"
             onClick={() => {
               movePeriod(1)
@@ -101,99 +183,18 @@ export function AttendanceMatrix() {
           >
             <ChevronRight className="size-4" />
           </Button>
-          <div className="flex rounded-full border border-border/80 p-0.5 bg-secondary/40">
-            {ATTENDANCE_MATRIX_VIEW_VALUES.map((item) => (
-              <Button
-                key={item}
-                size="sm"
-                className="rounded-full text-xs font-semibold px-3 h-7"
-                variant={view === item ? "default" : "ghost"}
-                onClick={() => {
-                  setView(item)
-                }}
-              >
-                {item === ATTENDANCE_MATRIX_VIEW.WEEK ? "Theo tuần" : "Theo tháng"}
-              </Button>
-            ))}
-          </div>
         </div>
-      </div>
-
-      <div
-        className="min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg"
-        data-testid="attendance-matrix"
-      >
-        {isLoading ? (
-          <div className="flex h-48 items-center justify-center gap-2 text-muted-foreground">
-            <Loader2 className="animate-spin" /> Đang tải bảng công
-          </div>
-        ) : isError ? (
-          <div className="flex h-48 items-center justify-center text-destructive">
-            Không tải được bảng công.
-          </div>
-        ) : (
-          <table className="min-w-max border-separate border-spacing-0 text-sm">
-            <thead className="sticky top-0 z-20 bg-background">
-              <tr>
-                <th className="sticky left-0 z-30 w-28 min-w-28 border-b bg-background p-3 text-left">
-                  Mã nhân sự
-                </th>
-                <th className="sticky left-28 z-30 w-48 min-w-48 border-b bg-background p-3 text-left">
-                  Họ và tên
-                </th>
-                <th className="sticky left-[19rem] z-30 w-40 min-w-40 border-b border-r border-border/60 shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] bg-background p-3 text-left">
-                  Vị trí
-                </th>
-                {dates.map((date) => (
-                  <th key={date} className="min-w-40 border-b bg-muted/40 p-3 text-center">
-                    <span className="block text-xs text-muted-foreground">
-                      {ATTENDANCE_MATRIX_UI.WEEKDAY_LABELS[dayjs(date).day()]}
-                    </span>
-                    <span>
-                      {dayjs(date).format(view === ATTENDANCE_MATRIX_VIEW.MONTH ? "DD" : "DD/MM")}
-                    </span>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {data?.employees.map((employee) => (
-                <tr key={employee.employeeId} className="hover:bg-muted/20">
-                  <td className="sticky left-0 z-10 w-28 max-w-28 border-b bg-background p-3 font-mono text-xs text-primary">
-                    <span className="block truncate" title={employee.employeeCode}>
-                      {employee.employeeCode}
-                    </span>
-                  </td>
-                  <th className="sticky left-28 z-10 w-48 max-w-48 border-b bg-background p-3 text-left">
-                    <p className="truncate font-medium" title={employee.fullName}>
-                      {employee.fullName}
-                    </p>
-                    <p
-                      className="truncate text-xs font-normal text-muted-foreground"
-                      title={employee.email}
-                    >
-                      {employee.email}
-                    </p>
-                  </th>
-                  <td className="sticky left-[19rem] z-10 w-40 max-w-40 border-b border-r border-border/60 shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)] bg-background p-3 text-muted-foreground">
-                    <span className="block truncate" title={employee.position}>
-                      {employee.position ?? "—"}
-                    </span>
-                  </td>
-                  {dates.map((date) => (
-                    <td key={date} className="border-b p-2 align-top">
-                      <AttendanceMatrixCell
-                        collapseMultiple={view === ATTENDANCE_MATRIX_VIEW.MONTH}
-                        shifts={employee.days.find((day) => day.date === date)?.shifts ?? []}
-                      />
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-    </PageCard>
+      }
+      columns={columns}
+      data={data?.employees ?? []}
+      keyExtractor={(emp) => emp.employeeId}
+      isLoading={isLoading}
+      emptyState={{
+        title: search ? "Không tìm thấy nhân viên" : "Không có dữ liệu",
+        description: search
+          ? `Không có nhân viên nào khớp với từ khóa "${search}".`
+          : "Chưa có bản ghi chấm công nào trong kỳ này.",
+      }}
+    />
   )
 }

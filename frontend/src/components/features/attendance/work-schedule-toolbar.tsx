@@ -31,12 +31,14 @@ export function WorkScheduleToolbar({
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div className="flex flex-wrap items-center gap-3">
-        <CalendarDays className="h-4 w-4 text-muted-foreground" />
-        <span className="font-semibold">{weekRangeLabel}</span>
+        <div className="flex h-10 items-center gap-2 rounded-full border border-border bg-muted/30 px-3.5 text-sm font-semibold text-foreground shadow-xs">
+          <CalendarDays className="h-4 w-4 text-primary shrink-0" />
+          <span>{weekRangeLabel}</span>
+        </div>
         <div className="w-44">
           <DatePicker
             value={formatDateParam(selectedDate)}
-            size="sm"
+            size="default"
             clearable={false}
             onChange={(val) => {
               if (val) onSelectedDateChange(val)
@@ -61,7 +63,7 @@ export function WorkScheduleToolbar({
           aria-label="Tuần trước"
           variant="outline"
           size="icon"
-          className="h-8 w-8 rounded-full"
+          className="h-10 w-10 rounded-full"
           onClick={() => {
             onMoveWeek(PREVIOUS_WEEK_DIRECTION)
           }}
@@ -72,7 +74,7 @@ export function WorkScheduleToolbar({
           aria-label="Tuần sau"
           variant="outline"
           size="icon"
-          className="h-8 w-8 rounded-full"
+          className="h-10 w-10 rounded-full"
           onClick={() => {
             onMoveWeek(NEXT_WEEK_DIRECTION)
           }}
