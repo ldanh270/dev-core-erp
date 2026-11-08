@@ -1,9 +1,10 @@
 "use client"
 
+import { AppModal } from "@/components/common/app-modal"
+import { Button } from "@/components/ui/button"
 import type { IApplication } from "@/lib/api/application.api"
 
 import { useState } from "react"
-
 import { toast } from "sonner"
 
 export interface RejectDialogProps {
@@ -20,12 +21,14 @@ export function RejectDialog({
   onCancel,
   onConfirm,
   isLoading,
+  title = "Lý do không duyệt",
+  description = "Vui lòng nhập lý do để nhân viên nắm được thông tin.",
   optionalReason,
 }: RejectDialogProps) {
   const [reason, setReason] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault()
     if (!optionalReason && !reason.trim()) {
       toast.error("Vui lòng nhập lý do không duyệt")
       return
@@ -34,48 +37,53 @@ export function RejectDialog({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
-      onClick={onCancel}
+    <AppModal
+      isOpen={true}
+      onClose={onCancel}
+      title={title}
+      description={description}
+      widthClassName="sm:max-w-md"
+      footerActions={
+        <div className="flex w-full items-center justify-end gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isLoading}
+            className="rounded-full px-5 font-medium"
+          >
+            Hủy
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={() => {
+              handleSubmit()
+            }}
+            disabled={isLoading}
+            className="rounded-full px-5 font-medium"
+          >
+            {isLoading ? "Đang xử lý..." : "Xác nhận không duyệt"}
+          </Button>
+        </div>
+      }
     >
-      <div
-        onClick={(e) => { e.stopPropagation() }}
-        className="bg-background w-full max-w-md rounded-2xl shadow-2xl p-6 flex flex-col gap-5"
-      >
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-bold text-slate-800">
-              Lý do không duyệt {!optionalReason && "*"}
-            </label>
-            <textarea
-              rows={3}
-              required={!optionalReason}
-              value={reason}
-              onChange={(e) => {
-                setReason(e.target.value)
-              }}
-              placeholder="Nhập lý do..."
-              className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none mt-2"
-            />
-          </div>
-          <div className="flex gap-3 mt-2">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="flex-1 py-2.5 border border-slate-200 rounded-full text-sm font-semibold text-slate-600 hover:bg-slate-50"
-            >
-              Hủy
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 disabled:opacity-60 text-white rounded-full text-sm font-bold transition-colors"
-            >
-              {isLoading ? "Đang xử lý..." : "Xác nhận không duyệt"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <label htmlFor="reject-reason-input" className="text-sm font-medium text-foreground">
+          Lý do {!optionalReason && <span className="text-destructive">*</span>}
+        </label>
+        <textarea
+          id="reject-reason-input"
+          rows={3}
+          required={!optionalReason}
+          value={reason}
+          onChange={(e) => {
+            setReason(e.target.value)
+          }}
+          placeholder="Nhập lý do tại đây..."
+          className="w-full rounded-xl border border-input bg-background p-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+        />
+      </form>
+    </AppModal>
   )
 }
