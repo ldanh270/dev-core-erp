@@ -35,6 +35,11 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
     token = req.headers.authorization.slice(7)
   }
 
+  // Fallback: check query parameter (used by browser EventSource SSE streams)
+  if (!token && typeof req.query?.token === "string") {
+    token = req.query.token
+  }
+
   // Verify token presence
   if (!token) {
     return next(
