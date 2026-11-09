@@ -1,4 +1,12 @@
 import type { TableDef } from "./database-reference.types"
+import type { HorizontalTrack, NodeBox, VerticalTrack } from "./database-erd-collision"
+import {
+  allocateHorizontalY,
+  allocateVerticalX,
+  buildNodeBoxes,
+  isHorizontalClear,
+  waypointsToOrthogonalPath,
+} from "./database-erd-collision"
 import type { ErdEdge, ErdPoint } from "./database-erd-layout"
 import {
   DEFAULT_EDGE_ANCHOR_Y,
@@ -9,18 +17,152 @@ import {
   MIN_NODE_HEIGHT,
 } from "./database-erd-layout"
 
+type RouteMode = "self" | "same-col" | "left-to-right" | "right-to-left"
+
 interface EdgeDraft {
   id: string
   sourceTable: string
   targetTable: string
   from: ErdPoint
-  sourceIsLeft: boolean
-  sourceY: number
+  to: ErdPoint
+  preferredMidY: number
+  mode: RouteMode
+  baseTrunkX: number
+  busKey: string
   highlighted: boolean
+  dimmed: boolean
   crossModule: boolean
 }
 
-// Compute straight-line edge endpoints with distributed target anchor slots to eliminate spider-web clustering.
+const ADJACENT_SPAN_THRESHOLD_X = 340
+const SELF_LOOP_OFFSET_X = 28
+const SAME_COL_OFFSET_X = 44
+const TARGET_TRUNK_MARGIN_X = 64
+const SOURCE_STUB_MARGIN_X = 48
+
+// Resolve the vertical pixel offset for a specific column row inside a table card.
+function getFieldOffsetY(table: TableDef, columnName: string, preferPk = false): number {
+  const linkedCols = getLinkedColumns(table)
+  let colIdx = linkedCols.findIndex((c) => c.name === columnName)
+  if (colIdx < 0 && preferPk) {
+    colIdx = linkedCols.findIndex((c) => c.isPk)
+  }
+  return colIdx >= 0 ? FIRST_FIELD_ANCHOR_Y + colIdx * FIELD_ANCHOR_STEP_Y : DEFAULT_EDGE_ANCHOR_Y
+}
+
+// Determine the orthogonal connection mode and port endpoints between two positioned tables.
+function resolveEndpoints(
+  sourceTable: string,
+  targetTable: string,
+  sourcePos: ErdPoint,
+  targetPos: ErdPoint,
+  sourceOffsetY: number,
+  targetOffsetY: number,
+): { from: ErdPoint; to: ErdPoint; mode: RouteMode; baseTrunkX: number } {
+  const sy = sourcePos.y + sourceOffsetY
+  const ty = targetPos.y + targetOffsetY
+
+  if (sourceTable === targetTable) {
+    const rightX = sourcePos.x + ERD_NODE_WIDTH
+    return {
+      from: { x: rightX, y: sy },
+      to: { x: rightX, y: Math.abs(sy - ty) < 6 ? ty - 12 : ty },
+      mode: "self",
+      baseTrunkX: rightX + SELF_LOOP_OFFSET_X,
+    }
+  }
+
+  if (Math.abs(sourcePos.x - targetPos.x) < 24) {
+    const leftX = Math.min(sourcePos.x, targetPos.x)
+    return {
+      from: { x: sourcePos.x, y: sy },
+      to: { x: targetPos.x, y: ty },
+      mode: "same-col",
+      baseTrunkX: leftX - SAME_COL_OFFSET_X,
+    }
+  }
+
+  const isLeftToRight = sourcePos.x < targetPos.x
+  const fromX = isLeftToRight ? sourcePos.x + ERD_NODE_WIDTH : sourcePos.x
+  const toX = isLeftToRight ? targetPos.x : targetPos.x + ERD_NODE_WIDTH
+  const spanX = Math.abs(toX - fromX)
+  const baseTrunkX =
+    spanX <= ADJACENT_SPAN_THRESHOLD_X
+      ? (fromX + toX) / 2
+      : isLeftToRight
+        ? toX - TARGET_TRUNK_MARGIN_X
+        : toX + TARGET_TRUNK_MARGIN_X
+
+  return {
+    from: { x: fromX, y: sy },
+    to: { x: toX, y: ty },
+    mode: isLeftToRight ? "left-to-right" : "right-to-left",
+    baseTrunkX,
+  }
+}
+
+// Build orthogonal Manhattan waypoints with interval-based track separation in both vertical avenues and horizontal streets.
+function buildOrthogonalWaypoints(
+  draft: EdgeDraft,
+  verticalTracks: VerticalTrack[],
+  horizontalTracks: HorizontalTrack[],
+  boxes: NodeBox[],
+): ErdPoint[] {
+  const { from, to, mode, baseTrunkX, busKey, sourceTable, targetTable } = draft
+
+  if (mode === "self") {
+    return [from, { x: baseTrunkX, y: from.y }, { x: baseTrunkX, y: to.y }, to]
+  }
+
+  if (mode === "same-col") {
+    const trunkX = allocateVerticalX(baseTrunkX, from.y, to.y, busKey, verticalTracks, boxes)
+    return [from, { x: trunkX, y: from.y }, { x: trunkX, y: to.y }, to]
+  }
+
+  const isAdjacentSpan = Math.abs(to.x - from.x) <= ADJACENT_SPAN_THRESHOLD_X
+  const canGoDirect =
+    isAdjacentSpan &&
+    isHorizontalClear(from.x, baseTrunkX, from.y, boxes, sourceTable, targetTable)
+
+  if (canGoDirect) {
+    const trunkX = allocateVerticalX(baseTrunkX, from.y, to.y, busKey, verticalTracks, boxes)
+    return [from, { x: trunkX, y: from.y }, { x: trunkX, y: to.y }, to]
+  }
+
+  const stubDir = mode === "left-to-right" ? 1 : -1
+  const baseExitX = from.x + stubDir * SOURCE_STUB_MARGIN_X
+  const corridorY = allocateHorizontalY(
+    baseExitX,
+    baseTrunkX,
+    draft.preferredMidY,
+    busKey,
+    horizontalTracks,
+    boxes,
+    sourceTable,
+    targetTable,
+  )
+  const sourceGroupKey = `src::${sourceTable}::${busKey}`
+  const exitX = allocateVerticalX(
+    baseExitX,
+    from.y,
+    corridorY,
+    sourceGroupKey,
+    verticalTracks,
+    boxes,
+  )
+  const trunkX = allocateVerticalX(baseTrunkX, corridorY, to.y, busKey, verticalTracks, boxes)
+
+  return [
+    from,
+    { x: exitX, y: from.y },
+    { x: exitX, y: corridorY },
+    { x: trunkX, y: corridorY },
+    { x: trunkX, y: to.y },
+    to,
+  ]
+}
+
+// Compute orthogonal Draw.io-style edges with PK bus merging, non-overlapping track allocation, and obstacle avoidance.
 export function createEdges(
   tables: TableDef[],
   tableByName: Map<string, TableDef>,
@@ -28,83 +170,95 @@ export function createEdges(
   heights: Map<string, number>,
   selectedTableName: string | null,
 ): ErdEdge[] {
-  const rawEdges: EdgeDraft[] = []
+  const boxes = buildNodeBoxes(positions, heights, ERD_NODE_WIDTH, MIN_NODE_HEIGHT)
+  const drafts: EdgeDraft[] = []
 
   for (const table of tables) {
-    const linkedCols = getLinkedColumns(table)
     for (const relation of table.outgoingRelations) {
-      const source = positions.get(table.name)
-      const target = positions.get(relation.targetTable)
+      const sourcePos = positions.get(table.name)
+      const targetPos = positions.get(relation.targetTable)
       const targetTable = tableByName.get(relation.targetTable)
-      if (!source || !target || !targetTable) continue
+      if (!sourcePos || !targetPos || !targetTable) continue
 
-      const colIdx = linkedCols.findIndex((c) => c.name === relation.sourceColumn)
-      const sourceOffsetY =
-        colIdx >= 0 ? FIRST_FIELD_ANCHOR_Y + colIdx * FIELD_ANCHOR_STEP_Y : DEFAULT_EDGE_ANCHOR_Y
-      const sourceIsLeft = source.x < target.x
+      const sourceOffsetY = getFieldOffsetY(table, relation.sourceColumn, false)
+      const targetOffsetY = getFieldOffsetY(targetTable, relation.targetColumn, true)
+      const { from, to, mode, baseTrunkX } = resolveEndpoints(
+        table.name,
+        relation.targetTable,
+        sourcePos,
+        targetPos,
+        sourceOffsetY,
+        targetOffsetY,
+      )
 
-      rawEdges.push({
-        id: `${table.name}-${relation.sourceColumn}->${relation.targetTable}`,
+      const tableAnchorY = sourcePos.y + FIRST_FIELD_ANCHOR_Y
+      const corridorBucket = Math.round(baseTrunkX / 120)
+      const verticalZone =
+        tableAnchorY < to.y - 160 ? "top" : tableAnchorY > to.y + 160 ? "bottom" : "mid"
+      const zonePortOffsetY = verticalZone === "top" ? -7 : verticalZone === "bottom" ? 7 : 0
+      const adjustedTo =
+        mode === "left-to-right" || mode === "right-to-left"
+          ? { x: to.x, y: to.y + zonePortOffsetY }
+          : to
+      const preferredMidY = Math.round((tableAnchorY + adjustedTo.y) / 2)
+      const busKey = `${corridorBucket}::${relation.targetTable}::${relation.targetColumn}::${mode}::${verticalZone}`
+      const highlighted =
+        table.name === selectedTableName || relation.targetTable === selectedTableName
+
+      drafts.push({
+        id: `${table.name}-${relation.sourceColumn}->${relation.targetTable}-${relation.targetColumn}`,
         sourceTable: table.name,
         targetTable: relation.targetTable,
-        from: { x: source.x + (sourceIsLeft ? ERD_NODE_WIDTH : 0), y: source.y + sourceOffsetY },
-        sourceIsLeft,
-        sourceY: source.y + sourceOffsetY,
-        highlighted: table.name === selectedTableName || relation.targetTable === selectedTableName,
+        from,
+        to: adjustedTo,
+        preferredMidY,
+        mode,
+        baseTrunkX,
+        busKey,
+        highlighted,
+        dimmed: selectedTableName !== null && !highlighted,
         crossModule: table.module !== targetTable.module,
       })
     }
   }
 
-  // Group incoming edges by target table and incoming side (left or right)
-  const leftIncoming = new Map<string, EdgeDraft[]>()
-  const rightIncoming = new Map<string, EdgeDraft[]>()
+  // Route shorter local edges first so they claim inner lanes closest to their tables.
+  drafts.sort((a, b) => {
+    const spanA = Math.abs(a.to.x - a.from.x) + Math.abs(a.to.y - a.from.y)
+    const spanB = Math.abs(b.to.x - b.from.x) + Math.abs(b.to.y - b.from.y)
+    return spanA - spanB
+  })
 
-  for (const edge of rawEdges) {
-    const map = edge.sourceIsLeft ? leftIncoming : rightIncoming
-    const list = map.get(edge.targetTable) ?? []
-    list.push(edge)
-    map.set(edge.targetTable, list)
-  }
+  const verticalTracks: VerticalTrack[] = []
+  const horizontalTracks: HorizontalTrack[] = []
 
-  // Assign distinct evenly spaced vertical anchor points for edges entering the same table side
-  const targetOffsetYMap = new Map<string, number>()
-
-  const assignOffsets = (map: Map<string, EdgeDraft[]>) => {
-    for (const [targetName, edgeList] of map) {
-      edgeList.sort((a, b) => a.sourceY - b.sourceY)
-      const targetH = heights.get(targetName) ?? MIN_NODE_HEIGHT
-      const startY = 36
-      const endY = Math.max(startY + 20, targetH - 24)
-      const count = edgeList.length
-
-      edgeList.forEach((edge, idx) => {
-        const offset = count === 1 ? DEFAULT_EDGE_ANCHOR_Y : startY + (idx / (count - 1)) * (endY - startY)
-        targetOffsetYMap.set(edge.id, offset)
-      })
-    }
-  }
-
-  assignOffsets(leftIncoming)
-  assignOffsets(rightIncoming)
-
-  return rawEdges.map((edge) => {
-    const target = positions.get(edge.targetTable) ?? { x: 0, y: 0 }
-    const offsetY = targetOffsetYMap.get(edge.id) ?? DEFAULT_EDGE_ANCHOR_Y
+  const edges = drafts.map((draft) => {
+    const waypoints = buildOrthogonalWaypoints(draft, verticalTracks, horizontalTracks, boxes)
     return {
-      id: edge.id,
-      from: edge.from,
-      to: { x: target.x + (edge.sourceIsLeft ? 0 : ERD_NODE_WIDTH), y: target.y + offsetY },
-      highlighted: edge.highlighted,
-      crossModule: edge.crossModule,
+      id: draft.id,
+      sourceTable: draft.sourceTable,
+      targetTable: draft.targetTable,
+      from: draft.from,
+      to: draft.to,
+      path: waypointsToOrthogonalPath(waypoints),
+      highlighted: draft.highlighted,
+      dimmed: draft.dimmed,
+      crossModule: draft.crossModule,
     }
   })
+
+  // Render dimmed/normal edges first and highlighted edges last so active paths stay on top.
+  return edges.sort((a, b) => Number(a.highlighted) - Number(b.highlighted))
 }
-// Return semantic stroke classes for active, cross-module dashed, or standard relationship lines.
-export function getErdEdgeClassName(edge: Pick<ErdEdge, 'highlighted' | 'crossModule'>): string {
-  if (edge.highlighted) return 'stroke-primary stroke-[2.5] opacity-100'
+
+// Return semantic stroke classes for active, dimmed, cross-module dashed, or standard orthogonal lines.
+export function getErdEdgeClassName(
+  edge: Pick<ErdEdge, "highlighted" | "crossModule"> & { dimmed?: boolean },
+): string {
+  if (edge.highlighted) return "stroke-primary stroke-[2.5] opacity-100"
+  if (edge.dimmed) return "stroke-muted-foreground/30 stroke-[1.25] opacity-35"
   if (edge.crossModule) {
-    return 'stroke-primary/75 stroke-2 opacity-90 [stroke-dasharray:7_4]'
+    return "stroke-primary/75 stroke-[1.75] opacity-85 [stroke-dasharray:6_4]"
   }
-  return 'stroke-muted-foreground/65 stroke-[1.75] opacity-80'
+  return "stroke-muted-foreground/75 stroke-[1.75] opacity-90"
 }

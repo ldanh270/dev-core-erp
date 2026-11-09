@@ -14,10 +14,11 @@ interface DatabaseErdNodeProps {
   selectedTableName: string | null
   position: ErdPoint
   onSelectTable: (table: TableDef) => void
+  onHoverTable?: (tableName: string | null) => void
 }
 
 /**
- * Renders an ERD table card with internal tables, dimmed external cross-module tables, and linked fields.
+ * Renders an ERD table card with synchronized 24px row heights for exact orthogonal port alignment.
  * Pure UI presentation component powered by `useDatabaseErdNode` hook.
  */
 export function DatabaseErdNode({
@@ -27,6 +28,7 @@ export function DatabaseErdNode({
   selectedTableName,
   position,
   onSelectTable,
+  onHoverTable,
 }: DatabaseErdNodeProps) {
   const {
     theme,
@@ -45,7 +47,15 @@ export function DatabaseErdNode({
   return (
     <button
       type="button"
-      onClick={() => { onSelectTable(table); }}
+      onClick={() => {
+        onSelectTable(table)
+      }}
+      onMouseEnter={() => {
+        onHoverTable?.(table.name)
+      }}
+      onMouseLeave={() => {
+        onHoverTable?.(null)
+      }}
       aria-label={`Xem chi tiết bảng ${table.name}`}
       data-erd-node={table.name}
       data-erd-role={isPrimary ? "primary" : "foreign-key"}
@@ -59,15 +69,15 @@ export function DatabaseErdNode({
         isSelected
           ? "z-20 border-2 border-primary bg-card opacity-100 shadow-xl ring-2 ring-primary/30"
           : isExternal
-            ? "z-0 border-2 border-dashed border-primary/80 bg-card/75 shadow-none hover:z-20 hover:border-primary hover:bg-card hover:shadow-md"
+            ? "z-10 border-2 border-dashed border-primary/80 bg-card/90 shadow-xs hover:z-20 hover:border-primary hover:bg-card hover:shadow-md"
             : isPrimary
-              ? `z-10 border-2 ${theme.border} bg-card opacity-100 shadow-lg ring-1 ring-border/60 hover:z-20 hover:shadow-xl`
-              : "z-0 border border-border/80 bg-card opacity-100 shadow-xs hover:z-20 hover:border-border hover:shadow-md"
+              ? `z-10 border-2 ${theme.border} bg-card opacity-100 shadow-md ring-1 ring-border/60 hover:z-20 hover:shadow-xl`
+              : "z-10 border border-border bg-card opacity-100 shadow-xs hover:z-20 hover:border-primary/60 hover:shadow-md"
       }`}
     >
-      {/* Header bar with model name, primary table badge ("Chính"), and total column count. */}
+      {/* Fixed 36px (h-9) header bar so row anchor Y coordinates stay pixel-accurate. */}
       <span
-        className={`flex items-center justify-between gap-2 border-b border-border/80 px-3 py-2 ${
+        className={`flex h-9 items-center justify-between gap-1.5 border-b border-border/80 px-3 ${
           isExternal
             ? "border-dashed bg-muted/50"
             : isPrimary
@@ -75,17 +85,26 @@ export function DatabaseErdNode({
               : "bg-muted/40"
         }`}
       >
-        <span className="min-w-0 break-all font-mono text-xs font-bold text-foreground">
+        <span
+          className="min-w-0 truncate font-mono text-xs font-bold text-foreground"
+          title={externalModuleName ? `${table.name} (${externalModuleName})` : table.name}
+        >
           {table.name}
         </span>
         <span className="flex shrink-0 items-center gap-1">
-          {isPrimary && (
-            <Badge
-              variant="outline"
-              className={`rounded-full px-1.5 py-0 text-[9px] font-semibold ${theme.badge}`}
-            >
-              Chính
+          {isExternal ? (
+            <Badge variant="outline" className="rounded-full px-1.5 py-0 text-[9px] font-medium">
+              {table.module}
             </Badge>
+          ) : (
+            isPrimary && (
+              <Badge
+                variant="outline"
+                className={`rounded-full px-1.5 py-0 text-[9px] font-semibold ${theme.badge}`}
+              >
+                Chính
+              </Badge>
+            )
           )}
           <Badge variant="outline" className="rounded-full px-1.5 py-0 text-[9px]">
             {table.columns.length} cột
@@ -93,23 +112,18 @@ export function DatabaseErdNode({
         </span>
       </span>
 
-      {/* Body listing all linked PK and FK columns with outgoing target table indicators. */}
+      {/* Body listing all linked PK and FK columns with fixed 24px (h-6) row height. */}
       <span
-        className={`block space-y-1 p-2.5 font-mono text-[11px] ${
-          isExternal ? "opacity-75 transition-opacity group-hover:opacity-100" : ""
+        className={`block px-2.5 py-2 font-mono text-[11px] ${
+          isExternal ? "opacity-85 transition-opacity group-hover:opacity-100" : ""
         }`}
       >
-        {isExternal && externalModuleName && (
-          <span className="block truncate border-b border-border/50 pb-1 font-sans text-[10px] text-muted-foreground">
-            {externalModuleName}
-          </span>
-        )}
         {linkedColumns.map((col) => (
           <span
             key={col.name}
-            className="flex items-center justify-between gap-2 text-muted-foreground"
+            className="flex h-6 items-center justify-between gap-2 text-muted-foreground"
           >
-            <span className="flex min-w-0 items-center gap-1">
+            <span className="flex min-w-0 items-center gap-1.5">
               {col.isPk && (
                 <KeyRound
                   className="size-3 shrink-0 text-amber-600 dark:text-amber-400"
@@ -122,9 +136,9 @@ export function DatabaseErdNode({
                   aria-label="FK"
                 />
               )}
-              <span className="truncate text-foreground">{col.name}</span>
+              <span className="truncate font-medium text-foreground">{col.name}</span>
             </span>
-            <span className="shrink-0 text-[10px]">
+            <span className="shrink-0 truncate max-w-[115px] text-[10px]">
               {col.fkTargetTable ? `→ ${col.fkTargetTable}` : col.type}
             </span>
           </span>

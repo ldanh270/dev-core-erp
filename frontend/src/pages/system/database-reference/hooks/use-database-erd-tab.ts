@@ -34,9 +34,21 @@ export function useDatabaseErdTab({
     [allTables],
   )
 
-  // Include external cross-module tables when a single module is selected and the cross-module switch is enabled.
+  // Include external cross-module tables when a single module is selected, or filter out cross-module FKs in ALL mode when disabled.
   const graphTables = useMemo(() => {
-    if (selectedModule === "ALL" || !showCrossModuleRelations) return tables
+    if (selectedModule === "ALL") {
+      if (showCrossModuleRelations) return tables
+      return tables.map((table) => ({
+        ...table,
+        outgoingRelations: table.outgoingRelations.filter(
+          (relation) => tableByName.get(relation.targetTable)?.module === table.module,
+        ),
+        incomingRelations: table.incomingRelations.filter(
+          (relation) => tableByName.get(relation.sourceTable)?.module === table.module,
+        ),
+      }))
+    }
+    if (!showCrossModuleRelations) return tables
 
     const externalNames = new Set<string>()
     for (const table of tables) {
