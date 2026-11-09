@@ -183,14 +183,14 @@ export class TaskService implements ITaskService {
       const childDue = data.dueDate ? new Date(data.dueDate) : null
       if (childStart && parent.startDate && childStart < new Date(parent.startDate)) {
         throw new AppError(
-          "Thời gian bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha",
+          "Child task start date cannot precede parent task start date",
           HttpStatusCode.BAD_REQUEST,
           ErrorLayer.SERVICE,
         )
       }
       if (childDue && parent.dueDate && childDue > new Date(parent.dueDate)) {
         throw new AppError(
-          "Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha",
+          "Child task due date cannot exceed parent task due date",
           HttpStatusCode.BAD_REQUEST,
           ErrorLayer.SERVICE,
         )
@@ -311,14 +311,14 @@ export class TaskService implements ITaskService {
         const effDue = data.dueDate !== undefined ? (data.dueDate ? new Date(data.dueDate) : null) : (task.dueDate ? new Date(task.dueDate) : null)
         if (effStart && parent.startDate && effStart < new Date(parent.startDate)) {
           throw new AppError(
-            "Thời gian bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha",
+            "Child task start date cannot precede parent task start date",
             HttpStatusCode.BAD_REQUEST,
             ErrorLayer.SERVICE,
           )
         }
         if (effDue && parent.dueDate && effDue > new Date(parent.dueDate)) {
           throw new AppError(
-            "Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha",
+            "Child task due date cannot exceed parent task due date",
             HttpStatusCode.BAD_REQUEST,
             ErrorLayer.SERVICE,
           )

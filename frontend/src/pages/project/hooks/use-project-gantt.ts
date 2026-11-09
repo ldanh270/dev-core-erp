@@ -9,6 +9,7 @@ import { customQueryApi } from "@/lib/api/custom-query.api"
 import type { CustomQuery } from "@/lib/api/custom-query.api"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
 import { TASK_STATUS, TASK_PRIORITY, TASK_TRACKER, CUSTOM_QUERY_TYPE } from "@/config/entities/project.config"
+import { PROJECT_MESSAGES } from "@/config/messages/project.message"
 import { useAuthStore } from "@/store/auth-store"
 import type { Project } from "@/types/project.types"
 import type { Task, UpdateTaskDto } from "@/types/task.types"
@@ -721,13 +722,13 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
       if (parent) {
         if (parent.startDate && newStart < new Date(parent.startDate)) {
           toast.warning(
-            `Ngày bắt đầu của task con không được trước ngày bắt đầu của task cha (${format(new Date(parent.startDate), "dd/MM/yyyy")})`
+            `${PROJECT_MESSAGES.CHILD_START_BEFORE_PARENT} (${format(new Date(parent.startDate), "dd/MM/yyyy")})`
           )
           return
         }
         if (parent.dueDate && newDue > new Date(parent.dueDate)) {
           toast.warning(
-            `Hạn hoàn thành của task con không được sau hạn hoàn thành của task cha (${format(new Date(parent.dueDate), "dd/MM/yyyy")})`
+            `${PROJECT_MESSAGES.CHILD_DUE_AFTER_PARENT} (${format(new Date(parent.dueDate), "dd/MM/yyyy")})`
           )
           return
         }
@@ -740,13 +741,13 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
       for (const child of children) {
         if (child.startDate && newStart > new Date(child.startDate)) {
           toast.warning(
-            `Khoảng thời gian task cha phải bao trùm task con "${child.title}" (bắt đầu ${format(new Date(child.startDate), "dd/MM/yyyy")})`
+            `${PROJECT_MESSAGES.PARENT_TIME_MUST_COVER_CHILD} "${child.title}" (bắt đầu ${format(new Date(child.startDate), "dd/MM/yyyy")})`
           )
           return
         }
         if (child.dueDate && newDue < new Date(child.dueDate)) {
           toast.warning(
-            `Khoảng thời gian task cha phải bao trùm task con "${child.title}" (hạn hoàn thành ${format(new Date(child.dueDate), "dd/MM/yyyy")})`
+            `${PROJECT_MESSAGES.PARENT_TIME_MUST_COVER_CHILD} "${child.title}" (hạn hoàn thành ${format(new Date(child.dueDate), "dd/MM/yyyy")})`
           )
           return
         }

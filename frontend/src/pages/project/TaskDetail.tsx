@@ -895,7 +895,7 @@ export default function TaskDetail() {
                 return
               }
               if (taskStart && taskDue && new Date(taskStart) > new Date(taskDue)) {
-                toast.warning("Ngày bắt đầu không được sau hạn hoàn thành")
+                toast.warning(PROJECT_MESSAGES.TASK_START_AFTER_DUE)
                 return
               }
 
@@ -906,13 +906,13 @@ export default function TaskDetail() {
                 if (parentTask) {
                   if (parentTask.startDate && taskStart && new Date(taskStart) < new Date(parentTask.startDate)) {
                     toast.warning(
-                      `Ngày bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha (${new Date(parentTask.startDate).toLocaleDateString("vi-VN")})`
+                      `${PROJECT_MESSAGES.CHILD_START_BEFORE_PARENT} (${new Date(parentTask.startDate).toLocaleDateString("vi-VN")})`
                     )
                     return
                   }
                   if (parentTask.dueDate && taskDue && new Date(taskDue) > new Date(parentTask.dueDate)) {
                     toast.warning(
-                      `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${new Date(parentTask.dueDate).toLocaleDateString("vi-VN")})`
+                      `${PROJECT_MESSAGES.CHILD_DUE_AFTER_PARENT} (${new Date(parentTask.dueDate).toLocaleDateString("vi-VN")})`
                     )
                     return
                   }
@@ -925,13 +925,13 @@ export default function TaskDetail() {
                 for (const child of childTasks) {
                   if (child.startDate && taskStart && new Date(taskStart) > new Date(child.startDate)) {
                     toast.warning(
-                      `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (bắt đầu ${new Date(child.startDate).toLocaleDateString("vi-VN")})`
+                      `${PROJECT_MESSAGES.PARENT_TIME_MUST_COVER_CHILD} "${child.title}" (bắt đầu ${new Date(child.startDate).toLocaleDateString("vi-VN")})`
                     )
                     return
                   }
                   if (child.dueDate && taskDue && new Date(taskDue) < new Date(child.dueDate)) {
                     toast.warning(
-                      `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (hạn hoàn thành ${new Date(child.dueDate).toLocaleDateString("vi-VN")})`
+                      `${PROJECT_MESSAGES.PARENT_TIME_MUST_COVER_CHILD} "${child.title}" (hạn hoàn thành ${new Date(child.dueDate).toLocaleDateString("vi-VN")})`
                     )
                     return
                   }
