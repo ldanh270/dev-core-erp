@@ -550,12 +550,14 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
           key === GANTT_FILTER_KEY.DATE_UPDATED ||
           key === GANTT_FILTER_KEY.DATE_CLOSED
         ) {
-          let taskDateStr: string | null = null
-          if (key === GANTT_FILTER_KEY.DATE_START) taskDateStr = task.startDate
-          else if (key === GANTT_FILTER_KEY.DATE_DUE) taskDateStr = task.dueDate
-          else if (key === GANTT_FILTER_KEY.DATE_CREATED) taskDateStr = task.createdAt
-          else if (key === GANTT_FILTER_KEY.DATE_UPDATED) taskDateStr = task.updatedAt
-          else if (key === GANTT_FILTER_KEY.DATE_CLOSED) taskDateStr = task.completedAt
+          const dateMap: Record<string, string | null> = {
+            [GANTT_FILTER_KEY.DATE_START]: task.startDate,
+            [GANTT_FILTER_KEY.DATE_DUE]: task.dueDate,
+            [GANTT_FILTER_KEY.DATE_CREATED]: task.createdAt,
+            [GANTT_FILTER_KEY.DATE_UPDATED]: task.updatedAt,
+            [GANTT_FILTER_KEY.DATE_CLOSED]: task.completedAt,
+          }
+          const taskDateStr = dateMap[key] ?? null
 
           if (filter.operator === GANTT_FILTER_OPERATOR.OVERDUE) {
             if (!taskDateStr) return false
