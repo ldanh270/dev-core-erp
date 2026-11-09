@@ -31,7 +31,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -638,11 +640,11 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
 
                 {/* Add Filter Selector */}
                 <div className="flex items-center gap-2 shrink-0 md:self-start bg-secondary/10 p-2 rounded-xl border border-dashed border-border/40">
-                  <span className="font-semibold text-muted-foreground">Thêm lọc</span>
-                  <select
+                  <span className="font-semibold text-muted-foreground text-xs">Thêm lọc</span>
+                  <Select
+                    key={activeFilterKeys.length}
                     value=""
-                    onChange={(e) => {
-                      const selected = e.target.value
+                    onValueChange={(selected) => {
                       if (selected && !activeFilterKeys.includes(selected)) {
                         setActiveFilterKeys(prev => [...prev, selected])
                         setFilterStates(prev => {
@@ -656,30 +658,50 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                         })
                       }
                     }}
-                    className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer min-w-[140px]"
                   >
-                    <option value="" disabled>-- Chọn --</option>
-                    {/* Flat filters (with no group) */}
-                    {Object.entries(filterDefinitions)
-                      .filter(([k, def]) => !def.group && !activeFilterKeys.includes(k))
-                      .map(([k, def]) => (
-                        <option key={k} value={k}>{def.label}</option>
-                      ))
-                    }
-                    {/* Grouped filters */}
-                    {Array.from(new Set(Object.values(filterDefinitions).map(d => d.group).filter(Boolean))).map(group => (
-                      <optgroup key={group} label={group}>
-                        {Object.entries(filterDefinitions)
-                          .filter(([k, def]) => def.group === group && !activeFilterKeys.includes(k))
-                          .map(([k, def]) => (
-                            <option key={k} value={k}>
-                              {def.label}
-                            </option>
-                          ))
-                        }
-                      </optgroup>
-                    ))}
-                  </select>
+                    <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer min-w-[140px]">
+                      <SelectValue placeholder="-- Chọn --" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl bg-popover max-h-80 overflow-y-auto p-1.5 shadow-xl space-y-1">
+                      {/* Flat filters (with no group) */}
+                      {Object.entries(filterDefinitions)
+                        .filter(([k, def]) => !def.group && !activeFilterKeys.includes(k))
+                        .map(([k, def]) => (
+                          <SelectItem
+                            key={k}
+                            value={k}
+                            className="text-xs py-2.5 my-1 rounded-lg cursor-pointer"
+                          >
+                            {def.label}
+                          </SelectItem>
+                        ))
+                      }
+
+                      {/* Grouped filters */}
+                      {Array.from(new Set(Object.values(filterDefinitions).map(d => d.group).filter(Boolean))).map((group) => {
+                        const items = Object.entries(filterDefinitions).filter(
+                          ([k, def]) => def.group === group && !activeFilterKeys.includes(k)
+                        )
+                        if (items.length === 0) return null
+                        return (
+                          <SelectGroup key={group} className="mt-2 pt-2 border-t border-border/20 first:mt-0 first:pt-0 first:border-0">
+                            <SelectLabel className="px-3 py-2 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                              {group}
+                            </SelectLabel>
+                            {items.map(([k, def]) => (
+                              <SelectItem
+                                key={k}
+                                value={k}
+                                className="text-xs py-2.5 my-1 pl-5 rounded-lg cursor-pointer"
+                              >
+                                {def.label}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )
+                      })}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
