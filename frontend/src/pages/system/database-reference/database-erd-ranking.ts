@@ -1,7 +1,14 @@
 import type { TableDef } from "./database-reference.types"
 
 const ORDERING_PASSES = 4
-const MAX_NODES_PER_COLUMN = 5
+
+// Calculate maximum tables per column based on dataset size to maintain an optimal 2:1 widescreen aspect ratio.
+export function getMaxNodesPerColumn(totalTables: number): number {
+  if (totalTables <= 8) return 4
+  if (totalTables <= 20) return 6
+  if (totalTables <= 35) return 8
+  return 10
+}
 
 // Build parent (referenced target) and child (dependent FK) adjacency maps among visible tables.
 export function createDependencyMaps(tables: TableDef[], visibleNames: Set<string>) {
@@ -67,12 +74,15 @@ export function groupByRank(tables: TableDef[], ranks: Map<string, number>) {
   return layers.filter((layer) => layer.length > 0)
 }
 
-// Split overly tall columns into balanced sub-columns of at most MAX_NODES_PER_COLUMN tables.
-export function splitLargeLayers(layers: string[][]): string[][] {
+// Split overly tall columns into balanced sub-columns of at most maxNodesPerColumn tables.
+export function splitLargeLayers(
+  layers: string[][],
+  maxNodesPerColumn: number,
+): string[][] {
   return layers.flatMap((layer) => {
-    if (layer.length <= MAX_NODES_PER_COLUMN) return [layer]
+    if (layer.length <= maxNodesPerColumn) return [layer]
     const chunks: string[][] = []
-    const chunkCount = Math.ceil(layer.length / MAX_NODES_PER_COLUMN)
+    const chunkCount = Math.ceil(layer.length / maxNodesPerColumn)
     const chunkSize = Math.ceil(layer.length / chunkCount)
     for (let i = 0; i < layer.length; i += chunkSize) {
       chunks.push(layer.slice(i, i + chunkSize))
@@ -87,6 +97,7 @@ export function centerHubLayers(
   tables: TableDef[],
   parents: Map<string, string[]>,
   children: Map<string, string[]>,
+  maxNodesPerColumn: number,
 ): string[][] {
   if (tables.length < 5 || layers.length < 2) return layers
 
@@ -120,7 +131,7 @@ export function centerHubLayers(
     .map((col) => col.filter((name) => !leftKids.has(name)))
     .filter((col) => col.length > 0)
 
-  const hubCol = layers[hubLayerIdx].filter((name) => !leftKids.has(name))
+  const hubCol = layers.at(hubLayerIdx)?.filter((name) => !leftKids.has(name)) ?? []
 
   const postHub = layers
     .slice(hubLayerIdx + 1)
@@ -129,8 +140,8 @@ export function centerHubLayers(
 
   const leftWingChunks: string[][] = []
   const leftKidsArr = Array.from(leftKids)
-  for (let i = 0; i < leftKidsArr.length; i += MAX_NODES_PER_COLUMN) {
-    leftWingChunks.push(leftKidsArr.slice(i, i + MAX_NODES_PER_COLUMN))
+  for (let i = 0; i < leftKidsArr.length; i += maxNodesPerColumn) {
+    leftWingChunks.push(leftKidsArr.slice(i, i + maxNodesPerColumn))
   }
 
   return [...preHub, ...leftWingChunks, hubCol, ...postHub].filter((col) => col.length > 0)

@@ -84,13 +84,16 @@ export default function DatabaseReference() {
 
   if (state.activeTab === "diagram") {
     return (
-      <PageContainer variant="table">
+      <PageContainer
+        variant="table"
+        className="h-[calc(100dvh-4rem)] p-3 md:px-5 md:py-3 gap-2 flex flex-col overflow-hidden"
+      >
         <PageHeader
           title="Database Schema Reference"
           description="Tra cứu lược đồ cơ sở dữ liệu và sơ đồ quan hệ thực thể (ERD)."
           actions={headerActions}
         />
-        <div className="flex-1 min-h-0 flex flex-col">
+        <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
           <DatabaseErdTab
             tables={state.filteredTables}
             allTables={allTables}

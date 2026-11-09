@@ -26,10 +26,27 @@ export function useDatabaseErdViewport(
   const [scale, setScale] = useState(1)
   const [pan, setPan] = useState<ErdPoint>({ x: 0, y: 0 })
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [viewport, setViewport] = useState<ViewportSize>({ width: 0, height: 0 })
+  const [viewport, setViewport] = useState<ViewportSize>(() => ({
+    width: typeof window !== "undefined" ? Math.max(800, window.innerWidth - 280) : 1200,
+    height: typeof window !== "undefined" ? Math.max(500, window.innerHeight - 240) : 600,
+  }))
   const [nodePositions, setNodePositions] = useState<Map<string, ErdPoint>>(() => new Map())
   const viewportRef = useRef<HTMLDivElement>(null)
   const fitOnFullscreenRef = useRef(false)
+
+  // Track tables signature to automatically reset manual node positions on module switch
+  const currentTableNames = useMemo(
+    () => tables.map((t) => t.name).sort().join(","),
+    [tables],
+  )
+  const prevTableNamesRef = useRef<string>("")
+
+  useEffect(() => {
+    if (prevTableNamesRef.current && prevTableNamesRef.current !== currentTableNames) {
+      setNodePositions(new Map())
+    }
+    prevTableNamesRef.current = currentTableNames
+  }, [currentTableNames])
 
   // Recompute ERD layout whenever visible tables, viewport width, or dragged node overrides change.
   const graph = useMemo(
@@ -121,28 +138,36 @@ export function useDatabaseErdViewport(
     return () => { document.removeEventListener("fullscreenchange", handleFullscreenChange); }
   }, [fullscreenTarget])
 
-  // Fit and center the entire graph within the current viewport dimensions.
+  // Fit and center the entire graph, optimizing vertical height utilization to avoid large bottom empty spaces.
   const fitGraph = useCallback(() => {
-    if (!viewport.width || !viewport.height) return
-    const nextScale = Math.min(
-      MAX_SCALE,
-      (viewport.width - FIT_VIEWPORT_PADDING) / graph.width,
-      (viewport.height - FIT_VIEWPORT_PADDING) / graph.height,
-    )
-    const fittedScale = Math.max(MIN_SCALE, nextScale)
+    if (!viewport.width || !viewport.height || !graph.width || !graph.height) return
+    const scaleW = (viewport.width - FIT_VIEWPORT_PADDING) / graph.width
+    const scaleH = (viewport.height - FIT_VIEWPORT_PADDING) / graph.height
+
+    // Calculate fitted scale to fill both width and height harmoniously without excessive empty margins.
+    const baseFitScale = Math.min(scaleW, scaleH)
+    let targetScale = baseFitScale
+    if (scaleH > scaleW && graph.nodes.length <= 15) {
+      // If height allows more room in small datasets, scale up comfortably toward 1.0 zoom.
+      targetScale = Math.min(1.0, Math.max(baseFitScale, Math.min(0.85, scaleH * 0.95)))
+    }
+
+    const fittedScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, targetScale))
     setScale(fittedScale)
     setPan({
-      x: (viewport.width - graph.width * fittedScale) / 2,
-      y: (viewport.height - graph.height * fittedScale) / 2,
+      x: Math.max(24, Math.round((viewport.width - graph.width * fittedScale) / 2)),
+      y: Math.max(16, Math.round((viewport.height - graph.height * fittedScale) / 2)),
     })
-  }, [graph.height, graph.width, viewport.height, viewport.width])
+  }, [graph.height, graph.nodes.length, graph.width, viewport.height, viewport.width])
 
   useEffect(() => {
-    if (nodePositions.size === 0 || fitOnFullscreenRef.current) {
-      fitGraph()
-      fitOnFullscreenRef.current = false
+    if (viewport.width > 0 && viewport.height > 0) {
+      if (nodePositions.size === 0 || fitOnFullscreenRef.current) {
+        fitGraph()
+        fitOnFullscreenRef.current = false
+      }
     }
-  }, [fitGraph, nodePositions.size])
+  }, [viewport.width, viewport.height, currentTableNames, fitGraph, nodePositions.size])
 
   useDatabaseErdKeyboard(toggleFullscreen, isFullscreen)
 

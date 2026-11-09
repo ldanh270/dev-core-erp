@@ -5,6 +5,7 @@ import {
   assignRanks,
   centerHubLayers,
   createDependencyMaps,
+  getMaxNodesPerColumn,
   groupByRank,
   orderLayers,
   splitLargeLayers,
@@ -48,10 +49,11 @@ export const FIELD_ANCHOR_STEP_Y = 24
 
 const NODE_BASE_CHROME_HEIGHT = 64
 const NODE_LINKED_ROW_HEIGHT = 26
-const MIN_NODE_GAP_X = 180
-const NODE_GAP_Y = 84
-const CANVAS_MARGIN = 64
-const ALTERNATING_COLUMN_STAGGER_Y = 36
+const MIN_NODE_GAP_X = 130
+const DEFAULT_NODE_GAP_Y = 96
+const COMPACT_NODE_GAP_Y = 110
+const CANVAS_MARGIN = 40
+const ALTERNATING_COLUMN_STAGGER_Y = 24
 
 // Return all primary/foreign key and referenced target columns without truncation.
 export function getLinkedColumns(table: TableDef): ColumnDef[] {
@@ -87,8 +89,15 @@ export function createErdLayout(
   const rawLayers = groupByRank(visibleTables, ranks)
 
   orderLayers(rawLayers, dependencies.parents, dependencies.children)
-  const splitLayers = splitLargeLayers(rawLayers)
-  const layers = centerHubLayers(splitLayers, visibleTables, dependencies.parents, dependencies.children)
+  const maxNodesPerColumn = getMaxNodesPerColumn(visibleTables.length)
+  const splitLayers = splitLargeLayers(rawLayers, maxNodesPerColumn)
+  const layers = centerHubLayers(
+    splitLayers,
+    visibleTables,
+    dependencies.parents,
+    dependencies.children,
+    maxNodesPerColumn,
+  )
 
   const widestLayer = layers.length
   const horizontalGap =
@@ -99,27 +108,27 @@ export function createErdLayout(
         )
       : MIN_NODE_GAP_X
 
+  const nodeGapY = visibleTables.length <= 10 ? COMPACT_NODE_GAP_Y : DEFAULT_NODE_GAP_Y
   const heights = new Map(visibleTables.map((t) => [t.name, getNodeHeight(t)]))
   const layerHeights = layers.map((layer) =>
     layer.reduce(
-      (sum, name, idx) => sum + (heights.get(name) ?? MIN_NODE_HEIGHT) + (idx > 0 ? NODE_GAP_Y : 0),
+      (sum, name, idx) => sum + (heights.get(name) ?? MIN_NODE_HEIGHT) + (idx > 0 ? nodeGapY : 0),
       0,
     ),
   )
   const maxLayerHeight = Math.max(0, ...layerHeights)
   const positions = new Map<string, ErdPoint>()
 
-  // Position each column vertically centered with alternating stagger to prevent horizontal line overlap.
+  // Position each column neatly starting from the top canvas margin with alternating stagger to prevent horizontal line overlap.
   layers.forEach((layer, colIdx) => {
-    const layerHeight = layerHeights.at(colIdx) ?? 0
     const staggerOffset =
       colIdx % 2 === 1 && layer.length > 1 ? ALTERNATING_COLUMN_STAGGER_Y : 0
-    let currentY = CANVAS_MARGIN + (maxLayerHeight - layerHeight) / 2 + staggerOffset
+    let currentY = CANVAS_MARGIN + staggerOffset
     const x = CANVAS_MARGIN + colIdx * (ERD_NODE_WIDTH + horizontalGap)
 
     for (const tableName of layer) {
       positions.set(tableName, { x, y: currentY })
-      currentY += (heights.get(tableName) ?? MIN_NODE_HEIGHT) + NODE_GAP_Y
+      currentY += (heights.get(tableName) ?? MIN_NODE_HEIGHT) + nodeGapY
     }
   })
 

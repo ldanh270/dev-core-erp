@@ -5,6 +5,7 @@ const DEFAULT_EDGE_ANCHOR_Y = 40
 const MIN_NODE_HEIGHT = 120
 const COLLISION_PADDING_Y = 12
 const COLLISION_SHIFT_CLEARANCE_Y = 28
+const MAX_TOTAL_COLLISION_SHIFT_PER_NODE = 60
 const ERD_NODE_WIDTH = 280
 
 // Detect straight edges that cross intermediate columns and push intersecting nodes downward.
@@ -14,6 +15,8 @@ export function avoidLineCollisions(
   positions: Map<string, ErdPoint>,
   heights: Map<string, number>,
 ): void {
+  const totalShiftPerNode = new Map<string, number>()
+
   for (const table of tables) {
     for (const rel of table.outgoingRelations) {
       const fromPos = positions.get(table.name)
@@ -40,7 +43,13 @@ export function avoidLineCollisions(
             lineY >= nodePos.y - COLLISION_PADDING_Y &&
             lineY <= nodePos.y + nodeH + COLLISION_PADDING_Y
           ) {
-            const shift = lineY - nodePos.y + COLLISION_SHIFT_CLEARANCE_Y
+            const rawShift = lineY - nodePos.y + COLLISION_SHIFT_CLEARANCE_Y
+            const currentTotal = totalShiftPerNode.get(nodeName) ?? 0
+            const allowedShift = Math.max(0, MAX_TOTAL_COLLISION_SHIFT_PER_NODE - currentTotal)
+            const shift = Math.min(rawShift, allowedShift)
+            if (shift <= 0) continue
+
+            totalShiftPerNode.set(nodeName, currentTotal + shift)
             for (let j = i; j < layer.length; j += 1) {
               const shiftedName = layer.at(j)
               const p = shiftedName ? positions.get(shiftedName) : undefined

@@ -1,4 +1,5 @@
-import { DEFAULT_KANBAN_COLOR } from "@/config/entities/project.config"
+import { DEFAULT_KANBAN_COLOR, STATUS_KEYWORD_MAP, TASK_STATUS } from "@/config/entities/project.config"
+import { PROJECT_MESSAGES } from "@/config/messages/project.message"
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
@@ -231,6 +232,21 @@ export function useProjectKanban({
     setDragOverInfo({ taskId, position })
   }
 
+  const isInvalidBackwardTransition = (
+    sourceStatusId?: string | null,
+    targetStatusId?: string | null,
+  ): boolean => {
+    if (!sourceStatusId || !targetStatusId) return false
+    const sourceStatus = statuses.find((s) => s.id === sourceStatusId)
+    const targetStatus = statuses.find((s) => s.id === targetStatusId)
+    if (!sourceStatus || !targetStatus) return false
+
+    const sourceKey = STATUS_KEYWORD_MAP[sourceStatus.name.toLowerCase().trim()] || sourceStatus.name.toLowerCase()
+    const targetKey = STATUS_KEYWORD_MAP[targetStatus.name.toLowerCase().trim()] || targetStatus.name.toLowerCase()
+
+    return sourceKey === TASK_STATUS.IN_PROGRESS && targetKey === TASK_STATUS.TODO
+  }
+
   const handleCardDrop = (e: React.DragEvent, targetTask: Task) => {
     if (draggingColumnId) return
     e.preventDefault()
@@ -241,6 +257,10 @@ export function useProjectKanban({
     if (taskId && taskId !== targetTask.id) {
       const sourceTask = tasks.find((t) => t.id === taskId)
       if (sourceTask && sourceTask.statusId !== targetTask.statusId) {
+        if (isInvalidBackwardTransition(sourceTask.statusId, targetTask.statusId)) {
+          toast.warning(PROJECT_MESSAGES.KANBAN_IN_PROGRESS_TO_TODO_BLOCKED)
+          return
+        }
         moveTaskMutation.mutate({ taskId, statusId: targetTask.statusId })
       }
     }
@@ -254,6 +274,10 @@ export function useProjectKanban({
     if (taskId) {
       const task = tasks.find((t) => t.id === taskId)
       if (task && task.statusId !== targetStatusId) {
+        if (isInvalidBackwardTransition(task.statusId, targetStatusId)) {
+          toast.warning(PROJECT_MESSAGES.KANBAN_IN_PROGRESS_TO_TODO_BLOCKED)
+          return
+        }
         moveTaskMutation.mutate({ taskId, statusId: targetStatusId })
       }
     }

@@ -25,11 +25,13 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   SPENT_TIME_STATUS,
+  STATUS_KEYWORD_MAP,
   TASK_PRIORITIES,
   TASK_STATUS,
   getSpentTimeStatusLabel,
   PROJECT_ROLE,
 } from "@/config/entities/project.config"
+import { PROJECT_MESSAGES } from "@/config/messages/project.message"
 import { SPENT_TIME_UI, getSpentTimeStatusPillVariant } from "@/config/rules/spent-time.config"
 import { usePermission } from "@/hooks/use-permission"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
@@ -288,6 +290,18 @@ export default function TaskDetail() {
   // Update task mutation
   const updateMutation = useMutation({
     mutationFn: async () => {
+      if (task?.statusId && taskStatusId && task.statusId !== taskStatusId) {
+        const sourceStatus = statuses.find((s) => s.id === task.statusId)
+        const targetStatus = statuses.find((s) => s.id === taskStatusId)
+        if (sourceStatus && targetStatus) {
+          const sourceKey = STATUS_KEYWORD_MAP[sourceStatus.name.toLowerCase().trim()] || sourceStatus.name.toLowerCase()
+          const targetKey = STATUS_KEYWORD_MAP[targetStatus.name.toLowerCase().trim()] || targetStatus.name.toLowerCase()
+          if (sourceKey === TASK_STATUS.IN_PROGRESS && targetKey === TASK_STATUS.TODO) {
+            toast.warning(PROJECT_MESSAGES.KANBAN_IN_PROGRESS_TO_TODO_BLOCKED)
+            throw new Error(PROJECT_MESSAGES.KANBAN_IN_PROGRESS_TO_TODO_BLOCKED)
+          }
+        }
+      }
       return taskApi.update(id, {
         title: taskTitle,
         description: cleanHtml(taskDesc),
@@ -306,6 +320,7 @@ export default function TaskDetail() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["task", id] })
       void queryClient.invalidateQueries({ queryKey: ["tasks", "project", projectId] })
+      toast.success("Cập nhật công việc thành công")
       setIsOpenEditModal(false)
       setEditError(null)
     },

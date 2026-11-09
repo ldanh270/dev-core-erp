@@ -48,7 +48,7 @@ export function DatabaseErdTab({
       className={`relative flex flex-col overflow-hidden border border-border bg-card ${
         viewport.isFullscreen
           ? "fixed inset-0 z-40 h-dvh rounded-none p-3"
-          : "flex-1 min-h-0 h-full rounded-xl shadow-xs"
+          : "flex-1 min-h-0 h-full w-full flex flex-col rounded-xl shadow-xs"
       }`}
     >
       <DatabaseErdControls

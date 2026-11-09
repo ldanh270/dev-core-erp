@@ -45,7 +45,7 @@ export function DatabaseErdCanvas({
     <div
       ref={viewportRef}
       data-testid="database-erd-viewport"
-      className="min-h-0 flex-1 touch-none cursor-grab overflow-hidden bg-background active:cursor-grabbing"
+      className="relative flex-1 min-h-0 w-full touch-none cursor-grab overflow-hidden bg-background active:cursor-grabbing"
       style={{
         backgroundImage:
           "radial-gradient(var(--muted-foreground) 0.75px, transparent 0.75px)",
@@ -67,7 +67,9 @@ export function DatabaseErdCanvas({
             transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
             transformOrigin: "top left",
             transition: isPanning ? "none" : "transform 100ms ease-out",
-            position: "relative",
+            position: "absolute",
+            top: 0,
+            left: 0,
             width: `${graph.width}px`,
             height: `${graph.height}px`,
           }}
