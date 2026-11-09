@@ -62,6 +62,8 @@ export interface DataTablePageProps<T> {
   cardIcon?: LucideIcon
   cardIconClassName?: string
   className?: string
+  // Optional className forwarded to the outer PageContainer wrapper.
+  containerClassName?: string
   density?: "normal" | "compact"
   tabs?: {
     items: DataTableTabItem[]
@@ -96,3 +98,4 @@ export interface DataTablePageProps<T> {
   pagination?: DataTablePaginationConfig
   extraContent?: ReactNode
 }
+

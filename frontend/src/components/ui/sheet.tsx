@@ -20,8 +20,14 @@ function SheetClose({ ...props }: React.ComponentProps<typeof SheetPrimitive.Clo
   return <SheetPrimitive.Close data-slot="sheet-close" {...props} />
 }
 
-function SheetPortal({ ...props }: React.ComponentProps<typeof SheetPrimitive.Portal>) {
-  return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />
+function SheetPortal({ container, ...props }: React.ComponentProps<typeof SheetPrimitive.Portal>) {
+  // Default portal container to the active fullscreen element when fullscreen mode is active.
+  const portalContainer =
+    container ??
+    (typeof document !== "undefined" && document.fullscreenElement instanceof HTMLElement
+      ? document.fullscreenElement
+      : undefined)
+  return <SheetPrimitive.Portal data-slot="sheet-portal" container={portalContainer} {...props} />
 }
 
 function SheetOverlay({

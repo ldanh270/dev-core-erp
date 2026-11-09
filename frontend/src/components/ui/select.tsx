@@ -59,8 +59,14 @@ function SelectContent({
   sideOffset = 4,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
+  // Mount portal inside the active fullscreen element when in fullscreen mode so dropdowns remain visible.
+  const portalContainer =
+    typeof document !== "undefined" && document.fullscreenElement instanceof HTMLElement
+      ? document.fullscreenElement
+      : undefined
+
   return (
-    <SelectPrimitive.Portal>
+    <SelectPrimitive.Portal container={portalContainer}>
       <SelectPrimitive.Content
         data-slot="select-content"
         sideOffset={sideOffset}
