@@ -89,6 +89,7 @@ export const GANTT_FILTER_OPERATOR = {
   AFTER: "after",
   BEFORE: "before",
   BETWEEN: "between",
+  OVERDUE: "overdue",
   OPEN: "open",
   DONG: "đóng",
   TAT_CA: "tất cả",
@@ -123,14 +124,14 @@ export const FILTER_DEFINITIONS = {
   [GANTT_FILTER_KEY.TXT_SUBJECT]: { label: "Chủ đề", type: GANTT_FILTER_TYPE.TEXT, group: "Văn bản" },
   [GANTT_FILTER_KEY.TXT_DESC]: { label: "Mô tả", type: GANTT_FILTER_TYPE.TEXT, group: "Văn bản" },
   [GANTT_FILTER_KEY.TXT_NOTES]: { label: "Ghi chú", type: GANTT_FILTER_TYPE.TEXT, group: "Văn bản" },
-  [GANTT_FILTER_KEY.TXT_ANY]: { label: "Any searchable text", type: GANTT_FILTER_TYPE.TEXT, group: "Vn bбn" },
+  [GANTT_FILTER_KEY.TXT_ANY]: { label: "Nội dung bất kỳ", type: GANTT_FILTER_TYPE.TEXT, group: "Văn bản" },
 
   // Group: Ngày
+  [GANTT_FILTER_KEY.DATE_DUE]: { label: "Hạn hoàn thành (Ngày hết hạn)", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
+  [GANTT_FILTER_KEY.DATE_START]: { label: "Bắt đầu", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
   [GANTT_FILTER_KEY.DATE_CREATED]: { label: "Tạo", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
   [GANTT_FILTER_KEY.DATE_UPDATED]: { label: "Cập nhật", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
   [GANTT_FILTER_KEY.DATE_CLOSED]: { label: "Đã đóng", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
-  [GANTT_FILTER_KEY.DATE_START]: { label: "Bắt đầu", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
-  [GANTT_FILTER_KEY.DATE_DUE]: { label: "Hết hạn", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
 
   // Group: Theo dõi thời gian
   [GANTT_FILTER_KEY.TIME_EST]: { label: "Thời gian ước lượng", type: GANTT_FILTER_TYPE.NUMBER, group: "Theo dõi thời gian" },

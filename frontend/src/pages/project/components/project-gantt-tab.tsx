@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useMemo } from "react"
 import { 
   Clock, 
   User, 
@@ -126,6 +126,18 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
     handleClearFilters,
     handleQuickQuery,
   } = useProjectGantt({ projectId, project })
+
+  const availableYears = useMemo(() => {
+    const currentYear = new Date().getFullYear()
+    const pYear = project?.startDate ? new Date(project.startDate).getFullYear() : currentYear
+    const startYear = Math.min(pYear, currentYear - 2, yearInput)
+    const endYear = Math.max(pYear + 3, currentYear + 3, yearInput + 1)
+    const years: number[] = []
+    for (let y = startYear; y <= endYear; y++) {
+      years.push(y)
+    }
+    return years
+  }, [project, yearInput])
 
   const getDueDateCol = (dueDateStr: string | null | undefined) => {
     if (!dueDateStr) return null
@@ -338,7 +350,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
     }
 
     if (def.type === GANTT_FILTER_TYPE.DATE) {
-      if (operator === GANTT_FILTER_OPERATOR.ANY || operator === GANTT_FILTER_OPERATOR.TODAY || operator === GANTT_FILTER_OPERATOR.YESTERDAY) return null
+      if (operator === GANTT_FILTER_OPERATOR.ANY || operator === GANTT_FILTER_OPERATOR.TODAY || operator === GANTT_FILTER_OPERATOR.YESTERDAY || operator === GANTT_FILTER_OPERATOR.OVERDUE) return null
       if (operator === GANTT_FILTER_OPERATOR.IN_DAYS || operator === GANTT_FILTER_OPERATOR.MORE_THAN_DAYS) {
         return (
           <div className="flex items-center gap-1 font-semibold">
@@ -564,6 +576,9 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                             if (def.type === GANTT_FILTER_TYPE.DATE) {
                               return (
                                 <>
+                                  {key === GANTT_FILTER_KEY.DATE_DUE && (
+                                    <option value={GANTT_FILTER_OPERATOR.OVERDUE}>quá hạn / trễ hạn</option>
+                                  )}
                                   <option value={GANTT_FILTER_OPERATOR.ANY}>bất kỳ lúc nào</option>
                                   <option value={GANTT_FILTER_OPERATOR.TODAY}>hôm nay</option>
                                   <option value={GANTT_FILTER_OPERATOR.YESTERDAY}>hôm qua</option>
@@ -768,10 +783,9 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
-                  <SelectItem value="2025">2025</SelectItem>
-                  <SelectItem value="2026">2026</SelectItem>
-                  <SelectItem value="2027">2027</SelectItem>
-                  <SelectItem value="2028">2028</SelectItem>
+                  {availableYears.map((yr: number) => (
+                    <SelectItem key={yr} value={String(yr)}>{yr}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 
@@ -1634,6 +1648,9 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                           if (def.type === GANTT_FILTER_TYPE.DATE) {
                             return (
                               <>
+                                {key === GANTT_FILTER_KEY.DATE_DUE && (
+                                  <option value={GANTT_FILTER_OPERATOR.OVERDUE}>quá hạn / trễ hạn</option>
+                                )}
                                 <option value={GANTT_FILTER_OPERATOR.ANY}>bất kỳ lúc nào</option>
                                 <option value={GANTT_FILTER_OPERATOR.TODAY}>hôm nay</option>
                                 <option value={GANTT_FILTER_OPERATOR.YESTERDAY}>hôm qua</option>

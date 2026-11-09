@@ -54,7 +54,12 @@ export default function NewTask() {
   const { hasAnyPermission } = usePermission()
 
   // Extract parent task ID from URL query parameters (if creating a subtask)
-  const parentTaskId = searchParams.get("parentTaskId") || ""
+  const parentTaskId = searchParams.get("parentTaskId") || sessionStorage.getItem("parentTaskId") || ""
+  useEffect(() => {
+    if (sessionStorage.getItem("parentTaskId")) {
+      sessionStorage.removeItem("parentTaskId")
+    }
+  }, [])
 
   // Initialize state variables for the task creation form fields
   const [taskTitle, setTaskTitle] = useState("") // Title of the task
@@ -251,6 +256,7 @@ export default function NewTask() {
         dueDate: taskDue || null,
         estimatedTime: parsedEstimate,
         progress: Number(taskProgress),
+        parentTaskId: parentTask === "none" ? null : parentTask,
       })
     },
     // On success, invalidate cached tasks queries and display success toast
@@ -296,6 +302,25 @@ export default function NewTask() {
     if (taskStart && taskDue && new Date(taskStart) > new Date(taskDue)) {
       toast.warning("Ngày bắt đầu không được sau hạn hoàn thành")
       return
+    }
+
+    // Validate that child task dates stay within parent task boundaries
+    if (parentTask && parentTask !== "none") {
+      const selectedParent = projectTasks.find((t) => t.id === parentTask)
+      if (selectedParent) {
+        if (selectedParent.startDate && taskStart && new Date(taskStart) < new Date(selectedParent.startDate)) {
+          toast.warning(
+            `Ngày bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha (${new Date(selectedParent.startDate).toLocaleDateString("vi-VN")})`
+          )
+          return
+        }
+        if (selectedParent.dueDate && taskDue && new Date(taskDue) > new Date(selectedParent.dueDate)) {
+          toast.warning(
+            `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${new Date(selectedParent.dueDate).toLocaleDateString("vi-VN")})`
+          )
+          return
+        }
+      }
     }
     // Call the create mutation
     createTaskMutation.mutate({ title: taskTitle, andAnother })

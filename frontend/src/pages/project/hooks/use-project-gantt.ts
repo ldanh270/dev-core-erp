@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { format, differenceInDays, addDays, eachDayOfInterval } from "date-fns"
+import { format, differenceInDays, addDays, eachDayOfInterval, startOfDay } from "date-fns"
 import { projectApi } from "@/lib/api/project.api"
 import { taskApi } from "@/lib/api/task.api"
 import { customQueryApi } from "@/lib/api/custom-query.api"
@@ -338,6 +338,7 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
       | { label: string; type: string; group: string }
       | undefined
     if (def === undefined) return GANTT_FILTER_OPERATOR.IS
+    if (key === GANTT_FILTER_KEY.DATE_DUE) return GANTT_FILTER_OPERATOR.OVERDUE
     if (key === GANTT_FILTER_KEY.STATUS) return GANTT_FILTER_OPERATOR.OPEN
     if (key === GANTT_FILTER_KEY.TRACKER || key === GANTT_FILTER_KEY.PRIORITY)
       return GANTT_FILTER_OPERATOR.IS
@@ -540,9 +541,35 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
             return false
         }
 
-        // Date logic (Start Date & Due Date)
-        else if (key === GANTT_FILTER_KEY.DATE_START || key === GANTT_FILTER_KEY.DATE_DUE) {
-          const taskDateStr = key === GANTT_FILTER_KEY.DATE_START ? task.startDate : task.dueDate
+        // Date logic (Start Date, Due Date, Created, Updated, Closed)
+        else if (
+          key === GANTT_FILTER_KEY.DATE_START ||
+          key === GANTT_FILTER_KEY.DATE_DUE ||
+          key === GANTT_FILTER_KEY.DATE_CREATED ||
+          key === GANTT_FILTER_KEY.DATE_UPDATED ||
+          key === GANTT_FILTER_KEY.DATE_CLOSED
+        ) {
+          let taskDateStr: string | null = null
+          if (key === GANTT_FILTER_KEY.DATE_START) taskDateStr = task.startDate
+          else if (key === GANTT_FILTER_KEY.DATE_DUE) taskDateStr = task.dueDate
+          else if (key === GANTT_FILTER_KEY.DATE_CREATED) taskDateStr = task.createdAt
+          else if (key === GANTT_FILTER_KEY.DATE_UPDATED) taskDateStr = task.updatedAt
+          else if (key === GANTT_FILTER_KEY.DATE_CLOSED) taskDateStr = task.completedAt || null
+
+          if (filter.operator === GANTT_FILTER_OPERATOR.OVERDUE) {
+            if (!taskDateStr) return false
+            const taskDate = new Date(taskDateStr)
+            const today = startOfDay(new Date())
+            const statusLower = (task.status || "").toLowerCase()
+            const isCompleted =
+              statusLower === TASK_STATUS.DONE ||
+              statusLower === TASK_STATUS.CANCELLED ||
+              (task.progress !== undefined && task.progress >= 100)
+            if (isCompleted) return false
+            if (taskDate >= today) return false
+            continue
+          }
+
           if (!taskDateStr) {
             if (filter.operator === GANTT_FILTER_OPERATOR.ANY) continue // matches any
             return false
@@ -628,12 +655,32 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
 
   // Overlap leave days check removed per user request
 
-  // Helper to render task bar position and duration (based on startDate to updatedAt)
+  // Helper to render task bar position and duration with parent task roll-up support
   const getTaskGridStyle = (task: Task) => {
-    if (!task.startDate) return null
+    let earliestStart = task.startDate ? new Date(task.startDate) : null
+    let latestEnd = task.dueDate ? new Date(task.dueDate) : null
 
-    const taskStart = new Date(task.startDate)
-    const taskEnd = task.updatedAt ? new Date(task.updatedAt) : new Date()
+    // Roll-up child task dates for parent task bar
+    const children = tasks.filter((t: Task) => t.parentTaskId === task.id)
+    for (const child of children) {
+      if (child.startDate) {
+        const cStart = new Date(child.startDate)
+        if (!earliestStart || cStart < earliestStart) {
+          earliestStart = cStart
+        }
+      }
+      if (child.dueDate) {
+        const cEnd = new Date(child.dueDate)
+        if (!latestEnd || cEnd > latestEnd) {
+          latestEnd = cEnd
+        }
+      }
+    }
+
+    if (!earliestStart) return null
+
+    const taskStart = earliestStart
+    const taskEnd = latestEnd || (task.updatedAt ? new Date(task.updatedAt) : new Date())
 
     // Check if task falls completely out of timeline view
     if (taskEnd < timelineStart || taskStart > timelineEnd) {
@@ -662,11 +709,49 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
     }
   }
 
-  // Change task date duration (shifting task days)
+  // Change task date duration (shifting task days) with parent-child boundary check
   const shiftTaskDates = (task: Task, days: number) => {
     if (!task.startDate || !task.dueDate) return
     const newStart = addDays(new Date(task.startDate), days)
     const newDue = addDays(new Date(task.dueDate), days)
+
+    // 1. If child task, validate it stays within parent bounds
+    if (task.parentTaskId) {
+      const parent = tasks.find((t: Task) => t.id === task.parentTaskId)
+      if (parent) {
+        if (parent.startDate && newStart < new Date(parent.startDate)) {
+          toast.warning(
+            `Ngày bắt đầu của task con không được trước ngày bắt đầu của task cha (${format(new Date(parent.startDate), "dd/MM/yyyy")})`
+          )
+          return
+        }
+        if (parent.dueDate && newDue > new Date(parent.dueDate)) {
+          toast.warning(
+            `Hạn hoàn thành của task con không được sau hạn hoàn thành của task cha (${format(new Date(parent.dueDate), "dd/MM/yyyy")})`
+          )
+          return
+        }
+      }
+    }
+
+    // 2. If parent task, validate it still encompasses all its children
+    const children = tasks.filter((t: Task) => t.parentTaskId === task.id)
+    if (children.length > 0) {
+      for (const child of children) {
+        if (child.startDate && newStart > new Date(child.startDate)) {
+          toast.warning(
+            `Khoảng thời gian task cha phải bao trùm task con "${child.title}" (bắt đầu ${format(new Date(child.startDate), "dd/MM/yyyy")})`
+          )
+          return
+        }
+        if (child.dueDate && newDue < new Date(child.dueDate)) {
+          toast.warning(
+            `Khoảng thời gian task cha phải bao trùm task con "${child.title}" (hạn hoàn thành ${format(new Date(child.dueDate), "dd/MM/yyyy")})`
+          )
+          return
+        }
+      }
+    }
 
     updateTaskMutation.mutate({
       taskId: task.id,

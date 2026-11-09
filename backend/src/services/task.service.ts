@@ -179,6 +179,22 @@ export class TaskService implements ITaskService {
       if (!parent) {
         throw new AppError("Parent task not found", HttpStatusCode.NOT_FOUND, ErrorLayer.SERVICE)
       }
+      const childStart = data.startDate ? new Date(data.startDate) : null
+      const childDue = data.dueDate ? new Date(data.dueDate) : null
+      if (childStart && parent.startDate && childStart < new Date(parent.startDate)) {
+        throw new AppError(
+          "Thời gian bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha",
+          HttpStatusCode.BAD_REQUEST,
+          ErrorLayer.SERVICE,
+        )
+      }
+      if (childDue && parent.dueDate && childDue > new Date(parent.dueDate)) {
+        throw new AppError(
+          "Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha",
+          HttpStatusCode.BAD_REQUEST,
+          ErrorLayer.SERVICE,
+        )
+      }
     }
 
     let statusId = data.statusId
@@ -284,6 +300,29 @@ export class TaskService implements ITaskService {
           HttpStatusCode.BAD_REQUEST,
           ErrorLayer.SERVICE,
         )
+      }
+    }
+
+    const effectiveParentId = data.parentTaskId !== undefined ? data.parentTaskId : task.parentTaskId
+    if (effectiveParentId) {
+      const parent = await this.repository.findById(effectiveParentId)
+      if (parent) {
+        const effStart = data.startDate !== undefined ? (data.startDate ? new Date(data.startDate) : null) : (task.startDate ? new Date(task.startDate) : null)
+        const effDue = data.dueDate !== undefined ? (data.dueDate ? new Date(data.dueDate) : null) : (task.dueDate ? new Date(task.dueDate) : null)
+        if (effStart && parent.startDate && effStart < new Date(parent.startDate)) {
+          throw new AppError(
+            "Thời gian bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha",
+            HttpStatusCode.BAD_REQUEST,
+            ErrorLayer.SERVICE,
+          )
+        }
+        if (effDue && parent.dueDate && effDue > new Date(parent.dueDate)) {
+          throw new AppError(
+            "Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha",
+            HttpStatusCode.BAD_REQUEST,
+            ErrorLayer.SERVICE,
+          )
+        }
       }
     }
 

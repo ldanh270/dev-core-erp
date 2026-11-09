@@ -898,6 +898,46 @@ export default function TaskDetail() {
                 toast.warning("Ngày bắt đầu không được sau hạn hoàn thành")
                 return
               }
+
+              // Validate date boundaries against parent task
+              const allTasks = siblingTasksData?.data || []
+              if (task?.parentTaskId) {
+                const parentTask = allTasks.find((t) => t.id === task.parentTaskId)
+                if (parentTask) {
+                  if (parentTask.startDate && taskStart && new Date(taskStart) < new Date(parentTask.startDate)) {
+                    toast.warning(
+                      `Ngày bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha (${new Date(parentTask.startDate).toLocaleDateString("vi-VN")})`
+                    )
+                    return
+                  }
+                  if (parentTask.dueDate && taskDue && new Date(taskDue) > new Date(parentTask.dueDate)) {
+                    toast.warning(
+                      `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${new Date(parentTask.dueDate).toLocaleDateString("vi-VN")})`
+                    )
+                    return
+                  }
+                }
+              }
+
+              // Validate date boundaries against subtasks
+              const childTasks = allTasks.filter((t) => t.parentTaskId === id)
+              if (childTasks.length > 0) {
+                for (const child of childTasks) {
+                  if (child.startDate && taskStart && new Date(taskStart) > new Date(child.startDate)) {
+                    toast.warning(
+                      `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (bắt đầu ${new Date(child.startDate).toLocaleDateString("vi-VN")})`
+                    )
+                    return
+                  }
+                  if (child.dueDate && taskDue && new Date(taskDue) < new Date(child.dueDate)) {
+                    toast.warning(
+                      `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (hạn hoàn thành ${new Date(child.dueDate).toLocaleDateString("vi-VN")})`
+                    )
+                    return
+                  }
+                }
+              }
+
               updateMutation.mutate()
             }}
             className="space-y-4 pt-3"
