@@ -1,7 +1,7 @@
 {
   "name": "ProjectRole",
   "dbName": "project_roles",
-  "module": "SECURITY",
+  "module": "PROJECT",
   "description": "Vai trò chức năng của thành viên trong dự án (PM, Tech Lead, Dev, QA, UI/UX...)",
   "columns": [
     {

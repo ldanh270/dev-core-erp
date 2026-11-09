@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "generatedAt": "2026-11-03T10:21:18.225Z",
+    "generatedAt": "2026-11-09T16:59:42.322Z",
     "schemaEngine": "Prisma PostgreSQL",
     "sourceFile": "backend/prisma/schema.prisma",
     "totalTables": 75,
@@ -16,11 +16,10 @@
       "color": "#0284c7",
       "icon": "Users",
       "description": "Quản lý nhân viên, hợp đồng lao động, bảo hiểm, phòng ban, chức vụ và chi nhánh",
-      "tableCount": 4,
+      "tableCount": 3,
       "tables": [
         "EmployeeContract",
         "Employee",
-        "RegimeCategory",
         "Position"
       ]
     },
@@ -30,7 +29,7 @@
       "color": "#16a34a",
       "icon": "Clock",
       "description": "Lịch làm việc hàng tuần, phân ca, chấm công thực tế, đơn từ (nghỉ phép, đổi ca, OT)",
-      "tableCount": 26,
+      "tableCount": 27,
       "tables": [
         "WorkingShift",
         "WeeklyScheduleTemplate",
@@ -45,6 +44,7 @@
         "ApplicationLeaveDetail",
         "ApplicationShiftSwapDetail",
         "ApplicationOvertimeDetail",
+        "RegimeCategory",
         "ApplicationRegimeDetail",
         "ApplicationLateEarlyDetail",
         "ApplicationBusinessTripDetail",
@@ -57,7 +57,7 @@
         "PartTimeAvailabilitySlot",
         "EmployeeLeaveBalance",
         "ApplicationForgotCardDetail",
-        "ApplicationNote"
+        "ApplicationRecruitmentDetail"
       ]
     },
     {
@@ -85,13 +85,15 @@
       "color": "#7c3aed",
       "icon": "FolderKanban",
       "description": "Quản lý dự án, task, thành viên dự án, tracker, chấm thời gian spent-time và capacity board",
-      "tableCount": 6,
+      "tableCount": 8,
       "tables": [
         "Project",
         "ProjectMember",
         "Task",
         "SpentTime",
+        "CustomQuery",
         "ProjectTaskStatus",
+        "ProjectRole",
         "ProjectTracker"
       ]
     },
@@ -103,7 +105,6 @@
       "description": "Đề xuất tuyển dụng (Requisition), tin tuyển dụng, hồ sơ ứng viên và lịch phỏng vấn",
       "tableCount": 19,
       "tables": [
-        "ApplicationRecruitmentDetail",
         "JobRequisition",
         "JobPosting",
         "CandidateFieldDefinition",
@@ -117,6 +118,7 @@
         "RecruitmentPipelineStage",
         "RecruitmentPostingActivity",
         "RecruitmentConnectorResponse",
+        "ApplicationNote",
         "InterviewRound",
         "Scorecard",
         "RecruitmentOffer",
@@ -130,7 +132,7 @@
       "color": "#dc2626",
       "icon": "ShieldCheck",
       "description": "Tài khoản người dùng, vai trò (Role), quyền hạn (Permission), phiên đăng nhập và bảo mật",
-      "tableCount": 9,
+      "tableCount": 8,
       "tables": [
         "PasswordResetRequest",
         "RefreshToken",
@@ -139,8 +141,7 @@
         "Permission",
         "RolePermission",
         "EmployeeRole",
-        "AuthorizationAuditLog",
-        "ProjectRole"
+        "AuthorizationAuditLog"
       ]
     },
     {
@@ -149,10 +150,9 @@
       "color": "#4b5563",
       "icon": "Sliders",
       "description": "Nhật ký hệ thống (Audit log), quy trình phê duyệt đa cấp, thông báo và cấu hình",
-      "tableCount": 2,
+      "tableCount": 1,
       "tables": [
-        "ActivityLog",
-        "CustomQuery"
+        "ActivityLog"
       ]
     }
   ],
@@ -746,7 +746,7 @@
     {
       "name": "RegimeCategory",
       "dbName": "RegimeCategory",
-      "module": "HRM",
+      "module": "ATTENDANCE",
       "description": "Bảng dữ liệu RegimeCategory trong hệ thống ERP",
       "columnCount": 8,
       "indexCount": 3,
@@ -1076,7 +1076,7 @@
     {
       "name": "CustomQuery",
       "dbName": "CustomQuery",
-      "module": "SYSTEM",
+      "module": "PROJECT",
       "description": "Bảng dữ liệu CustomQuery trong hệ thống ERP",
       "columnCount": 8,
       "indexCount": 2,
@@ -1106,7 +1106,7 @@
     {
       "name": "ProjectRole",
       "dbName": "project_roles",
-      "module": "SECURITY",
+      "module": "PROJECT",
       "description": "Vai trò chức năng của thành viên trong dự án (PM, Tech Lead, Dev, QA, UI/UX...)",
       "columnCount": 6,
       "indexCount": 3,
@@ -1146,7 +1146,7 @@
     {
       "name": "ApplicationRecruitmentDetail",
       "dbName": "ApplicationRecruitmentDetail",
-      "module": "RECRUITMENT",
+      "module": "ATTENDANCE",
       "description": "Bảng dữ liệu ApplicationRecruitmentDetail trong hệ thống ERP",
       "columnCount": 5,
       "indexCount": 1,
@@ -1286,7 +1286,7 @@
     {
       "name": "ApplicationNote",
       "dbName": "ApplicationNote",
-      "module": "ATTENDANCE",
+      "module": "RECRUITMENT",
       "description": "Bảng dữ liệu ApplicationNote trong hệ thống ERP",
       "columnCount": 6,
       "indexCount": 3,

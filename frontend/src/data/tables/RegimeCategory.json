@@ -1,7 +1,7 @@
 {
   "name": "RegimeCategory",
   "dbName": "RegimeCategory",
-  "module": "HRM",
+  "module": "ATTENDANCE",
   "description": "Bảng dữ liệu RegimeCategory trong hệ thống ERP",
   "columns": [
     {
