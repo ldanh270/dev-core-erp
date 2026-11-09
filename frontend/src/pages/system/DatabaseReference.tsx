@@ -124,7 +124,7 @@ export default function DatabaseReference() {
         onTabChange: actions.handleModuleChange,
       }}
       search={{
-        placeholder: "Tìm model, bảng, cột, kiểu dữ liệu hoặc mô tả...",
+        placeholder: "Tìm tên bảng, cột, mô tả...",
         value: state.searchQuery,
         onSearch: actions.handleSearchChange,
       }}
