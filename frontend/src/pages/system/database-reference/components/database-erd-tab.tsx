@@ -3,6 +3,8 @@ import { DatabaseErdCanvas } from "./database-erd-canvas"
 import { DatabaseErdControls } from "./database-erd-controls"
 import { useDatabaseErdTab } from "../hooks/use-database-erd-tab"
 
+import { useCallback } from "react"
+
 // Props for the interactive ERD tab container.
 interface DatabaseErdTabProps {
   tables: TableDef[]
@@ -41,6 +43,14 @@ export function DatabaseErdTab({
     selectedTableName,
   })
 
+  const { handleSelectNode } = viewport
+  const onSelectCanvasNode = useCallback(
+    (table: TableDef) => {
+      handleSelectNode(table, onSelectTable)
+    },
+    [handleSelectNode, onSelectTable],
+  )
+
   return (
     <section
       ref={setFullscreenTarget}
@@ -78,7 +88,7 @@ export function DatabaseErdTab({
         onPointerDown={viewport.handlePointerDown}
         onPointerMove={viewport.handlePointerMove}
         onPointerUp={viewport.handlePointerUp}
-        onSelectNode={(table) => { viewport.handleSelectNode(table, onSelectTable); }}
+        onSelectNode={onSelectCanvasNode}
       />
     </section>
   )

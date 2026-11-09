@@ -5,6 +5,7 @@ import type { ModuleDef, TableDef } from "../database-reference.types"
 import { useDatabaseErdNode } from "../hooks/use-database-erd-node"
 
 import { KeyRound, Link2 } from "lucide-react"
+import { memo } from "react"
 
 // Props required to render a single draggable ERD table node card.
 interface DatabaseErdNodeProps {
@@ -12,6 +13,7 @@ interface DatabaseErdNodeProps {
   modules: ModuleDef[]
   selectedModule: string
   selectedTableName: string | null
+  isFocused?: boolean
   position: ErdPoint
   onSelectTable: (table: TableDef) => void
   onHoverTable?: (tableName: string | null) => void
@@ -19,13 +21,14 @@ interface DatabaseErdNodeProps {
 
 /**
  * Renders an ERD table card with synchronized 24px row heights for exact orthogonal port alignment.
- * Pure UI presentation component powered by `useDatabaseErdNode` hook.
+ * Memoized presentation component powered by `useDatabaseErdNode` hook.
  */
-export function DatabaseErdNode({
+export const DatabaseErdNode = memo(function DatabaseErdNode({
   table,
   modules,
   selectedModule,
   selectedTableName,
+  isFocused,
   position,
   onSelectTable,
   onHoverTable,
@@ -33,7 +36,7 @@ export function DatabaseErdNode({
   const {
     theme,
     linkedColumns,
-    isSelected,
+    isSelected: hookSelected,
     isExternal,
     isPrimary,
     externalModuleName,
@@ -43,6 +46,7 @@ export function DatabaseErdNode({
     selectedModule,
     selectedTableName,
   })
+  const isSelected = isFocused ?? hookSelected
 
   return (
     <button
@@ -64,6 +68,7 @@ export function DatabaseErdNode({
         left: position.x,
         top: position.y,
         width: ERD_NODE_WIDTH,
+        contain: "layout style paint",
       }}
       className={`group cursor-move touch-none overflow-hidden rounded-xl text-left transition-shadow ${
         isSelected
@@ -146,4 +151,4 @@ export function DatabaseErdNode({
       </span>
     </button>
   )
-}
+})

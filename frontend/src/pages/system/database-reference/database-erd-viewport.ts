@@ -1,6 +1,6 @@
 import type { TableDef } from "./database-reference.types"
 import type { ErdPoint } from "./database-erd-layout"
-import { createErdLayout } from "./database-erd-layout"
+import { buildErdLayoutFromBase, createBaseErdLayout } from "./database-erd-layout"
 import { useDatabaseErdDrag } from "./database-erd-drag"
 import { useDatabaseErdKeyboard } from "./database-erd-keyboard"
 
@@ -31,10 +31,11 @@ export function useDatabaseErdViewport(
     height: typeof window !== "undefined" ? Math.max(500, window.innerHeight - 240) : 600,
   }))
   const [nodePositions, setNodePositions] = useState<Map<string, ErdPoint>>(() => new Map())
+  const [settledPositions, setSettledPositions] = useState<Map<string, ErdPoint>>(() => new Map())
   const viewportRef = useRef<HTMLDivElement>(null)
   const fitOnFullscreenRef = useRef(false)
 
-  // Track tables signature to automatically reset manual node positions on module switch
+  // Track tables signature to automatically reset manual node positions on module switch.
   const currentTableNames = useMemo(
     () => tables.map((t) => t.name).sort().join(","),
     [tables],
@@ -43,22 +44,94 @@ export function useDatabaseErdViewport(
 
   useEffect(() => {
     if (prevTableNamesRef.current && prevTableNamesRef.current !== currentTableNames) {
-      setNodePositions(new Map())
+      const empty = new Map<string, ErdPoint>()
+      setNodePositions(empty)
+      setSettledPositions(empty)
     }
     prevTableNamesRef.current = currentTableNames
   }, [currentTableNames])
 
-  // Recompute ERD layout whenever visible tables, viewport width, or dragged node overrides change.
-  const graph = useMemo(
-    () => createErdLayout(tables, selectedTableName, viewport.width, nodePositions),
-    [tables, selectedTableName, viewport.width, nodePositions],
+  // Cache topological ranking and radial wing layout independently of node drag overrides.
+  const baseLayout = useMemo(
+    () => createBaseErdLayout(tables, viewport.width),
+    [tables, viewport.width],
   )
+
+  // Compute full obstacle-avoiding layout only when settled positions change (not on every drag pixel).
+  const settledLayout = useMemo(
+    () => buildErdLayoutFromBase(baseLayout, selectedTableName, settledPositions),
+    [baseLayout, selectedTableName, settledPositions],
+  )
+
+  // Toggle browser fullscreen mode on the ERD section element.
+  const toggleFullscreen = useCallback(async () => {
+    try {
+      if (!fullscreenTarget) return
+      if (document.fullscreenElement === fullscreenTarget) {
+        await document.exitFullscreen()
+      } else if (document.fullscreenElement === null) {
+        await fullscreenTarget.requestFullscreen()
+      }
+    } catch (error) {
+      toast.error("Không thể mở toàn màn hình. Hãy kiểm tra quyền của trình duyệt.")
+      console.error("ERD fullscreen request failed", error)
+    }
+  }, [fullscreenTarget])
+
+  // Precompute current node list so useDatabaseErdDrag can read origin coordinates on pointer down.
+  const currentNodes = useMemo(
+    () =>
+      baseLayout.visibleTables.map((table) => ({
+        table,
+        position:
+          nodePositions.get(table.name) ??
+          baseLayout.basePositions.get(table.name) ?? { x: 64, y: 64 },
+      })),
+    [baseLayout, nodePositions],
+  )
+
+  const handleSettleNodePositions = useCallback(() => {
+    setNodePositions((latest) => {
+      setSettledPositions(latest)
+      return latest
+    })
+  }, [])
+
+  // Delegate node drag gestures and canvas panning to specialized hook.
+  const {
+    isPanning,
+    draggingTableName,
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+    handleSelectNode,
+  } = useDatabaseErdDrag({
+    scale,
+    pan,
+    setPan,
+    setNodePositions,
+    onSettleNodePositions: handleSettleNodePositions,
+    graphNodes: currentNodes,
+    isFullscreen,
+    toggleFullscreen,
+  })
+
+  // Route only connected edges during active node drag, and return full settled layout on release.
+  const graph = useMemo(() => {
+    if (!draggingTableName) return settledLayout
+    return buildErdLayoutFromBase(
+      baseLayout,
+      selectedTableName,
+      nodePositions,
+      draggingTableName,
+      settledLayout.edges,
+    )
+  }, [baseLayout, draggingTableName, nodePositions, selectedTableName, settledLayout])
 
   // Observe ERD container size changes to fit and center the diagram accurately.
   useEffect(() => {
     const element = viewportRef.current
     if (!element) return
-
     const observer = new ResizeObserver(([entry]) => {
       if (entry) {
         setViewport({ width: entry.contentRect.width, height: entry.contentRect.height })
@@ -75,7 +148,6 @@ export function useDatabaseErdViewport(
       if (event.ctrlKey || event.metaKey) {
         const element = viewportRef.current
         if (!element) return
-
         const rect = element.getBoundingClientRect()
         const pointer = { x: event.clientX - rect.left, y: event.clientY - rect.top }
         const nextScale = Math.min(
@@ -84,8 +156,8 @@ export function useDatabaseErdViewport(
         )
         const graphPoint = { x: (pointer.x - pan.x) / scale, y: (pointer.y - pan.y) / scale }
         setPan({
-          x: pointer.x - graphPoint.x * nextScale,
-          y: pointer.y - graphPoint.y * nextScale,
+          x: Math.round(pointer.x - graphPoint.x * nextScale),
+          y: Math.round(pointer.y - graphPoint.y * nextScale),
         })
         setScale(nextScale)
         return
@@ -93,7 +165,10 @@ export function useDatabaseErdViewport(
 
       const deltaX = event.shiftKey ? Math.abs(event.deltaX) || event.deltaY : event.deltaX
       const deltaY = event.shiftKey ? 0 : event.deltaY
-      setPan((current) => ({ x: current.x - deltaX, y: current.y - deltaY }))
+      setPan((current) => ({
+        x: Math.round(current.x - deltaX),
+        y: Math.round(current.y - deltaY),
+      }))
     },
     [pan.x, pan.y, scale],
   )
@@ -101,57 +176,35 @@ export function useDatabaseErdViewport(
   useEffect(() => {
     const element = viewportRef.current
     if (!element) return
-
     element.addEventListener("wheel", handleWheel, { passive: false })
     return () => { element.removeEventListener("wheel", handleWheel); }
   }, [handleWheel])
 
-  // Toggle browser fullscreen mode on the ERD section element.
-  const toggleFullscreen = useCallback(async () => {
-    try {
-      if (!fullscreenTarget) return
-
-      if (document.fullscreenElement === fullscreenTarget) {
-        await document.exitFullscreen()
-      } else if (document.fullscreenElement === null) {
-        await fullscreenTarget.requestFullscreen()
-      }
-    } catch (error) {
-      toast.error("Không thể mở toàn màn hình. Hãy kiểm tra quyền của trình duyệt.")
-      console.error("ERD fullscreen request failed", error)
-    }
-  }, [fullscreenTarget])
-
   useEffect(() => {
     const handleFullscreenChange = () => {
-      const isFullscreen =
+      const nextFullscreen =
         fullscreenTarget !== null && document.fullscreenElement === fullscreenTarget
-      if (isFullscreen) {
+      if (nextFullscreen) {
         fitOnFullscreenRef.current = true
         const bounds = viewportRef.current?.getBoundingClientRect()
         if (bounds) setViewport({ width: bounds.width, height: bounds.height })
       }
-      setIsFullscreen(isFullscreen)
+      setIsFullscreen(nextFullscreen)
     }
-
     document.addEventListener("fullscreenchange", handleFullscreenChange)
     return () => { document.removeEventListener("fullscreenchange", handleFullscreenChange); }
   }, [fullscreenTarget])
 
-  // Fit and center the entire graph, optimizing vertical height utilization to avoid large bottom empty spaces.
+  // Fit and center the entire graph within the current viewport dimensions.
   const fitGraph = useCallback(() => {
     if (!viewport.width || !viewport.height || !graph.width || !graph.height) return
     const scaleW = (viewport.width - FIT_VIEWPORT_PADDING) / graph.width
     const scaleH = (viewport.height - FIT_VIEWPORT_PADDING) / graph.height
-
-    // Calculate fitted scale to fill both width and height harmoniously without excessive empty margins.
     const baseFitScale = Math.min(scaleW, scaleH)
-    let targetScale = baseFitScale
-    if (scaleH > scaleW && graph.nodes.length <= 15) {
-      // If height allows more room in small datasets, scale up comfortably toward 1.0 zoom.
-      targetScale = Math.min(1.0, Math.max(baseFitScale, Math.min(0.85, scaleH * 0.95)))
-    }
-
+    const targetScale =
+      scaleH > scaleW && graph.nodes.length <= 15
+        ? Math.min(1.0, Math.max(baseFitScale, Math.min(0.85, scaleH * 0.95)))
+        : baseFitScale
     const fittedScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, targetScale))
     setScale(fittedScale)
     setPan({
@@ -171,32 +224,27 @@ export function useDatabaseErdViewport(
 
   useDatabaseErdKeyboard(toggleFullscreen, isFullscreen)
 
-  // Delegate node drag gestures and canvas panning to specialized hook.
-  const { isPanning, handlePointerDown, handlePointerMove, handlePointerUp, handleSelectNode } =
-    useDatabaseErdDrag({
-      scale,
-      pan,
-      setPan,
-      setNodePositions,
-      graphNodes: graph.nodes,
-      isFullscreen,
-      toggleFullscreen,
-    })
-
   // Clear manual drag overrides and restore automatic topological layout positions.
-  const resetNodePositions = () => { setNodePositions(new Map()); }
+  const resetNodePositions = useCallback(() => {
+    const empty = new Map<string, ErdPoint>()
+    setNodePositions(empty)
+    setSettledPositions(empty)
+  }, [])
 
   // Zoom in or out relative to the center of the viewport.
-  const zoomBy = (factor: number) => {
-    const nextScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale * factor))
-    const center = { x: viewport.width / 2, y: viewport.height / 2 }
-    const graphPoint = { x: (center.x - pan.x) / scale, y: (center.y - pan.y) / scale }
-    setPan({
-      x: center.x - graphPoint.x * nextScale,
-      y: center.y - graphPoint.y * nextScale,
-    })
-    setScale(nextScale)
-  }
+  const zoomBy = useCallback(
+    (factor: number) => {
+      const nextScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale * factor))
+      const center = { x: viewport.width / 2, y: viewport.height / 2 }
+      const graphPoint = { x: (center.x - pan.x) / scale, y: (center.y - pan.y) / scale }
+      setPan({
+        x: Math.round(center.x - graphPoint.x * nextScale),
+        y: Math.round(center.y - graphPoint.y * nextScale),
+      })
+      setScale(nextScale)
+    },
+    [pan.x, pan.y, scale, viewport.height, viewport.width],
+  )
 
   return {
     graph,

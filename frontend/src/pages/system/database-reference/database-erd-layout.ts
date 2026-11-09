@@ -43,6 +43,16 @@ export interface ErdLayout {
   height: number
 }
 
+// Precomputed topological grid layout cached independently of manual node drag overrides.
+export interface BaseErdLayout {
+  visibleTables: TableDef[]
+  tableByName: Map<string, TableDef>
+  basePositions: Map<string, ErdPoint>
+  heights: Map<string, number>
+  baseWidth: number
+  baseHeight: number
+}
+
 // Layout geometry constants synchronized with DatabaseErdNode DOM row heights.
 export const ERD_NODE_WIDTH = 280
 export const MIN_NODE_HEIGHT = 84
@@ -83,13 +93,8 @@ export function getNodeHeight(table: TableDef): number {
   return Math.max(MIN_NODE_HEIGHT, NODE_BASE_CHROME_HEIGHT + linkedCount * NODE_LINKED_ROW_HEIGHT)
 }
 
-// Place tables on a Manhattan row-band grid so unobstructed horizontal streets exist between every row.
-export function createErdLayout(
-  tables: TableDef[],
-  selectedTableName: string | null,
-  minWidth = 0,
-  positionOverrides: ReadonlyMap<string, ErdPoint> = new Map(),
-): ErdLayout {
+// Compute topological ranking, radial wing clustering, and aligned row-band coordinates once per table set.
+export function createBaseErdLayout(tables: TableDef[], minWidth = 0): BaseErdLayout {
   const visibleTables = tables
   const visibleNames = new Set(visibleTables.map((table) => table.name))
   const tableByName = new Map(visibleTables.map((table) => [table.name, table]))
@@ -144,40 +149,80 @@ export function createErdLayout(
     cursorY += rowMaxHeight + nodeGapY
   }
 
-  const positions = new Map<string, ErdPoint>()
+  const basePositions = new Map<string, ErdPoint>()
   layers.forEach((layer, colIdx) => {
     const x = CANVAS_MARGIN + colIdx * (ERD_NODE_WIDTH + horizontalGap)
 
     layer.forEach((tableName, localIdx) => {
       const targetRowIdx = getDistributedRowIndex(localIdx, layer.length, maxRows)
       const bandY = rowBandTops.at(targetRowIdx) ?? CANVAS_MARGIN
-      positions.set(tableName, { x, y: bandY })
+      basePositions.set(tableName, { x, y: bandY })
     })
   })
 
-  // Apply user-dragged node positions without clamping so nodes can move across the entire frame.
+  return {
+    visibleTables,
+    tableByName,
+    basePositions,
+    heights,
+    baseWidth:
+      CANVAS_MARGIN * 2 + widestLayer * ERD_NODE_WIDTH + Math.max(0, widestLayer - 1) * horizontalGap,
+    baseHeight: cursorY - nodeGapY + CANVAS_MARGIN,
+  }
+}
+
+// Merge manual drag overrides onto a cached base layout and route orthogonal edges without re-ranking tables.
+export function buildErdLayoutFromBase(
+  base: BaseErdLayout,
+  selectedTableName: string | null,
+  positionOverrides: ReadonlyMap<string, ErdPoint> = new Map(),
+  onlyConnectedToTable?: string | null,
+  previousEdges?: ErdEdge[],
+): ErdLayout {
+  const { visibleTables, tableByName, basePositions, heights, baseWidth, baseHeight } = base
+  const positions = new Map(basePositions)
+
   for (const [tableName, position] of positionOverrides) {
     if (positions.has(tableName)) positions.set(tableName, position)
   }
 
-  const width = Math.max(
-    CANVAS_MARGIN * 2 + widestLayer * ERD_NODE_WIDTH + Math.max(0, widestLayer - 1) * horizontalGap,
-    ...[...positions.values()].map((position) => position.x + ERD_NODE_WIDTH + CANVAS_MARGIN),
-  )
-  const height = Math.max(
-    cursorY - nodeGapY + CANVAS_MARGIN,
-    ...[...positions.entries()].map(
-      ([name, position]) => position.y + (heights.get(name) ?? MIN_NODE_HEIGHT) + CANVAS_MARGIN,
-    ),
-  )
+  let width = baseWidth
+  let height = baseHeight
+  for (const [name, position] of positions) {
+    width = Math.max(width, position.x + ERD_NODE_WIDTH + CANVAS_MARGIN)
+    height = Math.max(height, position.y + (heights.get(name) ?? MIN_NODE_HEIGHT) + CANVAS_MARGIN)
+  }
 
+  const fallbackPos: ErdPoint = { x: CANVAS_MARGIN, y: CANVAS_MARGIN }
   return {
     nodes: visibleTables.map((table) => ({
       table,
-      position: positions.get(table.name) ?? { x: CANVAS_MARGIN, y: CANVAS_MARGIN },
+      position: positions.get(table.name) ?? fallbackPos,
     })),
-    edges: createEdges(visibleTables, tableByName, positions, heights, selectedTableName),
+    edges: createEdges(
+      visibleTables,
+      tableByName,
+      positions,
+      heights,
+      selectedTableName,
+      onlyConnectedToTable,
+      previousEdges,
+    ),
     width,
     height,
   }
+}
+
+// Place tables on a Manhattan row-band grid so unobstructed horizontal streets exist between every row.
+export function createErdLayout(
+  tables: TableDef[],
+  selectedTableName: string | null,
+  minWidth = 0,
+  positionOverrides: ReadonlyMap<string, ErdPoint> = new Map(),
+): ErdLayout {
+  return buildErdLayoutFromBase(
+    createBaseErdLayout(tables, minWidth),
+    selectedTableName,
+    positionOverrides,
+  )
 }

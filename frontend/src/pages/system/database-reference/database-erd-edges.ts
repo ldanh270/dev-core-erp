@@ -4,6 +4,7 @@ import {
   allocateHorizontalY,
   allocateVerticalX,
   buildNodeBoxes,
+  buildStreetCenters,
   isHorizontalClear,
   waypointsToOrthogonalPath,
 } from "./database-erd-collision"
@@ -107,6 +108,7 @@ function buildOrthogonalWaypoints(
   verticalTracks: VerticalTrack[],
   horizontalTracks: HorizontalTrack[],
   boxes: NodeBox[],
+  streetCenters: number[],
 ): ErdPoint[] {
   const { from, to, mode, baseTrunkX, busKey, sourceTable, targetTable } = draft
 
@@ -138,6 +140,7 @@ function buildOrthogonalWaypoints(
     busKey,
     horizontalTracks,
     boxes,
+    streetCenters,
     sourceTable,
     targetTable,
   )
@@ -169,12 +172,23 @@ export function createEdges(
   positions: Map<string, ErdPoint>,
   heights: Map<string, number>,
   selectedTableName: string | null,
+  onlyConnectedToTable?: string | null,
+  previousEdges?: ErdEdge[],
 ): ErdEdge[] {
   const boxes = buildNodeBoxes(positions, heights, ERD_NODE_WIDTH, MIN_NODE_HEIGHT)
+  const streetCenters = buildStreetCenters(boxes)
   const drafts: EdgeDraft[] = []
+  const filterByTable = Boolean(onlyConnectedToTable && previousEdges && previousEdges.length > 0)
 
   for (const table of tables) {
     for (const relation of table.outgoingRelations) {
+      if (
+        filterByTable &&
+        table.name !== onlyConnectedToTable &&
+        relation.targetTable !== onlyConnectedToTable
+      ) {
+        continue
+      }
       const sourcePos = positions.get(table.name)
       const targetPos = positions.get(relation.targetTable)
       const targetTable = tableByName.get(relation.targetTable)
@@ -233,7 +247,13 @@ export function createEdges(
   const horizontalTracks: HorizontalTrack[] = []
 
   const edges = drafts.map((draft) => {
-    const waypoints = buildOrthogonalWaypoints(draft, verticalTracks, horizontalTracks, boxes)
+    const waypoints = buildOrthogonalWaypoints(
+      draft,
+      verticalTracks,
+      horizontalTracks,
+      boxes,
+      streetCenters,
+    )
     return {
       id: draft.id,
       sourceTable: draft.sourceTable,
@@ -246,6 +266,11 @@ export function createEdges(
       crossModule: draft.crossModule,
     }
   })
+
+  if (filterByTable && previousEdges) {
+    const updatedById = new Map(edges.map((edge) => [edge.id, edge]))
+    return previousEdges.map((edge) => updatedById.get(edge.id) ?? edge)
+  }
 
   // Render dimmed/normal edges first and highlighted edges last so active paths stay on top.
   return edges.sort((a, b) => Number(a.highlighted) - Number(b.highlighted))

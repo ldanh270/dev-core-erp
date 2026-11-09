@@ -51,6 +51,16 @@ export function buildNodeBoxes(
   return boxes
 }
 
+// Precompute deduplicated horizontal street center Y coordinates between row bands once per layout pass.
+export function buildStreetCenters(boxes: NodeBox[]): number[] {
+  const uniqueCenters = new Set<number>()
+  for (const box of boxes) {
+    if (box.top - 60 > 16) uniqueCenters.add(Math.round((box.top - 60) / 4) * 4)
+    uniqueCenters.add(Math.round((box.bottom + 60) / 4) * 4)
+  }
+  return [...uniqueCenters]
+}
+
 // Check whether a horizontal segment [x1, x2] at y intersects any non-endpoint table box.
 export function isHorizontalClear(
   x1: number,
@@ -64,12 +74,18 @@ export function isHorizontalClear(
   const maxX = Math.max(x1, x2) - OBSTACLE_CLEARANCE_X
   if (maxX <= minX) return true
 
-  return boxes.every((box) => {
-    if (box.name === excludeA || box.name === excludeB) return true
-    const overlapsX = box.right > minX && box.left < maxX
-    const overlapsY = y >= box.top - OBSTACLE_CLEARANCE_Y && y <= box.bottom + OBSTACLE_CLEARANCE_Y
-    return !(overlapsX && overlapsY)
-  })
+  for (const box of boxes) {
+    if (box.name === excludeA || box.name === excludeB) continue
+    if (
+      box.right > minX &&
+      box.left < maxX &&
+      y >= box.top - OBSTACLE_CLEARANCE_Y &&
+      y <= box.bottom + OBSTACLE_CLEARANCE_Y
+    ) {
+      return false
+    }
+  }
+  return true
 }
 
 // Check whether a vertical segment [y1, y2] at x intersects any table box.
@@ -83,11 +99,17 @@ export function isVerticalClear(
   const maxY = Math.max(y1, y2) - 2
   if (maxY <= minY) return true
 
-  return boxes.every((box) => {
-    const overlapsX = x >= box.left - OBSTACLE_CLEARANCE_X && x <= box.right + OBSTACLE_CLEARANCE_X
-    const overlapsY = box.bottom > minY && box.top < maxY
-    return !(overlapsX && overlapsY)
-  })
+  for (const box of boxes) {
+    if (
+      x >= box.left - OBSTACLE_CLEARANCE_X &&
+      x <= box.right + OBSTACLE_CLEARANCE_X &&
+      box.bottom > minY &&
+      box.top < maxY
+    ) {
+      return false
+    }
+  }
+  return true
 }
 
 // Allocate a non-overlapping vertical track X coordinate in a vertical avenue.
@@ -103,16 +125,16 @@ export function allocateVerticalX(
   const maxY = Math.max(y1, y2)
 
   // Reuse existing bus trunk X if another branch of the same groupKey already claimed a clear lane nearby.
-  const existing = tracks.find(
-    (t) =>
+  for (const t of tracks) {
+    if (
       t.groupKey === groupKey &&
       Math.abs(t.x - baseX) <= 72 &&
-      isVerticalClear(t.x, minY, maxY, boxes),
-  )
-  if (existing) {
-    existing.minY = Math.min(existing.minY, minY)
-    existing.maxY = Math.max(existing.maxY, maxY)
-    return existing.x
+      isVerticalClear(t.x, minY, maxY, boxes)
+    ) {
+      t.minY = Math.min(t.minY, minY)
+      t.maxY = Math.max(t.maxY, maxY)
+      return t.x
+    }
   }
 
   for (const offset of TRACK_OFFSETS) {
@@ -120,12 +142,17 @@ export function allocateVerticalX(
     if (!isVerticalClear(candX, minY, maxY, boxes)) continue
 
     // Enforce TRACK_MIN_SEPARATION against ALL non-merged vertical tracks so parallel lines never stick together.
-    const hasConflict = tracks.some(
-      (t) =>
+    let hasConflict = false
+    for (const t of tracks) {
+      if (
         Math.abs(t.x - candX) < TRACK_MIN_SEPARATION &&
         t.maxY >= minY - 6 &&
-        t.minY <= maxY + 6,
-    )
+        t.minY <= maxY + 6
+      ) {
+        hasConflict = true
+        break
+      }
+    }
     if (!hasConflict) {
       tracks.push({ x: candX, minY, maxY, groupKey })
       return candX
@@ -145,6 +172,7 @@ export function allocateHorizontalY(
   groupKey: string,
   tracks: HorizontalTrack[],
   boxes: NodeBox[],
+  streetCenters: number[],
   excludeA: string,
   excludeB: string,
 ): number {
@@ -152,40 +180,42 @@ export function allocateHorizontalY(
   const maxX = Math.max(x1, x2)
 
   // Reuse an existing horizontal bus line in the same corridor if it belongs to the same PK bus group.
-  const existing = tracks.find(
-    (t) =>
+  for (const t of tracks) {
+    if (
       t.groupKey === groupKey &&
       Math.abs(t.y - preferredY) <= 96 &&
-      isHorizontalClear(minX, maxX, t.y, boxes, excludeA, excludeB),
+      isHorizontalClear(minX, maxX, t.y, boxes, excludeA, excludeB)
+    ) {
+      t.minX = Math.min(t.minX, minX)
+      t.maxX = Math.max(t.maxX, maxX)
+      return t.y
+    }
+  }
+
+  // Order precomputed unique street centers by proximity to preferredY, followed by preferredY itself.
+  const orderedStreets = [...streetCenters].sort(
+    (a, b) => Math.abs(a - preferredY) - Math.abs(b - preferredY),
   )
-  if (existing) {
-    existing.minX = Math.min(existing.minX, minX)
-    existing.maxX = Math.max(existing.maxX, maxX)
-    return existing.y
-  }
+  orderedStreets.push(Math.round(preferredY))
 
-  // Collect candidate horizontal street centers between row bands first, then preferredY.
-  const streetCenters: number[] = []
-  for (const box of boxes) {
-    if (box.top - 60 > 16) streetCenters.push(box.top - 60)
-    streetCenters.push(box.bottom + 60)
-  }
-  streetCenters.sort((a, b) => Math.abs(a - preferredY) - Math.abs(b - preferredY))
-  const baseCandidates: number[] = [...streetCenters, Math.round(preferredY)]
-
-  for (const baseCand of baseCandidates) {
+  for (const baseCand of orderedStreets) {
     for (const offset of TRACK_OFFSETS) {
       const candY = Math.round(baseCand + offset)
       if (candY < 16) continue
       if (!isHorizontalClear(minX, maxX, candY, boxes, excludeA, excludeB)) continue
 
       // Enforce TRACK_MIN_SEPARATION against ALL non-merged horizontal tracks so parallel lines never clump.
-      const hasConflict = tracks.some(
-        (t) =>
+      let hasConflict = false
+      for (const t of tracks) {
+        if (
           Math.abs(t.y - candY) < TRACK_MIN_SEPARATION &&
           t.maxX >= minX - 6 &&
-          t.minX <= maxX + 6,
-      )
+          t.minX <= maxX + 6
+        ) {
+          hasConflict = true
+          break
+        }
+      }
       if (!hasConflict) {
         tracks.push({ y: candY, minX, maxX, groupKey })
         return candY
