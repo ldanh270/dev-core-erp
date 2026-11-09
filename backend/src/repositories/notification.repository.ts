@@ -1,9 +1,10 @@
+import { NOTIFICATION_AUDIENCE } from "@/configs/entities/notification-audience.config.ts"
 import {
   NOTIFICATION_PAGINATION,
   NOTIFICATION_PRIORITY,
   NOTIFICATION_TYPE,
 } from "@/configs/entities/notification.config.ts"
-import {
+import type {
   CreateNotificationDto,
   INotificationRepository,
   Notification,
@@ -11,179 +12,343 @@ import {
   PaginatedNotifications,
 } from "@/types/notification.types.ts"
 
-import crypto from "crypto"
+import { Prisma, type PrismaClient } from "@prisma/client"
+import { z } from "zod"
 
-/**
- * In-memory repository implementing INotificationRepository.
- * Fully compliant with SOLID principles (LSP & SRP).
- * Thread-safe and independent of external DB outages.
- */
-export class InMemoryNotificationRepository implements INotificationRepository {
-  private items = new Map<string, Notification>()
+type StoredNotification = Prisma.NotificationGetPayload<{
+  include: { states: true }
+}>
 
-  constructor() {
-    this.seedSampleNotifications()
+export class PrismaNotificationRepository implements INotificationRepository {
+  constructor(private readonly db: PrismaClient) {
+    // Sử dụng Prisma client được truyền vào, không tự tạo dữ liệu mẫu.
   }
 
-  private seedSampleNotifications(): void {
-    const now = new Date()
-    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000)
-    const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000)
-    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-
-    const samples: Omit<Notification, "id">[] = [
-      {
-        employeeId: "all",
-        title: "Đơn nghỉ phép được duyệt",
-        message: "Trưởng phòng đã duyệt đơn nghỉ phép của bạn.",
-        type: NOTIFICATION_TYPE.APPLICATION,
-        priority: NOTIFICATION_PRIORITY.MEDIUM,
-        read: false,
-        link: "/personal/applications",
-        metadata: null,
-        createdAt: fiveMinutesAgo,
-        updatedAt: fiveMinutesAgo,
+  private visibleWhere(employeeId: string): Prisma.NotificationWhereInput {
+    // Lấy thông báo cá nhân và thông báo chung chưa bị nhân viên này xóa.
+    return {
+      OR: [{ employeeId }, { employeeId: null }],
+      states: {
+        none: {
+          employeeId,
+          deleted: true,
+        },
       },
-      {
-        employeeId: "all",
-        title: "Nhắc nhở chấm công",
-        message: "Bạn chưa chấm công vào lúc 08:00 hôm nay.",
-        type: NOTIFICATION_TYPE.WARNING,
-        priority: NOTIFICATION_PRIORITY.HIGH,
-        read: false,
-        link: "/personal/schedules",
-        metadata: null,
-        createdAt: twoHoursAgo,
-        updatedAt: twoHoursAgo,
-      },
-      {
-        employeeId: "all",
-        title: "Cập nhật chính sách",
-        message: "Công ty vừa cập nhật chính sách phúc lợi mới cho năm 2026.",
-        type: NOTIFICATION_TYPE.SYSTEM,
-        priority: NOTIFICATION_PRIORITY.LOW,
-        read: true,
-        link: null,
-        metadata: null,
-        createdAt: oneDayAgo,
-        updatedAt: oneDayAgo,
-      },
-    ]
-
-    for (const sample of samples) {
-      const id = crypto.randomUUID()
-      this.items.set(id, { id, ...sample })
     }
   }
 
-  async findById(id: string): Promise<Notification | null> {
-    const item = this.items.get(id)
-    return item ? { ...item } : null
+  private toDomain(row: StoredNotification): Notification {
+    // Mảng states có thể rỗng khi nhân viên chưa tương tác với thông báo.
+    // Các truy vấn lấy dữ liệu chỉ bao gồm state của người đang xem.
+    const state = row.states.length > 0 ? row.states[0] : undefined
+
+    return {
+      id: row.id,
+      employeeId: row.employeeId ?? NOTIFICATION_AUDIENCE.ALL,
+      title: row.title,
+      message: row.message,
+      type: z.enum(NOTIFICATION_TYPE).parse(row.type),
+      priority: z.enum(NOTIFICATION_PRIORITY).parse(row.priority),
+      read: state?.read ?? false,
+      link: row.link,
+      metadata: z.record(z.string(), z.unknown()).nullable().parse(row.metadata),
+      createdAt: row.createdAt,
+      updatedAt: state?.updatedAt ?? row.updatedAt,
+    }
+  }
+
+  async findById(
+    id: string,
+    employeeId: string,
+  ): Promise<Notification | null> {
+    // Lấy thông báo cùng trạng thái riêng của người xem.
+    // Service chịu trách nhiệm kiểm tra quyền trước khi trả dữ liệu ra ngoài.
+    const row = await this.db.notification.findUnique({
+      where: { id },
+      include: {
+        states: {
+          where: { employeeId },
+        },
+      },
+    })
+
+    if (!row || row.states.some((state) => state.deleted)) {
+      return null
+    }
+
+    return this.toDomain(row)
   }
 
   async findByEmployeeId(
     employeeId: string,
     query?: NotificationQuery,
   ): Promise<PaginatedNotifications> {
-    const page = Math.max(1, query?.page ?? NOTIFICATION_PAGINATION.DEFAULT_PAGE)
+    // Chuẩn hóa phân trang theo giới hạn cấu hình.
+    const page = Math.max(
+      1,
+      query?.page ?? NOTIFICATION_PAGINATION.DEFAULT_PAGE,
+    )
+
     const limit = Math.min(
       NOTIFICATION_PAGINATION.MAX_LIMIT,
       Math.max(1, query?.limit ?? NOTIFICATION_PAGINATION.DEFAULT_LIMIT),
     )
 
-    const userItems = Array.from(this.items.values()).filter(
-      (item) => item.employeeId === employeeId || item.employeeId === "all",
+    // Số chưa đọc độc lập với bộ lọc và trang hiện tại.
+    const unreadWhere: Prisma.NotificationWhereInput = {
+      AND: [
+        this.visibleWhere(employeeId),
+        {
+          states: {
+            none: {
+              employeeId,
+              read: true,
+            },
+          },
+        },
+      ],
+    }
+
+    // Chỉ bổ sung bộ lọc khi có giá trị, tránh truyền undefined vào Prisma.
+    const where: Prisma.NotificationWhereInput = {
+      AND: [
+        this.visibleWhere(employeeId),
+        {
+          ...(query?.type === undefined ? {} : { type: query.type }),
+          ...(query?.read === undefined
+            ? {}
+            : {
+                states: query.read
+                  ? {
+                      some: {
+                        employeeId,
+                        read: true,
+                      },
+                    }
+                  : {
+                      none: {
+                        employeeId,
+                        read: true,
+                      },
+                    },
+              }),
+        },
+      ],
+    }
+
+    // Dùng cùng snapshot để danh sách và các số đếm nhất quán.
+    // Sắp xếp thêm theo id để phân trang ổn định khi trùng thời gian tạo.
+    const [rows, total, unreadCount] = await this.db.$transaction(
+      [
+        this.db.notification.findMany({
+          where,
+          include: {
+            states: {
+              where: { employeeId },
+            },
+          },
+          orderBy: [
+            { createdAt: "desc" },
+            { id: "desc" },
+          ],
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        this.db.notification.count({ where }),
+        this.db.notification.count({ where: unreadWhere }),
+      ],
+      {
+        isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
+      },
     )
 
-    const filtered = userItems.filter((item) => {
-      if (query?.type !== undefined && item.type !== query.type) return false
-      if (query?.read !== undefined && item.read !== query.read) return false
-      return true
-    })
-
-    filtered.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-
-    const total = filtered.length
-    const totalPages = Math.ceil(total / limit) || 1
-    const offset = (page - 1) * limit
-    const paginatedItems = filtered.slice(offset, offset + limit)
-
-    const unreadCount = userItems.filter((item) => !item.read).length
-
     return {
-      notifications: paginatedItems.map((item) => ({ ...item })),
+      notifications: rows.map((row) => this.toDomain(row)),
       total,
       page,
       limit,
-      totalPages,
+      totalPages: Math.ceil(total / limit) || 1,
       unreadCount,
     }
   }
 
   async create(data: CreateNotificationDto): Promise<Notification> {
-    const now = new Date()
-    const id = crypto.randomUUID()
-    const notification: Notification = {
-      id,
-      employeeId: data.employeeId,
-      title: data.title,
-      message: data.message,
-      type: data.type ?? NOTIFICATION_TYPE.INFO,
-      priority: data.priority ?? NOTIFICATION_PRIORITY.MEDIUM,
-      read: false,
-      link: data.link ?? null,
-      metadata: data.metadata ?? null,
-      createdAt: now,
-      updatedAt: now,
-    }
+    // Lưu vào DB trước khi service phát sự kiện SSE.
+    // Thông báo chung dùng employeeId = null trong DB.
+    const row = await this.db.notification.create({
+      data: {
+        employeeId:
+          data.employeeId === NOTIFICATION_AUDIENCE.ALL
+            ? null
+            : data.employeeId,
+        title: data.title,
+        message: data.message,
+        type: data.type ?? NOTIFICATION_TYPE.INFO,
+        priority: data.priority ?? NOTIFICATION_PRIORITY.MEDIUM,
+        link: data.link ?? null,
+        metadata:
+          data.metadata === undefined || data.metadata === null
+            ? Prisma.DbNull
+            : z.record(z.string(), z.json()).parse(data.metadata),
+      },
+      include: { states: true },
+    })
 
-    this.items.set(id, notification)
-    return { ...notification }
+    return this.toDomain(row)
   }
 
-  async markAsRead(id: string, employeeId: string): Promise<Notification | null> {
-    const item = this.items.get(id)
-    if (!item) return null
-    if (item.employeeId !== employeeId && item.employeeId !== "all") return null
+  async markAsRead(
+    id: string,
+    employeeId: string,
+  ): Promise<Notification | null> {
+    // Kiểm tra thông báo có thể xem trước khi cập nhật state cá nhân.
+    return this.db.$transaction(async (tx) => {
+      const row = await tx.notification.findFirst({
+        where: {
+          id,
+          ...this.visibleWhere(employeeId),
+        },
+      })
 
-    const updated: Notification = {
-      ...item,
-      read: true,
-      updatedAt: new Date(),
-    }
-    this.items.set(id, updated)
-    return { ...updated }
+      if (!row) {
+        return null
+      }
+
+      const state = await tx.notificationRecipientState.upsert({
+        where: {
+          notificationId_employeeId: {
+            notificationId: id,
+            employeeId,
+          },
+        },
+        create: {
+          notificationId: id,
+          employeeId,
+          read: true,
+        },
+        update: {
+          read: true,
+        },
+      })
+
+      // Không trả lại thông báo nếu người nhận đã xóa trong lúc cập nhật.
+      if (state.deleted) {
+        return null
+      }
+
+      return this.toDomain({
+        ...row,
+        states: [state],
+      })
+    })
   }
 
   async markAllAsRead(employeeId: string): Promise<number> {
-    let count = 0
-    const now = new Date()
+    // Chỉ đánh dấu các thông báo chưa đọc còn hiển thị với người nhận.
+    return this.db.$transaction(async (tx) => {
+      const rows = await tx.notification.findMany({
+        where: {
+          AND: [
+            this.visibleWhere(employeeId),
+            {
+              states: {
+                none: {
+                  employeeId,
+                  read: true,
+                },
+              },
+            },
+          ],
+        },
+        select: { id: true },
+      })
 
-    for (const [id, item] of this.items.entries()) {
-      if ((item.employeeId === employeeId || item.employeeId === "all") && !item.read) {
-        this.items.set(id, {
-          ...item,
-          read: true,
-          updatedAt: now,
-        })
-        count++
+      if (rows.length === 0) {
+        return 0
       }
-    }
 
-    return count
+      // Tạo state đã đọc cho những thông báo chưa có state cá nhân.
+      const created = await tx.notificationRecipientState.createMany({
+        data: rows.map(({ id }) => ({
+          notificationId: id,
+          employeeId,
+          read: true,
+        })),
+        skipDuplicates: true,
+      })
+
+      // Cập nhật những state đã tồn tại nhưng vẫn chưa đọc.
+      // Loại trừ state đã xóa để không khôi phục thông báo.
+      const updated = await tx.notificationRecipientState.updateMany({
+        where: {
+          employeeId,
+          notificationId: {
+            in: rows.map(({ id }) => id),
+          },
+          read: false,
+          deleted: false,
+        },
+        data: {
+          read: true,
+        },
+      })
+
+      return created.count + updated.count
+    })
   }
 
   async delete(id: string, employeeId: string): Promise<boolean> {
-    const item = this.items.get(id)
-    if (!item) return false
-    if (item.employeeId !== employeeId && item.employeeId !== "all") return false
+    // Chỉ ẩn thông báo đối với người hiện tại.
+    // Người nhận khác vẫn giữ nguyên nội dung và trạng thái của họ.
+    return this.db.$transaction(async (tx) => {
+      const row = await tx.notification.findFirst({
+        where: {
+          id,
+          ...this.visibleWhere(employeeId),
+        },
+      })
 
-    return this.items.delete(id)
+      if (!row) {
+        return false
+      }
+
+      await tx.notificationRecipientState.upsert({
+        where: {
+          notificationId_employeeId: {
+            notificationId: id,
+            employeeId,
+          },
+        },
+        create: {
+          notificationId: id,
+          employeeId,
+          deleted: true,
+        },
+        update: {
+          deleted: true,
+        },
+      })
+
+      return true
+    })
   }
 
   async getUnreadCount(employeeId: string): Promise<number> {
-    return Array.from(this.items.values()).filter(
-      (item) => (item.employeeId === employeeId || item.employeeId === "all") && !item.read,
-    ).length
+    // Đếm thông báo chưa được nhân viên này đọc và chưa bị họ xóa.
+    return this.db.notification.count({
+      where: {
+        AND: [
+          this.visibleWhere(employeeId),
+          {
+            states: {
+              none: {
+                employeeId,
+                read: true,
+              },
+            },
+          },
+        ],
+      },
+    })
   }
 }

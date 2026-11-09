@@ -3,15 +3,17 @@ import {
   NOTIFICATION_PRIORITY,
   NOTIFICATION_TYPE,
 } from "../../configs/entities/notification.config"
-import { InMemoryNotificationRepository } from "../../repositories/notification.repository"
 import { NotificationService } from "../../services/notification.service"
 import type { Notification } from "../../types/notification.types"
 import { AppError } from "../../utils/error.util"
+import { InMemoryNotificationRepository } from "../helpers/in-memory-notification.repository"
 
 describe("NotificationService", () => {
   let repository: InMemoryNotificationRepository
   let service: NotificationService
-
+  afterEach(() => {
+    service.dispose()
+  })
   beforeEach(() => {
     repository = new InMemoryNotificationRepository()
     service = new NotificationService(repository)

@@ -1,7 +1,4 @@
-import {
-  NotificationPriority,
-  NotificationType,
-} from "@/configs/entities/notification.config.ts"
+import { NotificationPriority, NotificationType } from "@/configs/entities/notification.config.ts"
 
 /**
  * Domain model representing a Notification
@@ -59,7 +56,7 @@ export interface PaginatedNotifications {
  * Repository contract for Notification persistence
  */
 export interface INotificationRepository {
-  findById(id: string): Promise<Notification | null>
+  findById(id: string, employeeId: string): Promise<Notification | null>
   findByEmployeeId(employeeId: string, query?: NotificationQuery): Promise<PaginatedNotifications>
   create(data: CreateNotificationDto): Promise<Notification>
   markAsRead(id: string, employeeId: string): Promise<Notification | null>
@@ -79,5 +76,8 @@ export interface INotificationService {
   markAllAsRead(employeeId: string): Promise<{ updatedCount: number }>
   deleteNotification(id: string, employeeId: string): Promise<boolean>
   getUnreadCount(employeeId: string): Promise<number>
-  subscribeToStream(employeeId: string, onNotification: (notification: Notification) => void): () => void
+  subscribeToStream(
+    employeeId: string,
+    onNotification: (notification: Notification) => void,
+  ): () => void
 }
