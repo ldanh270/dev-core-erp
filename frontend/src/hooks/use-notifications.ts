@@ -1,10 +1,11 @@
 import { API_BASE_URL, API_ENDPOINTS } from "@/config/api.config"
-import { routerNavigate } from "@/lib/router-navigator"
 import apiClient from "@/lib/api-client"
+import { routerNavigate } from "@/lib/router-navigator"
 import { useAuthStore } from "@/store/auth-store"
 import type { NotificationItem, NotificationListResponse } from "@/types/notification.types"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+
 import { toast } from "sonner"
 
 export function useNotifications() {
@@ -16,7 +17,9 @@ export function useNotifications() {
 
   const fetchNotifications = useCallback(async () => {
     if (!isAuthenticated) return
+
     setIsLoading(true)
+
     try {
       const response = await apiClient.get<{
         data: NotificationListResponse
@@ -34,19 +37,22 @@ export function useNotifications() {
     }
   }, [isAuthenticated])
 
-  const markAsRead = useCallback(async (id: string) => {
-    setNotifications((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, read: true } : item)),
-    )
-    setUnreadCount((prev) => Math.max(0, prev - 1))
+  const markAsRead = useCallback(
+    async (id: string) => {
+      setNotifications((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, read: true } : item)),
+      )
+      setUnreadCount((prev) => Math.max(0, prev - 1))
 
-    try {
-      await apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id))
-    } catch (error) {
-      console.error("Failed to mark notification as read:", error)
-      void fetchNotifications()
-    }
-  }, [fetchNotifications])
+      try {
+        await apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id))
+      } catch (error) {
+        console.error("Failed to mark notification as read:", error)
+        void fetchNotifications()
+      }
+    },
+    [fetchNotifications],
+  )
 
   const markAllAsRead = useCallback(async () => {
     setNotifications((prev) => prev.map((item) => ({ ...item, read: true })))
@@ -63,7 +69,9 @@ export function useNotifications() {
   const deleteNotification = useCallback(
     async (id: string) => {
       const target = notifications.find((n) => n.id === id)
+
       setNotifications((prev) => prev.filter((item) => item.id !== id))
+
       if (target && !target.read) {
         setUnreadCount((prev) => Math.max(0, prev - 1))
       }
@@ -102,6 +110,7 @@ export function useNotifications() {
       eventSource.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data) as NotificationItem & { type?: string }
+
           if (data && data.id && data.title) {
             // Prepend new real-time notification
             setNotifications((prev) => {
@@ -120,13 +129,15 @@ export function useNotifications() {
                     ? toast.error
                     : toast.info
 
+            const link = data.link
+
             showToast(data.title, {
               description: data.message,
               duration: 6000,
-              action: data.link
+              action: link
                 ? {
                     label: "Xem",
-                    onClick: () => routerNavigate(data.link!),
+                    onClick: () => routerNavigate(link),
                   }
                 : undefined,
             })
