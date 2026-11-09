@@ -29,7 +29,9 @@ const dbSchema: DbSchemaData = {
   tables: Object.fromEntries(allTables.map((table) => [table.name, table])),
   enums: schemaSummary.enums,
 }
-const PAGE_SIZE = SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT
+const DEFAULT_PAGE_SIZE = SYSTEM_CONFIG.PAGINATION.DEFAULT_LIMIT
+// Page size selector options including full 210-table view.
+const DATABASE_PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 210]
 
 /**
  * Main coordinator page for Database Schema Reference & Interactive ERD Viewer.
@@ -39,7 +41,7 @@ export default function DatabaseReference() {
   const { state, actions } = useDatabaseReference({
     allTables,
     dbSchema,
-    pageSize: PAGE_SIZE,
+    pageSize: DEFAULT_PAGE_SIZE,
   })
 
   const categoryTabs = useDatabaseCategoryTabs({
@@ -53,10 +55,10 @@ export default function DatabaseReference() {
     onSelectTableByName: actions.handleSelectTableByName,
   })
 
-  const totalPages = Math.ceil(state.filteredTables.length / PAGE_SIZE)
+  const totalPages = Math.ceil(state.filteredTables.length / state.pageSize)
   const visibleTables = useMemo(
-    () => state.filteredTables.slice((state.currentPage - 1) * PAGE_SIZE, state.currentPage * PAGE_SIZE),
-    [state.filteredTables, state.currentPage],
+    () => state.filteredTables.slice((state.currentPage - 1) * state.pageSize, state.currentPage * state.pageSize),
+    [state.filteredTables, state.currentPage, state.pageSize],
   )
 
   const headerActions = (
@@ -86,7 +88,7 @@ export default function DatabaseReference() {
     return (
       <PageContainer
         variant="table"
-        className="h-[calc(100dvh-4rem)] p-3 md:px-5 md:py-3 gap-2 flex flex-col overflow-hidden"
+        className="h-dvh p-3 md:px-5 md:py-3 gap-2 flex flex-col overflow-hidden"
       >
         <PageHeader
           title="Database Schema Reference"
@@ -113,6 +115,8 @@ export default function DatabaseReference() {
     <DataTablePage<TableDef>
       title="Database Schema Reference"
       description="Tra cứu lược đồ cơ sở dữ liệu và sơ đồ quan hệ thực thể (ERD)."
+      variant="viewport"
+      containerClassName="h-dvh p-3 md:px-5 md:py-3 gap-2"
       headerActions={headerActions}
       tabs={{
         items: categoryTabs,
@@ -127,6 +131,8 @@ export default function DatabaseReference() {
       columns={columns}
       data={visibleTables}
       keyExtractor={(table) => table.name}
+      onRowClick={actions.handleSelectTable}
+      rowClassName={(table) => (state.selectedTable?.name === table.name ? "bg-primary/10 hover:bg-primary/15" : undefined)}
       emptyState={{
         icon: Database,
         title: "Không tìm thấy bảng",
@@ -136,8 +142,13 @@ export default function DatabaseReference() {
         currentPage: state.currentPage,
         totalPages,
         totalItems: state.filteredTables.length,
-        itemsPerPage: PAGE_SIZE,
+        itemsPerPage: state.pageSize,
         onPageChange: actions.setCurrentPage,
+        onItemsPerPageChange: (limit) => {
+          actions.setPageSize(limit)
+          actions.setCurrentPage(1)
+        },
+        pageSizeOptions: DATABASE_PAGE_SIZE_OPTIONS,
       }}
       extraContent={detailSheet}
     />

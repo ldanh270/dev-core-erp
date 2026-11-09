@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
+import { SYSTEM_CONFIG } from "@/config/system.config"
 import type { DbSchemaData, TableDef } from "../database-reference.types"
 import { filterTables } from "../database-reference.utils"
 
@@ -11,7 +12,7 @@ const CLIPBOARD_FEEDBACK_DURATION_MS = 2000
 export interface UseDatabaseReferenceParams {
   allTables: TableDef[]
   dbSchema: DbSchemaData
-  pageSize: number
+  pageSize?: number
 }
 
 /**
@@ -21,11 +22,13 @@ export interface UseDatabaseReferenceParams {
 export function useDatabaseReference({
   allTables,
   dbSchema,
+  pageSize: initialPageSize = SYSTEM_CONFIG.PAGINATION.DEFAULT_LIMIT,
 }: UseDatabaseReferenceParams) {
   const [activeTab, setActiveTab] = useState<ActiveTab>("tables")
   const [selectedModule, setSelectedModule] = useState("ALL")
   const [searchQuery, setSearchQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(initialPageSize)
   const [selectedTable, setSelectedTable] = useState<TableDef | null>(null)
   const [copiedTableName, setCopiedTableName] = useState<string | null>(null)
 
@@ -82,6 +85,7 @@ export function useDatabaseReference({
       selectedModule,
       searchQuery,
       currentPage,
+      pageSize,
       selectedTable,
       copiedTableName,
       filteredTables,
@@ -89,6 +93,7 @@ export function useDatabaseReference({
     actions: {
       setActiveTab,
       setCurrentPage,
+      setPageSize,
       setSelectedTable,
       handleSelectTable,
       handleSelectTableByName,
