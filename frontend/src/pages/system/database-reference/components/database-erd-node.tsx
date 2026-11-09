@@ -7,7 +7,9 @@ import { useDatabaseErdNode } from "../hooks/use-database-erd-node"
 import { KeyRound, Link2 } from "lucide-react"
 import { memo } from "react"
 
-// Props required to render a single draggable ERD table node card.
+/**
+ * Props required to render a single draggable ERD table node card.
+ */
 interface DatabaseErdNodeProps {
   table: TableDef
   modules: ModuleDef[]
@@ -70,7 +72,7 @@ export const DatabaseErdNode = memo(function DatabaseErdNode({
         width: ERD_NODE_WIDTH,
         contain: "layout style paint",
       }}
-      className={`group cursor-move touch-none overflow-hidden rounded-xl text-left transition-shadow ${
+      className={`group select-none cursor-move touch-none overflow-hidden rounded-xl text-left transition-shadow ${
         isSelected
           ? "z-20 border-2 border-primary bg-card opacity-100 shadow-xl ring-2 ring-primary/30"
           : isExternal

@@ -5,7 +5,9 @@ import { useDatabaseErdTab } from "../hooks/use-database-erd-tab"
 
 import { useCallback } from "react"
 
-// Props for the interactive ERD tab container.
+/**
+ * Props for the interactive ERD tab container.
+ */
 interface DatabaseErdTabProps {
   tables: TableDef[]
   allTables: TableDef[]
@@ -55,7 +57,7 @@ export function DatabaseErdTab({
     <section
       ref={setFullscreenTarget}
       aria-label="Sơ đồ quan hệ cơ sở dữ liệu"
-      className={`relative flex flex-col overflow-hidden border border-border bg-card ${
+      className={`relative flex select-none flex-col overflow-hidden border border-border bg-card ${
         viewport.isFullscreen
           ? "fixed inset-0 z-40 h-dvh rounded-none p-3"
           : "flex-1 min-h-0 h-full w-full flex flex-col rounded-xl shadow-xs"

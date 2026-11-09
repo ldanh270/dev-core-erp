@@ -16,7 +16,9 @@ import { useDatabaseCategoryTabs } from "./database-reference/hooks/use-database
 import { useDatabaseReference } from "./database-reference/hooks/use-database-reference"
 import { useDatabaseTableColumns } from "./database-reference/hooks/use-database-table-columns"
 
-// Load extracted schema summary and individual table metadata JSON records generated from prisma schema.
+/**
+ * Extracted schema summary and individual table metadata JSON records generated from prisma schema.
+ */
 const schemaSummary: DbSchemaSummary = schemaSummaryRaw
 const tableFiles = import.meta.glob<TableDef>("@/data/tables/*.json", {
   eager: true,
@@ -30,7 +32,10 @@ const dbSchema: DbSchemaData = {
   enums: schemaSummary.enums,
 }
 const DEFAULT_PAGE_SIZE = SYSTEM_CONFIG.PAGINATION.DEFAULT_LIMIT
-// Page size selector options including full 210-table view.
+
+/**
+ * Page size selector options including full 210-table view.
+ */
 const DATABASE_PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 210]
 
 /**
