@@ -72,6 +72,13 @@ interface ProjectGanttTabProps {
  * track, plan, and manage task schedules dynamically across a grid-based timeline.
  */
 export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
+  const [hoveredTask, setHoveredTask] = useState<{
+    task: Task
+    isOverdue: boolean
+    isCompletedEarly: boolean
+    x: number
+    y: number
+  } | null>(null)
   const {
     timelineStart,
     selectedTaskForReview,
@@ -1159,57 +1166,55 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                             className="px-1 z-10 h-full flex items-center overflow-visible relative"
                           >
                             <div className="relative w-full flex items-center overflow-visible">
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div 
-                                      className="h-7 w-full border rounded-full px-2.5 flex items-center justify-between text-[10px] font-medium shadow-sm select-none relative overflow-hidden group cursor-pointer"
-                                      style={containerStyle}
-                                      onDoubleClick={() => { setSelectedTaskForReview(task); }}
-                                    >
-                                      {/* Progress bar inside task bar */}
-                                      {showProgress && (
-                                        <div 
-                                          className="absolute top-0 left-0 h-full transition-all duration-300"
-                                          style={{ ...progressStyle, width: `${progressVal}%` }}
-                                        />
-                                      )}
+                              <div 
+                                className="h-7 w-full border rounded-full px-2.5 flex items-center justify-between text-[10px] font-medium shadow-sm select-none relative overflow-hidden group cursor-pointer"
+                                style={containerStyle}
+                                onDoubleClick={() => { setSelectedTaskForReview(task); }}
+                                onMouseEnter={(e) => {
+                                  setHoveredTask({
+                                    task,
+                                    isOverdue: Boolean(isOverdue),
+                                    isCompletedEarly,
+                                    x: e.clientX,
+                                    y: e.clientY,
+                                  })
+                                }}
+                                onMouseMove={(e) => {
+                                  setHoveredTask({
+                                    task,
+                                    isOverdue: Boolean(isOverdue),
+                                    isCompletedEarly,
+                                    x: e.clientX,
+                                    y: e.clientY,
+                                  })
+                                }}
+                                onMouseLeave={() => {
+                                  setHoveredTask(null)
+                                }}
+                              >
+                                {/* Progress bar inside task bar */}
+                                {showProgress && (
+                                  <div 
+                                    className="absolute top-0 left-0 h-full transition-all duration-300"
+                                    style={{ ...progressStyle, width: `${progressVal}%` }}
+                                  />
+                                )}
 
-                                      <span className="truncate pr-1 z-10 text-[10px] font-semibold">{task.title}</span>
+                                <span className="truncate pr-1 z-10 text-[10px] font-semibold">{task.title}</span>
 
-                                      {/* Right tools (icons only) */}
-                                      <div className="flex items-center gap-1 shrink-0 z-10">
-                                        {task.status === "in_review" && (
-                                          <FileText className="size-3 text-white/90" />
-                                        )}
-                                        {task.status === "done" && (
-                                          <CheckCircle2 className="size-3 text-white" />
-                                        )}
-                                        {isOverdue && (
-                                          <Clock className="size-3 text-white animate-pulse" />
-                                        )}
-                                      </div>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent className="text-xs space-y-1 rounded-xl p-3 max-w-[280px]">
-                                    <p className="font-bold">{task.title}</p>
-                                    <p className="text-muted-foreground font-medium text-[10px]">
-                                      Lịch: {task.startDate ? format(new Date(task.startDate), "dd/MM/yyyy") : "?"} - {task.dueDate ? format(new Date(task.dueDate), "dd/MM/yyyy") : "?"}
-                                    </p>
-                                    <p className="font-medium text-[10px]">
-                                      Tiến độ: {task.progress}% ({task.status === "done" && isCompletedEarly ? "hoàn thành sớm" : task.status})
-                                    </p>
-                                    {task.status === "done" && isCompletedEarly && task.completedAt && (
-                                      <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-[10px]">
-                                        Xong ngày: {format(new Date(task.completedAt), "dd/MM/yyyy")}
-                                      </p>
-                                    )}
-                                    {isOverdue && (
-                                      <p className="text-rose-500 font-bold text-[10px]">Cảnh báo: Đã quá hạn hoàn thành!</p>
-                                    )}
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
+                                {/* Right tools (icons only) */}
+                                <div className="flex items-center gap-1 shrink-0 z-10">
+                                  {task.status === "in_review" && (
+                                    <FileText className="size-3 text-white/90" />
+                                  )}
+                                  {task.status === "done" && (
+                                    <CheckCircle2 className="size-3 text-white" />
+                                  )}
+                                  {isOverdue && (
+                                    <Clock className="size-3 text-white animate-pulse" />
+                                  )}
+                                </div>
+                              </div>
 
                               {/* Status and Progress label next to the bar removed per user request */}
                             </div>
@@ -1843,6 +1848,34 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Floating Mouse Cursor Tooltip for Gantt Task Bar */}
+      {hoveredTask && (
+        <div 
+          className="fixed pointer-events-none z-50 rounded-xl bg-foreground text-background p-3 shadow-2xl max-w-[300px] text-xs space-y-1 select-none border border-border/20 backdrop-blur-sm"
+          style={{
+            left: `${Math.min(Math.max(hoveredTask.x, 160), (typeof window !== "undefined" ? window.innerWidth : 1200) - 160)}px`,
+            top: hoveredTask.y < 140 ? `${hoveredTask.y + 16}px` : `${hoveredTask.y - 12}px`,
+            transform: hoveredTask.y < 140 ? "translate(-50%, 0)" : "translate(-50%, -100%)",
+          }}
+        >
+          <p className="font-bold leading-snug">{hoveredTask.task.title}</p>
+          <p className="text-background/80 font-medium text-[10px]">
+            Lịch: {hoveredTask.task.startDate ? format(new Date(hoveredTask.task.startDate), "dd/MM/yyyy") : "?"} - {hoveredTask.task.dueDate ? format(new Date(hoveredTask.task.dueDate), "dd/MM/yyyy") : "?"}
+          </p>
+          <p className="font-medium text-[10px]">
+            Tiến độ: {hoveredTask.task.progress}% ({hoveredTask.task.status === "done" && hoveredTask.isCompletedEarly ? "hoàn thành sớm" : hoveredTask.task.status})
+          </p>
+          {hoveredTask.task.status === "done" && hoveredTask.isCompletedEarly && hoveredTask.task.completedAt && (
+            <p className="text-emerald-400 font-semibold text-[10px]">
+              Xong ngày: {format(new Date(hoveredTask.task.completedAt), "dd/MM/yyyy")}
+            </p>
+          )}
+          {hoveredTask.isOverdue && (
+            <p className="text-rose-400 font-bold text-[10px]">Cảnh báo: Đã quá hạn hoàn thành!</p>
+          )}
+        </div>
+      )}
     </div>
   )
 }
