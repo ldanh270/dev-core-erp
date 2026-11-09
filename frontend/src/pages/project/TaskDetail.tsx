@@ -25,13 +25,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   SPENT_TIME_STATUS,
-  STATUS_KEYWORD_MAP,
+
   TASK_PRIORITIES,
   TASK_STATUS,
   getSpentTimeStatusLabel,
   PROJECT_ROLE,
 } from "@/config/entities/project.config"
-import { PROJECT_MESSAGES } from "@/config/messages/project.message"
 import { SPENT_TIME_UI, getSpentTimeStatusPillVariant } from "@/config/rules/spent-time.config"
 import { usePermission } from "@/hooks/use-permission"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
@@ -48,9 +47,7 @@ import { toast } from "sonner"
 import { extractErrorMessage } from "@/utils/error-helper"
 import type { SpentTime } from "@/types/spent-time.types"
 import type { TaskTracker, TaskPriority } from "@/types/task.types"
-
 import { useEffect, useState } from "react"
-
 import {
   AlertCircle,
   Calendar,
@@ -143,7 +140,7 @@ export default function TaskDetail() {
   const [resultTab, setResultTab] = useState<"report" | "optional">("optional") // Tab for result notes: "report" or "optional"
   const [editError, setEditError] = useState<string | null>(null) // Errors during form submission
 
-  // 1. Query hook to fetch detailed data for the targeted task
+  // Query hook to fetch detailed data for the targeted task
   const { data: task, isLoading: isLoadingTask } = useQuery({
     queryKey: ["task", id],
     queryFn: () => taskApi.getOne(id),
@@ -167,21 +164,21 @@ export default function TaskDetail() {
     enabled: !!id,
   })
 
-  // 3. Query hook to fetch active project members (populate assignee list)
+  // Query hook to fetch active project members (populate assignee list)
   const { data: members } = useQuery({
     queryKey: ["members", projectId],
     queryFn: () => projectApi.getMembers(projectId),
     enabled: !!projectId,
   })
 
-  // 4. Query hook to fetch parent project details (permissions validation)
+  // Query hook to fetch parent project details (permissions validation)
   const { data: project } = useQuery({
     queryKey: ["project", projectId],
     queryFn: () => projectApi.getOne(projectId),
     enabled: !!projectId,
   })
 
-  // 5. Query hook to fetch siblings tasks under the same project (enables prev/next navigations)
+  // Query hook to fetch siblings tasks under the same project (enables prev/next navigations)
   const { data: siblingTasksData } = useQuery({
     queryKey: ["tasks", "siblings", projectId],
     queryFn: () => taskApi.list({ projectId, limit: 1000, sortBy: "createdAt", sortOrder: "desc" }),
@@ -294,11 +291,10 @@ export default function TaskDetail() {
         const sourceStatus = statuses.find((s) => s.id === task.statusId)
         const targetStatus = statuses.find((s) => s.id === taskStatusId)
         if (sourceStatus && targetStatus) {
-          const sourceKey = STATUS_KEYWORD_MAP[sourceStatus.name.toLowerCase().trim()] || sourceStatus.name.toLowerCase()
-          const targetKey = STATUS_KEYWORD_MAP[targetStatus.name.toLowerCase().trim()] || targetStatus.name.toLowerCase()
-          if (sourceKey === TASK_STATUS.IN_PROGRESS && targetKey === TASK_STATUS.TODO) {
-            toast.warning(PROJECT_MESSAGES.KANBAN_IN_PROGRESS_TO_TODO_BLOCKED)
-            throw new Error(PROJECT_MESSAGES.KANBAN_IN_PROGRESS_TO_TODO_BLOCKED)
+          const isMovingBackToDefault = !sourceStatus.isDefault && !sourceStatus.isCompleted && targetStatus.isDefault
+          if (isMovingBackToDefault) {
+            toast.warning("Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình")
+            throw new Error("Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình")
           }
         }
       }
@@ -895,7 +891,7 @@ export default function TaskDetail() {
                 return
               }
               if (taskStart && taskDue && new Date(taskStart) > new Date(taskDue)) {
-                toast.warning(PROJECT_MESSAGES.TASK_START_AFTER_DUE)
+                toast.warning("Ngày bắt đầu không được sau hạn hoàn thành")
                 return
               }
 
@@ -906,13 +902,13 @@ export default function TaskDetail() {
                 if (parentTask) {
                   if (parentTask.startDate && taskStart && new Date(taskStart) < new Date(parentTask.startDate)) {
                     toast.warning(
-                      `${PROJECT_MESSAGES.CHILD_START_BEFORE_PARENT} (${new Date(parentTask.startDate).toLocaleDateString("vi-VN")})`
+                      `Ngày bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha (${new Date(parentTask.startDate).toLocaleDateString("vi-VN")})`
                     )
                     return
                   }
                   if (parentTask.dueDate && taskDue && new Date(taskDue) > new Date(parentTask.dueDate)) {
                     toast.warning(
-                      `${PROJECT_MESSAGES.CHILD_DUE_AFTER_PARENT} (${new Date(parentTask.dueDate).toLocaleDateString("vi-VN")})`
+                      `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${new Date(parentTask.dueDate).toLocaleDateString("vi-VN")})`
                     )
                     return
                   }
@@ -925,13 +921,13 @@ export default function TaskDetail() {
                 for (const child of childTasks) {
                   if (child.startDate && taskStart && new Date(taskStart) > new Date(child.startDate)) {
                     toast.warning(
-                      `${PROJECT_MESSAGES.PARENT_TIME_MUST_COVER_CHILD} "${child.title}" (bắt đầu ${new Date(child.startDate).toLocaleDateString("vi-VN")})`
+                      `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (bắt đầu ${new Date(child.startDate).toLocaleDateString("vi-VN")})`
                     )
                     return
                   }
                   if (child.dueDate && taskDue && new Date(taskDue) < new Date(child.dueDate)) {
                     toast.warning(
-                      `${PROJECT_MESSAGES.PARENT_TIME_MUST_COVER_CHILD} "${child.title}" (hạn hoàn thành ${new Date(child.dueDate).toLocaleDateString("vi-VN")})`
+                      `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (hạn hoàn thành ${new Date(child.dueDate).toLocaleDateString("vi-VN")})`
                     )
                     return
                   }

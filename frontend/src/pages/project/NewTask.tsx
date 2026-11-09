@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/select"
 // Import entity configurations for task tracker, status, and priorities
 import { TASK_PRIORITIES, PROJECT_ROLE } from "@/config/entities/project.config"
-import { PROJECT_MESSAGES } from "@/config/messages/project.message"
 import { usePermission } from "@/hooks/use-permission"
 // Import API utilities for projects, tasks, and task categories
 import { projectApi } from "@/lib/api/project.api"
@@ -301,7 +300,7 @@ export default function NewTask() {
     }
     // Validate that start date precedes due date
     if (taskStart && taskDue && new Date(taskStart) > new Date(taskDue)) {
-      toast.warning(PROJECT_MESSAGES.TASK_START_AFTER_DUE)
+      toast.warning("Ngày bắt đầu không được sau hạn hoàn thành")
       return
     }
 
@@ -311,13 +310,13 @@ export default function NewTask() {
       if (selectedParent) {
         if (selectedParent.startDate && taskStart && new Date(taskStart) < new Date(selectedParent.startDate)) {
           toast.warning(
-            `${PROJECT_MESSAGES.CHILD_START_BEFORE_PARENT} (${new Date(selectedParent.startDate).toLocaleDateString("vi-VN")})`
+            `Ngày bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha (${new Date(selectedParent.startDate).toLocaleDateString("vi-VN")})`
           )
           return
         }
         if (selectedParent.dueDate && taskDue && new Date(taskDue) > new Date(selectedParent.dueDate)) {
           toast.warning(
-            `${PROJECT_MESSAGES.CHILD_DUE_AFTER_PARENT} (${new Date(selectedParent.dueDate).toLocaleDateString("vi-VN")})`
+            `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${new Date(selectedParent.dueDate).toLocaleDateString("vi-VN")})`
           )
           return
         }

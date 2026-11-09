@@ -1,5 +1,4 @@
-import { DEFAULT_KANBAN_COLOR, STATUS_KEYWORD_MAP, TASK_STATUS } from "@/config/entities/project.config"
-import { PROJECT_MESSAGES } from "@/config/messages/project.message"
+import { DEFAULT_KANBAN_COLOR } from "@/config/entities/project.config"
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
@@ -125,7 +124,7 @@ export function useProjectKanban({
     mutationFn: ({ taskId, statusId }: { taskId: string; statusId: string | null }) =>
       taskApi.update(taskId, { statusId }),
 
-    // 1. Immediately update the cache before the API call
+    // Immediately update the cache before the API call
     onMutate: async ({ taskId, statusId }) => {
       await queryClient.cancelQueries({ queryKey: KANBAN_QUERY_KEY })
       const previousData = queryClient.getQueryData<{ data: Task[] }>(KANBAN_QUERY_KEY)
@@ -143,7 +142,7 @@ export function useProjectKanban({
       return { previousData }
     },
 
-    // 2. On API error: rollback to snapshot
+    // On API error: rollback to snapshot
     onError: (err: unknown, _vars, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(KANBAN_QUERY_KEY, context.previousData)
@@ -151,7 +150,7 @@ export function useProjectKanban({
       toast.error(extractErrorMessage(err))
     },
 
-    // 3. On settle: sync with server truth
+    // On settle: sync with server truth
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: KANBAN_QUERY_KEY })
     },
@@ -241,10 +240,10 @@ export function useProjectKanban({
     const targetStatus = statuses.find((s) => s.id === targetStatusId)
     if (!sourceStatus || !targetStatus) return false
 
-    const sourceKey = STATUS_KEYWORD_MAP[sourceStatus.name.toLowerCase().trim()] || sourceStatus.name.toLowerCase()
-    const targetKey = STATUS_KEYWORD_MAP[targetStatus.name.toLowerCase().trim()] || targetStatus.name.toLowerCase()
+    return !sourceStatus.isDefault && !sourceStatus.isCompleted && targetStatus.isDefault
 
-    return sourceKey === TASK_STATUS.IN_PROGRESS && targetKey === TASK_STATUS.TODO
+
+
   }
 
   const handleCardDrop = (e: React.DragEvent, targetTask: Task) => {
@@ -258,7 +257,7 @@ export function useProjectKanban({
       const sourceTask = tasks.find((t) => t.id === taskId)
       if (sourceTask && sourceTask.statusId !== targetTask.statusId) {
         if (isInvalidBackwardTransition(sourceTask.statusId, targetTask.statusId)) {
-          toast.warning(PROJECT_MESSAGES.KANBAN_IN_PROGRESS_TO_TODO_BLOCKED)
+          toast.warning("Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình")
           return
         }
         moveTaskMutation.mutate({ taskId, statusId: targetTask.statusId })
@@ -275,7 +274,7 @@ export function useProjectKanban({
       const task = tasks.find((t) => t.id === taskId)
       if (task && task.statusId !== targetStatusId) {
         if (isInvalidBackwardTransition(task.statusId, targetStatusId)) {
-          toast.warning(PROJECT_MESSAGES.KANBAN_IN_PROGRESS_TO_TODO_BLOCKED)
+          toast.warning("Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình")
           return
         }
         moveTaskMutation.mutate({ taskId, statusId: targetStatusId })

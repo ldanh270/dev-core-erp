@@ -108,36 +108,6 @@ export const TASK_STATUSES = [
   TASK_STATUS.REOPENED,
 ] as const
 
-/**
- * Keyword mapping to normalize database task status names to standard status keys
- */
-export const STATUS_KEYWORD_MAP: Record<string, string> = {
-  todo: "todo",
-  "to do": "todo",
-  "cần làm": "todo",
-  "chờ làm": "todo",
-  inprogress: "in_progress",
-  "in progress": "in_progress",
-  "in-progress": "in_progress",
-  "đang làm": "in_progress",
-  "đang thực hiện": "in_progress",
-  "đang xử lý": "in_progress",
-  inreview: "in_review",
-  "in review": "in_review",
-  "đang duyệt": "in_review",
-  "chờ duyệt": "in_review",
-  review: "in_review",
-  done: "done",
-  "hoàn thành": "done",
-  closed: "done",
-  "đã đóng": "done",
-  cancelled: "cancelled",
-  canceled: "cancelled",
-  "đã hủy": "cancelled",
-  reopened: "reopened",
-  "mở lại": "reopened",
-}
-
 export const CUSTOM_QUERY_TYPE = {
   GANTT: "gantt",
 } as const

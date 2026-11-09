@@ -77,28 +77,28 @@ export default function ProjectDashboard() {
   const [reportedPage, setReportedPage] = useState(1)
   const [reportedLimit, setReportedLimit] = useState(10)
 
-  // 1. Query hook to fetch tasks assigned to the current employee
+  // Query hook to fetch tasks assigned to the current employee
   const { data: assignedTasksData, isLoading: isLoadingAssigned } = useQuery({
     queryKey: ["tasks", "assigned", user?.id, assignedPage, assignedLimit],
     queryFn: () => taskApi.list({ assigneeId: user?.id, page: assignedPage, limit: assignedLimit }),
     enabled: !!user?.id,
   })
 
-  // 2. Query hook to fetch tasks created/reported by the current employee
+  // Query hook to fetch tasks created/reported by the current employee
   const { data: reportedTasksData, isLoading: isLoadingReported } = useQuery({
     queryKey: ["tasks", "reported", user?.id, reportedPage, reportedLimit],
     queryFn: () => taskApi.list({ createdById: user?.id, page: reportedPage, limit: reportedLimit }),
     enabled: !!user?.id,
   })
 
-  // 3. Query hook to fetch projects that the employee is currently involved in
+  // Query hook to fetch projects that the employee is currently involved in
   const { data: projectsData, isLoading: isLoadingProjects } = useQuery({
     queryKey: ["projects", "dashboard", user?.id],
     queryFn: () => projectApi.list({ limit: 100 }),
     enabled: !!user?.id,
   })
 
-  // 4. Query hook to fetch members of the project linked to the active task in the context menu
+  // Query hook to fetch members of the project linked to the active task in the context menu
   const { data: activeProjectMembers } = useQuery({
     queryKey: ["members", contextMenu.task?.projectId],
     queryFn: () => projectApi.getMembers(contextMenu.task?.projectId || ""),

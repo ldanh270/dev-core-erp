@@ -9,13 +9,11 @@ import { customQueryApi } from "@/lib/api/custom-query.api"
 import type { CustomQuery } from "@/lib/api/custom-query.api"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
 import { TASK_STATUS, TASK_PRIORITY, TASK_TRACKER, CUSTOM_QUERY_TYPE } from "@/config/entities/project.config"
-import { PROJECT_MESSAGES } from "@/config/messages/project.message"
 import { useAuthStore } from "@/store/auth-store"
 import type { Project } from "@/types/project.types"
 import type { Task, UpdateTaskDto } from "@/types/task.types"
 import { extractErrorMessage } from "@/utils/error-helper"
 import { usePermission } from "@/hooks/use-permission"
-
 import {
   DEFAULT_MONTHS_RANGE,
   DEFAULT_MONTHS_RANGE_STRING,
@@ -731,38 +729,38 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
     const newStart = addDays(new Date(task.startDate), days)
     const newDue = addDays(new Date(task.dueDate), days)
 
-    // 1. If child task, validate it stays within parent bounds
+    // If child task, validate it stays within parent bounds
     if (task.parentTaskId) {
       const parent = tasks.find((t: Task) => t.id === task.parentTaskId)
       if (parent) {
         if (parent.startDate && newStart < new Date(parent.startDate)) {
           toast.warning(
-            `${PROJECT_MESSAGES.CHILD_START_BEFORE_PARENT} (${format(new Date(parent.startDate), "dd/MM/yyyy")})`
+            `Ngày bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha (${format(new Date(parent.startDate), "dd/MM/yyyy")})`
           )
           return
         }
         if (parent.dueDate && newDue > new Date(parent.dueDate)) {
           toast.warning(
-            `${PROJECT_MESSAGES.CHILD_DUE_AFTER_PARENT} (${format(new Date(parent.dueDate), "dd/MM/yyyy")})`
+            `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${format(new Date(parent.dueDate), "dd/MM/yyyy")})`
           )
           return
         }
       }
     }
 
-    // 2. If parent task, validate it still encompasses all its children
+    // If parent task, validate it still encompasses all its children
     const children = tasks.filter((t: Task) => t.parentTaskId === task.id)
     if (children.length > 0) {
       for (const child of children) {
         if (child.startDate && newStart > new Date(child.startDate)) {
           toast.warning(
-            `${PROJECT_MESSAGES.PARENT_TIME_MUST_COVER_CHILD} "${child.title}" (bắt đầu ${format(new Date(child.startDate), "dd/MM/yyyy")})`
+            `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (bắt đầu ${format(new Date(child.startDate), "dd/MM/yyyy")})`
           )
           return
         }
         if (child.dueDate && newDue < new Date(child.dueDate)) {
           toast.warning(
-            `${PROJECT_MESSAGES.PARENT_TIME_MUST_COVER_CHILD} "${child.title}" (hạn hoàn thành ${format(new Date(child.dueDate), "dd/MM/yyyy")})`
+            `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (hạn hoàn thành ${format(new Date(child.dueDate), "dd/MM/yyyy")})`
           )
           return
         }
