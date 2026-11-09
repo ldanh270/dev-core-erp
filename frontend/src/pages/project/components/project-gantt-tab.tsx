@@ -194,9 +194,10 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
     // Pre-fill filters from current active filter keys and states
     const filtersCopy: Record<string, { enabled: boolean; operator: string; value: string }> = {}
     activeFilterKeys.forEach(k => {
-      const state = filterStates[k]
+      if (!Object.prototype.hasOwnProperty.call(filterStates, k)) return
+      const state = Reflect.get(filterStates, k) as { enabled: boolean; operator: string; value: string } | undefined
       if (state) {
-        filtersCopy[k] = { ...state }
+        Reflect.set(filtersCopy, k, { ...state })
       }
     })
     setNewQueryFilters(filtersCopy)
@@ -213,14 +214,15 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
     const finalKeys: string[] = []
 
     newQueryFilterKeys.forEach(k => {
-      const filter = newQueryFilters[k]
-      if (filter.enabled) {
+      if (!Object.prototype.hasOwnProperty.call(newQueryFilters, k)) return
+      const filter = Reflect.get(newQueryFilters, k) as { enabled: boolean; operator: string; value: string } | undefined
+      if (filter?.enabled) {
         finalKeys.push(k)
-        finalFilters[k] = {
+        Reflect.set(finalFilters, k, {
           enabled: true,
           operator: filter.operator,
           value: filter.value
-        }
+        })
       }
     })
 
@@ -263,7 +265,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
       if (operator !== GANTT_FILTER_OPERATOR.LA && operator !== GANTT_FILTER_OPERATOR.KHONG_LA) return null
       return (
         <Select value={value || TASK_STATUS.TODO} onValueChange={onChange}>
-          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-30">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
@@ -282,7 +284,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
       if (operator !== GANTT_FILTER_OPERATOR.IS && operator !== GANTT_FILTER_OPERATOR.IS_NOT) return null
       return (
         <Select value={value || TASK_TRACKER.TASK} onValueChange={onChange}>
-          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-30">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
@@ -303,7 +305,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
       if (operator !== GANTT_FILTER_OPERATOR.IS && operator !== GANTT_FILTER_OPERATOR.IS_NOT) return null
       return (
         <Select value={value || TASK_PRIORITY.MEDIUM} onValueChange={onChange}>
-          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-30">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
@@ -322,7 +324,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
         <Select value={value || (assignees[0]?.id || "none")} onValueChange={(val) => {
           onChange(val === "none" ? "" : val)
         }}>
-          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-30">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
@@ -476,7 +478,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                     return (
                       <div key={key} className="flex flex-wrap items-center gap-2 md:gap-4 py-1">
                         {/* Checkbox & Label */}
-                        <label className="flex items-center gap-2 cursor-pointer select-none font-semibold min-w-[120px]">
+                        <label className="flex items-center gap-2 cursor-pointer select-none font-semibold min-w-30">
                           <input 
                             type="checkbox" 
                             checked={filter.enabled} 
@@ -659,7 +661,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                       }
                     }}
                   >
-                    <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer min-w-[140px]">
+                    <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer min-w-35">
                       <SelectValue placeholder="-- Chọn --" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl bg-popover max-h-80 overflow-y-auto p-1.5 shadow-xl space-y-1">
@@ -786,7 +788,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                 value={String(monthInput)} 
                 onValueChange={(val) => { setMonthInput(parseInt(val)); }} 
               >
-                <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+                <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-30">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -808,7 +810,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                 value={String(yearInput)} 
                 onValueChange={(val) => { setYearInput(parseInt(val)); }} 
               >
-                <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[90px]">
+                <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-22.5">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -905,7 +907,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
 
         {/* Main Gantt Grid Container */}
         <div className="rounded-xl border border-border/40 shadow-sm overflow-hidden bg-background">
-          <div className="grid grid-cols-12 min-w-[900px] divide-x divide-border/40">
+          <div className="grid grid-cols-12 min-w-225 divide-x divide-border/40">
             
             {/* Left Panel: Task & Assignee Details (Col span: 4) */}
             <div className="col-span-4 flex flex-col bg-muted/10">
@@ -967,7 +969,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                             <TooltipTrigger asChild>
                               <div className="flex items-center gap-1 bg-secondary border border-border/40 py-0.5 px-2 rounded-full text-[10px] font-normal cursor-default shrink-0">
                                 <User className="size-2.5 text-muted-foreground" />
-                                <span className="max-w-[60px] truncate">{task.assignee.fullName.split(" ").pop()}</span>
+                                <span className="max-w-15 truncate">{task.assignee.fullName.split(" ").pop()}</span>
                               </div>
                             </TooltipTrigger>
                             <TooltipContent className="text-xs rounded-xl">
@@ -1327,7 +1329,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                   <li key={q.id} className="flex items-center justify-between group">
                     <button
                       onClick={() => { applySavedQuery(q); }}
-                      className="text-primary hover:underline text-left font-medium block truncate max-w-[150px]"
+                      className="text-primary hover:underline text-left font-medium block truncate max-w-37.5"
                       title={q.name}
                     >
                       {q.name}
@@ -1567,22 +1569,27 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
 
               <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
                 {newQueryFilterKeys.map((key) => {
-                  const filter = newQueryFilters[key] as { enabled: boolean; operator: string; value: string } | undefined
+                  if (!Object.prototype.hasOwnProperty.call(newQueryFilters, key)) return null
+                  const filter = Reflect.get(newQueryFilters, key) as { enabled: boolean; operator: string; value: string } | undefined
                   if (filter === undefined) return null
                   const def = Reflect.get(filterDefinitions, key) as { label: string; type: string; group: string } | undefined
                   
                   return (
                     <div key={key} className="flex flex-wrap items-center gap-2 md:gap-4 py-1">
                       {/* Checkbox & Label */}
-                      <label className="flex items-center gap-2 cursor-pointer select-none font-semibold min-w-[120px]">
+                      <label className="flex items-center gap-2 cursor-pointer select-none font-semibold min-w-30">
                         <input 
                           type="checkbox" 
                           checked={filter.enabled} 
                           onChange={(e) => {
-                            setNewQueryFilters(prev => ({
-                              ...prev,
-                              [key]: { ...prev[key], enabled: e.target.checked }
-                            }))
+                            setNewQueryFilters(prev => {
+                              if (!Object.prototype.hasOwnProperty.call(prev, key)) return prev
+                              const existing = Reflect.get(prev, key) as { enabled: boolean; operator: string; value: string } | undefined
+                              if (existing === undefined) return prev
+                              const next = { ...prev }
+                              Reflect.set(next, key, { ...existing, enabled: e.target.checked })
+                              return next
+                            })
                           }} 
                           className="rounded border-border/40 size-3.5 text-primary focus:ring-0 focus:ring-offset-0"
                         />
@@ -1609,10 +1616,14 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                             }
                           }
 
-                          setNewQueryFilters(prev => ({
-                            ...prev,
-                            [key]: { ...prev[key], operator: op, value: val }
-                          }))
+                          setNewQueryFilters(prev => {
+                            if (!Object.prototype.hasOwnProperty.call(prev, key)) return prev
+                            const existing = Reflect.get(prev, key) as { enabled: boolean; operator: string; value: string } | undefined
+                            if (existing === undefined) return prev
+                            const next = { ...prev }
+                            Reflect.set(next, key, { ...existing, operator: op, value: val })
+                            return next
+                          })
                         }}
                         className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer"
                       >
@@ -1703,10 +1714,14 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
 
                       {/* Value Select (Conditional) */}
                       {renderValueSelector(key, filter.operator, filter.value, (val) => {
-                        setNewQueryFilters(prev => ({
-                          ...prev,
-                          [key]: { ...prev[key], value: val }
-                        }))
+                        setNewQueryFilters(prev => {
+                          if (!Object.prototype.hasOwnProperty.call(prev, key)) return prev
+                          const existing = Reflect.get(prev, key) as { enabled: boolean; operator: string; value: string } | undefined
+                          if (existing === undefined) return prev
+                          const next = { ...prev }
+                          Reflect.set(next, key, { ...existing, value: val })
+                          return next
+                        })
                       })}
 
                       {/* Delete Button */}
@@ -1833,10 +1848,14 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                           setNewQuerySelectedCols(prev => {
                             const idx = prev.indexOf(selSelectedKey)
                             if (idx === -1 || idx === prev.length - 1) return prev
-                            const next = [...prev]
-                            next[idx] = next[idx + 1]
-                            next[idx + 1] = selSelectedKey
-                            return next
+                            const nextItem = prev.at(idx + 1)
+                            if (nextItem === undefined) return prev
+                            return [
+                              ...prev.slice(0, idx),
+                              nextItem,
+                              selSelectedKey,
+                              ...prev.slice(idx + 2),
+                            ]
                           })
                         }
                       }}
@@ -1874,7 +1893,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
       {/* Floating Mouse Cursor Tooltip for Gantt Task Bar */}
       {hoveredTask && (
         <div 
-          className="fixed pointer-events-none z-50 rounded-xl bg-foreground text-background p-3 shadow-2xl max-w-[300px] text-xs space-y-1 select-none border border-border/20 backdrop-blur-sm"
+          className="fixed pointer-events-none z-50 rounded-xl bg-foreground text-background p-3 shadow-2xl max-w-75 text-xs space-y-1 select-none border border-border/20 backdrop-blur-sm"
           style={{
             left: `${Math.min(Math.max(hoveredTask.x, 160), (typeof window !== "undefined" ? window.innerWidth : 1200) - 160)}px`,
             top: hoveredTask.y < 140 ? `${hoveredTask.y + 16}px` : `${hoveredTask.y - 12}px`,
