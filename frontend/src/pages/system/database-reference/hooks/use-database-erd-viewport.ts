@@ -129,7 +129,7 @@ export function useDatabaseErdViewport(
     const element = viewportRef.current
     if (!element) return
     const observer = new ResizeObserver(([entry]) => {
-      if (entry) setViewport({ width: entry.contentRect.width, height: entry.contentRect.height })
+      setViewport({ width: entry.contentRect.width, height: entry.contentRect.height })
     })
     observer.observe(element)
     return () => { observer.disconnect() }
