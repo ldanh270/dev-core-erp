@@ -1913,7 +1913,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
             </p>
           )}
           {hoveredTask.isOverdue && (
-            <p className="text-rose-400 font-bold text-[10px]">Cảnh báo: Đã quá hạn hoàn thành!</p>
+            <p className="text-rose-400 font-bold text-[10px]">Cảnh báo: Đã quá hạn hoàn thành!!!</p>
           )}
         </div>
       )}
