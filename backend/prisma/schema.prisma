@@ -346,7 +346,8 @@ model Employee {
   archivedRecruitmentPostings   JobPosting[]                 @relation("RecruitmentPostingArchiver")
 
   @@index([status, employeeType])
-  @@index([deletedAt])
+  @@index([deletedAt, createdAt(sort: Desc)])
+  @@index([deletedAt, status, workScheduleType])
   @@index([status, deletedAt])
   @@index([lockedUntil])
   @@index([failedLoginCount])
@@ -495,6 +496,8 @@ model EmployeeShift {
   forgotCardDetails   ApplicationForgotCardDetail[]   @relation("ApplicationForgotCardShift")
 
   @@unique([employeeId, assignedDate, shiftId])
+  @@index([employeeId, assignedDate, isOverride])
+  @@index([assignedDate, status])
   @@index([shiftId, assignedDate])
   @@index([status, assignedDate])
   @@index([scheduleId])
@@ -533,6 +536,7 @@ model AttendanceRecord {
   realShift RealShift?
 
   @@index([employeeId, date(sort: Desc)])
+  @@index([date(sort: Desc), status])
   // Partial index equivalent in Prisma requires raw SQL setup in migrations, but we create a standard one here
   @@index([status, date(sort: Desc)])
 }
@@ -596,11 +600,14 @@ model Application {
   attendanceRecordCorrection AttendanceRecord?              @relation("AttendanceRecordCorrection")
 
   @@index([employeeId, status])
+  @@index([employeeId, createdAt(sort: Desc)])
   @@index([employeeId, startDate(sort: Desc)])
   @@index([status, type])
+  @@index([status, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
   @@index([approvedById])
   @@index([partnerApprovedById])
-  @@index([assignedToId])
+  @@index([assignedToId, status, createdAt(sort: Desc)])
 }
 
 model ApplicationLeaveDetail {
@@ -942,7 +949,7 @@ model Payroll {
   payslips Payslip[]
 
   @@unique([periodYear, periodMonth, name])
-  @@index([status])
+  @@index([status, periodYear(sort: Desc), periodMonth(sort: Desc)])
   @@index([approvedById])
 }
 
@@ -970,6 +977,7 @@ model Payslip {
 
   @@unique([payrollId, employeeId])
   @@index([employeeId, payrollId(sort: Desc)])
+  @@index([employeeId, createdAt(sort: Desc)])
   @@index([salaryConfigId])
 }
 
@@ -1077,8 +1085,11 @@ model Task {
 
   @@index([projectId, status])
   @@index([projectId, statusId])
+  @@index([projectId, createdAt(sort: Desc)])
   @@index([statusId])
   @@index([assigneeId, status])
+  @@index([assigneeId, dueDate(sort: Asc)])
+  @@index([assigneeId, createdAt(sort: Desc)])
   @@index([dueDate, status])
   @@index([createdById])
   @@index([parentTaskId])
@@ -1156,8 +1167,9 @@ model SpentTime {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  @@index([taskId])
-  @@index([employeeId])
+  @@index([taskId, status])
+  @@index([employeeId, date(sort: Desc)])
+  @@index([employeeId, status, date(sort: Desc)])
   @@index([status, date])
   @@index([approvedById])
 }
@@ -1266,8 +1278,8 @@ model AuthorizationAuditLog {
   @@index([actorId])
   @@index([targetEmployeeId])
   @@index([targetRoleId])
-  @@index([createdAt])
-  @@index([action])
+  @@index([createdAt(sort: Desc)])
+  @@index([action, createdAt(sort: Desc)])
   @@map("authorization_audit_logs")
 }
 
@@ -1781,11 +1793,11 @@ model RecruitmentApplication {
   postingActivities  RecruitmentPostingActivity[]
 
   @@index([requisitionId, candidateId])
-  @@index([requisitionId])
+  @@index([requisitionId, createdAt(sort: Desc)])
   @@index([candidateId])
   @@index([postingId])
   @@index([assignedToId])
-  @@index([status])
+  @@index([status, createdAt(sort: Desc)])
   @@index([pipelineStageId])
   @@index([postingId, pipelineStageId])
   @@index([postingId, createdAt])
@@ -1859,7 +1871,7 @@ model ApplicationNote {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([applicationId])
+  @@index([applicationId, createdAt(sort: Desc)])
   @@index([addedById])
 }
 
@@ -1888,7 +1900,7 @@ model InterviewRound {
 
   scorecards Scorecard[]
 
-  @@index([applicationId])
+  @@index([applicationId, roundNumber(sort: Asc)])
   @@index([scheduledAt])
   @@index([status])
 }
@@ -1955,7 +1967,7 @@ model RecruitmentOffer {
   versions        OfferVersion[]
   backgroundCheck BackgroundCheck?
 
-  @@index([applicationId])
+  @@index([applicationId, createdAt(sort: Desc)])
   @@index([candidateId])
   @@index([status])
   @@index([createdById])
