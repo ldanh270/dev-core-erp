@@ -206,7 +206,7 @@ model EmployeeContract {
   employee   Employee @relation("EmployeeContracts", fields: [employeeId], references: [id], onDelete: Cascade)
 
   contractType   ContractType
-  contractNumber String       @unique
+  contractNumber String
   title          String?
 
   signedDate   DateTime? @db.Date
@@ -237,12 +237,14 @@ model EmployeeContract {
   renewedFrom   EmployeeContract?  @relation("ContractRenewal", fields: [renewedFromId], references: [id], onDelete: SetNull)
   renewedTo     EmployeeContract[] @relation("ContractRenewal")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@index([employeeId])
   @@index([status, endDate])
   @@index([contractNumber])
+  @@index([deletedAt])
   @@index([createdById])
   @@index([updatedById])
   @@index([renewedFromId])
@@ -254,9 +256,9 @@ model EmployeeContract {
 model Employee {
   id                    String           @id @default(cuid())
   fullName              String
-  username              String           @unique
+  username              String
   passwordHash          String
-  email                 String           @unique
+  email                 String
   phone                 String?
   dateOfBirth           DateTime?
   nationalId            String?
@@ -353,6 +355,8 @@ model Employee {
   @@index([failedLoginCount])
   @@index([positionId])
   @@index([personalEmployeeId])
+  @@index([username])
+  @@index([email])
 }
 
 // ── Attendance ──
@@ -1178,7 +1182,7 @@ model SpentTime {
 
 model AppRole {
   id               String  @id @default(cuid())
-  name             String  @unique
+  name             String
   description      String?
   isSystem         Boolean @default(false)
   isActive         Boolean @default(true)
@@ -1211,7 +1215,7 @@ model AdminStateLock {
 model Permission {
   id          String  @id @default(cuid())
   name        String
-  code        String  @unique // Convention: module.action
+  code        String // Convention: module.action; active uniqueness enforced via partial index
   module      String
   description String?
   isActive    Boolean @default(true)
@@ -1226,6 +1230,7 @@ model Permission {
   roles RolePermission[]
 
   @@index([module])
+  @@index([code])
   @@index([deletedAt])
   @@map("permissions")
 }
@@ -1319,8 +1324,8 @@ model ProjectTaskStatus {
 
 model Position {
   id                      String            @id @default(cuid())
-  name                    String            @unique
-  code                    String            @unique // ví dụ: "developer", "tester", "pm"
+  name                    String
+  code                    String // ví dụ: "developer", "tester", "pm" (partial unique where deletedAt IS NULL)
   description             String?
   allowedTaskTrackers     String[]
   allowedApplicationTypes ApplicationType[]
@@ -1333,6 +1338,9 @@ model Position {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
+  @@index([name])
+  @@index([code])
+  @@index([deletedAt])
   @@map("positions")
 }
 
