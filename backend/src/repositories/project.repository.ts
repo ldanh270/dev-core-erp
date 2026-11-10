@@ -13,11 +13,19 @@ import { Prisma, PrismaClient } from "@prisma/client"
 
 import { BaseRepository } from "./base.repository.ts"
 
+const PROJECT_EMPLOYEE_SELECT = {
+  id: true,
+  fullName: true,
+  email: true,
+} as const
+
+const PROJECT_DEFAULT_INCLUDE = {
+  teamLeader: { select: PROJECT_EMPLOYEE_SELECT },
+  createdBy: { select: PROJECT_EMPLOYEE_SELECT },
+} as const
+
 type PrismaProjectWithRelations = Prisma.ProjectGetPayload<{
-  include: {
-    teamLeader: true
-    createdBy: true
-  }
+  include: typeof PROJECT_DEFAULT_INCLUDE
 }>
 
 export class PrismaProjectRepository extends BaseRepository implements IProjectRepository {
@@ -71,10 +79,7 @@ export class PrismaProjectRepository extends BaseRepository implements IProjectR
   async findById(id: string): Promise<Project | null> {
     const project = await this.prisma.project.findUnique({
       where: { id },
-      include: {
-        teamLeader: true,
-        createdBy: true,
-      },
+      include: PROJECT_DEFAULT_INCLUDE,
     })
     return project ? this.mapToDomain(project) : null
   }
@@ -86,10 +91,7 @@ export class PrismaProjectRepository extends BaseRepository implements IProjectR
   async findByName(name: string): Promise<Project | null> {
     const project = await this.prisma.project.findUnique({
       where: { name },
-      include: {
-        teamLeader: true,
-        createdBy: true,
-      },
+      include: PROJECT_DEFAULT_INCLUDE,
     })
     return project ? this.mapToDomain(project) : null
   }
@@ -148,10 +150,7 @@ export class PrismaProjectRepository extends BaseRepository implements IProjectR
         skip,
         take: limit,
         orderBy: { [sortBy]: sortOrder },
-        include: {
-          teamLeader: true,
-          createdBy: true,
-        },
+        include: PROJECT_DEFAULT_INCLUDE,
       }),
     ])
 
@@ -185,10 +184,7 @@ export class PrismaProjectRepository extends BaseRepository implements IProjectR
         createdById: data.createdById,
         allowedTaskTrackers: data.allowedTaskTrackers as any,
       },
-      include: {
-        teamLeader: true,
-        createdBy: true,
-      },
+      include: PROJECT_DEFAULT_INCLUDE,
     })
     return this.mapToDomain(project)
   }
@@ -222,10 +218,7 @@ export class PrismaProjectRepository extends BaseRepository implements IProjectR
     const project = await this.prisma.project.update({
       where: { id },
       data: updateData,
-      include: {
-        teamLeader: true,
-        createdBy: true,
-      },
+      include: PROJECT_DEFAULT_INCLUDE,
     })
     return this.mapToDomain(project)
   }

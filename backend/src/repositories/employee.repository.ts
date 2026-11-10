@@ -13,16 +13,56 @@ import {
 } from "@/types"
 import { AppError } from "@/utils/error.util.ts"
 
-import { Prisma, PrismaClient, AppRole as PrismaAppRole, Employee as PrismaEmployee } from "@prisma/client"
+import { Prisma, PrismaClient, AppRole as PrismaAppRole } from "@prisma/client"
 
 import { BaseRepository } from "./base.repository.ts"
 
-type EmployeeRoleSummary = {
-  role: {
-    id: string
-    name: string
-  }
-}
+const EMPLOYEE_ROLE_SELECT = {
+  where: {
+    role: {
+      deletedAt: null,
+      isActive: true,
+    },
+  },
+  select: {
+    role: {
+      select: {
+        id: true,
+        name: true,
+      },
+    },
+  },
+} as const
+
+const EMPLOYEE_DOMAIN_SELECT = {
+  id: true,
+  fullName: true,
+  username: true,
+  email: true,
+  phone: true,
+  position: true,
+  positionId: true,
+  employeeType: true,
+  workScheduleType: true,
+  status: true,
+  dateOfBirth: true,
+  nationalId: true,
+  address: true,
+  startDate: true,
+  endDate: true,
+  avatarUrl: true,
+  avatarId: true,
+  createdAt: true,
+  updatedAt: true,
+  version: true,
+  authorizationVersion: true,
+  lockedUntil: true,
+  employeeRoles: EMPLOYEE_ROLE_SELECT,
+} as const
+
+type EmployeeWithRoles = Prisma.EmployeeGetPayload<{
+  select: typeof EMPLOYEE_DOMAIN_SELECT
+}>
 
 /** Whitelist client sort fields → Prisma orderBy; unknown keys fall back to createdAt. */
 function buildEmployeeOrderBy(
@@ -61,10 +101,6 @@ function buildEmployeeOrderBy(
     default:
       return { createdAt: direction }
   }
-}
-
-type EmployeeWithRoles = PrismaEmployee & {
-  employeeRoles?: EmployeeRoleSummary[]
 }
 
 /**
@@ -205,24 +241,7 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
       this.prisma.employee.findMany({
         where,
         orderBy,
-        include: {
-          employeeRoles: {
-            where: {
-              role: {
-                deletedAt: null,
-                isActive: true,
-              },
-            },
-            select: {
-              role: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
-        },
+        select: EMPLOYEE_DOMAIN_SELECT,
         skip: Number(skip),
         take: Number(limit),
       }),
@@ -273,24 +292,7 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
   async findById(id: string): Promise<Employee | null> {
     const employee = await this.prisma.employee.findFirst({
       where: { id, deletedAt: null },
-      include: {
-        employeeRoles: {
-          where: {
-            role: {
-              deletedAt: null,
-              isActive: true,
-            },
-          },
-          select: {
-            role: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-      },
+      select: EMPLOYEE_DOMAIN_SELECT,
     })
     if (!employee) return null
     return this.mapToDomain(employee)
@@ -336,24 +338,7 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
             }
           : undefined,
       },
-      include: {
-        employeeRoles: {
-          where: {
-            role: {
-              deletedAt: null,
-              isActive: true,
-            },
-          },
-          select: {
-            role: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-      },
+      select: EMPLOYEE_DOMAIN_SELECT,
     })
     return this.mapToDomain(employee)
   }
@@ -404,24 +389,7 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
     const employee = await this.prisma.employee.update({
       where: { id },
       data: updateData,
-      include: {
-        employeeRoles: {
-          where: {
-            role: {
-              deletedAt: null,
-              isActive: true,
-            },
-          },
-          select: {
-            role: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-      },
+      select: EMPLOYEE_DOMAIN_SELECT,
     })
     return this.mapToDomain(employee)
   }
@@ -436,52 +404,30 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
     const employee = await this.prisma.employee.update({
       where: { id },
       data: { status },
-      include: {
-        employeeRoles: {
-          where: {
-            role: {
-              deletedAt: null,
-              isActive: true,
-            },
-          },
-          select: {
-            role: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-      },
+      select: EMPLOYEE_DOMAIN_SELECT,
     })
     return this.mapToDomain(employee)
   }
 
   /**
    * Performs a soft delete on an employee record.
-   * Marks the employee's status as terminated, records the deletion timestamp,
-   * and anonymizes/prefixes unique identifier fields to prevent database constraint conflicts
-   * if a new employee is created with the same credentials.
+   * Marks the employee's status as terminated and records the deletion timestamp.
+   * Partial unique indexes on active records preserve original identifiers for audit.
    * @param id The ID of the employee to delete.
    * @returns A boolean representing whether the soft delete succeeded.
    */
   async deleteEmployee(id: string): Promise<boolean> {
     const record = await this.prisma.employee.findFirst({
       where: { id, deletedAt: null },
+      select: { id: true },
     })
     if (!record) return false
 
-    const timestamp = new Date().getTime()
     await this.prisma.employee.update({
       where: { id },
       data: {
         deletedAt: new Date(),
         status: EMPLOYEE_STATUS.TERMINATED,
-        email: `deleted_${timestamp}_${record.email}`,
-        username: `deleted_${timestamp}_${record.username}`,
-        phone: record.phone ? `deleted_${timestamp}_${record.phone}` : null,
-        nationalId: record.nationalId ? `deleted_${timestamp}_${record.nationalId}` : null,
       },
     })
     return true

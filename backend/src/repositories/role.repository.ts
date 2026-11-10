@@ -344,15 +344,11 @@ export class PrismaRoleRepository extends BaseRepository implements IRoleReposit
         throw new Error(ROLE_ERROR_CODES.ROLE_ASSIGNED_PERMISSION)
       }
 
-      const timestamp = Date.now()
-      // Safe truncation to avoid DB constraints length issues
-      const truncatedName = record.name.slice(0, 50)
       await tx.appRole.update({
         where: { id },
         data: {
           deletedAt: new Date(),
           updatedBy: actorId,
-          name: `deleted_${timestamp}_${record.id}_${truncatedName}`,
         },
       })
       return true

@@ -5,9 +5,54 @@ import type {
   UpdateProfileDto,
 } from "@/types/profile.types.ts"
 
-import { Prisma, PrismaClient, Employee as PrismaEmployee } from "@prisma/client"
+import { Prisma, PrismaClient } from "@prisma/client"
 
 import { BaseRepository } from "./base.repository.ts"
+
+const PROFILE_PERSONAL_EMPLOYEE_SELECT = {
+  id: true,
+  fullName: true,
+  email: true,
+  status: true,
+  deletedAt: true,
+} as const
+
+const PROFILE_BASE_SELECT = {
+  id: true,
+  fullName: true,
+  username: true,
+  email: true,
+  phone: true,
+  dateOfBirth: true,
+  nationalId: true,
+  address: true,
+  position: true,
+  positionId: true,
+  employeeType: true,
+  workScheduleType: true,
+  status: true,
+  startDate: true,
+  avatarUrl: true,
+  avatarId: true,
+  createdAt: true,
+  updatedAt: true,
+  personalEmployeeId: true,
+} as const
+
+const PROFILE_WITH_PERSONAL_SELECT = {
+  ...PROFILE_BASE_SELECT,
+  personalEmployee: {
+    select: PROFILE_PERSONAL_EMPLOYEE_SELECT,
+  },
+} as const
+
+type ProfileBaseRow = Prisma.EmployeeGetPayload<{
+  select: typeof PROFILE_BASE_SELECT
+}>
+
+type ProfilePersonalRow = Prisma.EmployeeGetPayload<{
+  select: typeof PROFILE_PERSONAL_EMPLOYEE_SELECT
+}>
 
 /**
  * Prisma implementation of the Profile Repository
@@ -19,8 +64,8 @@ export class PrismaProfileRepository extends BaseRepository implements IProfileR
   }
 
   private mapToProfile(
-    employee: PrismaEmployee & {
-      personalEmployee?: PrismaEmployee | null
+    employee: ProfileBaseRow & {
+      personalEmployee?: ProfilePersonalRow | null
     },
   ): ProfileEmployeeDocument {
     return {
@@ -58,9 +103,7 @@ export class PrismaProfileRepository extends BaseRepository implements IProfileR
   async findById(empId: string): Promise<ProfileEmployeeDocument | null> {
     const employee = await this.prisma.employee.findFirst({
       where: { id: empId, deletedAt: null },
-      include: {
-        personalEmployee: true,
-      },
+      select: PROFILE_WITH_PERSONAL_SELECT,
     })
 
     if (!employee) return null
@@ -71,6 +114,10 @@ export class PrismaProfileRepository extends BaseRepository implements IProfileR
   async findAuthById(empId: string): Promise<ProfileEmployeeDocumentWithPassword | null> {
     const employee = await this.prisma.employee.findFirst({
       where: { id: empId, deletedAt: null },
+      select: {
+        ...PROFILE_BASE_SELECT,
+        passwordHash: true,
+      },
     })
 
     if (!employee) return null
@@ -100,6 +147,7 @@ export class PrismaProfileRepository extends BaseRepository implements IProfileR
       const employee = await this.prisma.employee.update({
         where: { id: empId },
         data: updateFields,
+        select: PROFILE_BASE_SELECT,
       })
 
       return this.mapToProfile(employee)
@@ -122,6 +170,7 @@ export class PrismaProfileRepository extends BaseRepository implements IProfileR
           avatarUrl: avatar.url,
           avatarId: avatar.id,
         },
+        select: PROFILE_BASE_SELECT,
       })
 
       return this.mapToProfile(employee)
@@ -148,7 +197,7 @@ export class PrismaProfileRepository extends BaseRepository implements IProfileR
       const employee = await this.prisma.employee.update({
         where: { id: empId },
         data: { personalEmployeeId },
-        include: { personalEmployee: true },
+        select: PROFILE_WITH_PERSONAL_SELECT,
       })
 
       return this.mapToProfile(employee)
