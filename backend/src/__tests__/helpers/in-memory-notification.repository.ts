@@ -14,32 +14,47 @@ import type {
 
 import { randomUUID } from "node:crypto"
 
+/**
+ * Personal read and deletion state tracked for a notification recipient.
+ */
 type RecipientState = {
   read: boolean
   deleted: boolean
   updatedAt: Date
 }
 
-/** Chỉ dùng trong unit test, không dùng để lưu dữ liệu của ứng dụng. */
+/**
+ * In-memory notification repository used only for isolated unit tests.
+ * Implements the persistence contract without accessing the application database.
+ */
 export class InMemoryNotificationRepository implements INotificationRepository {
   private readonly items = new Map<string, Notification>()
   private readonly states = new Map<string, RecipientState>()
 
+  /**
+   * Generates the storage key for a notification and employee pair.
+   */
   private key(id: string, employeeId: string): string {
-    // Tạo khóa riêng cho từng cặp thông báo và người nhận.
+    // Build a distinct key for each notification and recipient pair.
     return JSON.stringify([id, employeeId])
   }
 
+  /**
+   * Checks audience membership and excludes notifications deleted by this employee.
+   */
   private canView(item: Notification, employeeId: string): boolean {
-    // Kiểm tra đối tượng nhận và trạng thái xóa cá nhân.
+    // Check the notification audience and recipient-specific deletion state.
     return (
       (item.employeeId === employeeId || item.employeeId === NOTIFICATION_AUDIENCE.ALL) &&
       !this.states.get(this.key(item.id, employeeId))?.deleted
     )
   }
 
+  /**
+   * Returns a notification with personal state, or null when missing or personally deleted.
+   */
   async findById(id: string, employeeId: string): Promise<Notification | null> {
-    // Ghép trạng thái của người xem; service chịu trách nhiệm kiểm tra quyền.
+    // Merge the viewer's state; audience authorization remains the service's responsibility.
     const item = this.items.get(id)
     const state = this.states.get(this.key(id, employeeId))
 
@@ -52,11 +67,14 @@ export class InMemoryNotificationRepository implements INotificationRepository {
         }
   }
 
+  /**
+   * Simulates recipient visibility, filtering, sorting, and pagination in memory.
+   */
   async findByEmployeeId(
     employeeId: string,
     query?: NotificationQuery,
   ): Promise<PaginatedNotifications> {
-    // Mô phỏng bộ lọc và phân trang trên các thông báo có thể xem.
+    // Apply filtering and pagination to notifications visible to the employee.
     const page = Math.max(1, query?.page ?? NOTIFICATION_PAGINATION.DEFAULT_PAGE)
     const limit = Math.min(
       NOTIFICATION_PAGINATION.MAX_LIMIT,
@@ -88,8 +106,11 @@ export class InMemoryNotificationRepository implements INotificationRepository {
     }
   }
 
+  /**
+   * Stores a notification with generated identity, timestamps, and configured defaults.
+   */
   async create(data: CreateNotificationDto): Promise<Notification> {
-    // Chỉ tạo dữ liệu khi test gọi, không tự thêm dữ liệu mẫu.
+    // Create data only when requested by a test; do not add seed records.
     const now = new Date()
     const item: Notification = {
       id: randomUUID(),
@@ -109,8 +130,11 @@ export class InMemoryNotificationRepository implements INotificationRepository {
     return { ...item }
   }
 
+  /**
+   * Marks a visible notification as read for one employee.
+   */
   async markAsRead(id: string, employeeId: string): Promise<Notification | null> {
-    // Chỉ cập nhật trạng thái của người nhận hiện tại.
+    // Update only the requesting recipient's state.
     const item = this.items.get(id)
 
     if (!item || !this.canView(item, employeeId)) return null
@@ -124,8 +148,11 @@ export class InMemoryNotificationRepository implements INotificationRepository {
     return this.findById(id, employeeId)
   }
 
+  /**
+   * Marks every visible unread notification as read and returns the affected count.
+   */
   async markAllAsRead(employeeId: string): Promise<number> {
-    // Duyệt toàn bộ thông báo, không bị giới hạn bởi trang đầu.
+    // Process all stored notifications rather than only the first page.
     let count = 0
 
     for (const item of this.items.values()) {
@@ -138,8 +165,11 @@ export class InMemoryNotificationRepository implements INotificationRepository {
     return count
   }
 
+  /**
+   * Hides a notification for one employee while preserving its previous read state.
+   */
   async delete(id: string, employeeId: string): Promise<boolean> {
-    // Mô phỏng thao tác ẩn thông báo của riêng người nhận.
+    // Simulate hiding a notification for one recipient only.
     const item = this.items.get(id)
 
     if (!item || !this.canView(item, employeeId)) return false
@@ -155,8 +185,11 @@ export class InMemoryNotificationRepository implements INotificationRepository {
     return true
   }
 
+  /**
+   * Counts visible notifications without a read state for the requesting employee.
+   */
   async getUnreadCount(employeeId: string): Promise<number> {
-    // Đếm độc lập với phân trang và bộ lọc.
+    // Count independently of pagination and list filters.
     return [...this.items.values()].filter(
       (item) =>
         this.canView(item, employeeId) && !this.states.get(this.key(item.id, employeeId))?.read,

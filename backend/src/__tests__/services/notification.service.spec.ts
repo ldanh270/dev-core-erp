@@ -8,18 +8,31 @@ import type { Notification } from "../../types/notification.types"
 import { AppError } from "../../utils/error.util"
 import { InMemoryNotificationRepository } from "../helpers/in-memory-notification.repository"
 
+/**
+ * Notification Service unit tests covering delivery, recipient state, and access control.
+ * Uses an in-memory repository to isolate business logic from database persistence.
+ */
 describe("NotificationService", () => {
   let repository: InMemoryNotificationRepository
   let service: NotificationService
+  /**
+   * Removes the service creation listener after each test to prevent listener accumulation.
+   */
   afterEach(() => {
     service.dispose()
   })
+  /**
+   * Creates an isolated repository and service instance before each test.
+   */
   beforeEach(() => {
     repository = new InMemoryNotificationRepository()
     service = new NotificationService(repository)
     jest.clearAllMocks()
   })
 
+  /**
+   * Verifies persisted notifications are delivered to personal and broadcast subscribers.
+   */
   describe("createNotification & real-time delivery", () => {
     it("UTCID01 - successfully creates a notification and pushes it to subscriber", async () => {
       const empId = "emp-001"
@@ -73,6 +86,9 @@ describe("NotificationService", () => {
     })
   })
 
+  /**
+   * Verifies notification listing returns records and counts for the requesting employee.
+   */
   describe("listNotifications & pagination", () => {
     it("UTCID03 - lists notifications for an employee including broadcast ones", async () => {
       const empId = "emp-003"
@@ -90,6 +106,9 @@ describe("NotificationService", () => {
     })
   })
 
+  /**
+   * Verifies individual and bulk read updates are reflected in recipient state and counts.
+   */
   describe("markAsRead & markAllAsRead", () => {
     it("UTCID04 - marks a single notification as read", async () => {
       const empId = "emp-004"
@@ -129,6 +148,9 @@ describe("NotificationService", () => {
     })
   })
 
+  /**
+   * Verifies missing notifications and unauthorized audience access are rejected.
+   */
   describe("getNotification access control", () => {
     it("UTCID06 - throws 404 when notification does not exist", async () => {
       await expect(service.getNotification("non-existent-id", "emp-001")).rejects.toThrow(AppError)
@@ -145,6 +167,9 @@ describe("NotificationService", () => {
     })
   })
 
+  /**
+   * Verifies a deleted notification can no longer be retrieved by its recipient.
+   */
   describe("deleteNotification", () => {
     it("UTCID08 - deletes notification successfully", async () => {
       const empId = "emp-006"

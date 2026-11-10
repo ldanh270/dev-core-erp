@@ -8,9 +8,14 @@ import { NotificationService } from "@/services/notification.service.ts"
 import express from "express"
 import rateLimit from "express-rate-limit"
 
+/**
+ * Notification router composing persistence, business logic, and HTTP handlers.
+ */
 const notificationRoutes = express.Router({ mergeParams: true })
 
-// Giới hạn số request theo cấu hình của môi trường đang chạy.
+/**
+ * Limits notification requests using the rate limit configured for the current environment.
+ */
 const notificationLimiter = rateLimit({
   windowMs: RATE_LIMIT.WINDOW_MS,
   max:
@@ -19,29 +24,29 @@ const notificationLimiter = rateLimit({
       : RATE_LIMIT.MAX_LIMIT_PROD,
 })
 
-// Khởi tạo repository dùng Prisma để lưu notification vào database.
+// Initialize notification persistence using the shared Prisma client.
 const repository = new PrismaNotificationRepository(prisma)
 
-// Truyền repository vào service và service vào controller.
+// Inject the repository into the service and the service into the controller.
 const service = new NotificationService(repository)
 const controller = new NotificationController(service)
 
-// Áp dụng giới hạn request và xác thực JWT cho các endpoint bên dưới.
+// Apply rate limiting and JWT authentication to all notification endpoints.
 notificationRoutes.use(notificationLimiter as unknown as express.RequestHandler)
 notificationRoutes.use(authenticate)
 
-// Mở kết nối SSE để nhận notification trực tiếp.
+// Open an SSE connection for real-time notification delivery.
 notificationRoutes.get("/stream", controller.stream)
 
-// Đặt các đường dẫn cố định trước "/:id" để tránh bị hiểu là notification ID.
+// Register static paths before "/:id" so they are not treated as notification IDs.
 notificationRoutes.get("/unread-count", controller.getUnreadCount)
 notificationRoutes.patch("/read-all", controller.markAllAsRead)
 
-// Lấy danh sách và tạo notification.
+// List notifications for the authenticated employee or create a notification.
 notificationRoutes.get("/", controller.list)
 notificationRoutes.post("/", controller.create)
 
-// Xem chi tiết, đánh dấu đã đọc và xóa notification của người nhận.
+// Retrieve, mark as read, or hide a notification for the authenticated recipient.
 notificationRoutes.get("/:id", controller.getOne)
 notificationRoutes.patch("/:id/read", controller.markAsRead)
 notificationRoutes.delete("/:id", controller.delete)
