@@ -243,6 +243,9 @@ model EmployeeContract {
   @@index([employeeId])
   @@index([status, endDate])
   @@index([contractNumber])
+  @@index([createdById])
+  @@index([updatedById])
+  @@index([renewedFromId])
 }
 
 // ─── Models ──────────────────────────────────────────────────────────────────
@@ -251,9 +254,9 @@ model EmployeeContract {
 model Employee {
   id                    String           @id @default(cuid())
   fullName              String
-  username              String
+  username              String           @unique
   passwordHash          String
-  email                 String
+  email                 String           @unique
   phone                 String?
   dateOfBirth           DateTime?
   nationalId            String?
@@ -331,24 +334,24 @@ model Employee {
   contractsUpdated               EmployeeContract[]           @relation("ContractUpdater")
 
   // Recruitment relations
-  requisitionsRequested         JobRequisition[]         @relation("RequisitionRequester")
-  requisitionsAssignedToApprove JobRequisition[]         @relation("RequisitionDesignatedApprover")
-  requisitionsApproved          JobRequisition[]         @relation("RequisitionApprover")
-  recruitmentAppsAssigned       RecruitmentApplication[] @relation("RecruitmentAppRecruiter")
-  scorecardsEvaluated           Scorecard[]              @relation("ScorecardEvaluator")
-  offersCreated                 RecruitmentOffer[]       @relation("OfferCreator")
-  bgcChecked                    BackgroundCheck[]        @relation("BgcChecker")
-  recruitmentNotesCreated       ApplicationNote[]        @relation("RecruitmentNoteCreator")
-  recruitmentPostingActivities RecruitmentPostingActivity[] @relation("RecruitmentPostingActivityActor")
-  archivedRecruitmentPostings  JobPosting[]              @relation("RecruitmentPostingArchiver")
+  requisitionsRequested         JobRequisition[]             @relation("RequisitionRequester")
+  requisitionsAssignedToApprove JobRequisition[]             @relation("RequisitionDesignatedApprover")
+  requisitionsApproved          JobRequisition[]             @relation("RequisitionApprover")
+  recruitmentAppsAssigned       RecruitmentApplication[]     @relation("RecruitmentAppRecruiter")
+  scorecardsEvaluated           Scorecard[]                  @relation("ScorecardEvaluator")
+  offersCreated                 RecruitmentOffer[]           @relation("OfferCreator")
+  bgcChecked                    BackgroundCheck[]            @relation("BgcChecker")
+  recruitmentNotesCreated       ApplicationNote[]            @relation("RecruitmentNoteCreator")
+  recruitmentPostingActivities  RecruitmentPostingActivity[] @relation("RecruitmentPostingActivityActor")
+  archivedRecruitmentPostings   JobPosting[]                 @relation("RecruitmentPostingArchiver")
 
   @@index([status, employeeType])
   @@index([deletedAt])
   @@index([status, deletedAt])
   @@index([lockedUntil])
   @@index([failedLoginCount])
-  @@index([email])
-  @@index([username])
+  @@index([positionId])
+  @@index([personalEmployeeId])
 }
 
 // ── Attendance ──
@@ -596,6 +599,7 @@ model Application {
   @@index([employeeId, startDate(sort: Desc)])
   @@index([status, type])
   @@index([approvedById])
+  @@index([partnerApprovedById])
   @@index([assignedToId])
 }
 
@@ -697,6 +701,8 @@ model ApplicationWorkFromHomeDetail {
   application     Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   employeeShiftId String
   employeeShift   EmployeeShift @relation(fields: [employeeShiftId], references: [id], onDelete: Restrict)
+
+  @@index([employeeShiftId])
 }
 
 model HolidayCalendar {
@@ -1033,6 +1039,7 @@ model ProjectMember {
 
   @@id([projectId, employeeId])
   @@index([employeeId])
+  @@index([roleId])
 }
 
 model Task {
@@ -1070,6 +1077,7 @@ model Task {
 
   @@index([projectId, status])
   @@index([projectId, statusId])
+  @@index([statusId])
   @@index([assigneeId, status])
   @@index([dueDate, status])
   @@index([createdById])
@@ -1151,6 +1159,7 @@ model SpentTime {
   @@index([taskId])
   @@index([employeeId])
   @@index([status, date])
+  @@index([approvedById])
 }
 
 // ── Dynamic RBAC ──
@@ -1276,6 +1285,7 @@ model CustomQuery {
   updatedAt  DateTime @updatedAt
 
   @@index([employeeId, type])
+  @@index([projectId])
 }
 
 model ProjectTaskStatus {
@@ -1369,6 +1379,8 @@ model ApplicationForgotCardDetail {
   checkInAt       DateTime?
   checkOutAt      DateTime?
   documentUrl     String?
+
+  @@index([employeeShiftId])
 }
 
 model ApplicationRecruitmentDetail {
@@ -1532,10 +1544,10 @@ model JobRequisition {
   targetHireDate  DateTime?           @db.Date
   targetCloseDate DateTime?           @db.Date
 
-  summary          String?  @db.Text
-  responsibilities String?  @db.Text
-  requirements     String?  @db.Text
-  benefits         String?  @db.Text
+  summary          String? @db.Text
+  responsibilities String? @db.Text
+  requirements     String? @db.Text
+  benefits         String? @db.Text
 
   requestedById   String
   requestedBy     Employee  @relation("RequisitionRequester", fields: [requestedById], references: [id], onDelete: Restrict)
@@ -1552,41 +1564,42 @@ model JobRequisition {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  postings     JobPosting[]
-  applications RecruitmentApplication[]
+  postings        JobPosting[]
+  applications    RecruitmentApplication[]
   candidateFields CandidateFieldDefinition[]
-  pipelineStages RecruitmentPipelineStage[]
+  pipelineStages  RecruitmentPipelineStage[]
 
   @@index([status])
   @@index([requestedById])
   @@index([approverId])
+  @@index([approvedById])
   @@index([positionId])
   @@index([department])
 }
 
 // Job Posting — one channel-specific publication point for a Requisition
 model JobPosting {
-  id               String             @id @default(cuid())
-  requisitionId    String
-  requisition      JobRequisition     @relation(fields: [requisitionId], references: [id], onDelete: Restrict)
-  channel          RecruitmentChannel
-  source           RecruitmentSource
-  sourceCode       String             @unique
-  formFields       Json?
-  status           PostingStatus      @default(draft)
-  postingUrl       String?
-  externalId       String?
-  connectorStatus  ConnectorStatus    @default(not_configured)
-  oauthAccountId   String?
-  oauthAccount     RecruitmentOAuthAccount? @relation(fields: [oauthAccountId], references: [id], onDelete: SetNull)
-  publishedAt      DateTime?
-  lastSyncedAt     DateTime?
-  closedAt         DateTime?
-  archivedAt       DateTime?
-  archivedById     String?
-  archivedBy       Employee?          @relation("RecruitmentPostingArchiver", fields: [archivedById], references: [id], onDelete: SetNull)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  id              String                   @id @default(cuid())
+  requisitionId   String
+  requisition     JobRequisition           @relation(fields: [requisitionId], references: [id], onDelete: Restrict)
+  channel         RecruitmentChannel
+  source          RecruitmentSource
+  sourceCode      String                   @unique
+  formFields      Json?
+  status          PostingStatus            @default(draft)
+  postingUrl      String?
+  externalId      String?
+  connectorStatus ConnectorStatus          @default(not_configured)
+  oauthAccountId  String?
+  oauthAccount    RecruitmentOAuthAccount? @relation(fields: [oauthAccountId], references: [id], onDelete: SetNull)
+  publishedAt     DateTime?
+  lastSyncedAt    DateTime?
+  closedAt        DateTime?
+  archivedAt      DateTime?
+  archivedById    String?
+  archivedBy      Employee?                @relation("RecruitmentPostingArchiver", fields: [archivedById], references: [id], onDelete: SetNull)
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
 
   applications       RecruitmentApplication[]
   intakeRecords      RecruitmentIntakeRecord[]
@@ -1595,8 +1608,8 @@ model JobPosting {
   pipelineStages     RecruitmentPipelineStage[]
   fieldSnapshots     PostingFieldSnapshot[]
 
-  @@index([requisitionId])
   @@unique([id, requisitionId])
+  @@index([requisitionId])
   @@index([channel])
   @@index([source])
   @@index([status])
@@ -1680,10 +1693,10 @@ model RecruitmentOAuthAccount {
 
 // OAuth callback nonce persisted for one-time consumption across API instances.
 model RecruitmentOAuthStateNonce {
-  nonce     String   @id
-  expiresAt DateTime
+  nonce      String    @id
+  expiresAt  DateTime
   consumedAt DateTime?
-  createdAt DateTime @default(now())
+  createdAt  DateTime  @default(now())
 
   @@index([expiresAt])
 }
@@ -1734,15 +1747,15 @@ model CandidateMeta {
 
 // Recruitment Application — Candidate's application to a requisition
 model RecruitmentApplication {
-  id            String         @id @default(cuid())
-  requisitionId String
-  requisition   JobRequisition @relation(fields: [requisitionId], references: [id], onDelete: Restrict)
-  candidateId   String
-  candidate     Candidate      @relation(fields: [candidateId], references: [id], onDelete: Restrict)
-  postingId     String
-  posting       JobPosting     @relation(fields: [postingId], references: [id], onDelete: Restrict)
+  id              String                   @id @default(cuid())
+  requisitionId   String
+  requisition     JobRequisition           @relation(fields: [requisitionId], references: [id], onDelete: Restrict)
+  candidateId     String
+  candidate       Candidate                @relation(fields: [candidateId], references: [id], onDelete: Restrict)
+  postingId       String
+  posting         JobPosting               @relation(fields: [postingId], references: [id], onDelete: Restrict)
   pipelineStageId String
-  pipelineStage RecruitmentPipelineStage @relation(fields: [pipelineStageId], references: [id], onDelete: Restrict)
+  pipelineStage   RecruitmentPipelineStage @relation(fields: [pipelineStageId], references: [id], onDelete: Restrict)
 
   /// Legacy lifecycle compatibility. Kanban position is owned exclusively by pipelineStageId.
   status         RecruitmentApplicationStatus @default(new)
@@ -1761,9 +1774,9 @@ model RecruitmentApplication {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  interviewRounds InterviewRound[]
-  offers          RecruitmentOffer[]
-  notes           ApplicationNote[]
+  interviewRounds    InterviewRound[]
+  offers             RecruitmentOffer[]
+  notes              ApplicationNote[]
   connectorResponses RecruitmentConnectorResponse[]
   postingActivities  RecruitmentPostingActivity[]
 
@@ -1780,19 +1793,19 @@ model RecruitmentApplication {
 }
 
 model RecruitmentPipelineStage {
-  id          String   @id @default(cuid())
-  postingId   String?
-  posting     JobPosting? @relation(fields: [postingId], references: [id], onDelete: Cascade)
+  id            String                   @id @default(cuid())
+  postingId     String?
+  posting       JobPosting?              @relation(fields: [postingId], references: [id], onDelete: Cascade)
   requisitionId String?
-  requisition JobRequisition? @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
-  name        String
-  color       String
-  position    Int
-  isDefault   Boolean  @default(false)
-  isCompleted Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  applications RecruitmentApplication[]
+  requisition   JobRequisition?          @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+  name          String
+  color         String
+  position      Int
+  isDefault     Boolean                  @default(false)
+  isCompleted   Boolean                  @default(false)
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+  applications  RecruitmentApplication[]
 
   @@unique([postingId, position])
   @@unique([id, postingId])
@@ -1820,16 +1833,16 @@ model RecruitmentPostingActivity {
 }
 
 model RecruitmentConnectorResponse {
-  id                 String                 @id @default(cuid())
+  id                 String                  @id @default(cuid())
   postingId          String
-  posting            JobPosting             @relation(fields: [postingId], references: [id], onDelete: Cascade)
+  posting            JobPosting              @relation(fields: [postingId], references: [id], onDelete: Cascade)
   externalResponseId String
-  applicationId      String?                  @unique
+  applicationId      String?                 @unique
   application        RecruitmentApplication? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
   errorCode          String?
-  errorMessage       String?                @db.Text
+  errorMessage       String?                 @db.Text
   responseData       Json?
-  processedAt        DateTime               @default(now())
+  processedAt        DateTime                @default(now())
 
   @@unique([postingId, externalResponseId])
 }
@@ -1945,6 +1958,7 @@ model RecruitmentOffer {
   @@index([applicationId])
   @@index([candidateId])
   @@index([status])
+  @@index([createdById])
 }
 
 // Offer Version — Negotiation history
@@ -2011,4 +2025,5 @@ model BackgroundCheck {
 
   @@index([candidateId])
   @@index([status])
+  @@index([checkedById])
 }
