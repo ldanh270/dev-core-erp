@@ -27,8 +27,8 @@ export class PositionsSeeder implements ISeeder {
     ]
 
     for (const pos of positionsData) {
-      const existing = await prisma.position.findUnique({
-        where: { code: pos.code }
+      const existing = await prisma.position.findFirst({
+        where: { code: pos.code, deletedAt: null },
       })
       if (!existing) {
         await prisma.position.create({

@@ -41,10 +41,10 @@ export class RecruitmentSeeder implements ISeeder {
     }
 
     // Get positions
-    const devPos = await prisma.position.findUnique({ where: { code: "developer" } })
-    const testerPos = await prisma.position.findUnique({ where: { code: "tester" } })
-    const pmPos = await prisma.position.findUnique({ where: { code: "pm" } })
-    const hrPos = await prisma.position.findUnique({ where: { code: "hr" } })
+    const devPos = await prisma.position.findFirst({ where: { code: "developer", deletedAt: null } })
+    const testerPos = await prisma.position.findFirst({ where: { code: "tester", deletedAt: null } })
+    const pmPos = await prisma.position.findFirst({ where: { code: "pm", deletedAt: null } })
+    const hrPos = await prisma.position.findFirst({ where: { code: "hr", deletedAt: null } })
 
     // Find recruiter / hr manager to assign applications
     const hrManager = employees.find((e) => e.username === "hr_manager") || employees[0]

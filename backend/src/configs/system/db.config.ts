@@ -36,3 +36,11 @@ export const PRISMA_INTERACTIVE_TRANSACTION_OPTIONS = {
   maxWait: 15_000,
   timeout: 15_000,
 } as const
+
+/** PostgreSQL connection pool bounds tuned for pooled/Supabase deployments. */
+export const DB_POOL_CONFIG = {
+  MAX: Number(process.env.DB_POOL_MAX) || 10,
+  IDLE_TIMEOUT_MS: 30_000,
+  CONNECTION_TIMEOUT_MS: 5_000,
+  STATEMENT_TIMEOUT_MS: Number(process.env.DB_STATEMENT_TIMEOUT_MS) || 30_000,
+} as const

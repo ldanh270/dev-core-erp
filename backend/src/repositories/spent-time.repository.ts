@@ -30,7 +30,7 @@ type PrismaSpentTimeWithRelations = PrismaSpentTime & {
       name: string
     } | null
   }) | null
-  employee?: PrismaEmployee | null
+  employee?: Pick<PrismaEmployee, "id" | "fullName" | "email"> | null
   approvedBy?: Pick<PrismaEmployee, "id" | "fullName"> | null
 }
 
@@ -99,7 +99,13 @@ export class PrismaSpentTimeRepository extends BaseRepository implements ISpentT
         },
       },
     },
-    employee: true,
+    employee: {
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+      },
+    },
     approvedBy: {
       select: {
         id: true,

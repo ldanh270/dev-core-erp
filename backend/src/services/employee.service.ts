@@ -330,19 +330,15 @@ export class EmployeeService implements IEmployeeService {
 
       const record = await tx.employee.findFirst({
         where: { id, deletedAt: null },
+        select: { id: true },
       })
       if (!record) return false
 
-      const timestamp = new Date().getTime()
       await tx.employee.update({
         where: { id },
         data: {
           deletedAt: new Date(),
           status: EMPLOYEE_STATUS.TERMINATED,
-          email: `deleted_${timestamp}_${record.email}`,
-          username: `deleted_${timestamp}_${record.username}`,
-          phone: record.phone ? `deleted_${timestamp}_${record.phone}` : null,
-          nationalId: record.nationalId ? `deleted_${timestamp}_${record.nationalId}` : null,
         },
       })
 

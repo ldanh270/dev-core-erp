@@ -65,8 +65,8 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
   }
 
   async findById(id: string): Promise<EmployeeContract | null> {
-    const contract = await this.prisma.employeeContract.findUnique({
-      where: { id },
+    const contract = await this.prisma.employeeContract.findFirst({
+      where: { id, deletedAt: null },
     })
     return contract ? this.mapToDomain(contract) : null
   }
@@ -75,6 +75,7 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
     const contracts = await this.prisma.employeeContract.findMany({
       where: {
         employeeId,
+        deletedAt: null,
         ...(includeInactive ? {} : { status: { notIn: ["expired", "terminated"] } }),
       },
       orderBy: { startDate: SORT_ORDER.DESC },
@@ -86,6 +87,7 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
     const contract = await this.prisma.employeeContract.findFirst({
       where: {
         employeeId,
+        deletedAt: null,
         status: { in: ["active", "pending_signature"] },
       },
       orderBy: { startDate: SORT_ORDER.DESC },
@@ -99,6 +101,7 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
 
     const contracts = await this.prisma.employeeContract.findMany({
       where: {
+        deletedAt: null,
         status: "active",
         endDate: {
           not: null,
@@ -115,7 +118,7 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
     const { employeeId, status, type, page = 1, limit = 50 } = query
     const skip = (page - 1) * limit
 
-    const where: Prisma.EmployeeContractWhereInput = {}
+    const where: Prisma.EmployeeContractWhereInput = { deletedAt: null }
     if (employeeId) where.employeeId = employeeId
     if (status) where.status = status
     if (type) where.contractType = type
@@ -166,7 +169,10 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
   }
 
   async update(id: string, data: UpdateContractDto, updatedById: string): Promise<EmployeeContract | null> {
-    const existing = await this.prisma.employeeContract.findUnique({ where: { id } })
+    const existing = await this.prisma.employeeContract.findFirst({
+      where: { id, deletedAt: null },
+      select: { id: true },
+    })
     if (!existing) return null
 
     const updateData: Prisma.EmployeeContractUpdateInput = {
@@ -201,6 +207,12 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
   }
 
   async terminate(id: string, data: TerminateContractDto): Promise<EmployeeContract | null> {
+    const existing = await this.prisma.employeeContract.findFirst({
+      where: { id, deletedAt: null },
+      select: { id: true },
+    })
+    if (!existing) return null
+
     const contract = await this.prisma.employeeContract.update({
       where: { id },
       data: {
@@ -218,6 +230,14 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
     createdById: string,
   ): Promise<EmployeeContract> {
     return this.prisma.$transaction(async (tx) => {
+      const existing = await tx.employeeContract.findFirst({
+        where: { id: _id, deletedAt: null },
+        select: { id: true },
+      })
+      if (!existing) {
+        throw new Error("Contract not found")
+      }
+
       // Mark old as renewed
       await tx.employeeContract.update({
         where: { id: _id },
@@ -252,14 +272,16 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
   }
 
   async softDelete(id: string): Promise<boolean> {
-    const existing = await this.prisma.employeeContract.findUnique({ where: { id } })
+    const existing = await this.prisma.employeeContract.findFirst({
+      where: { id, deletedAt: null },
+      select: { id: true },
+    })
     if (!existing) return false
 
     await this.prisma.employeeContract.update({
       where: { id },
       data: {
-        contractNumber: `${existing.contractNumber}_deleted_${Date.now()}`,
-        status: "terminated",
+        deletedAt: new Date(),
       },
     })
     return true

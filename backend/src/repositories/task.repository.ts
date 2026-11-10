@@ -14,13 +14,37 @@ import {
   Prisma,
   PrismaClient,
   Task as PrismaTask,
-  Employee as PrismaEmployee,
   TaskStatus as PrismaTaskStatus,
   TaskPriority as PrismaTaskPriority,
 } from "@prisma/client"
 
 import { BaseRepository } from "./base.repository.ts"
 import { TASK_STATUS } from "@/configs/entities/project.config.ts"
+
+const TASK_PROJECT_SELECT = {
+  id: true,
+  name: true,
+  taskCreationPolicy: true,
+  teamLeaderId: true,
+} as const
+
+const TASK_EMPLOYEE_SELECT = {
+  id: true,
+  fullName: true,
+  email: true,
+} as const
+
+const TASK_DEFAULT_INCLUDE = {
+  project: { select: TASK_PROJECT_SELECT },
+  assignee: { select: TASK_EMPLOYEE_SELECT },
+  createdBy: { select: TASK_EMPLOYEE_SELECT },
+} as const
+
+type TaskEmployeeSummary = {
+  id: string
+  fullName: string
+  email: string
+}
 
 type PrismaTaskWithRelations = PrismaTask & {
   project?: {
@@ -29,8 +53,8 @@ type PrismaTaskWithRelations = PrismaTask & {
     taskCreationPolicy: string
     teamLeaderId: string | null
   } | null
-  assignee?: PrismaEmployee | null
-  createdBy?: PrismaEmployee | null
+  assignee?: TaskEmployeeSummary | null
+  createdBy?: TaskEmployeeSummary | null
 }
 
 export class PrismaTaskRepository extends BaseRepository implements ITaskRepository {
@@ -98,18 +122,7 @@ export class PrismaTaskRepository extends BaseRepository implements ITaskReposit
   async findById(id: string): Promise<Task | null> {
     const task = await this.prisma.task.findUnique({
       where: { id },
-      include: {
-        project: {
-          select: {
-            id: true,
-            name: true,
-            taskCreationPolicy: true,
-            teamLeaderId: true,
-          },
-        },
-        assignee: true,
-        createdBy: true,
-      },
+      include: TASK_DEFAULT_INCLUDE,
     })
     return task ? this.mapToDomain(task as PrismaTaskWithRelations) : null
   }
@@ -191,18 +204,7 @@ export class PrismaTaskRepository extends BaseRepository implements ITaskReposit
         skip,
         take: limit,
         orderBy: { [sortBy]: sortOrder },
-        include: {
-          project: {
-            select: {
-              id: true,
-              name: true,
-              taskCreationPolicy: true,
-              teamLeaderId: true,
-            },
-          },
-          assignee: true,
-          createdBy: true,
-        },
+        include: TASK_DEFAULT_INCLUDE,
       }),
     ])
 
@@ -239,18 +241,7 @@ export class PrismaTaskRepository extends BaseRepository implements ITaskReposit
         progress: data.progress || 0,
         parentTaskId: data.parentTaskId,
       },
-      include: {
-        project: {
-          select: {
-            id: true,
-            name: true,
-            taskCreationPolicy: true,
-            teamLeaderId: true,
-          },
-        },
-        assignee: true,
-        createdBy: true,
-      },
+      include: TASK_DEFAULT_INCLUDE,
     })
     return this.mapToDomain(task as PrismaTaskWithRelations)
   }
@@ -302,18 +293,7 @@ export class PrismaTaskRepository extends BaseRepository implements ITaskReposit
     const task = await this.prisma.task.update({
       where: { id },
       data: updateData,
-      include: {
-        project: {
-          select: {
-            id: true,
-            name: true,
-            taskCreationPolicy: true,
-            teamLeaderId: true,
-          },
-        },
-        assignee: true,
-        createdBy: true,
-      },
+      include: TASK_DEFAULT_INCLUDE,
     })
     return this.mapToDomain(task as PrismaTaskWithRelations)
   }

@@ -31,8 +31,8 @@ export async function ensureCapacityDemoTester(
   client: CapacityDemoEmployeeClient,
   passwordHash: string,
 ) {
-  const testerPosition = await client.position.findUnique({
-    where: { code: EMPLOYEE_POSITION_CODE.TESTER },
+  const testerPosition = await client.position.findFirst({
+    where: { code: EMPLOYEE_POSITION_CODE.TESTER, deletedAt: null },
   })
   const existing = await client.employee.findFirst({
     where: {
