@@ -78,7 +78,7 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
 
   // Verify that the user still exists in the database and is active
   try {
-    const employee = await employeeRepository.findById(decoded.empId)
+    const employee = await employeeRepository.findAuthStatusById(decoded.empId)
     if (!employee || employee.status !== EMPLOYEE_STATUS.ACTIVE) {
       console.error("Auth Middleware: Employee not found or inactive", {
         empId: decoded.empId,

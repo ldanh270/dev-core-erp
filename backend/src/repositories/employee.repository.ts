@@ -226,18 +226,12 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
 
     const now = new Date()
 
-    // Perform concurrent data fetching and count query
-    const [
-      data,
-      total,
-      fullTimeCount,
-      partTimeCount,
-      internCount,
-      contractorCount,
-      lockedCount,
-      terminatedCount,
-      totalCount,
-    ] = await Promise.all([
+    // Perform concurrent data fetching and grouped stats
+    const baseStatsWhere: Prisma.EmployeeWhereInput = { deletedAt: null }
+    if (statsWhere.employeeRoles) baseStatsWhere.employeeRoles = statsWhere.employeeRoles
+    if (statsWhere.OR) baseStatsWhere.OR = statsWhere.OR
+
+    const [data, total, groupedStats, lockedCount] = await Promise.all([
       this.prisma.employee.findMany({
         where,
         orderBy,
@@ -246,20 +240,39 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
         take: Number(limit),
       }),
       this.prisma.employee.count({ where }),
-      this.prisma.employee.count({ where: { ...statsWhere, status: { not: EMPLOYEE_STATUS.TERMINATED }, employeeType: "full_time" } }),
-      this.prisma.employee.count({ where: { ...statsWhere, status: { not: EMPLOYEE_STATUS.TERMINATED }, employeeType: "part_time" } }),
-      this.prisma.employee.count({ where: { ...statsWhere, status: { not: EMPLOYEE_STATUS.TERMINATED }, employeeType: "intern" } }),
-      this.prisma.employee.count({ where: { ...statsWhere, status: { not: EMPLOYEE_STATUS.TERMINATED }, employeeType: "contractor" } }),
+      this.prisma.employee.groupBy({
+        by: ["status", "employeeType"],
+        where: baseStatsWhere,
+        _count: { _all: true },
+      }),
       this.prisma.employee.count({
         where: {
-          ...statsWhere,
+          ...baseStatsWhere,
           status: { not: EMPLOYEE_STATUS.TERMINATED },
           AND: [{ OR: [{ lockedUntil: { gt: now } }, { failedLoginCount: { gte: 5 } }] }],
         },
       }),
-      this.prisma.employee.count({ where: { ...statsWhere, status: EMPLOYEE_STATUS.TERMINATED } }),
-      this.prisma.employee.count({ where: { ...statsWhere, status: { not: EMPLOYEE_STATUS.TERMINATED } } }),
     ])
+
+    let fullTimeCount = 0
+    let partTimeCount = 0
+    let internCount = 0
+    let contractorCount = 0
+    let terminatedCount = 0
+    let totalCount = 0
+
+    for (const row of groupedStats) {
+      const count = row._count._all
+      if (row.status === EMPLOYEE_STATUS.TERMINATED) {
+        terminatedCount += count
+        continue
+      }
+      totalCount += count
+      if (row.employeeType === "full_time") fullTimeCount += count
+      else if (row.employeeType === "part_time") partTimeCount += count
+      else if (row.employeeType === "intern") internCount += count
+      else if (row.employeeType === "contractor") contractorCount += count
+    }
 
     const stats = {
       total: totalCount,
@@ -296,6 +309,28 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
     })
     if (!employee) return null
     return this.mapToDomain(employee)
+  }
+
+  /** Lightweight auth guard lookup — avoids role joins and non-status columns. */
+  async findAuthStatusById(id: string): Promise<{ id: string; status: EmployeeStatus } | null> {
+    return this.prisma.employee.findFirst({
+      where: { id, deletedAt: null },
+      select: { id: true, status: true },
+    })
+  }
+
+  /** Minimal active employee projection for payroll batch generation. */
+  async listActiveForPayroll(): Promise<
+    Array<Pick<Employee, "id" | "employeeType" | "workScheduleType">>
+  > {
+    return this.prisma.employee.findMany({
+      where: { status: EMPLOYEE_STATUS.ACTIVE, deletedAt: null },
+      select: {
+        id: true,
+        employeeType: true,
+        workScheduleType: true,
+      },
+    })
   }
 
   /**
