@@ -210,6 +210,26 @@ export class PrismaSpentTimeRepository extends BaseRepository implements ISpentT
     return result._sum.hours ?? 0
   }
 
+  /** Sums non-rejected hours across multiple tasks in a single groupBy query. */
+  async sumHoursByTaskIds(taskIds: string[]): Promise<Map<string, number>> {
+    const totals = new Map<string, number>()
+    if (taskIds.length === 0) return totals
+
+    const grouped = await this.prisma.spentTime.groupBy({
+      by: ["taskId"],
+      where: {
+        taskId: { in: taskIds },
+        status: { not: SPENT_TIME_STATUS.REJECTED },
+      },
+      _sum: { hours: true },
+    })
+
+    for (const row of grouped) {
+      totals.set(row.taskId, row._sum.hours ?? 0)
+    }
+    return totals
+  }
+
   /** Marks log approved — only approved rows are queried by listApprovedForPayroll. */
   async approve(id: string, approverId: string): Promise<SpentTime | null> {
     const record = await this.prisma.spentTime.update({
@@ -286,5 +306,56 @@ export class PrismaSpentTimeRepository extends BaseRepository implements ISpentT
         },
       ]
     })
+  }
+
+  /** Batch-loads approved PT spent time rows grouped by employeeId. */
+  async listApprovedForPayrollByEmployees(
+    employeeIds: string[],
+    startDate: Date,
+    endDate: Date,
+  ): Promise<Map<string, ApprovedSpentTimePayrollRow[]>> {
+    const grouped = new Map<string, ApprovedSpentTimePayrollRow[]>()
+    if (employeeIds.length === 0) return grouped
+
+    const records = await this.prisma.spentTime.findMany({
+      where: {
+        employeeId: { in: employeeIds },
+        status: SPENT_TIME_STATUS.APPROVED,
+        date: { gte: startDate, lte: endDate },
+      },
+      include: {
+        task: {
+          select: {
+            projectId: true,
+            project: {
+              select: {
+                members: {
+                  where: { employeeId: { in: employeeIds }, removedAt: null },
+                  select: { employeeId: true, hourlyRate: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+
+    for (const record of records) {
+      const member = record.task.project.members.find((m) => m.employeeId === record.employeeId)
+      if (!member?.hourlyRate) continue
+
+      const bucket = grouped.get(record.employeeId) ?? []
+      bucket.push({
+        id: record.id,
+        employeeId: record.employeeId,
+        projectId: record.task.projectId,
+        hours: record.hours,
+        workTimeType: record.workTimeType as SpentTimeWorkTimeType,
+        hourlyRate: Number(member.hourlyRate),
+      })
+      grouped.set(record.employeeId, bucket)
+    }
+
+    return grouped
   }
 }

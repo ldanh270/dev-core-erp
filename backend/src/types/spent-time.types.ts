@@ -112,6 +112,7 @@ export interface ISpentTimeRepository {
   update(id: string, data: UpdateSpentTimeDto): Promise<SpentTime | null>
   delete(id: string): Promise<boolean>
   sumTaskHours(taskId: string, excludeId?: string): Promise<number>
+  sumHoursByTaskIds?(taskIds: string[]): Promise<Map<string, number>>
   approve(id: string, approverId: string): Promise<SpentTime | null>
   reject(id: string, approverId: string, reason: string): Promise<SpentTime | null>
   listApprovedForPayroll(
@@ -119,6 +120,11 @@ export interface ISpentTimeRepository {
     startDate: Date,
     endDate: Date,
   ): Promise<ApprovedSpentTimePayrollRow[]>
+  listApprovedForPayrollByEmployees?(
+    employeeIds: string[],
+    startDate: Date,
+    endDate: Date,
+  ): Promise<Map<string, ApprovedSpentTimePayrollRow[]>>
 }
 
 /**

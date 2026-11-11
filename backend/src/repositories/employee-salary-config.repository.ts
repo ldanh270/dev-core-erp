@@ -8,6 +8,21 @@ import { EmployeeSalaryConfig, PrismaClient } from "@prisma/client"
 
 import { BaseRepository } from "./base.repository.ts"
 
+const SALARY_CONFIG_ACTIVE_INCLUDE = {
+  template: {
+    include: {
+      createdBy: {
+        select: { fullName: true },
+      },
+      components: {
+        include: {
+          component: true,
+        },
+      },
+    },
+  },
+} as const
+
 export class PrismaEmployeeSalaryConfigRepository
   extends BaseRepository
   implements IEmployeeSalaryConfigRepository
@@ -26,22 +41,35 @@ export class PrismaEmployeeSalaryConfigRepository
         effectiveFrom: { lte: atDate },
         OR: [{ effectiveTo: null }, { effectiveTo: { gte: atDate } }],
       },
-      include: {
-        template: {
-          include: {
-            createdBy: {
-              select: { fullName: true },
-            },
-            components: {
-              include: {
-                component: true,
-              },
-            },
-          },
-        },
-      },
+      include: SALARY_CONFIG_ACTIVE_INCLUDE,
       orderBy: { effectiveFrom: "desc" },
     })
+  }
+
+  /** Batch-loads latest active salary config per employee in a single query. */
+  async findActiveByEmployees(
+    employeeIds: string[],
+    atDate: Date,
+  ): Promise<Map<string, EmployeeSalaryConfigWithTemplate>> {
+    const result = new Map<string, EmployeeSalaryConfigWithTemplate>()
+    if (employeeIds.length === 0) return result
+
+    const configs = await this.prisma.employeeSalaryConfig.findMany({
+      where: {
+        employeeId: { in: employeeIds },
+        effectiveFrom: { lte: atDate },
+        OR: [{ effectiveTo: null }, { effectiveTo: { gte: atDate } }],
+      },
+      include: SALARY_CONFIG_ACTIVE_INCLUDE,
+      orderBy: { effectiveFrom: "desc" },
+    })
+
+    for (const config of configs) {
+      if (!result.has(config.employeeId)) {
+        result.set(config.employeeId, config)
+      }
+    }
+    return result
   }
 
   async findAllByEmployee(employeeId: string): Promise<EmployeeSalaryConfig[]> {
