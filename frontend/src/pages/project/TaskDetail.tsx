@@ -25,6 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   SPENT_TIME_STATUS,
+
   TASK_PRIORITIES,
   TASK_STATUS,
   getSpentTimeStatusLabel,
@@ -46,9 +47,7 @@ import { toast } from "sonner"
 import { extractErrorMessage } from "@/utils/error-helper"
 import type { SpentTime } from "@/types/spent-time.types"
 import type { TaskTracker, TaskPriority } from "@/types/task.types"
-
 import { useEffect, useState } from "react"
-
 import {
   AlertCircle,
   Calendar,
@@ -141,7 +140,7 @@ export default function TaskDetail() {
   const [resultTab, setResultTab] = useState<"report" | "optional">("optional") // Tab for result notes: "report" or "optional"
   const [editError, setEditError] = useState<string | null>(null) // Errors during form submission
 
-  // 1. Query hook to fetch detailed data for the targeted task
+  // Query hook to fetch detailed data for the targeted task
   const { data: task, isLoading: isLoadingTask } = useQuery({
     queryKey: ["task", id],
     queryFn: () => taskApi.getOne(id),
@@ -165,21 +164,21 @@ export default function TaskDetail() {
     enabled: !!id,
   })
 
-  // 3. Query hook to fetch active project members (populate assignee list)
+  // Query hook to fetch active project members (populate assignee list)
   const { data: members } = useQuery({
     queryKey: ["members", projectId],
     queryFn: () => projectApi.getMembers(projectId),
     enabled: !!projectId,
   })
 
-  // 4. Query hook to fetch parent project details (permissions validation)
+  // Query hook to fetch parent project details (permissions validation)
   const { data: project } = useQuery({
     queryKey: ["project", projectId],
     queryFn: () => projectApi.getOne(projectId),
     enabled: !!projectId,
   })
 
-  // 5. Query hook to fetch siblings tasks under the same project (enables prev/next navigations)
+  // Query hook to fetch siblings tasks under the same project (enables prev/next navigations)
   const { data: siblingTasksData } = useQuery({
     queryKey: ["tasks", "siblings", projectId],
     queryFn: () => taskApi.list({ projectId, limit: 1000, sortBy: "createdAt", sortOrder: "desc" }),
@@ -288,6 +287,17 @@ export default function TaskDetail() {
   // Update task mutation
   const updateMutation = useMutation({
     mutationFn: async () => {
+      if (task?.statusId && taskStatusId && task.statusId !== taskStatusId) {
+        const sourceStatus = statuses.find((s) => s.id === task.statusId)
+        const targetStatus = statuses.find((s) => s.id === taskStatusId)
+        if (sourceStatus && targetStatus) {
+          const isMovingBackToDefault = !sourceStatus.isDefault && !sourceStatus.isCompleted && targetStatus.isDefault
+          if (isMovingBackToDefault) {
+            toast.warning("Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình")
+            throw new Error("Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình")
+          }
+        }
+      }
       return taskApi.update(id, {
         title: taskTitle,
         description: cleanHtml(taskDesc),
@@ -306,6 +316,7 @@ export default function TaskDetail() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["task", id] })
       void queryClient.invalidateQueries({ queryKey: ["tasks", "project", projectId] })
+      toast.success("Cập nhật công việc thành công")
       setIsOpenEditModal(false)
       setEditError(null)
     },
@@ -883,6 +894,46 @@ export default function TaskDetail() {
                 toast.warning("Ngày bắt đầu không được sau hạn hoàn thành")
                 return
               }
+
+              // Validate date boundaries against parent task
+              const allTasks = siblingTasksData?.data || []
+              if (task?.parentTaskId) {
+                const parentTask = allTasks.find((t) => t.id === task.parentTaskId)
+                if (parentTask) {
+                  if (parentTask.startDate && taskStart && new Date(taskStart) < new Date(parentTask.startDate)) {
+                    toast.warning(
+                      `Ngày bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha (${new Date(parentTask.startDate).toLocaleDateString("vi-VN")})`
+                    )
+                    return
+                  }
+                  if (parentTask.dueDate && taskDue && new Date(taskDue) > new Date(parentTask.dueDate)) {
+                    toast.warning(
+                      `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${new Date(parentTask.dueDate).toLocaleDateString("vi-VN")})`
+                    )
+                    return
+                  }
+                }
+              }
+
+              // Validate date boundaries against subtasks
+              const childTasks = allTasks.filter((t) => t.parentTaskId === id)
+              if (childTasks.length > 0) {
+                for (const child of childTasks) {
+                  if (child.startDate && taskStart && new Date(taskStart) > new Date(child.startDate)) {
+                    toast.warning(
+                      `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (bắt đầu ${new Date(child.startDate).toLocaleDateString("vi-VN")})`
+                    )
+                    return
+                  }
+                  if (child.dueDate && taskDue && new Date(taskDue) < new Date(child.dueDate)) {
+                    toast.warning(
+                      `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (hạn hoàn thành ${new Date(child.dueDate).toLocaleDateString("vi-VN")})`
+                    )
+                    return
+                  }
+                }
+              }
+
               updateMutation.mutate()
             }}
             className="space-y-4 pt-3"

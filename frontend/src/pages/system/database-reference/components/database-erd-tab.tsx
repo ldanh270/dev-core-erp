@@ -3,7 +3,11 @@ import { DatabaseErdCanvas } from "./database-erd-canvas"
 import { DatabaseErdControls } from "./database-erd-controls"
 import { useDatabaseErdTab } from "../hooks/use-database-erd-tab"
 
-// Props for the interactive ERD tab container.
+import { useCallback } from "react"
+
+/**
+ * Props for the interactive ERD tab container.
+ */
 interface DatabaseErdTabProps {
   tables: TableDef[]
   allTables: TableDef[]
@@ -41,14 +45,22 @@ export function DatabaseErdTab({
     selectedTableName,
   })
 
+  const { handleSelectNode } = viewport
+  const onSelectCanvasNode = useCallback(
+    (table: TableDef) => {
+      handleSelectNode(table, onSelectTable)
+    },
+    [handleSelectNode, onSelectTable],
+  )
+
   return (
     <section
       ref={setFullscreenTarget}
       aria-label="Sơ đồ quan hệ cơ sở dữ liệu"
-      className={`relative flex flex-col overflow-hidden border border-border bg-card ${
+      className={`relative flex select-none flex-col overflow-hidden border border-border bg-card ${
         viewport.isFullscreen
           ? "fixed inset-0 z-40 h-dvh rounded-none p-3"
-          : "flex-1 min-h-0 h-full rounded-xl shadow-xs"
+          : "flex-1 min-h-0 h-full w-full flex flex-col rounded-xl shadow-xs"
       }`}
     >
       <DatabaseErdControls
@@ -78,7 +90,7 @@ export function DatabaseErdTab({
         onPointerDown={viewport.handlePointerDown}
         onPointerMove={viewport.handlePointerMove}
         onPointerUp={viewport.handlePointerUp}
-        onSelectNode={(table) => { viewport.handleSelectNode(table, onSelectTable); }}
+        onSelectNode={onSelectCanvasNode}
       />
     </section>
   )

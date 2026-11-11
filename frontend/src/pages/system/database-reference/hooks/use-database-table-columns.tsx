@@ -37,7 +37,7 @@ export function useDatabaseTableColumns({
         cell: (table) => (
           <div className="flex flex-col gap-1 py-1 font-mono">
             <div className="flex flex-col gap-0.5">
-              <span className="font-semibold text-foreground">{table.name}</span>
+              <span className="font-semibold text-foreground transition-colors group-hover:text-primary">{table.name}</span>
               <span className="text-[11px] text-muted-foreground">{table.dbName}</span>
             </div>
             <div>
@@ -62,24 +62,47 @@ export function useDatabaseTableColumns({
       {
         id: "module",
         header: "Phân hệ",
-        width: "160px",
-        minWidth: "160px",
+        width: "140px",
+        minWidth: "140px",
         cell: (table) => {
           const theme = getModuleTheme(table.module)
           return (
-            <div className="flex flex-col items-start gap-1 py-1">
+            <div className="flex items-center py-1">
               <Badge
                 variant="outline"
-                className={`rounded-full px-2 py-0 text-[10px] font-medium ${theme.badge}`}
+                className={`rounded-full px-2.5 py-0.5 text-[10px] font-medium ${theme.badge}`}
               >
                 {table.module}
               </Badge>
-              <span className="text-[11px] text-muted-foreground">
-                {table.columns.length} cột
-              </span>
             </div>
           )
         },
+      },
+      // Dedicated column count metric column.
+      {
+        id: "columnsCount",
+        header: "Số cột",
+        width: "90px",
+        minWidth: "90px",
+        align: "center",
+        cell: (table) => (
+          <span className="font-mono text-xs font-semibold text-foreground">
+            {table.columns.length}
+          </span>
+        ),
+      },
+      // Dedicated database index count metric column.
+      {
+        id: "indexesCount",
+        header: "Indexes",
+        width: "90px",
+        minWidth: "90px",
+        align: "center",
+        cell: (table) => (
+          <span className="font-mono text-xs text-muted-foreground">
+            {table.indexes?.length ?? 0}
+          </span>
+        ),
       },
       {
         id: "description",
@@ -123,10 +146,20 @@ export function useDatabaseTableColumns({
                   </button>
                 )
               })}
+              {/* Render interactive rounded pill badge for remaining overflow relationships */}
               {relations.length > MAX_VISIBLE_RELATION_CHIPS && (
-                <span className="self-center font-mono text-[10px] text-muted-foreground">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onSelectTable(table)
+                  }}
+                  className="inline-flex items-center rounded-full border border-border bg-muted/50 px-2 py-0.5 font-mono text-[10px] font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer"
+                  title={`Xem thêm ${relations.length - MAX_VISIBLE_RELATION_CHIPS} quan hệ liên kết khác trong chi tiết bảng`}
+                  aria-label={`Xem thêm ${relations.length - MAX_VISIBLE_RELATION_CHIPS} quan hệ`}
+                >
                   +{relations.length - MAX_VISIBLE_RELATION_CHIPS}
-                </span>
+                </button>
               )}
             </div>
           )

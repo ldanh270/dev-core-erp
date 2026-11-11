@@ -1,110 +1,147 @@
 import type { TableDef } from "./database-reference.types"
-import type { ErdEdge, ErdPoint } from "./database-erd-layout"
+import type { HorizontalTrack, VerticalTrack } from "./database-erd-tracks"
 import {
-  DEFAULT_EDGE_ANCHOR_Y,
+  buildNodeBoxes,
+  buildStreetCenters,
+  waypointsToOrthogonalPath,
+} from "./database-erd-collision"
+import type { ErdEdge, ErdPoint } from "./database-erd-geometry"
+import {
   ERD_NODE_WIDTH,
-  FIELD_ANCHOR_STEP_Y,
   FIRST_FIELD_ANCHOR_Y,
-  getLinkedColumns,
   MIN_NODE_HEIGHT,
-} from "./database-erd-layout"
+} from "./database-erd-geometry"
+import type { EdgeDraft } from "./database-erd-waypoints"
+import {
+  buildOrthogonalWaypoints,
+  getFieldOffsetY,
+  resolveEndpoints,
+} from "./database-erd-waypoints"
 
-interface EdgeDraft {
-  id: string
-  sourceTable: string
-  targetTable: string
-  from: ErdPoint
-  sourceIsLeft: boolean
-  sourceY: number
-  highlighted: boolean
-  crossModule: boolean
-}
+export { getErdEdgeClassName } from "./database-erd-edge-style"
 
-// Compute straight-line edge endpoints with distributed target anchor slots to eliminate spider-web clustering.
+/**
+ * Computes orthogonal relationship lines with PK bus merging and non-overlapping track allocation.
+ *
+ * @param tables - List of tables to route relationship lines for.
+ * @param tableByName - Lookup map of table metadata by name.
+ * @param positions - Current canvas coordinates of all tables.
+ * @param heights - Computed rendered heights of all tables.
+ * @param selectedTableName - Currently focused table for highlighting.
+ * @param onlyConnectedToTable - Optional filter to limit edge recomputation during node drag.
+ * @param previousEdges - Previous edge collection for incremental routing.
+ * @returns Sorted collection of orthogonal relationship edges.
+ */
 export function createEdges(
   tables: TableDef[],
   tableByName: Map<string, TableDef>,
   positions: Map<string, ErdPoint>,
   heights: Map<string, number>,
   selectedTableName: string | null,
+  onlyConnectedToTable?: string | null,
+  previousEdges?: ErdEdge[],
 ): ErdEdge[] {
-  const rawEdges: EdgeDraft[] = []
+  const boxes = buildNodeBoxes(positions, heights, ERD_NODE_WIDTH, MIN_NODE_HEIGHT)
+  const streetCenters = buildStreetCenters(boxes)
+  const drafts: EdgeDraft[] = []
+  const filterByTable = Boolean(onlyConnectedToTable && previousEdges && previousEdges.length > 0)
 
   for (const table of tables) {
-    const linkedCols = getLinkedColumns(table)
     for (const relation of table.outgoingRelations) {
-      const source = positions.get(table.name)
-      const target = positions.get(relation.targetTable)
+      if (
+        filterByTable &&
+        table.name !== onlyConnectedToTable &&
+        relation.targetTable !== onlyConnectedToTable
+      ) {
+        continue
+      }
+      const sourcePos = positions.get(table.name)
+      const targetPos = positions.get(relation.targetTable)
       const targetTable = tableByName.get(relation.targetTable)
-      if (!source || !target || !targetTable) continue
+      if (!sourcePos || !targetPos || !targetTable) continue
 
-      const colIdx = linkedCols.findIndex((c) => c.name === relation.sourceColumn)
-      const sourceOffsetY =
-        colIdx >= 0 ? FIRST_FIELD_ANCHOR_Y + colIdx * FIELD_ANCHOR_STEP_Y : DEFAULT_EDGE_ANCHOR_Y
-      const sourceIsLeft = source.x < target.x
+      const sourceOffsetY = getFieldOffsetY(table, relation.sourceColumn, false)
+      const targetOffsetY = getFieldOffsetY(targetTable, relation.targetColumn, true)
+      const { from, to, mode, baseTrunkX } = resolveEndpoints(
+        table.name,
+        relation.targetTable,
+        sourcePos,
+        targetPos,
+        sourceOffsetY,
+        targetOffsetY,
+      )
 
-      rawEdges.push({
-        id: `${table.name}-${relation.sourceColumn}->${relation.targetTable}`,
+      const tableAnchorY = sourcePos.y + FIRST_FIELD_ANCHOR_Y
+      const corridorBucket = Math.round(baseTrunkX / 120)
+      const verticalZone =
+        tableAnchorY < to.y - 160 ? "top" : tableAnchorY > to.y + 160 ? "bottom" : "mid"
+      const zonePortOffsetY = verticalZone === "top" ? -7 : verticalZone === "bottom" ? 7 : 0
+      const adjustedTo =
+        mode === "left-to-right" || mode === "right-to-left"
+          ? { x: to.x, y: to.y + zonePortOffsetY }
+          : to
+      const preferredMidY = Math.round((tableAnchorY + adjustedTo.y) / 2)
+      const busKey = `${corridorBucket}::${relation.targetTable}::${relation.targetColumn}::${mode}::${verticalZone}`
+      const highlighted =
+        table.name === selectedTableName || relation.targetTable === selectedTableName
+
+      drafts.push({
+        id: `${table.name}-${relation.sourceColumn}->${relation.targetTable}-${relation.targetColumn}`,
         sourceTable: table.name,
         targetTable: relation.targetTable,
-        from: { x: source.x + (sourceIsLeft ? ERD_NODE_WIDTH : 0), y: source.y + sourceOffsetY },
-        sourceIsLeft,
-        sourceY: source.y + sourceOffsetY,
-        highlighted: table.name === selectedTableName || relation.targetTable === selectedTableName,
+        from,
+        to: adjustedTo,
+        preferredMidY,
+        mode,
+        baseTrunkX,
+        busKey,
+        highlighted,
+        dimmed: selectedTableName !== null && !highlighted,
         crossModule: table.module !== targetTable.module,
       })
     }
   }
 
-  // Group incoming edges by target table and incoming side (left or right)
-  const leftIncoming = new Map<string, EdgeDraft[]>()
-  const rightIncoming = new Map<string, EdgeDraft[]>()
+  /**
+   * Sort shorter local lines first to claim inner avenue tracks closest to their nodes.
+   */
+  drafts.sort((a, b) => {
+    const spanA = Math.abs(a.to.x - a.from.x) + Math.abs(a.to.y - a.from.y)
+    const spanB = Math.abs(b.to.x - b.from.x) + Math.abs(b.to.y - b.from.y)
+    return spanA - spanB
+  })
 
-  for (const edge of rawEdges) {
-    const map = edge.sourceIsLeft ? leftIncoming : rightIncoming
-    const list = map.get(edge.targetTable) ?? []
-    list.push(edge)
-    map.set(edge.targetTable, list)
-  }
+  const verticalTracks: VerticalTrack[] = []
+  const horizontalTracks: HorizontalTrack[] = []
 
-  // Assign distinct evenly spaced vertical anchor points for edges entering the same table side
-  const targetOffsetYMap = new Map<string, number>()
-
-  const assignOffsets = (map: Map<string, EdgeDraft[]>) => {
-    for (const [targetName, edgeList] of map) {
-      edgeList.sort((a, b) => a.sourceY - b.sourceY)
-      const targetH = heights.get(targetName) ?? MIN_NODE_HEIGHT
-      const startY = 36
-      const endY = Math.max(startY + 20, targetH - 24)
-      const count = edgeList.length
-
-      edgeList.forEach((edge, idx) => {
-        const offset = count === 1 ? DEFAULT_EDGE_ANCHOR_Y : startY + (idx / (count - 1)) * (endY - startY)
-        targetOffsetYMap.set(edge.id, offset)
-      })
-    }
-  }
-
-  assignOffsets(leftIncoming)
-  assignOffsets(rightIncoming)
-
-  return rawEdges.map((edge) => {
-    const target = positions.get(edge.targetTable) ?? { x: 0, y: 0 }
-    const offsetY = targetOffsetYMap.get(edge.id) ?? DEFAULT_EDGE_ANCHOR_Y
+  const edges = drafts.map((draft) => {
+    const waypoints = buildOrthogonalWaypoints(
+      draft,
+      verticalTracks,
+      horizontalTracks,
+      boxes,
+      streetCenters,
+    )
     return {
-      id: edge.id,
-      from: edge.from,
-      to: { x: target.x + (edge.sourceIsLeft ? 0 : ERD_NODE_WIDTH), y: target.y + offsetY },
-      highlighted: edge.highlighted,
-      crossModule: edge.crossModule,
+      id: draft.id,
+      sourceTable: draft.sourceTable,
+      targetTable: draft.targetTable,
+      from: draft.from,
+      to: draft.to,
+      path: waypointsToOrthogonalPath(waypoints),
+      highlighted: draft.highlighted,
+      dimmed: draft.dimmed,
+      crossModule: draft.crossModule,
     }
   })
-}
-// Return semantic stroke classes for active, cross-module dashed, or standard relationship lines.
-export function getErdEdgeClassName(edge: Pick<ErdEdge, 'highlighted' | 'crossModule'>): string {
-  if (edge.highlighted) return 'stroke-primary stroke-[2.5] opacity-100'
-  if (edge.crossModule) {
-    return 'stroke-primary/75 stroke-2 opacity-90 [stroke-dasharray:7_4]'
+
+  if (filterByTable && previousEdges) {
+    const updatedById = new Map(edges.map((edge) => [edge.id, edge]))
+    return previousEdges.map((edge) => updatedById.get(edge.id) ?? edge)
   }
-  return 'stroke-muted-foreground/65 stroke-[1.75] opacity-80'
+
+  /**
+   * Render active highlighted paths last so they stay on top of dimmed lines.
+   */
+  return edges.sort((a, b) => Number(a.highlighted) - Number(b.highlighted))
 }

@@ -90,17 +90,15 @@ export function DatabaseErdControls({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {selectedModule !== "ALL" && (
-            <label className="flex h-9 cursor-pointer items-center gap-2 rounded-full border border-border bg-card px-3 text-xs font-semibold">
-              <Switch
-                size="sm"
-                checked={showCrossModuleRelations}
-                onCheckedChange={onCrossModuleRelationsChange}
-                aria-label="Hiển thị khóa ngoại liên phân hệ"
-              />
-              <span>FK liên phân hệ</span>
-            </label>
-          )}
+          <label className="flex h-9 cursor-pointer items-center gap-2 rounded-full border border-border bg-card px-3 text-xs font-semibold">
+            <Switch
+              size="sm"
+              checked={showCrossModuleRelations}
+              onCheckedChange={onCrossModuleRelationsChange}
+              aria-label="Hiển thị khóa ngoại liên phân hệ"
+            />
+            <span>FK liên phân hệ</span>
+          </label>
 
           {/* Match 36px (`h-9`) height of adjacent action buttons */}
           <div className="flex h-9 items-center gap-0.5 rounded-full border border-border bg-card px-1">

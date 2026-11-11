@@ -43,7 +43,7 @@ const STATUS_TABS = [
  */
 export default function ProjectList() {
   // ==========================================
-  // 1. URL Query State & Permission
+  // URL Query State & Permission
   // ==========================================
   const [searchParams, setSearchParams] = useSearchParams()
   const page = Number(searchParams.get("page")) || 1
@@ -56,7 +56,7 @@ export default function ProjectList() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
 
   // ==========================================
-  // 2. Data Fetching Queries
+  // Data Fetching Queries
   // ==========================================
   const { data: projectsData, isLoading } = useQuery({
     queryKey: ["projects"],
@@ -90,7 +90,7 @@ export default function ProjectList() {
   }, [dbTrackers])
 
   // ==========================================
-  // 3. Client Filtering & Pagination
+  // Client Filtering & Pagination
   // ==========================================
   const filteredProjects = useMemo(() => {
     const term = searchTerm.toLowerCase().trim()
@@ -117,7 +117,7 @@ export default function ProjectList() {
   }
 
   // ==========================================
-  // 4. Columns Configuration
+  // Columns Configuration
   // ==========================================
   const columns: DataTableColumn<Project>[] = useMemo(
     () => [
@@ -238,7 +238,7 @@ export default function ProjectList() {
   )
 
   // ==========================================
-  // 5. Render Master DataTablePage
+  // Render Master DataTablePage
   // ==========================================
   return (
     <DataTablePage<Project>

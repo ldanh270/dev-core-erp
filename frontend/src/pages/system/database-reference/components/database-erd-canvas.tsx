@@ -1,14 +1,16 @@
 import type { ModuleDef, TableDef } from "../database-reference.types"
-import type { ErdLayout, ErdPoint } from "../database-erd-layout"
-import { getErdEdgeClassName } from "../database-erd-edges"
+import type { ErdLayout, ErdPoint } from "../database-erd-geometry"
+import { DatabaseErdEdgesSvg } from "./database-erd-edges-svg"
 import { DatabaseErdNode } from "./database-erd-node"
+import { useDatabaseErdCanvas } from "../hooks/use-database-erd-canvas"
 
 import type { PointerEvent, RefObject } from "react"
 
-// Spacing of the radial dot grid background inside the interactive ERD viewport.
 const ERD_GRID_SIZE = "22px 22px"
 
-// Props required to render the interactive ERD canvas, SVG relationship lines, and node cards.
+/**
+ * Props required to render the interactive ERD canvas, orthogonal SVG relationship lines, and node cards.
+ */
 interface DatabaseErdCanvasProps {
   graph: ErdLayout
   modules: ModuleDef[]
@@ -25,7 +27,7 @@ interface DatabaseErdCanvasProps {
 }
 
 /**
- * Renders the pannable/zoomable ERD canvas with straight SVG relationship edges and draggable table nodes.
+ * Renders the GPU-composited ERD canvas with memoized orthogonal SVG relationship edges and draggable table nodes.
  */
 export function DatabaseErdCanvas({
   graph,
@@ -41,16 +43,23 @@ export function DatabaseErdCanvas({
   onPointerUp,
   onSelectNode,
 }: DatabaseErdCanvasProps) {
+  const { activeFocusTable, handleHoverTable } = useDatabaseErdCanvas({
+    isPanning,
+    selectedTableName,
+  })
+
   return (
     <div
       ref={viewportRef}
       data-testid="database-erd-viewport"
-      className="min-h-0 flex-1 touch-none cursor-grab overflow-hidden bg-background active:cursor-grabbing"
+      className="relative flex-1 min-h-0 w-full select-none touch-none cursor-grab overflow-hidden bg-background active:cursor-grabbing"
       style={{
         backgroundImage:
           "radial-gradient(var(--muted-foreground) 0.75px, transparent 0.75px)",
         backgroundSize: ERD_GRID_SIZE,
-        backgroundPosition: `${pan.x}px ${pan.y}px`,
+      }}
+      onDragStart={(event) => {
+        event.preventDefault()
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -64,87 +73,30 @@ export function DatabaseErdCanvas({
       ) : (
         <div
           style={{
-            transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
+            transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${scale})`,
             transformOrigin: "top left",
-            transition: isPanning ? "none" : "transform 100ms ease-out",
-            position: "relative",
+            willChange: "transform",
+            position: "absolute",
+            top: 0,
+            left: 0,
             width: `${graph.width}px`,
             height: `${graph.height}px`,
           }}
         >
-          {/* SVG layer rendering directional arrowheads and straight relationship lines (`M x1 y1 L x2 y2`). */}
-          <svg
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 size-full overflow-visible"
-          >
-            <defs>
-              <marker
-                id="database-arrow"
-                viewBox="0 0 10 10"
-                refX="8"
-                refY="5"
-                markerWidth="6"
-                markerHeight="6"
-                orient="auto"
-              >
-                <path d="M 0 0 L 10 5 L 0 10 z" className="fill-muted-foreground/60" />
-              </marker>
-              <marker
-                id="database-arrow-active"
-                viewBox="0 0 10 10"
-                refX="8"
-                refY="5"
-                markerWidth="7"
-                markerHeight="7"
-                orient="auto"
-              >
-                <path d="M 0 0 L 10 5 L 0 10 z" className="fill-primary" />
-              </marker>
-              <marker
-                id="database-arrow-cross-module"
-                viewBox="0 0 10 10"
-                refX="8"
-                refY="5"
-                markerWidth="7"
-                markerHeight="7"
-                orient="auto"
-              >
-                <path d="M 0 0 L 10 5 L 0 10 z" className="fill-primary" />
-              </marker>
-            </defs>
-            {graph.edges.map((edge) => {
-              // Draw a straight segment from source FK anchor to target PK anchor.
-              const path = `M ${edge.from.x} ${edge.from.y} L ${edge.to.x} ${edge.to.y}`
-              return (
-                <path
-                  key={edge.id}
-                  d={path}
-                  fill="none"
-                  data-cross-module={edge.crossModule}
-                  data-highlighted={edge.highlighted}
-                  className={getErdEdgeClassName(edge)}
-                  markerEnd={
-                    edge.highlighted
-                      ? "url(#database-arrow-active)"
-                      : edge.crossModule
-                        ? "url(#database-arrow-cross-module)"
-                        : "url(#database-arrow)"
-                  }
-                />
-              )
-            })}
-          </svg>
+          <DatabaseErdEdgesSvg edges={graph.edges} activeFocusTable={activeFocusTable} />
 
-          {/* HTML node layer rendering each table card at its computed or dragged position. */}
+          {/* HTML node layer rendering each memoized table card at its computed or dragged position. */}
           {graph.nodes.map(({ table, position }) => (
             <DatabaseErdNode
               key={table.name}
               table={table}
               modules={modules}
               selectedModule={selectedModule}
-              selectedTableName={selectedTableName}
+              selectedTableName={null}
+              isFocused={activeFocusTable === table.name}
               position={position}
               onSelectTable={onSelectNode}
+              onHoverTable={handleHoverTable}
             />
           ))}
         </div>

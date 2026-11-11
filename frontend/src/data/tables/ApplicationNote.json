@@ -1,7 +1,7 @@
 {
   "name": "ApplicationNote",
   "dbName": "ApplicationNote",
-  "module": "ATTENDANCE",
+  "module": "RECRUITMENT",
   "description": "Bảng dữ liệu ApplicationNote trong hệ thống ERP",
   "columns": [
     {

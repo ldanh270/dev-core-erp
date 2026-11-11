@@ -5,9 +5,9 @@ import {
   MIN_SCALE,
   useDatabaseErdViewport,
   ZOOM_STEP,
-} from "../database-erd-viewport"
+} from "./use-database-erd-viewport"
 
-export type { ViewportSize } from "../database-erd-viewport"
+export type { ViewportSize } from "./use-database-erd-viewport"
 
 export interface UseDatabaseErdTabParams {
   tables: TableDef[]
@@ -18,6 +18,9 @@ export interface UseDatabaseErdTabParams {
 
 /**
  * Custom hook orchestrating the interactive ERD graph tables calculation, cross-module filtering, and viewport controls.
+ *
+ * @param params - Tab tables, full schema tables, selected module, and highlighted table.
+ * @returns State and event handlers for canvas controls and viewport rendering.
  */
 export function useDatabaseErdTab({
   tables,
@@ -34,9 +37,23 @@ export function useDatabaseErdTab({
     [allTables],
   )
 
-  // Include external cross-module tables when a single module is selected and the cross-module switch is enabled.
+  /**
+   * Include external cross-module tables when single module is selected, or filter out cross-module FKs in ALL mode when disabled.
+   */
   const graphTables = useMemo(() => {
-    if (selectedModule === "ALL" || !showCrossModuleRelations) return tables
+    if (selectedModule === "ALL") {
+      if (showCrossModuleRelations) return tables
+      return tables.map((table) => ({
+        ...table,
+        outgoingRelations: table.outgoingRelations.filter(
+          (relation) => tableByName.get(relation.targetTable)?.module === table.module,
+        ),
+        incomingRelations: table.incomingRelations.filter(
+          (relation) => tableByName.get(relation.sourceTable)?.module === table.module,
+        ),
+      }))
+    }
+    if (!showCrossModuleRelations) return tables
 
     const externalNames = new Set<string>()
     for (const table of tables) {
@@ -50,34 +67,30 @@ export function useDatabaseErdTab({
       }
     }
 
-    const externalTables = allTables
-      .filter((table) => externalNames.has(table.name))
+    const externalTables = Array.from(externalNames)
+      .map((name) => tableByName.get(name))
+      .filter((table): table is TableDef => table !== undefined)
       .map((table) => ({
         ...table,
-        outgoingRelations: table.outgoingRelations.filter((relation) =>
-          moduleTableNames.has(relation.targetTable),
+        outgoingRelations: table.outgoingRelations.filter((rel) =>
+          moduleTableNames.has(rel.targetTable),
+        ),
+        incomingRelations: table.incomingRelations.filter((rel) =>
+          moduleTableNames.has(rel.sourceTable),
         ),
       }))
 
     return [...tables, ...externalTables]
-  }, [allTables, moduleTableNames, selectedModule, showCrossModuleRelations, tableByName, tables])
+  }, [moduleTableNames, selectedModule, showCrossModuleRelations, tableByName, tables])
 
-  const viewport = useDatabaseErdViewport(
-    graphTables,
-    selectedTableName,
-    fullscreenTarget,
-  )
+  const viewport = useDatabaseErdViewport(graphTables, selectedTableName, fullscreenTarget)
 
-  // Zoom in by the standard geometric step bounded by MAX_SCALE.
   const handleZoomIn = () => {
-    const nextScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, viewport.scale * ZOOM_STEP))
-    viewport.zoomBy(nextScale / viewport.scale)
+    viewport.zoomBy(ZOOM_STEP)
   }
 
-  // Zoom out by the standard geometric step bounded by MIN_SCALE.
   const handleZoomOut = () => {
-    const nextScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, viewport.scale * (1 / ZOOM_STEP)))
-    viewport.zoomBy(nextScale / viewport.scale)
+    viewport.zoomBy(1 / ZOOM_STEP)
   }
 
   return {
@@ -85,7 +98,10 @@ export function useDatabaseErdTab({
     setShowCrossModuleRelations,
     fullscreenTarget,
     setFullscreenTarget,
+    graphTables,
     viewport,
+    minScale: MIN_SCALE,
+    maxScale: MAX_SCALE,
     handleZoomIn,
     handleZoomOut,
   }

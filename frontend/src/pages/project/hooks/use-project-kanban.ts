@@ -124,7 +124,7 @@ export function useProjectKanban({
     mutationFn: ({ taskId, statusId }: { taskId: string; statusId: string | null }) =>
       taskApi.update(taskId, { statusId }),
 
-    // 1. Immediately update the cache before the API call
+    // Immediately update the cache before the API call
     onMutate: async ({ taskId, statusId }) => {
       await queryClient.cancelQueries({ queryKey: KANBAN_QUERY_KEY })
       const previousData = queryClient.getQueryData<{ data: Task[] }>(KANBAN_QUERY_KEY)
@@ -142,7 +142,7 @@ export function useProjectKanban({
       return { previousData }
     },
 
-    // 2. On API error: rollback to snapshot
+    // On API error: rollback to snapshot
     onError: (err: unknown, _vars, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(KANBAN_QUERY_KEY, context.previousData)
@@ -150,7 +150,7 @@ export function useProjectKanban({
       toast.error(extractErrorMessage(err))
     },
 
-    // 3. On settle: sync with server truth
+    // On settle: sync with server truth
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: KANBAN_QUERY_KEY })
     },
@@ -231,6 +231,21 @@ export function useProjectKanban({
     setDragOverInfo({ taskId, position })
   }
 
+  const isInvalidBackwardTransition = (
+    sourceStatusId?: string | null,
+    targetStatusId?: string | null,
+  ): boolean => {
+    if (!sourceStatusId || !targetStatusId) return false
+    const sourceStatus = statuses.find((s) => s.id === sourceStatusId)
+    const targetStatus = statuses.find((s) => s.id === targetStatusId)
+    if (!sourceStatus || !targetStatus) return false
+
+    return !sourceStatus.isDefault && !sourceStatus.isCompleted && targetStatus.isDefault
+
+
+
+  }
+
   const handleCardDrop = (e: React.DragEvent, targetTask: Task) => {
     if (draggingColumnId) return
     e.preventDefault()
@@ -241,6 +256,10 @@ export function useProjectKanban({
     if (taskId && taskId !== targetTask.id) {
       const sourceTask = tasks.find((t) => t.id === taskId)
       if (sourceTask && sourceTask.statusId !== targetTask.statusId) {
+        if (isInvalidBackwardTransition(sourceTask.statusId, targetTask.statusId)) {
+          toast.warning("Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình")
+          return
+        }
         moveTaskMutation.mutate({ taskId, statusId: targetTask.statusId })
       }
     }
@@ -254,6 +273,10 @@ export function useProjectKanban({
     if (taskId) {
       const task = tasks.find((t) => t.id === taskId)
       if (task && task.statusId !== targetStatusId) {
+        if (isInvalidBackwardTransition(task.statusId, targetStatusId)) {
+          toast.warning("Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình")
+          return
+        }
         moveTaskMutation.mutate({ taskId, statusId: targetStatusId })
       }
     }

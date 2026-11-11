@@ -13,7 +13,7 @@ const TABLES_DIR = path.join(DATA_DIR, "tables");
 
 fs.mkdirSync(TABLES_DIR, { recursive: true });
 
-// 1. Module Definition & Color Palette
+// Module Definition & Color Palette
 const MODULE_CONFIG = {
   HRM: {
     name: "Nhân sự & Tổ chức (HRM)",
@@ -62,6 +62,9 @@ const MODULE_CONFIG = {
 // Model classification mapping
 function detectModule(modelName) {
   const m = modelName.toLowerCase();
+  if (m === "applicationrecruitmentdetail" || m === "regimecategory") return "ATTENDANCE";
+  if (m === "applicationnote") return "RECRUITMENT";
+  if (m === "projectrole" || m === "customquery") return "PROJECT";
 
   // Recruitment
   if (
@@ -155,7 +158,7 @@ function detectModule(modelName) {
   return "SYSTEM";
 }
 
-// 2. Common Table & Field Vietnamese Dictionary
+// Common Table & Field Vietnamese Dictionary
 const TABLE_DESCRIPTIONS = {
   Employee: "Hồ sơ nhân viên trung tâm, lưu thông tin định danh, chức danh, phân loại và trạng thái công tác",
   EmployeeContract: "Hợp đồng lao động của nhân viên (loại hợp đồng, mức lương, phụ cấp, ngày ký và thời hạn)",
@@ -279,7 +282,7 @@ function parseIndexColumns(rawList) {
     .filter(Boolean);
 }
 
-// 3. Parser Implementation
+// Parser Implementation
 function parsePrismaSchema(content) {
   // Parse Enums
   const enums = {};
@@ -483,7 +486,7 @@ function parsePrismaSchema(content) {
     };
   }
 
-  // 4. Compute Foreign Key Graph (Outgoing & Incoming Relations)
+  // Compute Foreign Key Graph (Outgoing & Incoming Relations)
   for (const modelName in models) {
     const model = models[modelName];
 
@@ -553,7 +556,7 @@ function parsePrismaSchema(content) {
   };
 }
 
-// 5. Run Execution
+// Run Execution
 try {
   console.log("Reading Prisma Schema from:", PRISMA_PATH);
   const content = fs.readFileSync(PRISMA_PATH, "utf8");
