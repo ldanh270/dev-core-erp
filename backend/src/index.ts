@@ -18,6 +18,7 @@ import employeeSalaryConfigRoutes from "@/routes/employee-salary-config.route.ts
 import employeeRoutes from "@/routes/employee.route.ts"
 import employeeContractRoutes from "@/routes/employee-contract.route.ts"
 import holidayRoutes from "@/routes/holiday.route.ts"
+import notificationRoutes from "@/routes/notification.route.ts"
 import partTimeAvailabilityRoutes from "@/routes/part-time-availability.route.ts"
 import payrollRoutes from "@/routes/payroll.route.ts"
 import payslipTemplateRoutes from "@/routes/payslip-template.route.ts"
@@ -118,6 +119,7 @@ app.use("/api/positions", positionRoutes)
 app.use("/api", auditRoutes)
 app.use("/api/spent-times", spentTimeRoutes)
 app.use("/api/custom-queries", customQueryRoutes)
+app.use("/api/notifications", notificationRoutes)
 app.use("/api/debug", debugRoutes)
 
 // 404 handler

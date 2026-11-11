@@ -35,6 +35,11 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
     token = req.headers.authorization.slice(7)
   }
 
+  // Fallback: check query parameter (used by browser EventSource SSE streams)
+  if (!token && typeof req.query.token === "string") {
+    token = req.query.token
+  }
+
   // Verify token presence
   if (!token) {
     return next(
@@ -79,11 +84,13 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
   // Verify that the user still exists in the database and is active
   try {
     const employee = await employeeRepository.findById(decoded.empId)
+
     if (!employee || employee.status !== EMPLOYEE_STATUS.ACTIVE) {
       console.error("Auth Middleware: Employee not found or inactive", {
         empId: decoded.empId,
         employeeStatus: employee?.status,
       })
+
       return next(
         new AppError(
           AUTH_ERRORS.ACCOUNT_INACTIVE.message,
@@ -95,6 +102,7 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
     }
   } catch (error) {
     console.error("Auth Middleware: Error finding employee", error)
+
     return next(
       new AppError(
         AUTH_ERRORS.AUTH_ERROR.message,

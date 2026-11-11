@@ -1,3 +1,5 @@
+import { NOTIFICATION_PRIORITY, NOTIFICATION_TYPE } from "@/configs/entities/notification.config.ts"
+import { eventBus } from "@/libs/event-bus.ts"
 import {
   APPLICATION_STATUS,
   APPLICATION_TYPES,
@@ -122,7 +124,26 @@ export class ApplicationService implements IApplicationService {
    */
   async submitApplication(data: ISubmitApplicationDTO): Promise<unknown> {
     await this._validateApplicationSubmission(data)
-    return this.applicationRepo.submit(data)
+    const result = await this.applicationRepo.submit(data)
+    eventBus.emitTyped("notification:create", {
+      employeeId: data.employeeId,
+      title: "Tạo đơn thành công",
+      message: `Đơn (${data.type}) của bạn đã được gửi và đang chờ phê duyệt.`,
+      type: NOTIFICATION_TYPE.APPLICATION,
+      priority: NOTIFICATION_PRIORITY.MEDIUM,
+      link: "/application/my-applications",
+    })
+    if (data.assignedToId) {
+      eventBus.emitTyped("notification:create", {
+        employeeId: data.assignedToId,
+        title: "Có đơn mới cần duyệt",
+        message: `Có đơn mới (${data.type}) cần bạn phê duyệt.`,
+        type: NOTIFICATION_TYPE.APPLICATION,
+        priority: NOTIFICATION_PRIORITY.HIGH,
+        link: "/application/review",
+      })
+    }
+    return result
   }
 
   /**
@@ -362,7 +383,14 @@ export class ApplicationService implements IApplicationService {
         ErrorLayer.SERVICE,
       )
     }
-
+    eventBus.emitTyped("notification:create", {
+      employeeId: app.employeeId,
+      title: "Đơn đã được phê duyệt",
+      message: `Đơn (${app.type}) của bạn đã được phê duyệt thành công.`,
+      type: NOTIFICATION_TYPE.SUCCESS,
+      priority: NOTIFICATION_PRIORITY.HIGH,
+      link: "/application/my-applications",
+    })
     return updated
   }
 
@@ -405,7 +433,14 @@ export class ApplicationService implements IApplicationService {
         ErrorLayer.SERVICE,
       )
     }
-
+    eventBus.emitTyped("notification:create", {
+      employeeId: app.employeeId,
+      title: "Đơn bị từ chối",
+      message: `Đơn (${app.type}) của bạn đã bị từ chối. Lý do: ${rejectReason}`,
+      type: NOTIFICATION_TYPE.WARNING,
+      priority: NOTIFICATION_PRIORITY.HIGH,
+      link: "/application/my-applications",
+    })
     return updated
   }
 
