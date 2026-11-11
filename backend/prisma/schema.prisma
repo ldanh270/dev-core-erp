@@ -17,12 +17,11 @@ enum EmployeeStatus {
 
 enum EmployeeType {
   full_time
-  part_time // legacy — prefer workScheduleType for schedule logic
+  part_time
   contractor
   intern
 }
 
-// Canonical field for PT vs FT hours; decoupled from employment category (EmployeeType).
 enum WorkScheduleType {
   full_time
   part_time
@@ -109,7 +108,6 @@ enum PayrollStatus {
   paid
 }
 
-// Gates editability: draft/submitted editable by employee; approved locked; rejected sent back.
 enum PartTimeAvailabilityStatus {
   draft
   submitted
@@ -132,7 +130,7 @@ enum ProjectStatus {
   planning
   active
   on_hold
-  completed
+ completed
   cancelled
 }
 
@@ -181,8 +179,6 @@ enum ActivityAction {
   account_unlocked
 }
 
-// ─── Employee HRM Enums ───────────────────────────────────────────────────────
-
 enum ContractType {
   trial
   definite
@@ -199,7 +195,8 @@ enum ContractStatus {
   renewed
 }
 
-// ── Employee Contract ─────────────────────────────────────────────────────────
+// ─── Employee Contract ───────────────────────────────────────────────────────
+
 model EmployeeContract {
   id         String   @id @default(cuid())
   employeeId String
@@ -245,9 +242,8 @@ model EmployeeContract {
   @@index([contractNumber])
 }
 
-// ─── Models ──────────────────────────────────────────────────────────────────
+// ─── Employee ────────────────────────────────────────────────────────────────
 
-// ── Employee ──
 model Employee {
   id                    String           @id @default(cuid())
   fullName              String
@@ -264,7 +260,7 @@ model Employee {
   positionId            String?
   positionRel           Position?        @relation(fields: [positionId], references: [id], onDelete: SetNull)
   employeeType          EmployeeType     @default(full_time)
-  workScheduleType      WorkScheduleType @default(full_time) // PT payroll, availability, attendance branching
+  workScheduleType      WorkScheduleType @default(full_time)
   status                EmployeeStatus   @default(active)
   failedLoginCount      Int              @default(0)
   lockedUntil           DateTime?
@@ -277,9 +273,13 @@ model Employee {
 
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
-  deletedAt            DateTime? // For soft deletes
+  deletedAt            DateTime?
   version              Int       @default(1)
   authorizationVersion Int       @default(1)
+
+  // Notification relations
+  targetedNotifications Notification[]               @relation("NotificationTarget")
+  notificationStates    NotificationRecipientState[]
 
   // Relations
   auditLogsActed                 AuthorizationAuditLog[]      @relation("AuditLogActor")
@@ -331,16 +331,16 @@ model Employee {
   contractsUpdated               EmployeeContract[]           @relation("ContractUpdater")
 
   // Recruitment relations
-  requisitionsRequested         JobRequisition[]         @relation("RequisitionRequester")
-  requisitionsAssignedToApprove JobRequisition[]         @relation("RequisitionDesignatedApprover")
-  requisitionsApproved          JobRequisition[]         @relation("RequisitionApprover")
-  recruitmentAppsAssigned       RecruitmentApplication[] @relation("RecruitmentAppRecruiter")
-  scorecardsEvaluated           Scorecard[]              @relation("ScorecardEvaluator")
-  offersCreated                 RecruitmentOffer[]       @relation("OfferCreator")
-  bgcChecked                    BackgroundCheck[]        @relation("BgcChecker")
-  recruitmentNotesCreated       ApplicationNote[]        @relation("RecruitmentNoteCreator")
+  requisitionsRequested        JobRequisition[]              @relation("RequisitionRequester")
+  requisitionsAssignedToApprove JobRequisition[]             @relation("RequisitionDesignatedApprover")
+  requisitionsApproved         JobRequisition[]              @relation("RequisitionApprover")
+  recruitmentAppsAssigned      RecruitmentApplication[]      @relation("RecruitmentAppRecruiter")
+  scorecardsEvaluated          Scorecard[]                   @relation("ScorecardEvaluator")
+  offersCreated                RecruitmentOffer[]            @relation("OfferCreator")
+  bgcChecked                   BackgroundCheck[]             @relation("BgcChecker")
+  recruitmentNotesCreated      ApplicationNote[]             @relation("RecruitmentNoteCreator")
   recruitmentPostingActivities RecruitmentPostingActivity[] @relation("RecruitmentPostingActivityActor")
-  archivedRecruitmentPostings  JobPosting[]              @relation("RecruitmentPostingArchiver")
+  archivedRecruitmentPostings  JobPosting[]                  @relation("RecruitmentPostingArchiver")
 
   @@index([status, employeeType])
   @@index([deletedAt])
@@ -351,14 +351,15 @@ model Employee {
   @@index([username])
 }
 
-// ── Attendance ──
+// ─── Attendance ──────────────────────────────────────────────────────────────
+
 model WorkingShift {
   id                 String   @id @default(cuid())
   name               String
-  startTime          Int // "HH:mm" stored as total minutes from midnight (e.g., 540 for 09:00)
-  endTime            Int // "HH:mm" stored as total minutes from midnight (e.g., 1020 for 17:00)
-  breakStartTime     Int? // Optional unpaid-break start, minutes from midnight
-  breakEndTime       Int? // Optional unpaid-break end, minutes from midnight
+  startTime          Int
+  endTime            Int
+  breakStartTime     Int?
+  breakEndTime       Int?
   gracePeriodMinutes Int      @default(15)
   gpsLat             Float?
   gpsLng             Float?
@@ -372,16 +373,9 @@ model WorkingShift {
 
   employeeShifts EmployeeShift[]
 
-  // Relations for ShiftSchedule weekdays
   shiftScheduleDays           ShiftScheduleDay[]
   weeklyScheduleTemplateDays  WeeklyScheduleTemplateDay[]
   applicationShiftSwapDetails ApplicationShiftSwapDetail[] @relation("ShiftSwapWorkingShift")
-
-  /// @db.Check("start_time >= 0 AND start_time < 1440")
-  /// @db.Check("end_time >= 0 AND end_time <= 1440")
-  /// @db.Check("(break_start_time IS NULL AND break_end_time IS NULL) OR (start_time < break_start_time AND break_start_time < break_end_time AND break_end_time < end_time)")
-  /// @db.Check("grace_period_minutes >= 0 AND grace_period_minutes <= 120")
-  /// @db.Check("gps_radius_meters > 0")
 
   @@index([isActive])
   @@index([createdById])
@@ -421,7 +415,7 @@ model WeeklyScheduleTemplateDay {
   id        String                     @id @default(cuid())
   weekId    String
   week      WeeklyScheduleTemplateWeek @relation(fields: [weekId], references: [id], onDelete: Cascade)
-  dayOfWeek Int // 0 = Sunday, 1 = Monday, ... 6 = Saturday
+  dayOfWeek Int
   shiftId   String?
   shift     WorkingShift?              @relation(fields: [shiftId], references: [id], onDelete: Restrict)
 
@@ -458,7 +452,7 @@ model ShiftScheduleDay {
   scheduleId String
   schedule   ShiftSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   weekIndex  Int           @default(0)
-  dayOfWeek  Int // 0 = Sunday, 1 = Monday, ... 6 = Saturday
+  dayOfWeek  Int
   shiftId    String
   shift      WorkingShift  @relation(fields: [shiftId], references: [id], onDelete: Restrict)
 
@@ -530,11 +524,9 @@ model AttendanceRecord {
   realShift RealShift?
 
   @@index([employeeId, date(sort: Desc)])
-  // Partial index equivalent in Prisma requires raw SQL setup in migrations, but we create a standard one here
   @@index([status, date(sort: Desc)])
 }
 
-/// Snapshot of actual work times derived from check-in/out for the Real Shift calendar view.
 model RealShift {
   id                 String           @id @default(cuid())
   employeeId         String
@@ -542,10 +534,10 @@ model RealShift {
   attendanceRecordId String           @unique
   attendanceRecord   AttendanceRecord @relation(fields: [attendanceRecordId], references: [id], onDelete: Cascade)
   date               DateTime         @db.Date
-  actualStartTime    Int // minutes from midnight, derived from checkInAt
-  actualEndTime      Int? // minutes from midnight, derived from checkOutAt
-  isMatched          Boolean          @default(false) // true when actual bounds equal planned shift times
-  isPaidLeave        Boolean          @default(false) // true when this shift is a paid leave day
+  actualStartTime    Int
+  actualEndTime      Int?
+  isMatched          Boolean          @default(false)
+  isPaidLeave        Boolean          @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -553,6 +545,8 @@ model RealShift {
   @@index([employeeId, date(sort: Desc)])
   @@index([isMatched, date(sort: Desc)])
 }
+
+// ─── Applications ────────────────────────────────────────────────────────────
 
 model Application {
   id         String            @id @default(cuid())
@@ -611,15 +605,12 @@ model ApplicationShiftSwapDetail {
   applicationId String      @id
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
-  // Shift original want to swap (employee shift)
   employeeShiftId String
   employeeShift   EmployeeShift @relation("ApplicationEmployeeShift", fields: [employeeShiftId], references: [id], onDelete: Cascade)
 
-  // Shift to swap with (working shift)
   workingShiftId String?
   workingShift   WorkingShift? @relation("ShiftSwapWorkingShift", fields: [workingShiftId], references: [id], onDelete: Cascade)
 
-  // If swap with specific employee and shift instead of any available shift
   swapWithEmployeeId String?
   swapWithEmployee   Employee?      @relation("ApplicationSwapWith", fields: [swapWithEmployeeId], references: [id], onDelete: Cascade)
   swapWithShiftId    String?
@@ -641,8 +632,6 @@ model ApplicationOvertimeDetail {
   @@index([employeeShiftId])
 }
 
-/// User-defined regime category (e.g. Con lớn, Thai sản, Con nhỏ).
-/// Two defaults (paid / unpaid) are seeded on first use.
 model RegimeCategory {
   id              String   @id @default(cuid())
   name            String
@@ -699,8 +688,9 @@ model ApplicationWorkFromHomeDetail {
   employeeShift   EmployeeShift @relation(fields: [employeeShiftId], references: [id], onDelete: Restrict)
 }
 
+// ─── Holidays ────────────────────────────────────────────────────────────────
+
 model HolidayCalendar {
-  // Date is intentionally non-unique because scoped holidays may overlap on the same day.
   id          String                    @id @default(cuid())
   date        DateTime                  @db.Date
   name        String
@@ -708,7 +698,6 @@ model HolidayCalendar {
   scope       HolidayScope              @default(all)
   positionId  String?
   position    Position?                 @relation(fields: [positionId], references: [id], onDelete: SetNull)
-  /// Groups rows created from one date-range request.
   batchId     String?
   createdById String
   createdBy   Employee                  @relation(fields: [createdById], references: [id], onDelete: Restrict)
@@ -735,7 +724,8 @@ model HolidayCalendarAssignee {
   @@index([employeeId])
 }
 
-// ── Payroll ──
+// ─── Payroll ─────────────────────────────────────────────────────────────────
+
 model SalaryComponent {
   id          String             @id @default(cuid())
   code        String             @unique @default(cuid())
@@ -794,11 +784,8 @@ model EmployeeSalaryConfig {
   templateId String
   template   PayslipTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
 
-  // ── Lương chính ─────────────────────────────────
   baseSalary Decimal @db.Decimal(15, 2)
-  // Lương cứng hàng tháng — NOT NULL
 
-  // ── Versioning ──────────────────────────────────
   effectiveFrom DateTime  @db.Date
   effectiveTo   DateTime? @db.Date
   note          String?
@@ -867,7 +854,6 @@ model WeeklyScheduleSettings {
   @@index([updatedById])
 }
 
-// Employee-declared free/busy windows per ISO week; admin assigns shifts once status is submitted.
 model PartTimeWeeklyAvailability {
   id           String                     @id @default(cuid())
   employeeId   String
@@ -892,7 +878,6 @@ model PartTimeWeeklyAvailability {
   @@index([reviewedById])
 }
 
-// One row per weekday (0=Sun … 6=Sat); isBusyAllDay blocks all shift assignment that day.
 model PartTimeAvailabilityDay {
   id             String                     @id @default(cuid())
   availabilityId String
@@ -905,7 +890,6 @@ model PartTimeAvailabilityDay {
   @@unique([availabilityId, dayOfWeek])
 }
 
-// Free windows as minutes-from-midnight; assigned shifts must fall within these bounds.
 model PartTimeAvailabilitySlot {
   id        String                  @id @default(cuid())
   dayId     String
@@ -923,7 +907,6 @@ model Payroll {
   periodMonth  Int
   periodYear   Int
   status       PayrollStatus @default(draft)
-  /// Derived: SUM(payslips.netSalary). Must be updated in same transaction as payslip changes.
   totalAmount  Decimal       @default(0) @db.Decimal(15, 2)
   approvedById String?
   approvedBy   Employee?     @relation(fields: [approvedById], references: [id], onDelete: Restrict)
@@ -973,9 +956,7 @@ model PayslipDetail {
   payslip     Payslip         @relation(fields: [payslipId], references: [id], onDelete: Cascade)
   componentId String
   component   SalaryComponent @relation(fields: [componentId], references: [id], onDelete: Restrict)
-  /// Snapshot: name of component at time of payroll calculation (component name may change later)
   name        String
-  /// Snapshot: type of component at time of payroll calculation
   type        ComponentType
   value       Decimal         @db.Decimal(15, 2)
 
@@ -983,12 +964,13 @@ model PayslipDetail {
   @@index([componentId])
 }
 
-// ── Project & Product ──
+// ─── Project & Product ────────────────────────────────────────────────────────
+
 model Project {
   id                 String             @id @default(cuid())
   name               String             @unique
   description        String?
-  techStack          String[] // Array of strings in PG
+  techStack          String[]
   status             ProjectStatus      @default(planning)
   taskCreationPolicy TaskCreationPolicy @default(leader_only)
   startDate          DateTime?
@@ -1016,15 +998,12 @@ model Project {
   @@index([createdById])
 }
 
-/// PT per-project contract: rate for payroll, workMode for attendance (remote vs onsite GPS).
 model ProjectMember {
   projectId  String
   project    Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
   employeeId String
   employee   Employee              @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  /// Hourly rate for approved Spent Time on this project (PT employees).
   hourlyRate Decimal?              @db.Decimal(12, 2)
-  /// remote = Spent Time only; onsite = one GPS check-in per day, then Spent Time.
   workMode   ProjectMemberWorkMode @default(remote)
   roleId     String?
   role       ProjectRole?          @relation(fields: [roleId], references: [id], onDelete: SetNull)
@@ -1076,7 +1055,8 @@ model Task {
   @@index([parentTaskId])
 }
 
-// ── Auth ──
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
 model ActivityLog {
   id         String           @id @default(cuid())
   employeeId String?
@@ -1084,7 +1064,7 @@ model ActivityLog {
   category   ActivityCategory @default(auth)
   actionType ActivityAction
   ipAddress  String?
-  details    Json?            @db.JsonB // JsonB type for flexible metadata
+  details    Json?            @db.JsonB
   expiresAt  DateTime
 
   createdAt DateTime @default(now())
@@ -1118,16 +1098,15 @@ model RefreshToken {
   id         String    @id @default(cuid())
   employeeId String
   employee   Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  tokenHash  String    @unique // SHA-256 hash của raw token
-  expiresAt  DateTime // Fixed — kế thừa từ lần login gốc, không rolling
+  tokenHash  String    @unique
+  expiresAt  DateTime
   createdAt  DateTime  @default(now())
-  revokedAt  DateTime? // null = còn hợp lệ
+  revokedAt  DateTime?
 
   @@index([employeeId])
   @@index([expiresAt])
 }
 
-/// PT time log on a task — pending until lead approves; approved rows feed payroll.
 model SpentTime {
   id              String          @id @default(cuid())
   taskId          String
@@ -1138,7 +1117,6 @@ model SpentTime {
   hours           Float
   comment         String?
   activity        String
-  /// working_day vs overtime — OT uses multiplier in payroll calculation.
   workTimeType    String          @default("working_day")
   status          SpentTimeStatus @default(pending)
   approvedById    String?
@@ -1153,7 +1131,7 @@ model SpentTime {
   @@index([status, date])
 }
 
-// ── Dynamic RBAC ──
+// ─── Dynamic RBAC ────────────────────────────────────────────────────────────
 
 model AppRole {
   id               String  @id @default(cuid())
@@ -1190,7 +1168,7 @@ model AdminStateLock {
 model Permission {
   id          String  @id @default(cuid())
   name        String
-  code        String  @unique // Convention: module.action
+  code        String  @unique
   module      String
   description String?
   isActive    Boolean @default(true)
@@ -1262,7 +1240,8 @@ model AuthorizationAuditLog {
   @@map("authorization_audit_logs")
 }
 
-// ── CustomQuery ──
+// ─── Custom Queries ──────────────────────────────────────────────────────────
+
 model CustomQuery {
   id         String   @id @default(cuid())
   name       String
@@ -1271,7 +1250,7 @@ model CustomQuery {
   project    Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   employeeId String
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  queryData  String // JSON string storing filters
+  queryData  String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -1282,11 +1261,11 @@ model ProjectTaskStatus {
   id          String   @id @default(cuid())
   projectId   String
   project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  name        String // Tên trạng thái, ví dụ: "Idea", "To Do", "In Progress", "Done"
-  color       String   @default("#A3A3A3") // Mã màu sắc đại diện
-  order       Int      @default(0) // Thứ tự hiển thị cột trên Kanban Board
-  isDefault   Boolean  @default(false) // Nhãn mặc định khi tạo mới Task
-  isCompleted Boolean  @default(false) // Đánh dấu trạng thái đã hoàn thành (như Done, Closed)
+  name        String
+  color       String   @default("#A3A3A3")
+  order       Int      @default(0)
+  isDefault   Boolean  @default(false)
+  isCompleted Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   tasks       Task[]
@@ -1298,7 +1277,7 @@ model ProjectTaskStatus {
 model Position {
   id                      String            @id @default(cuid())
   name                    String            @unique
-  code                    String            @unique // ví dụ: "developer", "tester", "pm"
+  code                    String            @unique
   description             String?
   allowedTaskTrackers     String[]
   allowedApplicationTypes ApplicationType[]
@@ -1381,11 +1360,7 @@ model ApplicationRecruitmentDetail {
   requirements String? @db.Text
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// RECRUITMENT MODELS
-// ═══════════════════════════════════════════════════════════════════════════════
-
-// ── Enums ─────────────────────────────────────────────────────────────────────
+// ─── Recruitment Enums ───────────────────────────────────────────────────────
 
 enum RequisitionStatus {
   draft
@@ -1511,9 +1486,8 @@ enum RecruitmentFieldType {
   paragraph
 }
 
-// ── Models ─────────────────────────────────────────────────────────────────────
+// ─── Recruitment Models ──────────────────────────────────────────────────────
 
-// Job Requisition — Hiring request with approval workflow
 model JobRequisition {
   id              String              @id @default(cuid())
   code            String              @unique
@@ -1532,10 +1506,10 @@ model JobRequisition {
   targetHireDate  DateTime?           @db.Date
   targetCloseDate DateTime?           @db.Date
 
-  summary          String?  @db.Text
-  responsibilities String?  @db.Text
-  requirements     String?  @db.Text
-  benefits         String?  @db.Text
+  summary          String? @db.Text
+  responsibilities String? @db.Text
+  requirements     String? @db.Text
+  benefits         String? @db.Text
 
   requestedById   String
   requestedBy     Employee  @relation("RequisitionRequester", fields: [requestedById], references: [id], onDelete: Restrict)
@@ -1552,10 +1526,10 @@ model JobRequisition {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  postings     JobPosting[]
-  applications RecruitmentApplication[]
+  postings        JobPosting[]
+  applications    RecruitmentApplication[]
   candidateFields CandidateFieldDefinition[]
-  pipelineStages RecruitmentPipelineStage[]
+  pipelineStages  RecruitmentPipelineStage[]
 
   @@index([status])
   @@index([requestedById])
@@ -1564,29 +1538,28 @@ model JobRequisition {
   @@index([department])
 }
 
-// Job Posting — one channel-specific publication point for a Requisition
 model JobPosting {
-  id               String             @id @default(cuid())
-  requisitionId    String
-  requisition      JobRequisition     @relation(fields: [requisitionId], references: [id], onDelete: Restrict)
-  channel          RecruitmentChannel
-  source           RecruitmentSource
-  sourceCode       String             @unique
-  formFields       Json?
-  status           PostingStatus      @default(draft)
-  postingUrl       String?
-  externalId       String?
-  connectorStatus  ConnectorStatus    @default(not_configured)
-  oauthAccountId   String?
-  oauthAccount     RecruitmentOAuthAccount? @relation(fields: [oauthAccountId], references: [id], onDelete: SetNull)
-  publishedAt      DateTime?
-  lastSyncedAt     DateTime?
-  closedAt         DateTime?
-  archivedAt       DateTime?
-  archivedById     String?
-  archivedBy       Employee?          @relation("RecruitmentPostingArchiver", fields: [archivedById], references: [id], onDelete: SetNull)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  id              String             @id @default(cuid())
+  requisitionId   String
+  requisition     JobRequisition     @relation(fields: [requisitionId], references: [id], onDelete: Restrict)
+  channel         RecruitmentChannel
+  source          RecruitmentSource
+  sourceCode      String             @unique
+  formFields      Json?
+  status          PostingStatus      @default(draft)
+  postingUrl      String?
+  externalId      String?
+  connectorStatus ConnectorStatus    @default(not_configured)
+  oauthAccountId  String?
+  oauthAccount    RecruitmentOAuthAccount? @relation(fields: [oauthAccountId], references: [id], onDelete: SetNull)
+  publishedAt     DateTime?
+  lastSyncedAt    DateTime?
+  closedAt        DateTime?
+  archivedAt      DateTime?
+  archivedById    String?
+  archivedBy      Employee?          @relation("RecruitmentPostingArchiver", fields: [archivedById], references: [id], onDelete: SetNull)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 
   applications       RecruitmentApplication[]
   intakeRecords      RecruitmentIntakeRecord[]
@@ -1640,7 +1613,6 @@ model PostingFieldSnapshot {
   @@index([externalQuestionId])
 }
 
-// Recruitment Intake Record — Raw provenance data ingested from external forms
 model RecruitmentIntakeRecord {
   id              String            @id @default(cuid())
   postingId       String
@@ -1659,7 +1631,6 @@ model RecruitmentIntakeRecord {
   @@index([processedStatus])
 }
 
-// RecruitmentOAuthAccount — OAuth credentials for posting channels (per user)
 model RecruitmentOAuthAccount {
   id           String             @id @default(cuid())
   userId       String
@@ -1678,17 +1649,15 @@ model RecruitmentOAuthAccount {
   @@index([channel])
 }
 
-// OAuth callback nonce persisted for one-time consumption across API instances.
 model RecruitmentOAuthStateNonce {
-  nonce     String   @id
-  expiresAt DateTime
+  nonce      String    @id
+  expiresAt  DateTime
   consumedAt DateTime?
-  createdAt DateTime @default(now())
+  createdAt  DateTime  @default(now())
 
   @@index([expiresAt])
 }
 
-// Candidate — Person being recruited
 model Candidate {
   id          String    @id @default(cuid())
   fullName    String
@@ -1718,7 +1687,6 @@ model Candidate {
   @@index([source])
 }
 
-// Candidate Meta — flexible key/value profile data, like WordPress usermeta.
 model CandidateMeta {
   id          String    @id @default(cuid())
   candidateId String
@@ -1732,19 +1700,17 @@ model CandidateMeta {
   @@index([metaKey])
 }
 
-// Recruitment Application — Candidate's application to a requisition
 model RecruitmentApplication {
-  id            String         @id @default(cuid())
-  requisitionId String
-  requisition   JobRequisition @relation(fields: [requisitionId], references: [id], onDelete: Restrict)
-  candidateId   String
-  candidate     Candidate      @relation(fields: [candidateId], references: [id], onDelete: Restrict)
-  postingId     String
-  posting       JobPosting     @relation(fields: [postingId], references: [id], onDelete: Restrict)
+  id              String                   @id @default(cuid())
+  requisitionId   String
+  requisition     JobRequisition           @relation(fields: [requisitionId], references: [id], onDelete: Restrict)
+  candidateId     String
+  candidate       Candidate                @relation(fields: [candidateId], references: [id], onDelete: Restrict)
+  postingId       String
+  posting         JobPosting               @relation(fields: [postingId], references: [id], onDelete: Restrict)
   pipelineStageId String
-  pipelineStage RecruitmentPipelineStage @relation(fields: [pipelineStageId], references: [id], onDelete: Restrict)
+  pipelineStage   RecruitmentPipelineStage @relation(fields: [pipelineStageId], references: [id], onDelete: Restrict)
 
-  /// Legacy lifecycle compatibility. Kanban position is owned exclusively by pipelineStageId.
   status         RecruitmentApplicationStatus @default(new)
   rejectReason   String?                      @db.Text
   withdrawReason String?
@@ -1761,9 +1727,9 @@ model RecruitmentApplication {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  interviewRounds InterviewRound[]
-  offers          RecruitmentOffer[]
-  notes           ApplicationNote[]
+  interviewRounds    InterviewRound[]
+  offers             RecruitmentOffer[]
+  notes              ApplicationNote[]
   connectorResponses RecruitmentConnectorResponse[]
   postingActivities  RecruitmentPostingActivity[]
 
@@ -1780,18 +1746,19 @@ model RecruitmentApplication {
 }
 
 model RecruitmentPipelineStage {
-  id          String   @id @default(cuid())
-  postingId   String?
-  posting     JobPosting? @relation(fields: [postingId], references: [id], onDelete: Cascade)
+  id            String          @id @default(cuid())
+  postingId     String?
+  posting       JobPosting?     @relation(fields: [postingId], references: [id], onDelete: Cascade)
   requisitionId String?
-  requisition JobRequisition? @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
-  name        String
-  color       String
-  position    Int
-  isDefault   Boolean  @default(false)
-  isCompleted Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  requisition   JobRequisition? @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+  name          String
+  color         String
+  position      Int
+  isDefault     Boolean         @default(false)
+  isCompleted   Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
   applications RecruitmentApplication[]
 
   @@unique([postingId, position])
@@ -1800,7 +1767,6 @@ model RecruitmentPipelineStage {
   @@index([requisitionId, position])
 }
 
-// Recruitment Posting Activity — immutable workspace history for a posting
 model RecruitmentPostingActivity {
   id            String                  @id @default(cuid())
   postingId     String
@@ -1820,21 +1786,20 @@ model RecruitmentPostingActivity {
 }
 
 model RecruitmentConnectorResponse {
-  id                 String                 @id @default(cuid())
+  id                 String                  @id @default(cuid())
   postingId          String
-  posting            JobPosting             @relation(fields: [postingId], references: [id], onDelete: Cascade)
+  posting            JobPosting              @relation(fields: [postingId], references: [id], onDelete: Cascade)
   externalResponseId String
-  applicationId      String?                  @unique
+  applicationId      String?                 @unique
   application        RecruitmentApplication? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
   errorCode          String?
-  errorMessage       String?                @db.Text
+  errorMessage       String?                 @db.Text
   responseData       Json?
-  processedAt        DateTime               @default(now())
+  processedAt        DateTime                @default(now())
 
   @@unique([postingId, externalResponseId])
 }
 
-// Application Note — Recruiter notes on an application
 model ApplicationNote {
   id            String                 @id @default(cuid())
   applicationId String
@@ -1850,7 +1815,6 @@ model ApplicationNote {
   @@index([addedById])
 }
 
-// Interview Round — Scheduled interview
 model InterviewRound {
   id            String                 @id @default(cuid())
   applicationId String
@@ -1880,7 +1844,6 @@ model InterviewRound {
   @@index([status])
 }
 
-// Scorecard — Evaluation per interviewer
 model Scorecard {
   id          String         @id @default(cuid())
   interviewId String
@@ -1906,7 +1869,6 @@ model Scorecard {
   @@index([evaluatorId])
 }
 
-// Recruitment Offer — Job offer with versioning
 model RecruitmentOffer {
   id            String                 @id @default(cuid())
   applicationId String
@@ -1947,7 +1909,6 @@ model RecruitmentOffer {
   @@index([status])
 }
 
-// Offer Version — Negotiation history
 model OfferVersion {
   id      String           @id @default(cuid())
   offerId String
@@ -1969,7 +1930,6 @@ model OfferVersion {
   @@index([offerId])
 }
 
-// Background Check
 model BackgroundCheck {
   id          String           @id @default(cuid())
   offerId     String           @unique
@@ -1980,19 +1940,15 @@ model BackgroundCheck {
   group  BgcGroup
   status BgcStatus @default(pending)
 
-  // Group A checks
   idVerified      Boolean?
   addressVerified Boolean?
 
-  // Group B checks
   criminalRecordCheck Boolean?
   legalStatusCheck    Boolean?
 
-  // Group C checks
   certificationVerified     Boolean?
   employmentHistoryVerified Boolean?
 
-  // Group D checks
   financialCheckCompleted Boolean?
   creditScoreCheck        Boolean?
 
@@ -2011,4 +1967,44 @@ model BackgroundCheck {
 
   @@index([candidateId])
   @@index([status])
+}
+
+// ─── Notifications ───────────────────────────────────────────────────────────
+
+// Lưu nội dung notification.
+// employeeId = null biểu thị notification chung cho toàn hệ thống.
+model Notification {
+  id         String    @id @default(uuid())
+  employeeId String?
+  employee   Employee? @relation("NotificationTarget", fields: [employeeId], references: [id], onDelete: Cascade)
+
+  title     String
+  message   String
+  type      String
+  priority  String
+  link      String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  states NotificationRecipientState[]
+
+  @@index([employeeId, createdAt])
+  @@index([employeeId, type, createdAt])
+}
+
+// Lưu trạng thái riêng của từng nhân viên đối với notification.
+// Một người đọc hoặc xóa sẽ không ảnh hưởng những người nhận khác.
+model NotificationRecipientState {
+  notificationId String
+  employeeId     String
+  read           Boolean  @default(false)
+  deleted        Boolean  @default(false)
+  updatedAt      DateTime @updatedAt
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@id([notificationId, employeeId])
+  @@index([employeeId, deleted, read])
 }
