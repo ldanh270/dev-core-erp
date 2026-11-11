@@ -575,6 +575,29 @@ export class PrismaApplicationRepository extends BaseRepository implements IAppl
     return existing !== null
   }
 
+  /** Batch-checks which employees have pending or approved leave overlapping [startDate, endDate]. */
+  async findLeaveOverlappingEmployees(
+    employeeIds: string[],
+    startDate: string | Date,
+    endDate: string | Date,
+  ): Promise<Set<string>> {
+    if (employeeIds.length === 0) return new Set()
+
+    const overlapping = await this.prisma.application.findMany({
+      where: {
+        employeeId: { in: employeeIds },
+        type: ApplicationType.leave,
+        status: { in: [ApplicationStatus.pending, ApplicationStatus.approved] },
+        startDate: { lte: new Date(endDate) },
+        endDate: { gte: new Date(startDate) },
+      },
+      distinct: ["employeeId"],
+      select: { employeeId: true },
+    })
+
+    return new Set(overlapping.map((row) => row.employeeId))
+  }
+
   /**
    * Calculates the total number of approved leave days used by an employee for a specific leave type in a given year.
    *

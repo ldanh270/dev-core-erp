@@ -1,4 +1,5 @@
 import {
+  CompletedTaskSuggestionRow,
   CreateTaskDto,
   Task,
   TaskListQuery,
@@ -329,5 +330,68 @@ export class PrismaTaskRepository extends BaseRepository implements ITaskReposit
       where: { statusId },
       data: { status: legacyStatus },
     })
+  }
+
+  /** Batch-counts in_progress tasks per assignee for AI capacity estimation. */
+  async countActiveByAssignees(assigneeIds: string[]): Promise<Map<string, number>> {
+    const counts = new Map<string, number>()
+    if (assigneeIds.length === 0) return counts
+
+    const grouped = await this.prisma.task.groupBy({
+      by: ["assigneeId"],
+      where: {
+        assigneeId: { in: assigneeIds },
+        status: TASK_STATUS.IN_PROGRESS as PrismaTaskStatus,
+      },
+      _count: { _all: true },
+    })
+
+    for (const row of grouped) {
+      if (row.assigneeId) {
+        counts.set(row.assigneeId, row._count._all)
+      }
+    }
+    return counts
+  }
+
+  /** Fetches up to `perAssigneeLimit` most recently completed tasks per assignee in one query. */
+  async listRecentCompletedByAssignees(
+    assigneeIds: string[],
+    perAssigneeLimit = 20,
+  ): Promise<Map<string, CompletedTaskSuggestionRow[]>> {
+    const grouped = new Map<string, CompletedTaskSuggestionRow[]>()
+    if (assigneeIds.length === 0) return grouped
+
+    const rows = await this.prisma.$queryRaw<
+      Array<{ id: string; title: string; estimatedTime: number | null; assigneeId: string }>
+    >`
+      SELECT id, title, "estimatedTime", "assigneeId"
+      FROM (
+        SELECT
+          id,
+          title,
+          "estimatedTime",
+          "assigneeId",
+          ROW_NUMBER() OVER (
+            PARTITION BY "assigneeId"
+            ORDER BY "completedAt" DESC NULLS LAST, "updatedAt" DESC
+          ) AS rn
+        FROM "Task"
+        WHERE "assigneeId" = ANY(${assigneeIds}::text[])
+          AND status = ${TASK_STATUS.DONE}::"TaskStatus"
+      ) ranked
+      WHERE rn <= ${perAssigneeLimit}
+    `
+
+    for (const row of rows) {
+      const bucket = grouped.get(row.assigneeId) ?? []
+      bucket.push({
+        id: row.id,
+        title: row.title,
+        estimatedTime: row.estimatedTime,
+      })
+      grouped.set(row.assigneeId, bucket)
+    }
+    return grouped
   }
 }
