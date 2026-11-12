@@ -12,6 +12,13 @@ function getKey(): Buffer {
   return key
 }
 
+/**
+ * Encrypts a sensitive credential or token using AES-256-GCM.
+ * Generates a random 12-byte initialization vector (IV) and appends the 16-byte authentication tag.
+ *
+ * @param plaintext - Raw secret string to encrypt
+ * @returns Formatted ciphertext string: `enc:v1:<iv>:<authTag>:<ciphertext>` (base64url encoded)
+ */
 export function encryptCredential(plaintext: string): string {
   const iv = randomBytes(12)
   const cipher = createCipheriv(ALGORITHM, getKey(), iv)
@@ -20,6 +27,14 @@ export function encryptCredential(plaintext: string): string {
   return `${VERSION}:${iv.toString("base64url")}:${authTag.toString("base64url")}:${encrypted.toString("base64url")}`
 }
 
+/**
+ * Decrypts an AES-256-GCM encrypted credential formatted by `encryptCredential`.
+ * If value does not start with the version prefix `enc:v1:`, returns the raw value unchanged (backward-compatibility).
+ *
+ * @param value - Encrypted string formatted as `enc:v1:<iv>:<authTag>:<ciphertext>`
+ * @returns Decrypted plain text string
+ * @throws {Error} If encrypted format is malformed or authentication tag verification fails
+ */
 export function decryptCredential(value: string): string {
   if (!value.startsWith(`${VERSION}:`)) return value
   const [, , ivValue, authTagValue, encryptedValue] = value.split(":")

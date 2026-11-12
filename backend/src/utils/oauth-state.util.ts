@@ -4,6 +4,9 @@ import { prisma } from "@/libs/database"
 
 const STATE_TTL_MS = 10 * 60 * 1000
 
+/**
+ * Encrypted and HMAC-signed state payload exchanged during OAuth handshakes.
+ */
 export interface OAuthStatePayload {
   userId: string
   channel: string
@@ -24,6 +27,14 @@ const getSecret = () => {
 
 const sign = (value: string) => createHmac("sha256", getSecret()).update(value).digest("base64url")
 
+/**
+ * Creates an HMAC-signed OAuth state parameter with a unique single-use nonce.
+ * Persists the nonce into the database with a 10-minute expiration window.
+ *
+ * @param input - Identity and channel information to embed in state
+ * @param now - Optional timestamp override (default: Date.now())
+ * @returns Dot-delimited string formatted as `<base64urlPayload>.<signature>`
+ */
 export async function createOAuthState(
   input: Omit<OAuthStatePayload, "nonce" | "expiresAt">,
   now = Date.now(),
@@ -40,6 +51,15 @@ export async function createOAuthState(
   return `${encodedPayload}.${sign(encodedPayload)}`
 }
 
+/**
+ * Verifies and consumes a signed OAuth state parameter.
+ * Enforces timing-safe signature comparison, expiration checking, and single-use DB nonce consumption.
+ *
+ * @param state - The state string returned from the OAuth provider callback
+ * @param now - Optional timestamp override (default: Date.now())
+ * @returns Decoded and verified OAuthStatePayload
+ * @throws {Error} If format invalid, signature mismatched, state expired, or nonce already consumed
+ */
 export async function consumeOAuthState(state: string, now = Date.now()): Promise<OAuthStatePayload> {
   const [encodedPayload, encodedSignature, ...extra] = state.split(".")
   if (!encodedPayload || !encodedSignature || extra.length > 0) {
