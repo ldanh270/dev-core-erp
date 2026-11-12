@@ -1,4 +1,7 @@
-import { IContractStatus, IContractType } from "@/configs/entities/employee-contract.config.ts"
+import { CONTRACT_STATUS, IContractStatus, IContractType } from "@/configs/entities/employee-contract.config.ts"
+import { ErrorLayer } from "@/configs/system/error-code.config.ts"
+import { HttpStatusCode } from "@/configs/system/http.config.ts"
+import { AppError } from "@/utils/error.util.ts"
 import { SORT_ORDER } from "@/configs/system/db.config.ts"
 import { Prisma, PrismaClient } from "@prisma/client"
 
@@ -76,7 +79,7 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
       where: {
         employeeId,
         deletedAt: null,
-        ...(includeInactive ? {} : { status: { notIn: ["expired", "terminated"] } }),
+        ...(includeInactive ? {} : { status: { notIn: [CONTRACT_STATUS.EXPIRED, CONTRACT_STATUS.TERMINATED] } }),
       },
       orderBy: { startDate: SORT_ORDER.DESC },
     })
@@ -88,7 +91,7 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
       where: {
         employeeId,
         deletedAt: null,
-        status: { in: ["active", "pending_signature"] },
+        status: { in: [CONTRACT_STATUS.ACTIVE, CONTRACT_STATUS.PENDING_SIGNATURE] },
       },
       orderBy: { startDate: SORT_ORDER.DESC },
     })
@@ -102,7 +105,7 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
     const contracts = await this.prisma.employeeContract.findMany({
       where: {
         deletedAt: null,
-        status: "active",
+        status: CONTRACT_STATUS.ACTIVE,
         endDate: {
           not: null,
           gte: now,
@@ -216,7 +219,7 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
     const contract = await this.prisma.employeeContract.update({
       where: { id },
       data: {
-        status: "terminated",
+        status: CONTRACT_STATUS.TERMINATED,
         terminationReason: data.terminationReason,
         terminationDate: data.terminationDate ? new Date(data.terminationDate) : new Date(),
       },
@@ -235,13 +238,13 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
         select: { id: true },
       })
       if (!existing) {
-        throw new Error("Contract not found")
+        throw new AppError("Contract not found", HttpStatusCode.NOT_FOUND, ErrorLayer.REPOSITORY)
       }
 
       // Mark old as renewed
       await tx.employeeContract.update({
         where: { id: _id },
-        data: { status: "renewed" },
+        data: { status: CONTRACT_STATUS.RENEWED },
       })
 
       // Create new contract

@@ -13,6 +13,10 @@ import { aiClient } from "@/utils/ai-client.util.ts"
 import { AppError } from "@/utils/error.util.ts"
 
 const LAYER_NAME = "TaskEstimateAiService"
+const DEFAULT_TASK_DUE_DAYS = 3
+const MS_PER_DAY = 24 * 60 * 60 * 1000
+const RECENT_COMPLETED_TASKS_LIMIT = 20
+const ACTIVE_TASKS_FALLBACK_LIMIT = 100
 
 export interface TaskEstimateAiSuggestion {
   employeeId: string
@@ -75,7 +79,7 @@ export class TaskEstimateAiService {
 
     const startDate = task.startDate || new Date()
     // Default to 3 days if dueDate is not specified
-    const dueDate = task.dueDate || new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000)
+    const dueDate = task.dueDate || new Date(startDate.getTime() + DEFAULT_TASK_DUE_DAYS * MS_PER_DAY)
 
     const memberIds = members.map((member) => member.employeeId as string)
 
@@ -124,7 +128,8 @@ export class TaskEstimateAiService {
 
     // 3. Process each member in memory using batched query results
     for (const employeeId of activeMemberIds) {
-      const employee = employeeById.get(employeeId)!
+      const employee = employeeById.get(employeeId)
+      if (!employee) continue
       const activeCount = activeTaskCounts.get(employeeId) ?? 0
 
       let workloadScore = 0
@@ -295,7 +300,7 @@ export class TaskEstimateAiService {
         const res = await this.taskRepository.listTasks({
           assigneeId,
           status: TASK_STATUS.IN_PROGRESS,
-          limit: 100,
+          limit: ACTIVE_TASKS_FALLBACK_LIMIT,
         })
         return [assigneeId, res.meta.total] as const
       }),
@@ -333,7 +338,7 @@ export class TaskEstimateAiService {
     employeeIds: string[],
   ): Promise<Map<string, CompletedTaskSuggestionRow[]>> {
     if (this.taskRepository.listRecentCompletedByAssignees) {
-      return this.taskRepository.listRecentCompletedByAssignees(employeeIds, 20)
+      return this.taskRepository.listRecentCompletedByAssignees(employeeIds, RECENT_COMPLETED_TASKS_LIMIT)
     }
 
     const entries = await Promise.all(
@@ -341,7 +346,7 @@ export class TaskEstimateAiService {
         const res = await this.taskRepository.listTasks({
           assigneeId,
           status: TASK_STATUS.DONE,
-          limit: 20,
+          limit: RECENT_COMPLETED_TASKS_LIMIT,
           sortBy: "completedAt",
           sortOrder: "desc",
         })

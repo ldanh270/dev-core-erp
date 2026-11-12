@@ -1,4 +1,5 @@
 import {
+  APPLICATION_STATUS,
   ATTENDANCE_STATUS,
   EMPLOYEE_SHIFT_STATUS,
   PAID_LEAVE_TYPES,
@@ -49,6 +50,7 @@ import {
 import * as math from "mathjs"
 
 const PAYSLIP_BATCH_WRITE_CHUNK_SIZE = 25
+const MAX_ACTIVE_EMPLOYEES_FALLBACK_LIMIT = 100_000
 
 type ComputedPayslipDraft = {
   employeeId: string
@@ -112,7 +114,7 @@ export class PayrollService implements IPayrollService {
       : (
           await this.employeeRepo.listEmployeesPaginated({
             status: EMPLOYEE_STATUS.ACTIVE,
-            limit: 100000,
+            limit: MAX_ACTIVE_EMPLOYEES_FALLBACK_LIMIT,
           })
         ).data
 
@@ -144,7 +146,7 @@ export class PayrollService implements IPayrollService {
         ? this.prisma.application.findMany({
             where: {
               employeeId: { in: ftEmployeeIds },
-              status: "approved",
+              status: APPLICATION_STATUS.APPROVED,
               type: { in: [ApplicationType.leave, ApplicationType.late_early] },
               startDate: { lte: periodEnd },
               endDate: { gte: periodStart },

@@ -4,6 +4,7 @@ import {
   IEmployeeSalaryConfigRepository,
 } from "@/types/payroll.types.ts"
 
+import { SORT_ORDER } from "@/configs/system/db.config.ts"
 import { EmployeeSalaryConfig, PrismaClient } from "@prisma/client"
 
 import { BaseRepository } from "./base.repository.ts"
@@ -42,7 +43,7 @@ export class PrismaEmployeeSalaryConfigRepository
         OR: [{ effectiveTo: null }, { effectiveTo: { gte: atDate } }],
       },
       include: SALARY_CONFIG_ACTIVE_INCLUDE,
-      orderBy: { effectiveFrom: "desc" },
+      orderBy: { effectiveFrom: SORT_ORDER.DESC },
     })
   }
 
@@ -61,7 +62,7 @@ export class PrismaEmployeeSalaryConfigRepository
         OR: [{ effectiveTo: null }, { effectiveTo: { gte: atDate } }],
       },
       include: SALARY_CONFIG_ACTIVE_INCLUDE,
-      orderBy: { effectiveFrom: "desc" },
+      orderBy: { effectiveFrom: SORT_ORDER.DESC },
     })
 
     for (const config of configs) {
