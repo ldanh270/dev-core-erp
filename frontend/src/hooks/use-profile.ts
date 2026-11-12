@@ -12,6 +12,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 const PROFILE_QUERY_KEY = ["profile", "me"]
 
+/**
+ * Hook to query current authenticated user's profile details.
+ *
+ * @returns React Query result containing ProfileDto
+ */
 export const useProfile = () => {
   return useQuery<ProfileDto>({
     queryKey: PROFILE_QUERY_KEY,
@@ -20,6 +25,11 @@ export const useProfile = () => {
   })
 }
 
+/**
+ * Mutation hook to update profile personal info with optimistic cache updates.
+ *
+ * @returns React Query mutation object
+ */
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient()
 
@@ -32,6 +42,11 @@ export const useUpdateProfile = () => {
   })
 }
 
+/**
+ * Mutation hook to upload and set a new profile avatar image.
+ *
+ * @returns React Query mutation object
+ */
 export const useUploadAvatar = () => {
   const queryClient = useQueryClient()
 
@@ -43,6 +58,11 @@ export const useUploadAvatar = () => {
   })
 }
 
+/**
+ * Mutation hook to change user's password with current password verification.
+ *
+ * @returns React Query mutation object
+ */
 export const useChangePassword = () => {
   return useMutation({
     mutationFn: ({ oldPassword, newPassword }: { oldPassword: string; newPassword: string }) =>
@@ -50,6 +70,12 @@ export const useChangePassword = () => {
   })
 }
 
+/**
+ * Mutation hook to link/unlink the authenticated account to a physical HR employee record.
+ * Synchronizes local user state in authStore and invalidates attendance caches.
+ *
+ * @returns React Query mutation object
+ */
 export const useUpdatePersonalEmployeeLink = () => {
   const queryClient = useQueryClient()
   const setAuth = useAuthStore((state) => state.setAuth)

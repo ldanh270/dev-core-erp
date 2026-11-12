@@ -1,3 +1,10 @@
+/**
+ * Extracts a user-friendly error message from an unknown error object.
+ * Parses Axios error responses (including validation error metadata arrays) and Error instances.
+ *
+ * @param err - Unknown error caught in try/catch or React Query onError handler
+ * @returns Human-readable error message string
+ */
 export const extractErrorMessage = (err: unknown): string => {
   if (err && typeof err === "object" && "response" in err) {
     const axiosError = err as {

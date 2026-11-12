@@ -5,6 +5,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export const SHIFTS_KEY = ["shifts"] as const
 
+/**
+ * Hook to fetch all configured work shifts.
+ *
+ * @returns React Query query result with list of shifts
+ */
 export function useShifts() {
   return useQuery({
     queryKey: SHIFTS_KEY,
@@ -12,6 +17,12 @@ export function useShifts() {
   })
 }
 
+/**
+ * Hook to fetch details for a single shift by ID.
+ *
+ * @param id - Shift ID or null
+ * @returns React Query query result with shift details
+ */
 export function useShiftById(id: string | null) {
   return useQuery({
     queryKey: ["shifts", id],
@@ -20,6 +31,12 @@ export function useShiftById(id: string | null) {
   })
 }
 
+/**
+ * Mutation hook to create a new work shift definition.
+ * Automatically invalidates active shifts queries upon success.
+ *
+ * @returns React Query mutation object
+ */
 export function useCreateShift() {
   const qc = useQueryClient()
   return useMutation({
@@ -28,6 +45,12 @@ export function useCreateShift() {
   })
 }
 
+/**
+ * Mutation hook to update an existing work shift definition.
+ * Automatically invalidates active shifts queries upon success.
+ *
+ * @returns React Query mutation object
+ */
 export function useUpdateShift() {
   const qc = useQueryClient()
   return useMutation({
@@ -37,6 +60,12 @@ export function useUpdateShift() {
   })
 }
 
+/**
+ * Mutation hook to delete a work shift by ID.
+ * Automatically invalidates active shifts queries upon success.
+ *
+ * @returns React Query mutation object
+ */
 export function useDeleteShift() {
   const qc = useQueryClient()
   return useMutation({

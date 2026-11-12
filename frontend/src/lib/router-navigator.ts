@@ -25,15 +25,19 @@ let _navigate: NavigateFunction | null = null
 /**
  * Called once by `NavigatorInjector` in App.tsx to register the navigate fn.
  * Do NOT call this from anywhere else.
+ *
+ * @param navigate - React Router navigate function instance
  */
 export const setNavigate = (navigate: NavigateFunction): void => {
   _navigate = navigate
 }
 
 /**
- * Navigate programmatically from outside a React component.
- * Falls back to `window.location.href` if the navigator is not yet initialised
- * (e.g., very early app bootstrap before the router mounts).
+ * Navigates programmatically from outside a React component tree without hard reload.
+ * Falls back to validated `window.location.assign` if the navigator is not yet initialised.
+ *
+ * @param to - Target route path string
+ * @param options - Optional React Router navigation options (e.g. replace, state)
  */
 export const routerNavigate = (to: string, options?: NavigateOptions): void => {
   if (_navigate) {
