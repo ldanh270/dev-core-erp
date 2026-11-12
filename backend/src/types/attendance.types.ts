@@ -425,6 +425,11 @@ export interface IApplicationRepository {
     endDate: string | Date,
     excludeId?: string,
   ): Promise<boolean>
+  findLeaveOverlappingEmployees?(
+    employeeIds: string[],
+    startDate: string | Date,
+    endDate: string | Date,
+  ): Promise<Set<string>>
   getUsedLeaveDays(employeeId: string, leaveType: ILeaveType, year: number): Promise<number>
 }
 

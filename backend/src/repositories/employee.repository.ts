@@ -13,16 +13,56 @@ import {
 } from "@/types"
 import { AppError } from "@/utils/error.util.ts"
 
-import { Prisma, PrismaClient, AppRole as PrismaAppRole, Employee as PrismaEmployee } from "@prisma/client"
+import { Prisma, PrismaClient, AppRole as PrismaAppRole } from "@prisma/client"
 
 import { BaseRepository } from "./base.repository.ts"
 
-type EmployeeRoleSummary = {
-  role: {
-    id: string
-    name: string
-  }
-}
+const EMPLOYEE_ROLE_SELECT = {
+  where: {
+    role: {
+      deletedAt: null,
+      isActive: true,
+    },
+  },
+  select: {
+    role: {
+      select: {
+        id: true,
+        name: true,
+      },
+    },
+  },
+} as const
+
+const EMPLOYEE_DOMAIN_SELECT = {
+  id: true,
+  fullName: true,
+  username: true,
+  email: true,
+  phone: true,
+  position: true,
+  positionId: true,
+  employeeType: true,
+  workScheduleType: true,
+  status: true,
+  dateOfBirth: true,
+  nationalId: true,
+  address: true,
+  startDate: true,
+  endDate: true,
+  avatarUrl: true,
+  avatarId: true,
+  createdAt: true,
+  updatedAt: true,
+  version: true,
+  authorizationVersion: true,
+  lockedUntil: true,
+  employeeRoles: EMPLOYEE_ROLE_SELECT,
+} as const
+
+type EmployeeWithRoles = Prisma.EmployeeGetPayload<{
+  select: typeof EMPLOYEE_DOMAIN_SELECT
+}>
 
 /** Whitelist client sort fields → Prisma orderBy; unknown keys fall back to createdAt. */
 function buildEmployeeOrderBy(
@@ -61,10 +101,6 @@ function buildEmployeeOrderBy(
     default:
       return { createdAt: direction }
   }
-}
-
-type EmployeeWithRoles = PrismaEmployee & {
-  employeeRoles?: EmployeeRoleSummary[]
 }
 
 /**
@@ -190,57 +226,53 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
 
     const now = new Date()
 
-    // Perform concurrent data fetching and count query
-    const [
-      data,
-      total,
-      fullTimeCount,
-      partTimeCount,
-      internCount,
-      contractorCount,
-      lockedCount,
-      terminatedCount,
-      totalCount,
-    ] = await Promise.all([
+    // Perform concurrent data fetching and grouped stats
+    const baseStatsWhere: Prisma.EmployeeWhereInput = { deletedAt: null }
+    if (statsWhere.employeeRoles) baseStatsWhere.employeeRoles = statsWhere.employeeRoles
+    if (statsWhere.OR) baseStatsWhere.OR = statsWhere.OR
+
+    const [data, total, groupedStats, lockedCount] = await Promise.all([
       this.prisma.employee.findMany({
         where,
         orderBy,
-        include: {
-          employeeRoles: {
-            where: {
-              role: {
-                deletedAt: null,
-                isActive: true,
-              },
-            },
-            select: {
-              role: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
-        },
+        select: EMPLOYEE_DOMAIN_SELECT,
         skip: Number(skip),
         take: Number(limit),
       }),
       this.prisma.employee.count({ where }),
-      this.prisma.employee.count({ where: { ...statsWhere, status: { not: EMPLOYEE_STATUS.TERMINATED }, employeeType: "full_time" } }),
-      this.prisma.employee.count({ where: { ...statsWhere, status: { not: EMPLOYEE_STATUS.TERMINATED }, employeeType: "part_time" } }),
-      this.prisma.employee.count({ where: { ...statsWhere, status: { not: EMPLOYEE_STATUS.TERMINATED }, employeeType: "intern" } }),
-      this.prisma.employee.count({ where: { ...statsWhere, status: { not: EMPLOYEE_STATUS.TERMINATED }, employeeType: "contractor" } }),
+      this.prisma.employee.groupBy({
+        by: ["status", "employeeType"],
+        where: baseStatsWhere,
+        _count: { _all: true },
+      }),
       this.prisma.employee.count({
         where: {
-          ...statsWhere,
+          ...baseStatsWhere,
           status: { not: EMPLOYEE_STATUS.TERMINATED },
           AND: [{ OR: [{ lockedUntil: { gt: now } }, { failedLoginCount: { gte: 5 } }] }],
         },
       }),
-      this.prisma.employee.count({ where: { ...statsWhere, status: EMPLOYEE_STATUS.TERMINATED } }),
-      this.prisma.employee.count({ where: { ...statsWhere, status: { not: EMPLOYEE_STATUS.TERMINATED } } }),
     ])
+
+    let fullTimeCount = 0
+    let partTimeCount = 0
+    let internCount = 0
+    let contractorCount = 0
+    let terminatedCount = 0
+    let totalCount = 0
+
+    for (const row of groupedStats) {
+      const count = row._count._all
+      if (row.status === EMPLOYEE_STATUS.TERMINATED) {
+        terminatedCount += count
+        continue
+      }
+      totalCount += count
+      if (row.employeeType === "full_time") fullTimeCount += count
+      else if (row.employeeType === "part_time") partTimeCount += count
+      else if (row.employeeType === "intern") internCount += count
+      else if (row.employeeType === "contractor") contractorCount += count
+    }
 
     const stats = {
       total: totalCount,
@@ -273,27 +305,32 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
   async findById(id: string): Promise<Employee | null> {
     const employee = await this.prisma.employee.findFirst({
       where: { id, deletedAt: null },
-      include: {
-        employeeRoles: {
-          where: {
-            role: {
-              deletedAt: null,
-              isActive: true,
-            },
-          },
-          select: {
-            role: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-      },
+      select: EMPLOYEE_DOMAIN_SELECT,
     })
     if (!employee) return null
     return this.mapToDomain(employee)
+  }
+
+  /** Lightweight auth guard lookup — avoids role joins and non-status columns. */
+  async findAuthStatusById(id: string): Promise<{ id: string; status: EmployeeStatus } | null> {
+    return this.prisma.employee.findFirst({
+      where: { id, deletedAt: null },
+      select: { id: true, status: true },
+    })
+  }
+
+  /** Minimal active employee projection for payroll batch generation. */
+  async listActiveForPayroll(): Promise<
+    Array<Pick<Employee, "id" | "employeeType" | "workScheduleType">>
+  > {
+    return this.prisma.employee.findMany({
+      where: { status: EMPLOYEE_STATUS.ACTIVE, deletedAt: null },
+      select: {
+        id: true,
+        employeeType: true,
+        workScheduleType: true,
+      },
+    })
   }
 
   /**
@@ -336,24 +373,7 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
             }
           : undefined,
       },
-      include: {
-        employeeRoles: {
-          where: {
-            role: {
-              deletedAt: null,
-              isActive: true,
-            },
-          },
-          select: {
-            role: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-      },
+      select: EMPLOYEE_DOMAIN_SELECT,
     })
     return this.mapToDomain(employee)
   }
@@ -404,24 +424,7 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
     const employee = await this.prisma.employee.update({
       where: { id },
       data: updateData,
-      include: {
-        employeeRoles: {
-          where: {
-            role: {
-              deletedAt: null,
-              isActive: true,
-            },
-          },
-          select: {
-            role: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-      },
+      select: EMPLOYEE_DOMAIN_SELECT,
     })
     return this.mapToDomain(employee)
   }
@@ -436,52 +439,30 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
     const employee = await this.prisma.employee.update({
       where: { id },
       data: { status },
-      include: {
-        employeeRoles: {
-          where: {
-            role: {
-              deletedAt: null,
-              isActive: true,
-            },
-          },
-          select: {
-            role: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-      },
+      select: EMPLOYEE_DOMAIN_SELECT,
     })
     return this.mapToDomain(employee)
   }
 
   /**
    * Performs a soft delete on an employee record.
-   * Marks the employee's status as terminated, records the deletion timestamp,
-   * and anonymizes/prefixes unique identifier fields to prevent database constraint conflicts
-   * if a new employee is created with the same credentials.
+   * Marks the employee's status as terminated and records the deletion timestamp.
+   * Partial unique indexes on active records preserve original identifiers for audit.
    * @param id The ID of the employee to delete.
    * @returns A boolean representing whether the soft delete succeeded.
    */
   async deleteEmployee(id: string): Promise<boolean> {
     const record = await this.prisma.employee.findFirst({
       where: { id, deletedAt: null },
+      select: { id: true },
     })
     if (!record) return false
 
-    const timestamp = new Date().getTime()
     await this.prisma.employee.update({
       where: { id },
       data: {
         deletedAt: new Date(),
         status: EMPLOYEE_STATUS.TERMINATED,
-        email: `deleted_${timestamp}_${record.email}`,
-        username: `deleted_${timestamp}_${record.username}`,
-        phone: record.phone ? `deleted_${timestamp}_${record.phone}` : null,
-        nationalId: record.nationalId ? `deleted_${timestamp}_${record.nationalId}` : null,
       },
     })
     return true

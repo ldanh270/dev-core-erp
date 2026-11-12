@@ -1,6 +1,8 @@
+import { TASK_STATUS } from "@/configs/entities/project.config.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import {
+  CompletedTaskSuggestionRow,
   IEmployeeRepository,
   IProjectRepository,
   ISpentTimeRepository,
@@ -11,6 +13,10 @@ import { aiClient } from "@/utils/ai-client.util.ts"
 import { AppError } from "@/utils/error.util.ts"
 
 const LAYER_NAME = "TaskEstimateAiService"
+const DEFAULT_TASK_DUE_DAYS = 3
+const MS_PER_DAY = 24 * 60 * 60 * 1000
+const RECENT_COMPLETED_TASKS_LIMIT = 20
+const ACTIVE_TASKS_FALLBACK_LIMIT = 100
 
 export interface TaskEstimateAiSuggestion {
   employeeId: string
@@ -71,22 +77,60 @@ export class TaskEstimateAiService {
     const geminiCandidatesContext: GeminiCandidateContext[] = []
     const velocities = new Map<string, number>()
 
-    // 3. Process each member to compute local scores (Workload & Availability)
-    for (const member of members) {
-      const employeeId = member.employeeId
+    const startDate = task.startDate || new Date()
+    // Default to 3 days if dueDate is not specified
+    const dueDate = task.dueDate || new Date(startDate.getTime() + DEFAULT_TASK_DUE_DAYS * MS_PER_DAY)
 
-      // Load employee profile
-      const employee = await this.employeeRepository.findById(employeeId)
+    const memberIds = members.map((member) => member.employeeId as string)
+
+    // Reuse member.employee projection from getMembers; fallback only for callers/mocks missing it.
+    const resolvedEmployees = await Promise.all(
+      members.map(async (member) => {
+        if (member.employee) {
+          return {
+            id: member.employeeId as string,
+            fullName: member.employee.fullName as string,
+            position: (member.employee.position as string | null) ?? null,
+          }
+        }
+        const emp = await this.employeeRepository.findById(member.employeeId)
+        return emp
+          ? { id: emp.id, fullName: emp.fullName, position: emp.position ?? null }
+          : null
+      }),
+    )
+
+    const employeeById = new Map<string, { id: string; fullName: string; position: string | null }>()
+    for (const emp of resolvedEmployees) {
+      if (emp) employeeById.set(emp.id, emp)
+    }
+    const activeMemberIds = memberIds.filter((id) => employeeById.has(id))
+    if (activeMemberIds.length === 0) {
+      return []
+    }
+
+    const [activeTaskCounts, overlappingEmployees, completedTasksByAssignee] = await Promise.all([
+      this.loadActiveTaskCounts(activeMemberIds),
+      this.loadLeaveOverlappingEmployees(activeMemberIds, startDate, dueDate),
+      this.loadRecentCompletedTasks(activeMemberIds),
+    ])
+
+    const taskIdsNeedingSpentHours = Array.from(
+      new Set(
+        Array.from(completedTasksByAssignee.values())
+          .flat()
+          .filter((t) => Boolean(t.estimatedTime && t.id))
+          .map((t) => t.id),
+      ),
+    )
+
+    const spentHoursByTaskId = await this.loadSpentHoursMap(taskIdsNeedingSpentHours)
+
+    // 3. Process each member in memory using batched query results
+    for (const employeeId of activeMemberIds) {
+      const employee = employeeById.get(employeeId)
       if (!employee) continue
-
-      // Calculate Workload Score (S_workload)
-      // Count active tasks assigned to employee
-      const activeTasksResult = await this.taskRepository.listTasks({
-        assigneeId: employeeId,
-        status: "in_progress",
-        limit: 100,
-      })
-      const activeCount = activeTasksResult.meta.total
+      const activeCount = activeTaskCounts.get(employeeId) ?? 0
 
       let workloadScore = 0
       if (activeCount === 0) workloadScore = 100
@@ -95,36 +139,16 @@ export class TaskEstimateAiService {
       else if (activeCount === 3) workloadScore = 30
       else workloadScore = 0
 
-      // Calculate Availability Score (H_avail)
-      const startDate = task.startDate || new Date()
-      // Default to 3 days if dueDate is not specified
-      const dueDate = task.dueDate || new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000)
-
-      const hasLeaveOverlap = await this.applicationRepository.checkLeaveOverlap(
-        employeeId,
-        startDate,
-        dueDate,
-      )
-      const availabilityScore = hasLeaveOverlap ? 0 : 100
-
-      // Fetch completed tasks for Velocity analysis and Skill context (retrieve up to 20 completed tasks)
-      const completedTasksResult = await this.taskRepository.listTasks({
-        assigneeId: employeeId,
-        status: "done",
-        limit: 20,
-        sortBy: "completedAt",
-        sortOrder: "desc",
-      })
-      const completedTasks = completedTasksResult.data
+      const availabilityScore = overlappingEmployees.has(employeeId) ? 0 : 100
+      const completedTasks = completedTasksByAssignee.get(employeeId) ?? []
       const completedTaskTitles = completedTasks.slice(0, 5).map((t) => t.title)
 
-      // Calculate Personal Velocity: AI Baseline / Real Spent Hours
       let totalBaseline = 0
       let totalSpent = 0
 
       for (const t of completedTasks) {
         if (t.estimatedTime && t.id) {
-          const taskSpentHours = await this.spentTimeRepository.sumTaskHours(t.id)
+          const taskSpentHours = spentHoursByTaskId.get(t.id) ?? 0
           if (taskSpentHours > 0) {
             totalBaseline += t.estimatedTime
             totalSpent += taskSpentHours
@@ -264,5 +288,88 @@ export class TaskEstimateAiService {
 
     const taskSuggestions = await aiClient.generateJson<GeneratedTaskSuggestion[]>(prompt)
     return taskSuggestions
+  }
+
+  private async loadActiveTaskCounts(employeeIds: string[]): Promise<Map<string, number>> {
+    if (this.taskRepository.countActiveByAssignees) {
+      return this.taskRepository.countActiveByAssignees(employeeIds)
+    }
+
+    const entries = await Promise.all(
+      employeeIds.map(async (assigneeId) => {
+        const res = await this.taskRepository.listTasks({
+          assigneeId,
+          status: TASK_STATUS.IN_PROGRESS,
+          limit: ACTIVE_TASKS_FALLBACK_LIMIT,
+        })
+        return [assigneeId, res.meta.total] as const
+      }),
+    )
+    return new Map(entries)
+  }
+
+  private async loadLeaveOverlappingEmployees(
+    employeeIds: string[],
+    startDate: Date,
+    dueDate: Date,
+  ): Promise<Set<string>> {
+    if (this.applicationRepository.findLeaveOverlappingEmployees) {
+      return this.applicationRepository.findLeaveOverlappingEmployees(
+        employeeIds,
+        startDate,
+        dueDate,
+      )
+    }
+
+    const flags = await Promise.all(
+      employeeIds.map(async (employeeId) => ({
+        employeeId,
+        overlaps: await this.applicationRepository.checkLeaveOverlap(
+          employeeId,
+          startDate,
+          dueDate,
+        ),
+      })),
+    )
+    return new Set(flags.filter((f) => f.overlaps).map((f) => f.employeeId))
+  }
+
+  private async loadRecentCompletedTasks(
+    employeeIds: string[],
+  ): Promise<Map<string, CompletedTaskSuggestionRow[]>> {
+    if (this.taskRepository.listRecentCompletedByAssignees) {
+      return this.taskRepository.listRecentCompletedByAssignees(employeeIds, RECENT_COMPLETED_TASKS_LIMIT)
+    }
+
+    const entries = await Promise.all(
+      employeeIds.map(async (assigneeId) => {
+        const res = await this.taskRepository.listTasks({
+          assigneeId,
+          status: TASK_STATUS.DONE,
+          limit: RECENT_COMPLETED_TASKS_LIMIT,
+          sortBy: "completedAt",
+          sortOrder: "desc",
+        })
+        return [
+          assigneeId,
+          res.data.map((t) => ({ id: t.id, title: t.title, estimatedTime: t.estimatedTime ?? null })),
+        ] as const
+      }),
+    )
+    return new Map(entries)
+  }
+
+  private async loadSpentHoursMap(taskIds: string[]): Promise<Map<string, number>> {
+    if (taskIds.length === 0) return new Map()
+    if (this.spentTimeRepository.sumHoursByTaskIds) {
+      return this.spentTimeRepository.sumHoursByTaskIds(taskIds)
+    }
+
+    const entries = await Promise.all(
+      taskIds.map(
+        async (taskId) => [taskId, await this.spentTimeRepository.sumTaskHours(taskId)] as const,
+      ),
+    )
+    return new Map(entries)
   }
 }

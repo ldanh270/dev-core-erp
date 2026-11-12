@@ -33,8 +33,8 @@ enum EmployeeType {
 /// Organizational position with allowed task trackers and application types. Links employees, scoped holidays, and hiring requisitions.
 model Position {
   id                      String            @id @default(cuid())
-  name                    String            @unique
-  code                    String            @unique
+  name                    String
+  code                    String
   description             String?
   allowedTaskTrackers     String[]
   allowedApplicationTypes ApplicationType[]
@@ -47,6 +47,9 @@ model Position {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
+  @@index([name])
+  @@index([code])
+  @@index([deletedAt])
   @@map("positions")
 }
 
@@ -150,12 +153,15 @@ model Employee {
   archivedRecruitmentPostings   JobPosting[]                 @relation("RecruitmentPostingArchiver")
 
   @@index([status, employeeType])
-  @@index([deletedAt])
+  @@index([deletedAt, createdAt(sort: Desc)])
+  @@index([deletedAt, status, workScheduleType])
   @@index([status, deletedAt])
   @@index([lockedUntil])
   @@index([failedLoginCount])
-  @@index([email])
+  @@index([positionId])
+  @@index([personalEmployeeId])
   @@index([username])
+  @@index([email])
 }
 
 // Module: Employee contracts
@@ -186,7 +192,7 @@ model EmployeeContract {
   employee   Employee @relation("EmployeeContracts", fields: [employeeId], references: [id], onDelete: Cascade)
 
   contractType   ContractType
-  contractNumber String       @unique
+  contractNumber String
   title          String?
 
   signedDate   DateTime? @db.Date
@@ -217,12 +223,17 @@ model EmployeeContract {
   renewedFrom   EmployeeContract?  @relation("ContractRenewal", fields: [renewedFromId], references: [id], onDelete: SetNull)
   renewedTo     EmployeeContract[] @relation("ContractRenewal")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@index([employeeId])
   @@index([status, endDate])
   @@index([contractNumber])
+  @@index([deletedAt])
+  @@index([createdById])
+  @@index([updatedById])
+  @@index([renewedFromId])
 }
 
 // Module: Work schedules and attendance
@@ -415,6 +426,8 @@ model EmployeeShift {
   forgotCardDetails   ApplicationForgotCardDetail[]   @relation("ApplicationForgotCardShift")
 
   @@unique([employeeId, assignedDate, shiftId])
+  @@index([employeeId, assignedDate, isOverride])
+  @@index([assignedDate, status])
   @@index([shiftId, assignedDate])
   @@index([status, assignedDate])
   @@index([scheduleId])
@@ -504,6 +517,7 @@ model AttendanceRecord {
   realShift RealShift?
 
   @@index([employeeId, date(sort: Desc)])
+  @@index([date(sort: Desc), status])
   @@index([status, date(sort: Desc)])
 }
 
@@ -610,10 +624,14 @@ model Application {
   attendanceRecordCorrection AttendanceRecord?              @relation("AttendanceRecordCorrection")
 
   @@index([employeeId, status])
+  @@index([employeeId, createdAt(sort: Desc)])
   @@index([employeeId, startDate(sort: Desc)])
   @@index([status, type])
+  @@index([status, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
   @@index([approvedById])
-  @@index([assignedToId])
+  @@index([partnerApprovedById])
+  @@index([assignedToId, status, createdAt(sort: Desc)])
 }
 
 /// Annual leave allocation and usage for an employee. A unique employee/year pair prevents duplicate annual balance records.
@@ -733,6 +751,8 @@ model ApplicationWorkFromHomeDetail {
   application     Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   employeeShiftId String
   employeeShift   EmployeeShift @relation(fields: [employeeShiftId], references: [id], onDelete: Restrict)
+
+  @@index([employeeShiftId])
 }
 
 /// One-to-one attendance correction request details for an employee shift. Stores optional replacement check-in/check-out timestamps and supporting evidence.
@@ -744,6 +764,8 @@ model ApplicationForgotCardDetail {
   checkInAt       DateTime?
   checkOutAt      DateTime?
   documentUrl     String?
+
+  @@index([employeeShiftId])
 }
 
 /// One-to-one internal hiring request details with position information, headcount, and requirements. positionId is a scalar reference without a Prisma relation.
@@ -972,7 +994,7 @@ model Payroll {
   payslips Payslip[]
 
   @@unique([periodYear, periodMonth, name])
-  @@index([status])
+  @@index([status, periodYear(sort: Desc), periodMonth(sort: Desc)])
   @@index([approvedById])
 }
 
@@ -1001,6 +1023,7 @@ model Payslip {
 
   @@unique([payrollId, employeeId])
   @@index([employeeId, payrollId(sort: Desc)])
+  @@index([employeeId, createdAt(sort: Desc)])
   @@index([salaryConfigId])
 }
 
@@ -1168,6 +1191,7 @@ model ProjectMember {
 
   @@id([projectId, employeeId])
   @@index([employeeId])
+  @@index([roleId])
 }
 
 /// Project work item with assignment, planning, progress, and optional custom status. Self-relations represent parent tasks and subtasks; time entries attach to individual tasks.
@@ -1206,7 +1230,11 @@ model Task {
 
   @@index([projectId, status])
   @@index([projectId, statusId])
+  @@index([projectId, createdAt(sort: Desc)])
+  @@index([statusId])
   @@index([assigneeId, status])
+  @@index([assigneeId, dueDate(sort: Asc)])
+  @@index([assigneeId, createdAt(sort: Desc)])
   @@index([dueDate, status])
   @@index([createdById])
   @@index([parentTaskId])
@@ -1232,9 +1260,11 @@ model SpentTime {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  @@index([taskId])
-  @@index([employeeId])
+  @@index([taskId, status])
+  @@index([employeeId, date(sort: Desc)])
+  @@index([employeeId, status, date(sort: Desc)])
   @@index([status, date])
+  @@index([approvedById])
 }
 
 /// Employee-owned saved query definition with an optional project scope. Stores a query type and serialized query data.
@@ -1251,6 +1281,7 @@ model CustomQuery {
   updatedAt  DateTime @updatedAt
 
   @@index([employeeId, type])
+  @@index([projectId])
 }
 
 // Module: Authentication
@@ -1305,7 +1336,7 @@ model RefreshToken {
 /// Application access role with system, administrative, default, and activation flags. Links permissions and employees through explicit join tables and supports soft deletion.
 model AppRole {
   id               String  @id @default(cuid())
-  name             String  @unique
+  name             String
   description      String?
   isSystem         Boolean @default(false)
   isActive         Boolean @default(true)
@@ -1333,7 +1364,7 @@ model AppRole {
 model Permission {
   id          String  @id @default(cuid())
   name        String
-  code        String  @unique
+  code        String
   module      String
   description String?
   isActive    Boolean @default(true)
@@ -1348,6 +1379,7 @@ model Permission {
   roles RolePermission[]
 
   @@index([module])
+  @@index([code])
   @@index([deletedAt])
   @@map("permissions")
 }
@@ -1410,8 +1442,8 @@ model AuthorizationAuditLog {
   @@index([actorId])
   @@index([targetEmployeeId])
   @@index([targetRoleId])
-  @@index([createdAt])
-  @@index([action])
+  @@index([createdAt(sort: Desc)])
+  @@index([action, createdAt(sort: Desc)])
   @@map("authorization_audit_logs")
 }
 
@@ -1646,6 +1678,7 @@ model JobRequisition {
   @@index([approverId])
   @@index([positionId])
   @@index([department])
+  @@index([approvedById])
 }
 
 /// Channel-specific publication of a hiring requisition. Tracks connector configuration, external identity, lifecycle timestamps, form snapshots, and candidate intake.
@@ -1853,11 +1886,11 @@ model RecruitmentApplication {
   postingActivities  RecruitmentPostingActivity[]
 
   @@index([requisitionId, candidateId])
-  @@index([requisitionId])
+  @@index([requisitionId, createdAt(sort: Desc)])
   @@index([candidateId])
   @@index([postingId])
   @@index([assignedToId])
-  @@index([status])
+  @@index([status, createdAt(sort: Desc)])
   @@index([pipelineStageId])
   @@index([postingId, pipelineStageId])
   @@index([postingId, createdAt])
@@ -1934,7 +1967,7 @@ model ApplicationNote {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([applicationId])
+  @@index([applicationId, createdAt(sort: Desc)])
   @@index([addedById])
 }
 
@@ -1963,7 +1996,7 @@ model InterviewRound {
 
   scorecards Scorecard[]
 
-  @@index([applicationId])
+  @@index([applicationId, roundNumber(sort: Asc)])
   @@index([scheduledAt])
   @@index([status])
 }
@@ -2030,9 +2063,10 @@ model RecruitmentOffer {
   versions        OfferVersion[]
   backgroundCheck BackgroundCheck?
 
-  @@index([applicationId])
+  @@index([applicationId, createdAt(sort: Desc)])
   @@index([candidateId])
   @@index([status])
+  @@index([createdById])
 }
 
 /// Versioned compensation and date terms for a recruitment offer. Version numbers are unique within an offer; createdById has no Prisma relation.
@@ -2095,6 +2129,7 @@ model BackgroundCheck {
 
   @@index([candidateId])
   @@index([status])
+  @@index([checkedById])
 }
 
 // Module: Notifications

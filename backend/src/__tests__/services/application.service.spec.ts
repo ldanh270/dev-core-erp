@@ -153,6 +153,7 @@ describe('ApplicationService', () => {
       findApprovals: jest.fn(),
       partnerConfirm: jest.fn(),
       partnerReject: jest.fn(),
+      findLeaveOverlappingEmployees: jest.fn(),
       getUsedLeaveDays: jest.fn()
     };
 

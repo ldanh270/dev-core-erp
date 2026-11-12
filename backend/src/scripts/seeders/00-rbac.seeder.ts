@@ -341,11 +341,18 @@ export class RBACSeeder implements ISeeder {
     // Create permissions
     const createdPermissions: Record<string, string> = {}
     for (const p of permissionsData) {
-      const dbPermission = await prisma.permission.upsert({
-        where: { code: p.code },
-        update: { name: p.name, module: p.module, description: p.description, isSystem: true },
-        create: { ...p, isSystem: true },
+      const existingPermission = await prisma.permission.findFirst({
+        where: { code: p.code, deletedAt: null },
+        select: { id: true },
       })
+      const dbPermission = existingPermission
+        ? await prisma.permission.update({
+            where: { id: existingPermission.id },
+            data: { name: p.name, module: p.module, description: p.description, isSystem: true },
+          })
+        : await prisma.permission.create({
+            data: { ...p, isSystem: true },
+          })
       createdPermissions[p.code] = dbPermission.id
     }
     console.info(`    [✓] Upserted ${permissionsData.length} permissions.`)
@@ -390,16 +397,21 @@ export class RBACSeeder implements ISeeder {
     // Create AppRoles
     const createdRoles: Record<string, string> = {}
     for (const r of rolesData) {
-      const dbRole = await prisma.appRole.upsert({
-        where: { name: r.name },
-        update: {
-          description: r.description,
-          isSystem: r.isSystem,
-          isAdministrative: r.isAdministrative,
-          isDefault: r.isDefault,
-        },
-        create: r,
+      const existingRole = await prisma.appRole.findFirst({
+        where: { name: r.name, deletedAt: null },
+        select: { id: true },
       })
+      const dbRole = existingRole
+        ? await prisma.appRole.update({
+            where: { id: existingRole.id },
+            data: {
+              description: r.description,
+              isSystem: r.isSystem,
+              isAdministrative: r.isAdministrative,
+              isDefault: r.isDefault,
+            },
+          })
+        : await prisma.appRole.create({ data: r })
       createdRoles[r.name] = dbRole.id
     }
     console.info(`    [✓] Upserted ${rolesData.length} core AppRoles.`)

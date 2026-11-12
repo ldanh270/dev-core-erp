@@ -11,8 +11,14 @@ import {
   UpdateContractDto,
 } from "@/types/employee-contract.types.ts"
 import { AppError } from "@/utils/error.util.ts"
+import { handleDbUniqueError } from "@/utils/db-error.util.ts"
 
 import { IEmployeeContractRepository } from "@/repositories/employee-contract.repository.ts"
+
+const CONTRACT_UNIQUE_FIELD_MAP: Record<string, string> = {
+  contractNumber: "Contract number",
+  employeeId: "Active contract for employee",
+}
 
 export interface IEmployeeContractService {
   getById(id: string): Promise<EmployeeContract>
@@ -83,7 +89,11 @@ export class EmployeeContractService implements IEmployeeContractService {
       )
     }
 
-    return this.repository.create(data, actorId)
+    try {
+      return await this.repository.create(data, actorId)
+    } catch (error) {
+      handleDbUniqueError(error, "EmployeeContractService", CONTRACT_UNIQUE_FIELD_MAP)
+    }
   }
 
   async updateContract(id: string, data: UpdateContractDto, actorId: string): Promise<EmployeeContract> {
@@ -101,11 +111,15 @@ export class EmployeeContractService implements IEmployeeContractService {
       )
     }
 
-    const updated = await this.repository.update(id, data, actorId)
-    if (!updated) {
-      throw new AppError("Failed to update contract", HttpStatusCode.INTERNAL_SERVER_ERROR, ErrorLayer.SERVICE)
+    try {
+      const updated = await this.repository.update(id, data, actorId)
+      if (!updated) {
+        throw new AppError("Failed to update contract", HttpStatusCode.INTERNAL_SERVER_ERROR, ErrorLayer.SERVICE)
+      }
+      return updated
+    } catch (error) {
+      handleDbUniqueError(error, "EmployeeContractService", CONTRACT_UNIQUE_FIELD_MAP)
     }
-    return updated
   }
 
   async terminateContract(id: string, data: TerminateContractDto): Promise<EmployeeContract> {
@@ -143,7 +157,11 @@ export class EmployeeContractService implements IEmployeeContractService {
       )
     }
 
-    return this.repository.renew(id, data.newContract, actorId)
+    try {
+      return await this.repository.renew(id, data.newContract, actorId)
+    } catch (error) {
+      handleDbUniqueError(error, "EmployeeContractService", CONTRACT_UNIQUE_FIELD_MAP)
+    }
   }
 
   async deleteContract(id: string): Promise<boolean> {

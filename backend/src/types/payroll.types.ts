@@ -177,6 +177,10 @@ export interface IEmployeeSalaryConfigRepository {
     employeeId: string,
     atDate: Date,
   ): Promise<EmployeeSalaryConfigWithTemplate | null>
+  findActiveByEmployees?(
+    employeeIds: string[],
+    atDate: Date,
+  ): Promise<Map<string, EmployeeSalaryConfigWithTemplate>>
   findAllByEmployee(employeeId: string): Promise<EmployeeSalaryConfig[]>
   create(
     data: ICreateSalaryConfigDTO & { employeeId: string; createdById: string },

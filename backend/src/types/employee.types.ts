@@ -170,8 +170,14 @@ export interface PaginatedEmployeesDto {
 export interface IEmployeeRepository {
   /** Get paginated list of employees */
   listEmployeesPaginated(query: EmployeeListQuery): Promise<PaginatedEmployeesDto>
+  /** Lightweight list of active employees for payroll generation */
+  listActiveForPayroll?(): Promise<
+    Array<Pick<Employee, "id" | "employeeType" | "workScheduleType">>
+  >
   /** Find single employee by ID */
   findById(id: string): Promise<Employee | null>
+  /** Lightweight auth status check without role joins or PII */
+  findAuthStatusById?(id: string): Promise<{ id: string; status: EmployeeStatus } | null>
   /** Create employee */
   createEmployee(data: CreateEmployeeDto & { passwordHash: string }): Promise<Employee>
   /** Update employee details */

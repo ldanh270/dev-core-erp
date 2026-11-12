@@ -65,21 +65,31 @@ export class EmployeeContractsSeeder implements ISeeder {
         )
 
         return Promise.all(
-          employees.map((employee, index) => {
+          employees.map(async (employee, index) => {
             const contractType = CONTRACT_TYPES[index % CONTRACT_TYPES.length]
             const status = CONTRACT_STATUSES[index % CONTRACT_STATUSES.length]
             const contractNumber = `${DEMO_CONTRACT_NUMBER_PREFIX}-${employee.username.toUpperCase()}`
             const isTerminated = status === CONTRACT_STATUS.TERMINATED
 
-            return transaction.employeeContract.upsert({
-              where: { contractNumber },
-              update: {
-                employeeId: employee.id,
-                contractType,
-                status,
-                updatedById: context.adminId,
-              },
-              create: {
+            const existing = await transaction.employeeContract.findFirst({
+              where: { contractNumber, deletedAt: null },
+              select: { id: true },
+            })
+
+            if (existing) {
+              return transaction.employeeContract.update({
+                where: { id: existing.id },
+                data: {
+                  employeeId: employee.id,
+                  contractType,
+                  status,
+                  updatedById: context.adminId,
+                },
+              })
+            }
+
+            return transaction.employeeContract.create({
+              data: {
                 employeeId: employee.id,
                 contractType,
                 contractNumber,

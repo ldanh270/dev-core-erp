@@ -1,4 +1,7 @@
-import { IContractStatus, IContractType } from "@/configs/entities/employee-contract.config.ts"
+import { CONTRACT_STATUS, IContractStatus, IContractType } from "@/configs/entities/employee-contract.config.ts"
+import { ErrorLayer } from "@/configs/system/error-code.config.ts"
+import { HttpStatusCode } from "@/configs/system/http.config.ts"
+import { AppError } from "@/utils/error.util.ts"
 import { SORT_ORDER } from "@/configs/system/db.config.ts"
 import { Prisma, PrismaClient } from "@prisma/client"
 
@@ -65,8 +68,8 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
   }
 
   async findById(id: string): Promise<EmployeeContract | null> {
-    const contract = await this.prisma.employeeContract.findUnique({
-      where: { id },
+    const contract = await this.prisma.employeeContract.findFirst({
+      where: { id, deletedAt: null },
     })
     return contract ? this.mapToDomain(contract) : null
   }
@@ -75,7 +78,8 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
     const contracts = await this.prisma.employeeContract.findMany({
       where: {
         employeeId,
-        ...(includeInactive ? {} : { status: { notIn: ["expired", "terminated"] } }),
+        deletedAt: null,
+        ...(includeInactive ? {} : { status: { notIn: [CONTRACT_STATUS.EXPIRED, CONTRACT_STATUS.TERMINATED] } }),
       },
       orderBy: { startDate: SORT_ORDER.DESC },
     })
@@ -86,7 +90,8 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
     const contract = await this.prisma.employeeContract.findFirst({
       where: {
         employeeId,
-        status: { in: ["active", "pending_signature"] },
+        deletedAt: null,
+        status: { in: [CONTRACT_STATUS.ACTIVE, CONTRACT_STATUS.PENDING_SIGNATURE] },
       },
       orderBy: { startDate: SORT_ORDER.DESC },
     })
@@ -99,7 +104,8 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
 
     const contracts = await this.prisma.employeeContract.findMany({
       where: {
-        status: "active",
+        deletedAt: null,
+        status: CONTRACT_STATUS.ACTIVE,
         endDate: {
           not: null,
           gte: now,
@@ -115,7 +121,7 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
     const { employeeId, status, type, page = 1, limit = 50 } = query
     const skip = (page - 1) * limit
 
-    const where: Prisma.EmployeeContractWhereInput = {}
+    const where: Prisma.EmployeeContractWhereInput = { deletedAt: null }
     if (employeeId) where.employeeId = employeeId
     if (status) where.status = status
     if (type) where.contractType = type
@@ -166,7 +172,10 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
   }
 
   async update(id: string, data: UpdateContractDto, updatedById: string): Promise<EmployeeContract | null> {
-    const existing = await this.prisma.employeeContract.findUnique({ where: { id } })
+    const existing = await this.prisma.employeeContract.findFirst({
+      where: { id, deletedAt: null },
+      select: { id: true },
+    })
     if (!existing) return null
 
     const updateData: Prisma.EmployeeContractUpdateInput = {
@@ -201,10 +210,16 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
   }
 
   async terminate(id: string, data: TerminateContractDto): Promise<EmployeeContract | null> {
+    const existing = await this.prisma.employeeContract.findFirst({
+      where: { id, deletedAt: null },
+      select: { id: true },
+    })
+    if (!existing) return null
+
     const contract = await this.prisma.employeeContract.update({
       where: { id },
       data: {
-        status: "terminated",
+        status: CONTRACT_STATUS.TERMINATED,
         terminationReason: data.terminationReason,
         terminationDate: data.terminationDate ? new Date(data.terminationDate) : new Date(),
       },
@@ -218,10 +233,18 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
     createdById: string,
   ): Promise<EmployeeContract> {
     return this.prisma.$transaction(async (tx) => {
+      const existing = await tx.employeeContract.findFirst({
+        where: { id: _id, deletedAt: null },
+        select: { id: true },
+      })
+      if (!existing) {
+        throw new AppError("Contract not found", HttpStatusCode.NOT_FOUND, ErrorLayer.REPOSITORY)
+      }
+
       // Mark old as renewed
       await tx.employeeContract.update({
         where: { id: _id },
-        data: { status: "renewed" },
+        data: { status: CONTRACT_STATUS.RENEWED },
       })
 
       // Create new contract
@@ -252,14 +275,16 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
   }
 
   async softDelete(id: string): Promise<boolean> {
-    const existing = await this.prisma.employeeContract.findUnique({ where: { id } })
+    const existing = await this.prisma.employeeContract.findFirst({
+      where: { id, deletedAt: null },
+      select: { id: true },
+    })
     if (!existing) return false
 
     await this.prisma.employeeContract.update({
       where: { id },
       data: {
-        contractNumber: `${existing.contractNumber}_deleted_${Date.now()}`,
-        status: "terminated",
+        deletedAt: new Date(),
       },
     })
     return true

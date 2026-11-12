@@ -199,13 +199,11 @@ export class PrismaPermissionRepository extends BaseRepository implements IPermi
         throw new Error(PERMISSION_ERROR_CODES.ASSIGNED)
       }
 
-      const timestamp = Date.now()
       await tx.permission.update({
         where: { id },
         data: {
           deletedAt: new Date(),
           updatedBy: actorId,
-          code: `deleted_${timestamp}_${record.id}_${record.code}`,
         },
       })
       return true

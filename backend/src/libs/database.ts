@@ -1,4 +1,4 @@
-import { CONNECTION_STRING } from "@/configs/system/db.config.ts"
+import { CONNECTION_STRING, DB_POOL_CONFIG } from "@/configs/system/db.config.ts"
 import { ENVIRONMENT, ENV_ENVIRONMENT } from "@/configs/system/server.config.ts"
 
 import { PrismaPg } from "@prisma/adapter-pg"
@@ -35,6 +35,10 @@ function createPrismaClient() {
 
   const pool = new Pool({
     connectionString: cleanConnectionString,
+    max: DB_POOL_CONFIG.MAX,
+    idleTimeoutMillis: DB_POOL_CONFIG.IDLE_TIMEOUT_MS,
+    connectionTimeoutMillis: DB_POOL_CONFIG.CONNECTION_TIMEOUT_MS,
+    statement_timeout: DB_POOL_CONFIG.STATEMENT_TIMEOUT_MS,
     ssl: hasSSL
       ? { rejectUnauthorized: false }
       : undefined,

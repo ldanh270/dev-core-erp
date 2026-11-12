@@ -139,12 +139,23 @@ export interface PaginatedTasksDto {
   }
 }
 
+export interface CompletedTaskSuggestionRow {
+  id: string
+  title: string
+  estimatedTime: number | null
+}
+
 /**
  * Repository interface for managing Task database transactions
  */
 export interface ITaskRepository {
   findById(id: string): Promise<Task | null>
   listTasks(query: TaskListQuery): Promise<PaginatedTasksDto>
+  countActiveByAssignees?(assigneeIds: string[]): Promise<Map<string, number>>
+  listRecentCompletedByAssignees?(
+    assigneeIds: string[],
+    perAssigneeLimit?: number,
+  ): Promise<Map<string, CompletedTaskSuggestionRow[]>>
   createTask(data: CreateTaskDto & { createdById: string }): Promise<Task>
   updateTask(id: string, data: UpdateTaskDto): Promise<Task | null>
   deleteTask(id: string): Promise<boolean>

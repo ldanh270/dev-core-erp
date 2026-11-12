@@ -29,12 +29,12 @@ export class EmployeesSeeder implements ISeeder {
       "employee",
     ]
     let adminId = ""
-    const devPos = await prisma.position.findUnique({ where: { code: "developer" } })
-    const testerPos = await prisma.position.findUnique({ where: { code: "tester" } })
-    const pmPos = await prisma.position.findUnique({ where: { code: "pm" } })
-    const hrPos = await prisma.position.findUnique({ where: { code: "hr" } })
-    const gmPos = await prisma.position.findUnique({ where: { code: "gm" } })
-    const adminPos = await prisma.position.findUnique({ where: { code: "admin" } })
+    const devPos = await prisma.position.findFirst({ where: { code: "developer", deletedAt: null } })
+    const testerPos = await prisma.position.findFirst({ where: { code: "tester", deletedAt: null } })
+    const pmPos = await prisma.position.findFirst({ where: { code: "pm", deletedAt: null } })
+    const hrPos = await prisma.position.findFirst({ where: { code: "hr", deletedAt: null } })
+    const gmPos = await prisma.position.findFirst({ where: { code: "gm", deletedAt: null } })
+    const adminPos = await prisma.position.findFirst({ where: { code: "admin", deletedAt: null } })
 
     const passwordHash = await HashUtil.hash(getSeedPassword("SEED_PASSWORD"))
 
