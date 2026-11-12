@@ -40,6 +40,7 @@ export function DataTablePage<T>({
   cardIcon: CardIcon,
   cardIconClassName,
   className,
+  containerClassName,
   density = "normal",
   tabs,
   search,
@@ -210,7 +211,7 @@ export function DataTablePage<T>({
         )}
 
         {/* Table viewport */}
-        <div className="relative flex-1 min-h-0 overflow-auto overscroll-contain">
+        <div className="relative flex-1 min-h-0 overflow-auto">
           <table
             className={cn(
               "w-full border-separate border-spacing-0 text-left",
@@ -232,7 +233,7 @@ export function DataTablePage<T>({
               </colgroup>
             )}
             {/* Table header */}
-            <thead className="bg-card">
+            <thead className="sticky top-0 z-20 bg-card shadow-xs">
               <tr>
                 {visibleColumns.map((col) => {
                   const stickyProps = getStickyCellProps(col, stickyLayout, { isHeader: true, isDesktop: isLg })
@@ -402,7 +403,7 @@ export function DataTablePage<T>({
   }
 
   return (
-    <PageContainer variant={variant === "viewport" ? "table" : "default"}>
+    <PageContainer variant={variant === "viewport" ? "table" : "default"} className={containerClassName}>
       <PageHeader
         title={title}
         description={description}

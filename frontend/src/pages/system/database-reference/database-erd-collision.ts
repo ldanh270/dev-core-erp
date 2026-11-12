@@ -1,54 +1,138 @@
-import type { TableDef } from "./database-reference.types"
-import type { ErdPoint } from "./database-erd-layout"
+import type { ErdPoint } from "./database-erd-geometry"
+import type { HorizontalTrack, VerticalTrack } from "./database-erd-tracks"
 
-const DEFAULT_EDGE_ANCHOR_Y = 40
-const MIN_NODE_HEIGHT = 120
-const COLLISION_PADDING_Y = 12
-const COLLISION_SHIFT_CLEARANCE_Y = 28
-const ERD_NODE_WIDTH = 280
+export type { HorizontalTrack, VerticalTrack }
+export {
+  allocateHorizontalY,
+  allocateVerticalX,
+  TRACK_MIN_SEPARATION,
+  TRACK_OFFSETS,
+} from "./database-erd-tracks"
+export { waypointsToOrthogonalPath } from "./database-erd-path"
 
-// Detect straight edges that cross intermediate columns and push intersecting nodes downward.
-export function avoidLineCollisions(
-  layers: string[][],
-  tables: TableDef[],
+/**
+ * Bounding box of a rendered table card on the ERD canvas.
+ */
+export interface NodeBox {
+  name: string
+  left: number
+  right: number
+  top: number
+  bottom: number
+}
+
+const OBSTACLE_CLEARANCE_X = 12
+const OBSTACLE_CLEARANCE_Y = 12
+
+/**
+ * Converts node positions and heights into bounding boxes for obstacle detection.
+ *
+ * @param positions - Current coordinates of tables.
+ * @param heights - Computed rendered heights.
+ * @param nodeWidth - Fixed node width in pixels.
+ * @param defaultHeight - Fallback height if not found in map.
+ * @returns Array of table bounding boxes.
+ */
+export function buildNodeBoxes(
   positions: Map<string, ErdPoint>,
   heights: Map<string, number>,
-): void {
-  for (const table of tables) {
-    for (const rel of table.outgoingRelations) {
-      const fromPos = positions.get(table.name)
-      const toPos = positions.get(rel.targetTable)
-      if (!fromPos || !toPos || Math.abs(fromPos.x - toPos.x) <= ERD_NODE_WIDTH) continue
-      const minX = Math.min(fromPos.x, toPos.x) + ERD_NODE_WIDTH
-      const maxX = Math.max(fromPos.x, toPos.x)
-      const y1 = fromPos.y + DEFAULT_EDGE_ANCHOR_Y
-      const y2 = toPos.y + DEFAULT_EDGE_ANCHOR_Y
+  nodeWidth: number,
+  defaultHeight: number,
+): NodeBox[] {
+  const boxes: NodeBox[] = []
+  for (const [name, pos] of positions) {
+    const h = heights.get(name) ?? defaultHeight
+    boxes.push({
+      name,
+      left: pos.x,
+      right: pos.x + nodeWidth,
+      top: pos.y,
+      bottom: pos.y + h,
+    })
+  }
+  return boxes
+}
 
-      for (const layer of layers) {
-        const firstPos = positions.get(layer.at(0) ?? "")
-        if (!firstPos || firstPos.x < minX || firstPos.x >= maxX) continue
-        const t = (firstPos.x + ERD_NODE_WIDTH / 2 - fromPos.x) / (toPos.x - fromPos.x)
-        const lineY = y1 + t * (y2 - y1)
+/**
+ * Precomputes horizontal street center Y coordinates between row bands once per layout pass.
+ *
+ * @param boxes - Collection of table obstacle boxes.
+ * @returns Array of deduplicated street center Y values.
+ */
+export function buildStreetCenters(boxes: NodeBox[]): number[] {
+  const uniqueCenters = new Set<number>()
+  for (const box of boxes) {
+    if (box.top - 60 > 16) uniqueCenters.add(Math.round((box.top - 60) / 4) * 4)
+    uniqueCenters.add(Math.round((box.bottom + 60) / 4) * 4)
+  }
+  return [...uniqueCenters]
+}
 
-        for (let i = 0; i < layer.length; i += 1) {
-          const nodeName = layer.at(i)
-          if (!nodeName) continue
-          const nodePos = positions.get(nodeName)
-          const nodeH = heights.get(nodeName) ?? MIN_NODE_HEIGHT
-          if (
-            nodePos &&
-            lineY >= nodePos.y - COLLISION_PADDING_Y &&
-            lineY <= nodePos.y + nodeH + COLLISION_PADDING_Y
-          ) {
-            const shift = lineY - nodePos.y + COLLISION_SHIFT_CLEARANCE_Y
-            for (let j = i; j < layer.length; j += 1) {
-              const shiftedName = layer.at(j)
-              const p = shiftedName ? positions.get(shiftedName) : undefined
-              if (p && shiftedName) positions.set(shiftedName, { x: p.x, y: p.y + shift })
-            }
-          }
-        }
-      }
+/**
+ * Checks whether a horizontal segment [x1, x2] at y intersects any non-endpoint table box.
+ *
+ * @param x1 - Start horizontal coordinate.
+ * @param x2 - End horizontal coordinate.
+ * @param y - Vertical coordinate.
+ * @param boxes - Table bounding boxes.
+ * @param excludeA - Source table to ignore.
+ * @param excludeB - Target table to ignore.
+ * @returns True if segment has clear line of sight.
+ */
+export function isHorizontalClear(
+  x1: number,
+  x2: number,
+  y: number,
+  boxes: NodeBox[],
+  excludeA: string,
+  excludeB: string,
+): boolean {
+  const minX = Math.min(x1, x2) + OBSTACLE_CLEARANCE_X
+  const maxX = Math.max(x1, x2) - OBSTACLE_CLEARANCE_X
+  if (maxX <= minX) return true
+
+  for (const box of boxes) {
+    if (box.name === excludeA || box.name === excludeB) continue
+    if (
+      box.right > minX &&
+      box.left < maxX &&
+      y >= box.top - OBSTACLE_CLEARANCE_Y &&
+      y <= box.bottom + OBSTACLE_CLEARANCE_Y
+    ) {
+      return false
     }
   }
+  return true
+}
+
+/**
+ * Checks whether a vertical segment [y1, y2] at x intersects any table box.
+ *
+ * @param x - Horizontal coordinate.
+ * @param y1 - Start vertical coordinate.
+ * @param y2 - End vertical coordinate.
+ * @param boxes - Table bounding boxes.
+ * @returns True if segment has clear line of sight.
+ */
+export function isVerticalClear(
+  x: number,
+  y1: number,
+  y2: number,
+  boxes: NodeBox[],
+): boolean {
+  const minY = Math.min(y1, y2) + 2
+  const maxY = Math.max(y1, y2) - 2
+  if (maxY <= minY) return true
+
+  for (const box of boxes) {
+    if (
+      x >= box.left - OBSTACLE_CLEARANCE_X &&
+      x <= box.right + OBSTACLE_CLEARANCE_X &&
+      box.bottom > minY &&
+      box.top < maxY
+    ) {
+      return false
+    }
+  }
+  return true
 }

@@ -1,94 +1,84 @@
-import type { ColumnDef, TableDef } from "./database-reference.types"
-import { avoidLineCollisions } from "./database-erd-collision"
+import type { TableDef } from "./database-reference.types"
 import { createEdges } from "./database-erd-edges"
 import {
   assignRanks,
   centerHubLayers,
   createDependencyMaps,
+  getMaxNodesPerColumn,
   groupByRank,
   orderLayers,
   splitLargeLayers,
 } from "./database-erd-ranking"
+import {
+  ERD_NODE_WIDTH,
+  MIN_NODE_HEIGHT,
+  getNodeHeight,
+} from "./database-erd-geometry"
+import type {
+  BaseErdLayout,
+  ErdEdge,
+  ErdLayout,
+  ErdNode,
+  ErdPoint,
+} from "./database-erd-geometry"
 
-// 2D coordinate in the ERD graph space.
-export interface ErdPoint {
-  x: number
-  y: number
-}
+export type { ErdPoint, ErdNode, ErdEdge, ErdLayout, BaseErdLayout }
+export {
+  ERD_NODE_WIDTH,
+  MIN_NODE_HEIGHT,
+  DEFAULT_EDGE_ANCHOR_Y,
+  FIRST_FIELD_ANCHOR_Y,
+  FIELD_ANCHOR_STEP_Y,
+  getLinkedColumns,
+  isPrimaryErdTable,
+  getNodeHeight,
+} from "./database-erd-geometry"
 
-// Positioned ERD table node.
-export interface ErdNode {
-  table: TableDef
-  position: ErdPoint
-}
-
-// Straight line edge connecting a foreign-key column to its target table.
-export interface ErdEdge {
-  id: string
-  from: ErdPoint
-  to: ErdPoint
-  highlighted: boolean
-  crossModule: boolean
-}
-
-// Complete computed ERD layout including nodes, straight edges, and bounding dimensions.
-export interface ErdLayout {
-  nodes: ErdNode[]
-  edges: ErdEdge[]
-  width: number
-  height: number
-}
-
-// Layout geometry constants for node sizing, spacing, and collision avoidance.
-export const ERD_NODE_WIDTH = 280
-export const MIN_NODE_HEIGHT = 120
-export const DEFAULT_EDGE_ANCHOR_Y = 40
-export const FIRST_FIELD_ANCHOR_Y = 56
-export const FIELD_ANCHOR_STEP_Y = 24
-
-const NODE_BASE_CHROME_HEIGHT = 64
-const NODE_LINKED_ROW_HEIGHT = 26
-const MIN_NODE_GAP_X = 180
-const NODE_GAP_Y = 84
+const MIN_NODE_GAP_X = 240
+const DEFAULT_NODE_GAP_Y = 124
+const COMPACT_NODE_GAP_Y = 132
 const CANVAS_MARGIN = 64
-const ALTERNATING_COLUMN_STAGGER_Y = 36
 
-// Return all primary/foreign key and referenced target columns without truncation.
-export function getLinkedColumns(table: TableDef): ColumnDef[] {
-  const incomingTargets = new Set(table.incomingRelations.map((rel) => rel.targetColumn))
-  return table.columns.filter(
-    (column) => column.isPk || column.isFk || incomingTargets.has(column.name),
-  )
+/**
+ * Maps a node's local index in a column of length `layerLen` onto a distributed row index in `[0, maxRows - 1]`.
+ */
+function getDistributedRowIndex(localIdx: number, layerLen: number, maxRows: number): number {
+  if (layerLen <= 1) return Math.floor(maxRows / 2)
+  if (layerLen >= maxRows) return localIdx
+  return Math.floor(((localIdx + 0.5) * maxRows) / layerLen)
 }
 
-// Identify core/parent tables (referenced by other tables or standalone roots) vs FK child tables.
-export function isPrimaryErdTable(table: TableDef): boolean {
-  return table.incomingRelations.length > 0 || table.outgoingRelations.length === 0
-}
-
-// Estimate node height from the full count of displayed linked columns so cards never overlap vertically.
-export function getNodeHeight(table: TableDef): number {
-  const linkedCount = Math.max(1, getLinkedColumns(table).length)
-  return Math.max(MIN_NODE_HEIGHT, NODE_BASE_CHROME_HEIGHT + linkedCount * NODE_LINKED_ROW_HEIGHT)
-}
-
-// Place referenced models before dependent models, center dominant hub tables, and avoid line collisions.
-export function createErdLayout(
-  tables: TableDef[],
-  selectedTableName: string | null,
-  minWidth = 0,
-  positionOverrides: ReadonlyMap<string, ErdPoint> = new Map(),
-): ErdLayout {
+/**
+ * Computes topological ranking, radial wing clustering, and aligned row-band coordinates once per table set.
+ *
+ * @param tables - List of tables.
+ * @param minWidth - Minimum target layout canvas width.
+ * @returns Cached base layout geometry.
+ */
+export function createBaseErdLayout(tables: TableDef[], minWidth = 0): BaseErdLayout {
   const visibleTables = tables
   const visibleNames = new Set(visibleTables.map((table) => table.name))
   const tableByName = new Map(visibleTables.map((table) => [table.name, table]))
   const dependencies = createDependencyMaps(visibleTables, visibleNames)
   const ranks = assignRanks(visibleTables, dependencies.parents, dependencies.children)
-  const rawLayers = groupByRank(visibleTables, ranks)
+  const rawLayers = groupByRank(
+    visibleTables,
+    ranks,
+    dependencies.parents,
+    dependencies.children,
+  )
 
   orderLayers(rawLayers, dependencies.parents, dependencies.children)
-  const splitLayers = splitLargeLayers(rawLayers)
-  const layers = centerHubLayers(splitLayers, visibleTables, dependencies.parents, dependencies.children)
+  const maxNodesPerColumn = getMaxNodesPerColumn(visibleTables.length)
+  const splitLayers = splitLargeLayers(rawLayers, maxNodesPerColumn)
+  const layers = centerHubLayers(
+    splitLayers,
+    visibleTables,
+    dependencies.parents,
+    dependencies.children,
+    maxNodesPerColumn,
+  )
+  orderLayers(layers, dependencies.parents, dependencies.children)
 
   const widestLayer = layers.length
   const horizontalGap =
@@ -99,56 +89,120 @@ export function createErdLayout(
         )
       : MIN_NODE_GAP_X
 
+  const nodeGapY = visibleTables.length <= 12 ? COMPACT_NODE_GAP_Y : DEFAULT_NODE_GAP_Y
   const heights = new Map(visibleTables.map((t) => [t.name, getNodeHeight(t)]))
-  const layerHeights = layers.map((layer) =>
-    layer.reduce(
-      (sum, name, idx) => sum + (heights.get(name) ?? MIN_NODE_HEIGHT) + (idx > 0 ? NODE_GAP_Y : 0),
-      0,
-    ),
-  )
-  const maxLayerHeight = Math.max(0, ...layerHeights)
-  const positions = new Map<string, ErdPoint>()
+  const maxRows = Math.max(1, ...layers.map((layer) => layer.length))
 
-  // Position each column vertically centered with alternating stagger to prevent horizontal line overlap.
+  /**
+   * Compute aligned row-band Y coordinates so every gap between rows forms a clear horizontal street across all columns.
+   */
+  const rowBandTops: number[] = []
+  let cursorY = CANVAS_MARGIN
+
+  for (let rowIdx = 0; rowIdx < maxRows; rowIdx += 1) {
+    rowBandTops.push(cursorY)
+    let rowMaxHeight = MIN_NODE_HEIGHT
+    for (const layer of layers) {
+      layer.forEach((tableName, localIdx) => {
+        if (getDistributedRowIndex(localIdx, layer.length, maxRows) === rowIdx) {
+          rowMaxHeight = Math.max(rowMaxHeight, heights.get(tableName) ?? MIN_NODE_HEIGHT)
+        }
+      })
+    }
+    cursorY += rowMaxHeight + nodeGapY
+  }
+
+  const basePositions = new Map<string, ErdPoint>()
   layers.forEach((layer, colIdx) => {
-    const layerHeight = layerHeights.at(colIdx) ?? 0
-    const staggerOffset =
-      colIdx % 2 === 1 && layer.length > 1 ? ALTERNATING_COLUMN_STAGGER_Y : 0
-    let currentY = CANVAS_MARGIN + (maxLayerHeight - layerHeight) / 2 + staggerOffset
     const x = CANVAS_MARGIN + colIdx * (ERD_NODE_WIDTH + horizontalGap)
 
-    for (const tableName of layer) {
-      positions.set(tableName, { x, y: currentY })
-      currentY += (heights.get(tableName) ?? MIN_NODE_HEIGHT) + NODE_GAP_Y
-    }
+    layer.forEach((tableName, localIdx) => {
+      const targetRowIdx = getDistributedRowIndex(localIdx, layer.length, maxRows)
+      const bandY = rowBandTops.at(targetRowIdx) ?? CANVAS_MARGIN
+      basePositions.set(tableName, { x, y: bandY })
+    })
   })
 
-  // Shift intermediate nodes down if a straight relationship line passes through their bounding box.
-  avoidLineCollisions(layers, visibleTables, positions, heights)
+  return {
+    visibleTables,
+    tableByName,
+    basePositions,
+    heights,
+    baseWidth:
+      CANVAS_MARGIN * 2 + widestLayer * ERD_NODE_WIDTH + Math.max(0, widestLayer - 1) * horizontalGap,
+    baseHeight: cursorY - nodeGapY + CANVAS_MARGIN,
+  }
+}
 
-  // Apply user-dragged node positions without clamping so nodes can move across the entire frame.
+/**
+ * Merges manual drag overrides onto cached base layout and routes orthogonal edges without re-ranking tables.
+ *
+ * @param base - Cached base layout.
+ * @param selectedTableName - Currently highlighted table.
+ * @param positionOverrides - Map of user-dragged node coordinates.
+ * @param onlyConnectedToTable - Dragged table name for incremental edge routing.
+ * @param previousEdges - Previous collection of routed edges.
+ * @returns Complete ERD graph with nodes and orthogonal edges.
+ */
+export function buildErdLayoutFromBase(
+  base: BaseErdLayout,
+  selectedTableName: string | null,
+  positionOverrides: ReadonlyMap<string, ErdPoint> = new Map(),
+  onlyConnectedToTable?: string | null,
+  previousEdges?: ErdEdge[],
+): ErdLayout {
+  const { visibleTables, tableByName, basePositions, heights, baseWidth, baseHeight } = base
+  const positions = new Map(basePositions)
+
   for (const [tableName, position] of positionOverrides) {
     if (positions.has(tableName)) positions.set(tableName, position)
   }
 
-  const width = Math.max(
-    CANVAS_MARGIN * 2 + widestLayer * ERD_NODE_WIDTH + Math.max(0, widestLayer - 1) * horizontalGap,
-    ...[...positions.values()].map((position) => position.x + ERD_NODE_WIDTH + CANVAS_MARGIN),
-  )
-  const height = Math.max(
-    CANVAS_MARGIN * 2 + maxLayerHeight,
-    ...[...positions.entries()].map(
-      ([name, position]) => position.y + (heights.get(name) ?? MIN_NODE_HEIGHT) + CANVAS_MARGIN,
-    ),
-  )
+  let width = baseWidth
+  let height = baseHeight
+  for (const [name, position] of positions) {
+    width = Math.max(width, position.x + ERD_NODE_WIDTH + CANVAS_MARGIN)
+    height = Math.max(height, position.y + (heights.get(name) ?? MIN_NODE_HEIGHT) + CANVAS_MARGIN)
+  }
 
+  const fallbackPos: ErdPoint = { x: CANVAS_MARGIN, y: CANVAS_MARGIN }
   return {
     nodes: visibleTables.map((table) => ({
       table,
-      position: positions.get(table.name) ?? { x: CANVAS_MARGIN, y: CANVAS_MARGIN },
+      position: positions.get(table.name) ?? fallbackPos,
     })),
-    edges: createEdges(visibleTables, tableByName, positions, heights, selectedTableName),
+    edges: createEdges(
+      visibleTables,
+      tableByName,
+      positions,
+      heights,
+      selectedTableName,
+      onlyConnectedToTable,
+      previousEdges,
+    ),
     width,
     height,
   }
+}
+
+/**
+ * Places tables on a Manhattan row-band grid so unobstructed horizontal streets exist between every row.
+ *
+ * @param tables - Table list.
+ * @param selectedTableName - Highlighted table name.
+ * @param minWidth - Canvas minimum width.
+ * @param positionOverrides - Drag overrides map.
+ * @returns Fully computed ERD layout.
+ */
+export function createErdLayout(
+  tables: TableDef[],
+  selectedTableName: string | null,
+  minWidth = 0,
+  positionOverrides: ReadonlyMap<string, ErdPoint> = new Map(),
+): ErdLayout {
+  return buildErdLayoutFromBase(
+    createBaseErdLayout(tables, minWidth),
+    selectedTableName,
+    positionOverrides,
+  )
 }

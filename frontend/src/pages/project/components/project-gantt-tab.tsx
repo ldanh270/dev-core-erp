@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useMemo } from "react"
 import { 
   Clock, 
   User, 
@@ -31,7 +31,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -72,6 +74,13 @@ interface ProjectGanttTabProps {
  * track, plan, and manage task schedules dynamically across a grid-based timeline.
  */
 export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
+  const [hoveredTask, setHoveredTask] = useState<{
+    task: Task
+    isOverdue: boolean
+    isCompletedEarly: boolean
+    x: number
+    y: number
+  } | null>(null)
   const {
     timelineStart,
     selectedTaskForReview,
@@ -127,6 +136,18 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
     handleQuickQuery,
   } = useProjectGantt({ projectId, project })
 
+  const availableYears = useMemo(() => {
+    const currentYear = new Date().getFullYear()
+    const pYear = project?.startDate ? new Date(project.startDate).getFullYear() : currentYear
+    const startYear = Math.min(pYear, currentYear - 2, yearInput)
+    const endYear = Math.max(pYear + 3, currentYear + 3, yearInput + 1)
+    const years: number[] = []
+    for (let y = startYear; y <= endYear; y++) {
+      years.push(y)
+    }
+    return years
+  }, [project, yearInput])
+
   const getDueDateCol = (dueDateStr: string | null | undefined) => {
     if (!dueDateStr) return null
     const dueDate = new Date(dueDateStr)
@@ -173,9 +194,10 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
     // Pre-fill filters from current active filter keys and states
     const filtersCopy: Record<string, { enabled: boolean; operator: string; value: string }> = {}
     activeFilterKeys.forEach(k => {
-      const state = filterStates[k]
+      if (!Object.prototype.hasOwnProperty.call(filterStates, k)) return
+      const state = Reflect.get(filterStates, k) as { enabled: boolean; operator: string; value: string } | undefined
       if (state) {
-        filtersCopy[k] = { ...state }
+        Reflect.set(filtersCopy, k, { ...state })
       }
     })
     setNewQueryFilters(filtersCopy)
@@ -192,14 +214,15 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
     const finalKeys: string[] = []
 
     newQueryFilterKeys.forEach(k => {
-      const filter = newQueryFilters[k]
-      if (filter.enabled) {
+      if (!Object.prototype.hasOwnProperty.call(newQueryFilters, k)) return
+      const filter = Reflect.get(newQueryFilters, k) as { enabled: boolean; operator: string; value: string } | undefined
+      if (filter?.enabled) {
         finalKeys.push(k)
-        finalFilters[k] = {
+        Reflect.set(finalFilters, k, {
           enabled: true,
           operator: filter.operator,
           value: filter.value
-        }
+        })
       }
     })
 
@@ -242,7 +265,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
       if (operator !== GANTT_FILTER_OPERATOR.LA && operator !== GANTT_FILTER_OPERATOR.KHONG_LA) return null
       return (
         <Select value={value || TASK_STATUS.TODO} onValueChange={onChange}>
-          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-30">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
@@ -261,7 +284,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
       if (operator !== GANTT_FILTER_OPERATOR.IS && operator !== GANTT_FILTER_OPERATOR.IS_NOT) return null
       return (
         <Select value={value || TASK_TRACKER.TASK} onValueChange={onChange}>
-          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-30">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
@@ -282,7 +305,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
       if (operator !== GANTT_FILTER_OPERATOR.IS && operator !== GANTT_FILTER_OPERATOR.IS_NOT) return null
       return (
         <Select value={value || TASK_PRIORITY.MEDIUM} onValueChange={onChange}>
-          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-30">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
@@ -301,7 +324,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
         <Select value={value || (assignees[0]?.id || "none")} onValueChange={(val) => {
           onChange(val === "none" ? "" : val)
         }}>
-          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+          <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-30">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
@@ -338,7 +361,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
     }
 
     if (def.type === GANTT_FILTER_TYPE.DATE) {
-      if (operator === GANTT_FILTER_OPERATOR.ANY || operator === GANTT_FILTER_OPERATOR.TODAY || operator === GANTT_FILTER_OPERATOR.YESTERDAY) return null
+      if (operator === GANTT_FILTER_OPERATOR.ANY || operator === GANTT_FILTER_OPERATOR.TODAY || operator === GANTT_FILTER_OPERATOR.YESTERDAY || operator === GANTT_FILTER_OPERATOR.OVERDUE) return null
       if (operator === GANTT_FILTER_OPERATOR.IN_DAYS || operator === GANTT_FILTER_OPERATOR.MORE_THAN_DAYS) {
         return (
           <div className="flex items-center gap-1 font-semibold">
@@ -455,7 +478,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                     return (
                       <div key={key} className="flex flex-wrap items-center gap-2 md:gap-4 py-1">
                         {/* Checkbox & Label */}
-                        <label className="flex items-center gap-2 cursor-pointer select-none font-semibold min-w-[120px]">
+                        <label className="flex items-center gap-2 cursor-pointer select-none font-semibold min-w-30">
                           <input 
                             type="checkbox" 
                             checked={filter.enabled} 
@@ -564,6 +587,9 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                             if (def.type === GANTT_FILTER_TYPE.DATE) {
                               return (
                                 <>
+                                  {key === GANTT_FILTER_KEY.DATE_DUE && (
+                                    <option value={GANTT_FILTER_OPERATOR.OVERDUE}>quá hạn / trễ hạn</option>
+                                  )}
                                   <option value={GANTT_FILTER_OPERATOR.ANY}>bất kỳ lúc nào</option>
                                   <option value={GANTT_FILTER_OPERATOR.TODAY}>hôm nay</option>
                                   <option value={GANTT_FILTER_OPERATOR.YESTERDAY}>hôm qua</option>
@@ -616,11 +642,11 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
 
                 {/* Add Filter Selector */}
                 <div className="flex items-center gap-2 shrink-0 md:self-start bg-secondary/10 p-2 rounded-xl border border-dashed border-border/40">
-                  <span className="font-semibold text-muted-foreground">Thêm lọc</span>
-                  <select
+                  <span className="font-semibold text-muted-foreground text-xs">Thêm lọc</span>
+                  <Select
+                    key={activeFilterKeys.length}
                     value=""
-                    onChange={(e) => {
-                      const selected = e.target.value
+                    onValueChange={(selected) => {
                       if (selected && !activeFilterKeys.includes(selected)) {
                         setActiveFilterKeys(prev => [...prev, selected])
                         setFilterStates(prev => {
@@ -634,30 +660,50 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                         })
                       }
                     }}
-                    className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer min-w-[140px]"
                   >
-                    <option value="" disabled>-- Chọn --</option>
-                    {/* Flat filters (with no group) */}
-                    {Object.entries(filterDefinitions)
-                      .filter(([k, def]) => !def.group && !activeFilterKeys.includes(k))
-                      .map(([k, def]) => (
-                        <option key={k} value={k}>{def.label}</option>
-                      ))
-                    }
-                    {/* Grouped filters */}
-                    {Array.from(new Set(Object.values(filterDefinitions).map(d => d.group).filter(Boolean))).map(group => (
-                      <optgroup key={group} label={group}>
-                        {Object.entries(filterDefinitions)
-                          .filter(([k, def]) => def.group === group && !activeFilterKeys.includes(k))
-                          .map(([k, def]) => (
-                            <option key={k} value={k}>
-                              {def.label}
-                            </option>
-                          ))
-                        }
-                      </optgroup>
-                    ))}
-                  </select>
+                    <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer min-w-35">
+                      <SelectValue placeholder="-- Chọn --" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl bg-popover max-h-80 overflow-y-auto p-1.5 shadow-xl space-y-1">
+                      {/* Flat filters (with no group) */}
+                      {Object.entries(filterDefinitions)
+                        .filter(([k, def]) => !def.group && !activeFilterKeys.includes(k))
+                        .map(([k, def]) => (
+                          <SelectItem
+                            key={k}
+                            value={k}
+                            className="text-xs py-2.5 my-1 rounded-lg cursor-pointer"
+                          >
+                            {def.label}
+                          </SelectItem>
+                        ))
+                      }
+
+                      {/* Grouped filters */}
+                      {Array.from(new Set(Object.values(filterDefinitions).map(d => d.group).filter(Boolean))).map((group) => {
+                        const items = Object.entries(filterDefinitions).filter(
+                          ([k, def]) => def.group === group && !activeFilterKeys.includes(k)
+                        )
+                        if (items.length === 0) return null
+                        return (
+                          <SelectGroup key={group} className="mt-2 pt-2 border-t border-border/20 first:mt-0 first:pt-0 first:border-0">
+                            <SelectLabel className="px-3 py-2 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                              {group}
+                            </SelectLabel>
+                            {items.map(([k, def]) => (
+                              <SelectItem
+                                key={k}
+                                value={k}
+                                className="text-xs py-2.5 my-1 pl-5 rounded-lg cursor-pointer"
+                              >
+                                {def.label}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )
+                      })}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
@@ -742,7 +788,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                 value={String(monthInput)} 
                 onValueChange={(val) => { setMonthInput(parseInt(val)); }} 
               >
-                <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[120px]">
+                <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-30">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -764,14 +810,13 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                 value={String(yearInput)} 
                 onValueChange={(val) => { setYearInput(parseInt(val)); }} 
               >
-                <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-[90px]">
+                <SelectTrigger className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold bg-background min-w-22.5">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
-                  <SelectItem value="2025">2025</SelectItem>
-                  <SelectItem value="2026">2026</SelectItem>
-                  <SelectItem value="2027">2027</SelectItem>
-                  <SelectItem value="2028">2028</SelectItem>
+                  {availableYears.map((yr: number) => (
+                    <SelectItem key={yr} value={String(yr)}>{yr}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 
@@ -862,7 +907,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
 
         {/* Main Gantt Grid Container */}
         <div className="rounded-xl border border-border/40 shadow-sm overflow-hidden bg-background">
-          <div className="grid grid-cols-12 min-w-[900px] divide-x divide-border/40">
+          <div className="grid grid-cols-12 min-w-225 divide-x divide-border/40">
             
             {/* Left Panel: Task & Assignee Details (Col span: 4) */}
             <div className="col-span-4 flex flex-col bg-muted/10">
@@ -924,7 +969,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                             <TooltipTrigger asChild>
                               <div className="flex items-center gap-1 bg-secondary border border-border/40 py-0.5 px-2 rounded-full text-[10px] font-normal cursor-default shrink-0">
                                 <User className="size-2.5 text-muted-foreground" />
-                                <span className="max-w-[60px] truncate">{task.assignee.fullName.split(" ").pop()}</span>
+                                <span className="max-w-15 truncate">{task.assignee.fullName.split(" ").pop()}</span>
                               </div>
                             </TooltipTrigger>
                             <TooltipContent className="text-xs rounded-xl">
@@ -1145,57 +1190,55 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                             className="px-1 z-10 h-full flex items-center overflow-visible relative"
                           >
                             <div className="relative w-full flex items-center overflow-visible">
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div 
-                                      className="h-7 w-full border rounded-full px-2.5 flex items-center justify-between text-[10px] font-medium shadow-sm select-none relative overflow-hidden group cursor-pointer"
-                                      style={containerStyle}
-                                      onDoubleClick={() => { setSelectedTaskForReview(task); }}
-                                    >
-                                      {/* Progress bar inside task bar */}
-                                      {showProgress && (
-                                        <div 
-                                          className="absolute top-0 left-0 h-full transition-all duration-300"
-                                          style={{ ...progressStyle, width: `${progressVal}%` }}
-                                        />
-                                      )}
+                              <div 
+                                className="h-7 w-full border rounded-full px-2.5 flex items-center justify-between text-[10px] font-medium shadow-sm select-none relative overflow-hidden group cursor-pointer"
+                                style={containerStyle}
+                                onDoubleClick={() => { setSelectedTaskForReview(task); }}
+                                onMouseEnter={(e) => {
+                                  setHoveredTask({
+                                    task,
+                                    isOverdue: Boolean(isOverdue),
+                                    isCompletedEarly,
+                                    x: e.clientX,
+                                    y: e.clientY,
+                                  })
+                                }}
+                                onMouseMove={(e) => {
+                                  setHoveredTask({
+                                    task,
+                                    isOverdue: Boolean(isOverdue),
+                                    isCompletedEarly,
+                                    x: e.clientX,
+                                    y: e.clientY,
+                                  })
+                                }}
+                                onMouseLeave={() => {
+                                  setHoveredTask(null)
+                                }}
+                              >
+                                {/* Progress bar inside task bar */}
+                                {showProgress && (
+                                  <div 
+                                    className="absolute top-0 left-0 h-full transition-all duration-300"
+                                    style={{ ...progressStyle, width: `${progressVal}%` }}
+                                  />
+                                )}
 
-                                      <span className="truncate pr-1 z-10 text-[10px] font-semibold">{task.title}</span>
+                                <span className="truncate pr-1 z-10 text-[10px] font-semibold">{task.title}</span>
 
-                                      {/* Right tools (icons only) */}
-                                      <div className="flex items-center gap-1 shrink-0 z-10">
-                                        {task.status === "in_review" && (
-                                          <FileText className="size-3 text-white/90" />
-                                        )}
-                                        {task.status === "done" && (
-                                          <CheckCircle2 className="size-3 text-white" />
-                                        )}
-                                        {isOverdue && (
-                                          <Clock className="size-3 text-white animate-pulse" />
-                                        )}
-                                      </div>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent className="text-xs space-y-1 rounded-xl p-3 max-w-[280px]">
-                                    <p className="font-bold">{task.title}</p>
-                                    <p className="text-muted-foreground font-medium text-[10px]">
-                                      Lịch: {task.startDate ? format(new Date(task.startDate), "dd/MM/yyyy") : "?"} - {task.dueDate ? format(new Date(task.dueDate), "dd/MM/yyyy") : "?"}
-                                    </p>
-                                    <p className="font-medium text-[10px]">
-                                      Tiến độ: {task.progress}% ({task.status === "done" && isCompletedEarly ? "hoàn thành sớm" : task.status})
-                                    </p>
-                                    {task.status === "done" && isCompletedEarly && task.completedAt && (
-                                      <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-[10px]">
-                                        Xong ngày: {format(new Date(task.completedAt), "dd/MM/yyyy")}
-                                      </p>
-                                    )}
-                                    {isOverdue && (
-                                      <p className="text-rose-500 font-bold text-[10px]">Cảnh báo: Đã quá hạn hoàn thành!</p>
-                                    )}
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
+                                {/* Right tools (icons only) */}
+                                <div className="flex items-center gap-1 shrink-0 z-10">
+                                  {task.status === "in_review" && (
+                                    <FileText className="size-3 text-white/90" />
+                                  )}
+                                  {task.status === "done" && (
+                                    <CheckCircle2 className="size-3 text-white" />
+                                  )}
+                                  {isOverdue && (
+                                    <Clock className="size-3 text-white animate-pulse" />
+                                  )}
+                                </div>
+                              </div>
 
                               {/* Status and Progress label next to the bar removed per user request */}
                             </div>
@@ -1286,7 +1329,7 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                   <li key={q.id} className="flex items-center justify-between group">
                     <button
                       onClick={() => { applySavedQuery(q); }}
-                      className="text-primary hover:underline text-left font-medium block truncate max-w-[150px]"
+                      className="text-primary hover:underline text-left font-medium block truncate max-w-37.5"
                       title={q.name}
                     >
                       {q.name}
@@ -1526,22 +1569,27 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
 
               <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
                 {newQueryFilterKeys.map((key) => {
-                  const filter = newQueryFilters[key] as { enabled: boolean; operator: string; value: string } | undefined
+                  if (!Object.prototype.hasOwnProperty.call(newQueryFilters, key)) return null
+                  const filter = Reflect.get(newQueryFilters, key) as { enabled: boolean; operator: string; value: string } | undefined
                   if (filter === undefined) return null
                   const def = Reflect.get(filterDefinitions, key) as { label: string; type: string; group: string } | undefined
                   
                   return (
                     <div key={key} className="flex flex-wrap items-center gap-2 md:gap-4 py-1">
                       {/* Checkbox & Label */}
-                      <label className="flex items-center gap-2 cursor-pointer select-none font-semibold min-w-[120px]">
+                      <label className="flex items-center gap-2 cursor-pointer select-none font-semibold min-w-30">
                         <input 
                           type="checkbox" 
                           checked={filter.enabled} 
                           onChange={(e) => {
-                            setNewQueryFilters(prev => ({
-                              ...prev,
-                              [key]: { ...prev[key], enabled: e.target.checked }
-                            }))
+                            setNewQueryFilters(prev => {
+                              if (!Object.prototype.hasOwnProperty.call(prev, key)) return prev
+                              const existing = Reflect.get(prev, key) as { enabled: boolean; operator: string; value: string } | undefined
+                              if (existing === undefined) return prev
+                              const next = { ...prev }
+                              Reflect.set(next, key, { ...existing, enabled: e.target.checked })
+                              return next
+                            })
                           }} 
                           className="rounded border-border/40 size-3.5 text-primary focus:ring-0 focus:ring-offset-0"
                         />
@@ -1568,10 +1616,14 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                             }
                           }
 
-                          setNewQueryFilters(prev => ({
-                            ...prev,
-                            [key]: { ...prev[key], operator: op, value: val }
-                          }))
+                          setNewQueryFilters(prev => {
+                            if (!Object.prototype.hasOwnProperty.call(prev, key)) return prev
+                            const existing = Reflect.get(prev, key) as { enabled: boolean; operator: string; value: string } | undefined
+                            if (existing === undefined) return prev
+                            const next = { ...prev }
+                            Reflect.set(next, key, { ...existing, operator: op, value: val })
+                            return next
+                          })
                         }}
                         className="h-8 rounded-full border border-border/40 px-3 text-xs font-semibold focus:outline-none focus:border-primary bg-background cursor-pointer"
                       >
@@ -1634,6 +1686,9 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                           if (def.type === GANTT_FILTER_TYPE.DATE) {
                             return (
                               <>
+                                {key === GANTT_FILTER_KEY.DATE_DUE && (
+                                  <option value={GANTT_FILTER_OPERATOR.OVERDUE}>quá hạn / trễ hạn</option>
+                                )}
                                 <option value={GANTT_FILTER_OPERATOR.ANY}>bất kỳ lúc nào</option>
                                 <option value={GANTT_FILTER_OPERATOR.TODAY}>hôm nay</option>
                                 <option value={GANTT_FILTER_OPERATOR.YESTERDAY}>hôm qua</option>
@@ -1659,10 +1714,14 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
 
                       {/* Value Select (Conditional) */}
                       {renderValueSelector(key, filter.operator, filter.value, (val) => {
-                        setNewQueryFilters(prev => ({
-                          ...prev,
-                          [key]: { ...prev[key], value: val }
-                        }))
+                        setNewQueryFilters(prev => {
+                          if (!Object.prototype.hasOwnProperty.call(prev, key)) return prev
+                          const existing = Reflect.get(prev, key) as { enabled: boolean; operator: string; value: string } | undefined
+                          if (existing === undefined) return prev
+                          const next = { ...prev }
+                          Reflect.set(next, key, { ...existing, value: val })
+                          return next
+                        })
                       })}
 
                       {/* Delete Button */}
@@ -1789,10 +1848,14 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
                           setNewQuerySelectedCols(prev => {
                             const idx = prev.indexOf(selSelectedKey)
                             if (idx === -1 || idx === prev.length - 1) return prev
-                            const next = [...prev]
-                            next[idx] = next[idx + 1]
-                            next[idx + 1] = selSelectedKey
-                            return next
+                            const nextItem = prev.at(idx + 1)
+                            if (nextItem === undefined) return prev
+                            return [
+                              ...prev.slice(0, idx),
+                              nextItem,
+                              selSelectedKey,
+                              ...prev.slice(idx + 2),
+                            ]
                           })
                         }
                       }}
@@ -1826,6 +1889,34 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Floating Mouse Cursor Tooltip for Gantt Task Bar */}
+      {hoveredTask && (
+        <div 
+          className="fixed pointer-events-none z-50 rounded-xl bg-foreground text-background p-3 shadow-2xl max-w-75 text-xs space-y-1 select-none border border-border/20 backdrop-blur-sm"
+          style={{
+            left: `${Math.min(Math.max(hoveredTask.x, 160), (typeof window !== "undefined" ? window.innerWidth : 1200) - 160)}px`,
+            top: hoveredTask.y < 140 ? `${hoveredTask.y + 16}px` : `${hoveredTask.y - 12}px`,
+            transform: hoveredTask.y < 140 ? "translate(-50%, 0)" : "translate(-50%, -100%)",
+          }}
+        >
+          <p className="font-bold leading-snug">{hoveredTask.task.title}</p>
+          <p className="text-background/80 font-medium text-[10px]">
+            Lịch: {hoveredTask.task.startDate ? format(new Date(hoveredTask.task.startDate), "dd/MM/yyyy") : "?"} - {hoveredTask.task.dueDate ? format(new Date(hoveredTask.task.dueDate), "dd/MM/yyyy") : "?"}
+          </p>
+          <p className="font-medium text-[10px]">
+            Tiến độ: {hoveredTask.task.progress}% ({hoveredTask.task.status === "done" && hoveredTask.isCompletedEarly ? "hoàn thành sớm" : hoveredTask.task.status})
+          </p>
+          {hoveredTask.task.status === "done" && hoveredTask.isCompletedEarly && hoveredTask.task.completedAt && (
+            <p className="text-emerald-400 font-semibold text-[10px]">
+              Xong ngày: {format(new Date(hoveredTask.task.completedAt), "dd/MM/yyyy")}
+            </p>
+          )}
+          {hoveredTask.isOverdue && (
+            <p className="text-rose-400 font-bold text-[10px]">Cảnh báo: Đã quá hạn hoàn thành!!!</p>
+          )}
+        </div>
+      )}
     </div>
   )
 }

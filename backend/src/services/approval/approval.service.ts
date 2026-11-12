@@ -1,3 +1,5 @@
+import { NOTIFICATION_PRIORITY, NOTIFICATION_TYPE } from "@/configs/entities/notification.config.ts"
+import { eventBus } from "@/libs/event-bus.ts"
 import { APPLICATION_STATUS } from "@/configs/entities/attendance.config.ts"
 import { PASSWORD_RESET_STATUS } from "@/configs/auth/auth.config.ts"
 import { PROJECT_STATUS } from "@/configs/entities/project.config.ts"
@@ -208,9 +210,17 @@ export class ApprovalService implements IApprovalService {
             HttpStatusCode.INTERNAL_SERVER_ERROR,
             ErrorLayer.SERVICE,
           )
+        eventBus.emitTyped("notification:create", {
+          employeeId: applicantId,
+          title: "Đơn đã được duyệt",
+          message: `Đơn của bạn (${app.type}) đã được phê duyệt thành công.`,
+          type: NOTIFICATION_TYPE.SUCCESS,
+          priority: NOTIFICATION_PRIORITY.HIGH,
+          link: "/application/my-applications",
+        })
         return result
       } else {
-        return prisma.application.update({
+        const result = await prisma.application.update({
           where: { id: dto.id },
           data: {
             status: APPLICATION_STATUS.REJECTED,
@@ -219,6 +229,15 @@ export class ApprovalService implements IApprovalService {
             rejectReason: dto.rejectReason,
           },
         })
+        eventBus.emitTyped("notification:create", {
+          employeeId: applicantId,
+          title: "Đơn bị từ chối",
+          message: `Đơn của bạn (${app.type}) đã bị từ chối.${dto.rejectReason ? ` Lý do: ${dto.rejectReason}` : ""}`,
+          type: NOTIFICATION_TYPE.WARNING,
+          priority: NOTIFICATION_PRIORITY.HIGH,
+          link: "/application/my-applications",
+        })
+        return result
       }
     } else if (dto.category === APPROVAL_CATEGORY.PASSWORD_RESET) {
       const req = await prisma.passwordResetRequest.findUnique({ where: { id: dto.id } })

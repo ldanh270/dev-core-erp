@@ -1,3 +1,8 @@
+// DevCore ERP database schema.
+// Modules group their enums and models by business responsibility.
+// Use /// for enum, model, and field documentation; use // for module and section notes.
+// Relations and constraints below define persistence rules; workflow enforcement belongs to the application.
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -6,8 +11,10 @@ datasource db {
   provider = "postgresql"
 }
 
-// ─── Enums ───────────────────────────────────────────────────────────────────
+// Module: Employees and positions
+// Core employee identities and organizational positions shared by business modules.
 
+/// Employment lifecycle states recorded on employee profiles.
 enum EmployeeStatus {
   active
   inactive
@@ -15,9 +22,10 @@ enum EmployeeStatus {
   terminated
 }
 
+/// Employment engagement categories shared by employees and recruitment records.
 enum EmployeeType {
   full_time
-  part_time // legacy — prefer workScheduleType for schedule logic
+  part_time
   contractor
   intern
 }
@@ -269,7 +277,7 @@ model Employee {
   positionId            String?
   positionRel           Position?        @relation(fields: [positionId], references: [id], onDelete: SetNull)
   employeeType          EmployeeType     @default(full_time)
-  workScheduleType      WorkScheduleType @default(full_time) // PT payroll, availability, attendance branching
+  workScheduleType      WorkScheduleType @default(full_time)
   status                EmployeeStatus   @default(active)
   failedLoginCount      Int              @default(0)
   lockedUntil           DateTime?
@@ -282,9 +290,13 @@ model Employee {
 
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
-  deletedAt            DateTime? // For soft deletes
+  deletedAt            DateTime?
   version              Int       @default(1)
   authorizationVersion Int       @default(1)
+
+  // Notification relations
+  targetedNotifications Notification[]               @relation("NotificationTarget")
+  notificationStates    NotificationRecipientState[]
 
   // Relations
   auditLogsActed                 AuthorizationAuditLog[]      @relation("AuditLogActor")
@@ -346,6 +358,16 @@ model Employee {
   recruitmentNotesCreated       ApplicationNote[]            @relation("RecruitmentNoteCreator")
   recruitmentPostingActivities  RecruitmentPostingActivity[] @relation("RecruitmentPostingActivityActor")
   archivedRecruitmentPostings   JobPosting[]                 @relation("RecruitmentPostingArchiver")
+  requisitionsRequested         JobRequisition[]             @relation("RequisitionRequester")
+  requisitionsAssignedToApprove JobRequisition[]             @relation("RequisitionDesignatedApprover")
+  requisitionsApproved          JobRequisition[]             @relation("RequisitionApprover")
+  recruitmentAppsAssigned       RecruitmentApplication[]     @relation("RecruitmentAppRecruiter")
+  scorecardsEvaluated           Scorecard[]                  @relation("ScorecardEvaluator")
+  offersCreated                 RecruitmentOffer[]           @relation("OfferCreator")
+  bgcChecked                    BackgroundCheck[]            @relation("BgcChecker")
+  recruitmentNotesCreated       ApplicationNote[]            @relation("RecruitmentNoteCreator")
+  recruitmentPostingActivities  RecruitmentPostingActivity[] @relation("RecruitmentPostingActivityActor")
+  archivedRecruitmentPostings   JobPosting[]                 @relation("RecruitmentPostingArchiver")
 
   @@index([status, employeeType])
   @@index([deletedAt, createdAt(sort: Desc)])
@@ -359,14 +381,115 @@ model Employee {
   @@index([email])
 }
 
-// ── Attendance ──
+// Module: Employee contracts
+// Employment agreements, compensation terms, and contract renewal history.
+
+/// Supported legal engagement types for employee contracts.
+enum ContractType {
+  trial
+  definite
+  indefinite
+  service
+}
+
+/// Contract lifecycle states, including signature, termination, and renewal.
+enum ContractStatus {
+  draft
+  pending_signature
+  active
+  expired
+  terminated
+  renewed
+}
+
+/// Employment agreement with salary terms, dates, attachments, and author records. Self-relations link a renewed contract to its predecessor and successors.
+model EmployeeContract {
+  id         String   @id @default(cuid())
+  employeeId String
+  employee   Employee @relation("EmployeeContracts", fields: [employeeId], references: [id], onDelete: Cascade)
+
+  contractType   ContractType
+  contractNumber String       @unique
+  title          String?
+
+  signedDate   DateTime? @db.Date
+  startDate    DateTime  @db.Date
+  endDate      DateTime? @db.Date
+  trialEndDate DateTime? @db.Date
+
+  salary   Decimal @db.Decimal(15, 2)
+  currency String  @default("VND")
+
+  allowances  Json?
+  attachments String[]
+
+  status            ContractStatus @default(draft)
+  terminationReason String?
+  terminationDate   DateTime?
+
+  probationSalary     Decimal? @db.Decimal(15, 2)
+  probationSalaryRate Decimal? @db.Decimal(5, 2)
+
+  createdById String
+  createdBy   Employee  @relation("ContractCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedById String?
+  updatedBy   Employee? @relation("ContractUpdater", fields: [updatedById], references: [id], onDelete: SetNull)
+  note        String?
+
+  renewedFromId String?
+  renewedFrom   EmployeeContract?  @relation("ContractRenewal", fields: [renewedFromId], references: [id], onDelete: SetNull)
+  renewedTo     EmployeeContract[] @relation("ContractRenewal")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([employeeId])
+  @@index([status, endDate])
+  @@index([contractNumber])
+}
+
+// Module: Work schedules and attendance
+// Shift definitions, recurring schedules, part-time availability, and recorded attendance.
+
+/// Scheduling categories used independently of employment engagement type.
+enum WorkScheduleType {
+  full_time
+  part_time
+}
+
+/// Assignment states for a dated employee shift.
+enum ShiftStatus {
+  scheduled
+  holiday_pending
+  confirmed
+  cancelled
+}
+
+/// Recorded attendance outcomes for an assigned shift.
+enum AttendanceStatus {
+  on_time
+  late
+  early_leave
+  absent
+  overtime
+}
+
+/// Review states for an employee's weekly part-time availability submission.
+enum PartTimeAvailabilityStatus {
+  draft
+  submitted
+  approved
+  rejected
+}
+
+/// Reusable shift definition with time boundaries, break settings, and attendance location rules. Referenced by templates, schedules, assignments, and swap requests.
 model WorkingShift {
   id                 String   @id @default(cuid())
   name               String
-  startTime          Int // "HH:mm" stored as total minutes from midnight (e.g., 540 for 09:00)
-  endTime            Int // "HH:mm" stored as total minutes from midnight (e.g., 1020 for 17:00)
-  breakStartTime     Int? // Optional unpaid-break start, minutes from midnight
-  breakEndTime       Int? // Optional unpaid-break end, minutes from midnight
+  startTime          Int
+  endTime            Int
+  breakStartTime     Int?
+  breakEndTime       Int?
   gracePeriodMinutes Int      @default(15)
   gpsLat             Float?
   gpsLng             Float?
@@ -380,21 +503,31 @@ model WorkingShift {
 
   employeeShifts EmployeeShift[]
 
-  // Relations for ShiftSchedule weekdays
   shiftScheduleDays           ShiftScheduleDay[]
   weeklyScheduleTemplateDays  WeeklyScheduleTemplateDay[]
   applicationShiftSwapDetails ApplicationShiftSwapDetail[] @relation("ShiftSwapWorkingShift")
-
-  /// @db.Check("start_time >= 0 AND start_time < 1440")
-  /// @db.Check("end_time >= 0 AND end_time <= 1440")
-  /// @db.Check("(break_start_time IS NULL AND break_end_time IS NULL) OR (start_time < break_start_time AND break_start_time < break_end_time AND break_end_time < end_time)")
-  /// @db.Check("grace_period_minutes >= 0 AND grace_period_minutes <= 120")
-  /// @db.Check("gps_radius_meters > 0")
 
   @@index([isActive])
   @@index([createdById])
 }
 
+/// Schedule generation timing and the last generated week key. The identifier defaults to GLOBAL; the schema does not prevent other identifiers.
+model WeeklyScheduleSettings {
+  id                   String   @id @default("GLOBAL")
+  triggerDayOfWeek     Int
+  triggerHour          Int      @default(7)
+  triggerMinute        Int      @default(0)
+  lastGeneratedWeekKey String?
+  updatedById          String
+  updatedBy            Employee @relation(fields: [updatedById], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([updatedById])
+}
+
+/// Reusable recurring schedule definition. Contains ordered cycle weeks and is referenced by employee schedules.
 model WeeklyScheduleTemplate {
   id          String   @id @default(cuid())
   name        String
@@ -414,6 +547,7 @@ model WeeklyScheduleTemplate {
   @@index([createdById])
 }
 
+/// One week within a recurring template. The template and week index uniquely identify each cycle week.
 model WeeklyScheduleTemplateWeek {
   id         String                 @id @default(cuid())
   templateId String
@@ -425,11 +559,12 @@ model WeeklyScheduleTemplateWeek {
   @@unique([templateId, weekIndex])
 }
 
+/// One weekday within a template week. The shift relation is optional; each week can contain only one entry per weekday.
 model WeeklyScheduleTemplateDay {
   id        String                     @id @default(cuid())
   weekId    String
   week      WeeklyScheduleTemplateWeek @relation(fields: [weekId], references: [id], onDelete: Cascade)
-  dayOfWeek Int // 0 = Sunday, 1 = Monday, ... 6 = Saturday
+  dayOfWeek Int
   shiftId   String?
   shift     WorkingShift?              @relation(fields: [shiftId], references: [id], onDelete: Restrict)
 
@@ -437,6 +572,7 @@ model WeeklyScheduleTemplateDay {
   @@index([shiftId])
 }
 
+/// Employee schedule with an effective date range and optional source template. Owns recurring day definitions and generated employee shift assignments.
 model ShiftSchedule {
   id          String                  @id @default(cuid())
   employeeId  String
@@ -461,12 +597,13 @@ model ShiftSchedule {
   @@index([templateId])
 }
 
+/// Working shift for a weekday and cycle week within an employee schedule. The schedule, week index, and weekday form a unique assignment.
 model ShiftScheduleDay {
   id         String        @id @default(cuid())
   scheduleId String
   schedule   ShiftSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   weekIndex  Int           @default(0)
-  dayOfWeek  Int // 0 = Sunday, 1 = Monday, ... 6 = Saturday
+  dayOfWeek  Int
   shiftId    String
   shift      WorkingShift  @relation(fields: [shiftId], references: [id], onDelete: Restrict)
 
@@ -474,6 +611,7 @@ model ShiftScheduleDay {
   @@index([shiftId])
 }
 
+/// Dated working shift assigned to an employee, optionally generated from a schedule. Links attendance and shift-specific application details; duplicate employee/date/shift combinations are prevented.
 model EmployeeShift {
   id           String         @id @default(cuid())
   employeeId   String
@@ -508,6 +646,57 @@ model EmployeeShift {
   @@index([createdById])
 }
 
+/// Employee availability submission for a week, including review metadata. Owns daily entries and is unique per employee and week start.
+model PartTimeWeeklyAvailability {
+  id           String                     @id @default(cuid())
+  employeeId   String
+  employee     Employee                   @relation("PartTimeAvailabilityEmployee", fields: [employeeId], references: [id], onDelete: Cascade)
+  weekStart    DateTime                   @db.Date
+  status       PartTimeAvailabilityStatus @default(submitted)
+  note         String?
+  submittedAt  DateTime?
+  reviewedById String?
+  reviewedBy   Employee?                  @relation("PartTimeAvailabilityReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt   DateTime?
+  rejectReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  days PartTimeAvailabilityDay[]
+
+  @@unique([employeeId, weekStart])
+  @@index([weekStart])
+  @@index([status])
+  @@index([reviewedById])
+}
+
+/// Daily entry within a weekly availability submission. Stores the all-day busy flag and associated time slots; weekdays are unique within a submission.
+model PartTimeAvailabilityDay {
+  id             String                     @id @default(cuid())
+  availabilityId String
+  availability   PartTimeWeeklyAvailability @relation(fields: [availabilityId], references: [id], onDelete: Cascade)
+  dayOfWeek      Int
+  isBusyAllDay   Boolean                    @default(false)
+
+  slots PartTimeAvailabilitySlot[]
+
+  @@unique([availabilityId, dayOfWeek])
+}
+
+/// Time interval belonging to a daily availability entry. Stores display ordering alongside its start and end boundaries.
+model PartTimeAvailabilitySlot {
+  id        String                  @id @default(cuid())
+  dayId     String
+  day       PartTimeAvailabilityDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  startTime Int
+  endTime   Int
+  sortOrder Int                     @default(0)
+
+  @@index([dayId])
+}
+
+/// Check-in, check-out, location, and calculated attendance totals for one employee shift. Unique relations allow at most one correction application and one actual-shift record per attendance record.
 model AttendanceRecord {
   id              String        @id @default(cuid())
   employeeId      String
@@ -545,7 +734,7 @@ model AttendanceRecord {
   @@index([status, date(sort: Desc)])
 }
 
-/// Snapshot of actual work times derived from check-in/out for the Real Shift calendar view.
+/// Actual working-time boundaries associated with an attendance record. Includes matching and paid-leave flags; each attendance record has at most one actual-shift record.
 model RealShift {
   id                 String           @id @default(cuid())
   employeeId         String
@@ -553,10 +742,10 @@ model RealShift {
   attendanceRecordId String           @unique
   attendanceRecord   AttendanceRecord @relation(fields: [attendanceRecordId], references: [id], onDelete: Cascade)
   date               DateTime         @db.Date
-  actualStartTime    Int // minutes from midnight, derived from checkInAt
-  actualEndTime      Int? // minutes from midnight, derived from checkOutAt
-  isMatched          Boolean          @default(false) // true when actual bounds equal planned shift times
-  isPaidLeave        Boolean          @default(false) // true when this shift is a paid leave day
+  actualStartTime    Int
+  actualEndTime      Int?
+  isMatched          Boolean          @default(false)
+  isPaidLeave        Boolean          @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -565,6 +754,50 @@ model RealShift {
   @@index([isMatched, date(sort: Desc)])
 }
 
+// Module: Employee applications and leave
+// Employee requests, review metadata, request details, and annual leave balances.
+
+/// Employee request categories used to select the relevant application details.
+enum ApplicationType {
+  leave
+  overtime
+  work_from_home
+  shift_swap
+  business_trip
+  late_early
+  regime
+  resignation
+  forgot_card
+  recruitment
+}
+
+/// Employee request review states, including partner approval for coordinated requests.
+enum ApplicationStatus {
+  pending
+  partner_pending
+  approved
+  rejected
+  cancelled
+}
+
+/// Leave categories recorded in employee leave request details.
+enum LeaveType {
+  annual_leave
+  sick_leave
+  maternity_leave
+  bereavement_leave
+  marriage_leave
+  unpaid_leave
+  other
+}
+
+/// Paid or unpaid treatment recorded for a leave request.
+enum RegimeType {
+  paid
+  unpaid
+}
+
+/// Employee request header with a date range, review metadata, and optional type-specific details. Detail tables use the application identifier as their primary key; type/detail consistency is not enforced here.
 model Application {
   id         String            @id @default(cuid())
   employeeId String
@@ -614,50 +847,23 @@ model Application {
   @@index([assignedToId, status, createdAt(sort: Desc)])
 }
 
-model ApplicationLeaveDetail {
-  applicationId String      @id
-  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  leaveType     LeaveType
-  regimeType    RegimeType
-  documentUrl   String?
+/// Annual leave allocation and usage for an employee. A unique employee/year pair prevents duplicate annual balance records.
+model EmployeeLeaveBalance {
+  id         String   @id @default(cuid())
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  year       Int
+  totalDays  Decimal  @db.Decimal(5, 2)
+  usedDays   Decimal  @default(0) @db.Decimal(5, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([employeeId, year])
+  @@index([employeeId, year])
 }
 
-model ApplicationShiftSwapDetail {
-  applicationId String      @id
-  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-
-  // Shift original want to swap (employee shift)
-  employeeShiftId String
-  employeeShift   EmployeeShift @relation("ApplicationEmployeeShift", fields: [employeeShiftId], references: [id], onDelete: Cascade)
-
-  // Shift to swap with (working shift)
-  workingShiftId String?
-  workingShift   WorkingShift? @relation("ShiftSwapWorkingShift", fields: [workingShiftId], references: [id], onDelete: Cascade)
-
-  // If swap with specific employee and shift instead of any available shift
-  swapWithEmployeeId String?
-  swapWithEmployee   Employee?      @relation("ApplicationSwapWith", fields: [swapWithEmployeeId], references: [id], onDelete: Cascade)
-  swapWithShiftId    String?
-  swapWithShift      EmployeeShift? @relation("ApplicationSwapWithShift", fields: [swapWithShiftId], references: [id], onDelete: Cascade)
-
-  @@index([employeeShiftId])
-  @@index([workingShiftId])
-  @@index([swapWithEmployeeId])
-  @@index([swapWithShiftId])
-}
-
-model ApplicationOvertimeDetail {
-  applicationId String      @id
-  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-
-  employeeShiftId String
-  employeeShift   EmployeeShift @relation("ApplicationOvertimeShift", fields: [employeeShiftId], references: [id], onDelete: Cascade)
-
-  @@index([employeeShiftId])
-}
-
-/// User-defined regime category (e.g. Con lớn, Thai sản, Con nhỏ).
-/// Two defaults (paid / unpaid) are seeded on first use.
+/// Reusable attendance allowance category with late-arrival and early-departure limits. Referenced by regime request details.
 model RegimeCategory {
   id              String   @id @default(cuid())
   name            String
@@ -676,6 +882,49 @@ model RegimeCategory {
   @@index([isDefault])
 }
 
+/// One-to-one leave request details containing leave category, pay treatment, and an optional supporting document.
+model ApplicationLeaveDetail {
+  applicationId String      @id
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  leaveType     LeaveType
+  regimeType    RegimeType
+  documentUrl   String?
+}
+
+/// One-to-one shift change or swap request details. References the employee shift and optional replacement shift or swap partner.
+model ApplicationShiftSwapDetail {
+  applicationId String      @id
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  employeeShiftId String
+  employeeShift   EmployeeShift @relation("ApplicationEmployeeShift", fields: [employeeShiftId], references: [id], onDelete: Cascade)
+
+  workingShiftId String?
+  workingShift   WorkingShift? @relation("ShiftSwapWorkingShift", fields: [workingShiftId], references: [id], onDelete: Cascade)
+
+  swapWithEmployeeId String?
+  swapWithEmployee   Employee?      @relation("ApplicationSwapWith", fields: [swapWithEmployeeId], references: [id], onDelete: Cascade)
+  swapWithShiftId    String?
+  swapWithShift      EmployeeShift? @relation("ApplicationSwapWithShift", fields: [swapWithShiftId], references: [id], onDelete: Cascade)
+
+  @@index([employeeShiftId])
+  @@index([workingShiftId])
+  @@index([swapWithEmployeeId])
+  @@index([swapWithShiftId])
+}
+
+/// One-to-one overtime request details linked to the affected employee shift.
+model ApplicationOvertimeDetail {
+  applicationId String      @id
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  employeeShiftId String
+  employeeShift   EmployeeShift @relation("ApplicationOvertimeShift", fields: [employeeShiftId], references: [id], onDelete: Cascade)
+
+  @@index([employeeShiftId])
+}
+
+/// One-to-one attendance allowance request details. References a regime category and records requested late-arrival and early-departure minutes.
 model ApplicationRegimeDetail {
   applicationId    String         @id
   application      Application    @relation(fields: [applicationId], references: [id], onDelete: Cascade)
@@ -688,6 +937,7 @@ model ApplicationRegimeDetail {
   @@index([regimeCategoryId])
 }
 
+/// One-to-one late-arrival or early-departure request details for an employee shift. The direction flag distinguishes late arrival from early departure.
 model ApplicationLateEarlyDetail {
   applicationId   String        @id
   application     Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
@@ -699,6 +949,7 @@ model ApplicationLateEarlyDetail {
   @@index([employeeShiftId])
 }
 
+/// One-to-one business trip request details containing destination, purpose, and an optional budget.
 model ApplicationBusinessTripDetail {
   applicationId String      @id
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
@@ -707,6 +958,7 @@ model ApplicationBusinessTripDetail {
   budget        Decimal?    @db.Decimal(15, 2)
 }
 
+/// One-to-one remote-work request details linked to an employee shift.
 model ApplicationWorkFromHomeDetail {
   applicationId   String        @id
   application     Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
@@ -717,7 +969,6 @@ model ApplicationWorkFromHomeDetail {
 }
 
 model HolidayCalendar {
-  // Date is intentionally non-unique because scoped holidays may overlap on the same day.
   id          String                    @id @default(cuid())
   date        DateTime                  @db.Date
   name        String
@@ -725,7 +976,6 @@ model HolidayCalendar {
   scope       HolidayScope              @default(all)
   positionId  String?
   position    Position?                 @relation(fields: [positionId], references: [id], onDelete: SetNull)
-  /// Groups rows created from one date-range request.
   batchId     String?
   createdById String
   createdBy   Employee                  @relation(fields: [createdById], references: [id], onDelete: Restrict)
@@ -742,6 +992,7 @@ model HolidayCalendar {
   @@index([createdById])
 }
 
+/// Join record assigning a holiday to an employee. The composite primary key prevents duplicate assignments.
 model HolidayCalendarAssignee {
   holidayId  String
   holiday    HolidayCalendar @relation(fields: [holidayId], references: [id], onDelete: Cascade)
@@ -752,7 +1003,32 @@ model HolidayCalendarAssignee {
   @@index([employeeId])
 }
 
-// ── Payroll ──
+// Module: Payroll and compensation
+// Salary formulas, payslip templates, effective salary configurations, and payroll results.
+
+/// Payroll processing and approval states, including payment completion.
+enum PayrollStatus {
+  draft
+  pending_approval
+  approved
+  rejected
+  paid
+}
+
+/// Salary component classification as an addition or a deduction.
+enum ComponentType {
+  addition
+  deduction
+}
+
+/// Value interpretation for salary components: currency, number, or percentage.
+enum ComponentValueType {
+  currency
+  number
+  percentage
+}
+
+/// Reusable salary calculation component with a formula and value interpretation. Referenced by template memberships and calculated payslip lines.
 model SalaryComponent {
   id          String             @id @default(cuid())
   code        String             @unique @default(cuid())
@@ -775,65 +1051,7 @@ model SalaryComponent {
   @@index([createdById])
 }
 
-model PayslipTemplate {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  description String?
-  isActive    Boolean  @default(true)
-  createdById String
-  createdBy   Employee @relation(fields: [createdById], references: [id], onDelete: Restrict)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  components    PayslipTemplateComponent[]
-  salaryConfigs EmployeeSalaryConfig[]
-
-  @@index([isActive])
-  @@index([createdById])
-}
-
-model PayslipTemplateComponent {
-  templateId      String
-  template        PayslipTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  componentId     String
-  component       SalaryComponent @relation(fields: [componentId], references: [id], onDelete: Restrict)
-  overrideFormula String?
-
-  @@id([templateId, componentId])
-  @@index([componentId])
-}
-
-model EmployeeSalaryConfig {
-  id         String          @id @default(cuid())
-  employeeId String
-  employee   Employee        @relation(fields: [employeeId], references: [id], onDelete: Restrict)
-  templateId String
-  template   PayslipTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
-
-  // ── Lương chính ─────────────────────────────────
-  baseSalary Decimal @db.Decimal(15, 2)
-  // Lương cứng hàng tháng — NOT NULL
-
-  // ── Versioning ──────────────────────────────────
-  effectiveFrom DateTime  @db.Date
-  effectiveTo   DateTime? @db.Date
-  note          String?
-
-  createdById String
-  createdBy   Employee @relation("SalaryConfigCreator", fields: [createdById], references: [id], onDelete: Restrict)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  payslips Payslip[]
-
-  @@index([employeeId, effectiveFrom(sort: Desc)])
-  @@index([templateId])
-  @@index([effectiveTo])
-  @@index([createdById])
-}
-
+/// Named decimal input available to salary calculations. Codes uniquely identify variables independently of their display names.
 model SalaryVariable {
   id          String  @id @default(cuid())
   code        String  @unique
@@ -852,6 +1070,66 @@ model SalaryVariable {
   @@index([createdById])
 }
 
+/// Reusable collection of salary components referenced by employee salary configurations.
+model PayslipTemplate {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdById String
+  createdBy   Employee @relation(fields: [createdById], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  components    PayslipTemplateComponent[]
+  salaryConfigs EmployeeSalaryConfig[]
+
+  @@index([isActive])
+  @@index([createdById])
+}
+
+/// Join record adding a salary component to a payslip template. An optional formula overrides the component formula for this membership.
+model PayslipTemplateComponent {
+  templateId      String
+  template        PayslipTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  componentId     String
+  component       SalaryComponent @relation(fields: [componentId], references: [id], onDelete: Restrict)
+  overrideFormula String?
+
+  @@id([templateId, componentId])
+  @@index([componentId])
+}
+
+/// Employee base salary and payslip template for an effective date range. Generated payslips reference the configuration; overlapping date ranges are not prevented here.
+model EmployeeSalaryConfig {
+  id         String          @id @default(cuid())
+  employeeId String
+  employee   Employee        @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  templateId String
+  template   PayslipTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+
+  baseSalary Decimal @db.Decimal(15, 2)
+
+  effectiveFrom DateTime  @db.Date
+  effectiveTo   DateTime? @db.Date
+  note          String?
+
+  createdById String
+  createdBy   Employee @relation("SalaryConfigCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payslips Payslip[]
+
+  @@index([employeeId, effectiveFrom(sort: Desc)])
+  @@index([templateId])
+  @@index([effectiveTo])
+  @@index([createdById])
+}
+
+/// Payroll generation and approval timing configuration with an editor reference. The identifier defaults to GLOBAL; the schema does not enforce a singleton.
 model PayrollSettings {
   id             String   @id @default("GLOBAL")
   triggerDay     Int
@@ -869,78 +1147,13 @@ model PayrollSettings {
   @@index([updatedById])
 }
 
-model WeeklyScheduleSettings {
-  id                   String   @id @default("GLOBAL")
-  triggerDayOfWeek     Int
-  triggerHour          Int      @default(7)
-  triggerMinute        Int      @default(0)
-  lastGeneratedWeekKey String?
-  updatedById          String
-  updatedBy            Employee @relation(fields: [updatedById], references: [id], onDelete: Restrict)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([updatedById])
-}
-
-// Employee-declared free/busy windows per ISO week; admin assigns shifts once status is submitted.
-model PartTimeWeeklyAvailability {
-  id           String                     @id @default(cuid())
-  employeeId   String
-  employee     Employee                   @relation("PartTimeAvailabilityEmployee", fields: [employeeId], references: [id], onDelete: Cascade)
-  weekStart    DateTime                   @db.Date
-  status       PartTimeAvailabilityStatus @default(submitted)
-  note         String?
-  submittedAt  DateTime?
-  reviewedById String?
-  reviewedBy   Employee?                  @relation("PartTimeAvailabilityReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
-  reviewedAt   DateTime?
-  rejectReason String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  days PartTimeAvailabilityDay[]
-
-  @@unique([employeeId, weekStart])
-  @@index([weekStart])
-  @@index([status])
-  @@index([reviewedById])
-}
-
-// One row per weekday (0=Sun … 6=Sat); isBusyAllDay blocks all shift assignment that day.
-model PartTimeAvailabilityDay {
-  id             String                     @id @default(cuid())
-  availabilityId String
-  availability   PartTimeWeeklyAvailability @relation(fields: [availabilityId], references: [id], onDelete: Cascade)
-  dayOfWeek      Int
-  isBusyAllDay   Boolean                    @default(false)
-
-  slots PartTimeAvailabilitySlot[]
-
-  @@unique([availabilityId, dayOfWeek])
-}
-
-// Free windows as minutes-from-midnight; assigned shifts must fall within these bounds.
-model PartTimeAvailabilitySlot {
-  id        String                  @id @default(cuid())
-  dayId     String
-  day       PartTimeAvailabilityDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
-  startTime Int
-  endTime   Int
-  sortOrder Int                     @default(0)
-
-  @@index([dayId])
-}
-
+/// Payroll batch for a named month and year, with approval metadata and a stored total. Contains employee payslips and is unique by year, month, and name.
 model Payroll {
   id           String        @id @default(cuid())
   name         String        @default("Bảng lương")
   periodMonth  Int
   periodYear   Int
   status       PayrollStatus @default(draft)
-  /// Derived: SUM(payslips.netSalary). Must be updated in same transaction as payslip changes.
   totalAmount  Decimal       @default(0) @db.Decimal(15, 2)
   approvedById String?
   approvedBy   Employee?     @relation(fields: [approvedById], references: [id], onDelete: Restrict)
@@ -957,6 +1170,7 @@ model Payroll {
   @@index([approvedById])
 }
 
+/// Employee payroll result linked to the salary configuration used for calculation. Stores attendance totals and compensation totals; each payroll has at most one payslip per employee.
 model Payslip {
   id         String   @id @default(cuid())
   payrollId  String
@@ -985,15 +1199,14 @@ model Payslip {
   @@index([salaryConfigId])
 }
 
+/// Calculated salary component line belonging to a payslip. Stores the line name, classification, and value alongside the source component reference.
 model PayslipDetail {
   id          String          @id @default(cuid())
   payslipId   String
   payslip     Payslip         @relation(fields: [payslipId], references: [id], onDelete: Cascade)
   componentId String
   component   SalaryComponent @relation(fields: [componentId], references: [id], onDelete: Restrict)
-  /// Snapshot: name of component at time of payroll calculation (component name may change later)
   name        String
-  /// Snapshot: type of component at time of payroll calculation
   type        ComponentType
   value       Decimal         @db.Decimal(15, 2)
 
@@ -1001,12 +1214,61 @@ model PayslipDetail {
   @@index([componentId])
 }
 
-// ── Project & Product ──
+// Module: Projects, tasks and time tracking
+// Project configuration, team membership, hierarchical tasks, and reviewed time entries.
+
+/// Project lifecycle states from planning through completion or cancellation.
+enum ProjectStatus {
+  planning
+  active
+  on_hold
+  completed
+  cancelled
+}
+
+/// Working-location categories for project membership.
+enum ProjectMemberWorkMode {
+  remote
+  onsite
+}
+
+/// Project policy selecting which members may create tasks. The application layer enforces the policy.
+enum TaskCreationPolicy {
+  leader_only
+  all_members
+}
+
+/// Built-in task workflow states, separate from project-specific custom statuses.
+enum TaskStatus {
+  todo
+  in_progress
+  in_review
+  done
+  cancelled
+  reopened
+}
+
+/// Priority levels for project tasks.
+enum TaskPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+/// Review states for employee time entries on tasks.
+enum SpentTimeStatus {
+  pending
+  approved
+  rejected
+}
+
+/// Project workspace containing members, tasks, tracker definitions, roles, and custom statuses. Records leadership, creation policy, and delivery dates.
 model Project {
   id                 String             @id @default(cuid())
   name               String             @unique
   description        String?
-  techStack          String[] // Array of strings in PG
+  techStack          String[]
   status             ProjectStatus      @default(planning)
   taskCreationPolicy TaskCreationPolicy @default(leader_only)
   startDate          DateTime?
@@ -1034,15 +1296,65 @@ model Project {
   @@index([createdById])
 }
 
-/// PT per-project contract: rate for payroll, workMode for attendance (remote vs onsite GPS).
+/// Project-specific membership role with allowed task tracker codes. Names and codes are unique within a project.
+model ProjectRole {
+  id                  String   @id @default(cuid())
+  projectId           String
+  project             Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name                String
+  code                String
+  allowedTaskTrackers String[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  members ProjectMember[]
+
+  @@unique([projectId, name])
+  @@unique([projectId, code])
+  @@map("project_roles")
+}
+
+/// Project-specific task tracker definition with an activation flag. Task tracker values are stored as strings rather than foreign keys to this model.
+model ProjectTracker {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name      String
+  code      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, name])
+  @@unique([projectId, code])
+  @@map("project_trackers")
+}
+
+/// Project-specific custom workflow status with ordering and completion flags. Referenced optionally by tasks alongside their built-in status.
+model ProjectTaskStatus {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name        String
+  color       String   @default("#A3A3A3")
+  order       Int      @default(0)
+  isDefault   Boolean  @default(false)
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tasks       Task[]
+
+  @@unique([projectId, name])
+  @@index([projectId])
+}
+
+/// Employee membership in a project with an optional role, hourly rate, and removal timestamp. The project/employee primary key permits one membership record per pair.
 model ProjectMember {
   projectId  String
   project    Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
   employeeId String
   employee   Employee              @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  /// Hourly rate for approved Spent Time on this project (PT employees).
   hourlyRate Decimal?              @db.Decimal(12, 2)
-  /// remote = Spent Time only; onsite = one GPS check-in per day, then Spent Time.
   workMode   ProjectMemberWorkMode @default(remote)
   roleId     String?
   role       ProjectRole?          @relation(fields: [roleId], references: [id], onDelete: SetNull)
@@ -1054,6 +1366,7 @@ model ProjectMember {
   @@index([roleId])
 }
 
+/// Project work item with assignment, planning, progress, and optional custom status. Self-relations represent parent tasks and subtasks; time entries attach to individual tasks.
 model Task {
   id              String       @id @default(cuid())
   projectId       String
@@ -1099,25 +1412,60 @@ model Task {
   @@index([parentTaskId])
 }
 
-// ── Auth ──
-model ActivityLog {
-  id         String           @id @default(cuid())
-  employeeId String?
-  employee   Employee?        @relation(fields: [employeeId], references: [id], onDelete: SetNull)
-  category   ActivityCategory @default(auth)
-  actionType ActivityAction
-  ipAddress  String?
-  details    Json?            @db.JsonB // JsonB type for flexible metadata
-  expiresAt  DateTime
+/// Employee time entry for a task and date, with review metadata. Stores hours, activity, and work-time classification independently of shift attendance.
+model SpentTime {
+  id              String          @id @default(cuid())
+  taskId          String
+  task            Task            @relation("TaskSpentTimes", fields: [taskId], references: [id], onDelete: Cascade)
+  employeeId      String
+  employee        Employee        @relation("EmployeeSpentTimes", fields: [employeeId], references: [id], onDelete: Restrict)
+  date            DateTime        @db.Date
+  hours           Float
+  comment         String?
+  activity        String
+  workTimeType    String          @default("working_day")
+  status          SpentTimeStatus @default(pending)
+  approvedById    String?
+  approvedBy      Employee?       @relation("SpentTimeApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  approvedAt      DateTime?
+  rejectionReason String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
-  createdAt DateTime @default(now())
-
-  @@index([employeeId, createdAt(sort: Desc)])
-  @@index([category, actionType, createdAt])
-  @@index([category])
-  @@index([expiresAt])
+  @@index([taskId])
+  @@index([employeeId])
+  @@index([status, date])
 }
 
+/// Employee-owned saved query definition with an optional project scope. Stores a query type and serialized query data.
+model CustomQuery {
+  id         String   @id @default(cuid())
+  name       String
+  type       String   @default("gantt")
+  projectId  String?
+  project    Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  queryData  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([employeeId, type])
+}
+
+// Module: Authentication
+// Password reset requests and refresh token lifecycle records.
+
+/// Password reset request states covering review, consumption, and expiration.
+enum PasswordResetStatus {
+  pending
+  approved
+  rejected
+  used
+  expired
+}
+
+/// Employee password reset request with a unique token, expiration, and optional approver. Approval and token consumption state are stored separately from refresh tokens.
 model PasswordResetRequest {
   id           String              @id @default(cuid())
   employeeId   String
@@ -1137,14 +1485,15 @@ model PasswordResetRequest {
   @@index([approvedById])
 }
 
+/// Hashed employee refresh token with expiration and optional revocation timestamp. Each stored token hash is unique.
 model RefreshToken {
   id         String    @id @default(cuid())
   employeeId String
   employee   Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  tokenHash  String    @unique // SHA-256 hash của raw token
-  expiresAt  DateTime // Fixed — kế thừa từ lần login gốc, không rolling
+  tokenHash  String    @unique
+  expiresAt  DateTime
   createdAt  DateTime  @default(now())
-  revokedAt  DateTime? // null = còn hợp lệ
+  revokedAt  DateTime?
 
   @@index([employeeId])
   @@index([expiresAt])
@@ -1206,12 +1555,7 @@ model AppRole {
   @@map("roles")
 }
 
-model AdminStateLock {
-  id Int @id @default(1)
-
-  @@map("admin_state_lock")
-}
-
+/// Named capability identified by a unique code and module. Assigned to roles through RolePermission and supports activation and soft deletion.
 model Permission {
   id          String  @id @default(cuid())
   name        String
@@ -1235,6 +1579,7 @@ model Permission {
   @@map("permissions")
 }
 
+/// Join record granting a permission to a role, with assignment metadata. The composite primary key prevents duplicate grants.
 model RolePermission {
   roleId       String
   permissionId String
@@ -1249,6 +1594,7 @@ model RolePermission {
   @@map("role_permissions")
 }
 
+/// Join record assigning an application role to an employee. The composite primary key prevents duplicate employee/role assignments.
 model EmployeeRole {
   employeeId String
   roleId     String
@@ -1263,6 +1609,14 @@ model EmployeeRole {
   @@map("employee_roles")
 }
 
+/// Coordination record for administrative state changes. The identifier defaults to 1; locking behavior must be implemented by database transactions in the application.
+model AdminStateLock {
+  id Int @id @default(1)
+
+  @@map("admin_state_lock")
+}
+
+/// Authorization change record with actor, target identifiers, and before/after JSON values. Employee references are optional; role and permission target identifiers have no Prisma relations.
 model AuthorizationAuditLog {
   id                 String  @id @default(uuid())
   actorId            String?
@@ -1428,6 +1782,7 @@ enum RequisitionStatus {
   filled
 }
 
+/// Urgency levels for hiring requisitions.
 enum RequisitionPriority {
   low
   medium
@@ -1435,6 +1790,7 @@ enum RequisitionPriority {
   urgent
 }
 
+/// Publication states for a recruitment job posting.
 enum PostingStatus {
   draft
   open
@@ -1443,6 +1799,7 @@ enum PostingStatus {
   archived
 }
 
+/// Supported publication and connector channels for job postings.
 enum RecruitmentChannel {
   linkedin
   facebook
@@ -1453,12 +1810,14 @@ enum RecruitmentChannel {
   other
 }
 
+/// Readiness and error states for a job posting's external connector.
 enum ConnectorStatus {
   not_configured
   ready
   error
 }
 
+/// Candidate application lifecycle states from intake through hiring or termination of consideration.
 enum RecruitmentApplicationStatus {
   new
   reviewing
@@ -1476,6 +1835,7 @@ enum RecruitmentApplicationStatus {
   candidate_withdrew
 }
 
+/// Origin categories recorded on candidates, postings, intake records, and recruitment applications.
 enum RecruitmentSource {
   website
   linkedin
@@ -1488,12 +1848,14 @@ enum RecruitmentSource {
   other
 }
 
+/// Supported interview delivery formats.
 enum InterviewFormat {
   in_person
   video_call
   phone
 }
 
+/// Scheduling and completion states for an interview round.
 enum InterviewRoundStatus {
   scheduled
   completed
@@ -1501,6 +1863,7 @@ enum InterviewRoundStatus {
   no_show
 }
 
+/// Evaluation outcomes recorded independently of interview scheduling status.
 enum InterviewResult {
   pass
   fail
@@ -1508,6 +1871,7 @@ enum InterviewResult {
   no_show
 }
 
+/// Background check group codes stored on candidate screening records. Group-specific verification requirements are defined outside this schema.
 enum BgcGroup {
   a
   b
@@ -1515,6 +1879,7 @@ enum BgcGroup {
   d
 }
 
+/// Processing and outcome states for a background check.
 enum BgcStatus {
   pending
   in_progress
@@ -1523,6 +1888,7 @@ enum BgcStatus {
   failed
 }
 
+/// Candidate offer lifecycle states from drafting through response, withdrawal, or expiration.
 enum RecruitmentOfferStatus {
   draft
   sent
@@ -1532,20 +1898,20 @@ enum RecruitmentOfferStatus {
   expired
 }
 
+/// Processing states for raw recruitment intake records.
 enum IntakeStatus {
   received
   processed
   failed
 }
 
+/// Supported input formats for configurable candidate form fields.
 enum RecruitmentFieldType {
   short_text
   paragraph
 }
 
-// ── Models ─────────────────────────────────────────────────────────────────────
-
-// Job Requisition — Hiring request with approval workflow
+/// Hiring request with headcount, compensation range, position, and approval metadata. Owns job postings, application records, candidate field definitions, and pipeline configuration.
 model JobRequisition {
   id              String              @id @default(cuid())
   code            String              @unique
@@ -1568,6 +1934,10 @@ model JobRequisition {
   responsibilities String? @db.Text
   requirements     String? @db.Text
   benefits         String? @db.Text
+  summary          String? @db.Text
+  responsibilities String? @db.Text
+  requirements     String? @db.Text
+  benefits         String? @db.Text
 
   requestedById   String
   requestedBy     Employee  @relation("RequisitionRequester", fields: [requestedById], references: [id], onDelete: Restrict)
@@ -1586,7 +1956,10 @@ model JobRequisition {
 
   postings        JobPosting[]
   applications    RecruitmentApplication[]
+  postings        JobPosting[]
+  applications    RecruitmentApplication[]
   candidateFields CandidateFieldDefinition[]
+  pipelineStages  RecruitmentPipelineStage[]
   pipelineStages  RecruitmentPipelineStage[]
 
   @@index([status])
@@ -1597,8 +1970,29 @@ model JobRequisition {
   @@index([department])
 }
 
-// Job Posting — one channel-specific publication point for a Requisition
+/// Channel-specific publication of a hiring requisition. Tracks connector configuration, external identity, lifecycle timestamps, form snapshots, and candidate intake.
 model JobPosting {
+  id              String                   @id @default(cuid())
+  requisitionId   String
+  requisition     JobRequisition           @relation(fields: [requisitionId], references: [id], onDelete: Restrict)
+  channel         RecruitmentChannel
+  source          RecruitmentSource
+  sourceCode      String                   @unique
+  formFields      Json?
+  status          PostingStatus            @default(draft)
+  postingUrl      String?
+  externalId      String?
+  connectorStatus ConnectorStatus          @default(not_configured)
+  oauthAccountId  String?
+  oauthAccount    RecruitmentOAuthAccount? @relation(fields: [oauthAccountId], references: [id], onDelete: SetNull)
+  publishedAt     DateTime?
+  lastSyncedAt    DateTime?
+  closedAt        DateTime?
+  archivedAt      DateTime?
+  archivedById    String?
+  archivedBy      Employee?                @relation("RecruitmentPostingArchiver", fields: [archivedById], references: [id], onDelete: SetNull)
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
   id              String                   @id @default(cuid())
   requisitionId   String
   requisition     JobRequisition           @relation(fields: [requisitionId], references: [id], onDelete: Restrict)
@@ -1630,6 +2024,7 @@ model JobPosting {
 
   @@unique([id, requisitionId])
   @@index([requisitionId])
+  @@index([requisitionId])
   @@index([channel])
   @@index([source])
   @@index([status])
@@ -1637,6 +2032,7 @@ model JobPosting {
   @@index([archivedById])
 }
 
+/// Configurable candidate form field belonging to a requisition. Field keys and positions are each unique within the requisition.
 model CandidateFieldDefinition {
   id            String               @id @default(cuid())
   requisitionId String
@@ -1654,6 +2050,7 @@ model CandidateFieldDefinition {
   @@index([requisitionId])
 }
 
+/// Posting-specific copy of candidate form field configuration. Preserves labels, required flags, ordering, and optional external question identifiers.
 model PostingFieldSnapshot {
   id                 String               @id @default(cuid())
   postingId          String
@@ -1673,7 +2070,7 @@ model PostingFieldSnapshot {
   @@index([externalQuestionId])
 }
 
-// Recruitment Intake Record — Raw provenance data ingested from external forms
+/// Raw candidate submission received for a posting, with processing state and error details. sourceRef is globally unique; candidateId and applicationId are scalar identifiers without Prisma relations.
 model RecruitmentIntakeRecord {
   id              String            @id @default(cuid())
   postingId       String
@@ -1692,7 +2089,7 @@ model RecruitmentIntakeRecord {
   @@index([processedStatus])
 }
 
-// RecruitmentOAuthAccount — OAuth credentials for posting channels (per user)
+/// Employee-owned credentials for a recruitment channel integration. Job postings may reference the account; credential encryption is not specified by the schema.
 model RecruitmentOAuthAccount {
   id           String             @id @default(cuid())
   userId       String
@@ -1711,17 +2108,20 @@ model RecruitmentOAuthAccount {
   @@index([channel])
 }
 
-// OAuth callback nonce persisted for one-time consumption across API instances.
+/// OAuth state nonce with expiration and optional consumption timestamp. The nonce itself is the primary key.
 model RecruitmentOAuthStateNonce {
   nonce      String    @id
   expiresAt  DateTime
+  nonce      String    @id
+  expiresAt  DateTime
   consumedAt DateTime?
+  createdAt  DateTime  @default(now())
   createdAt  DateTime  @default(now())
 
   @@index([expiresAt])
 }
 
-// Candidate — Person being recruited
+/// Candidate profile and source information shared across recruitment applications. Links flexible metadata, offers, and background checks.
 model Candidate {
   id          String    @id @default(cuid())
   fullName    String
@@ -1751,7 +2151,7 @@ model Candidate {
   @@index([source])
 }
 
-// Candidate Meta — flexible key/value profile data, like WordPress usermeta.
+/// JSON metadata entry for a candidate. Each candidate can have only one value for a given metadata key.
 model CandidateMeta {
   id          String    @id @default(cuid())
   candidateId String
@@ -1765,8 +2165,15 @@ model CandidateMeta {
   @@index([metaKey])
 }
 
-// Recruitment Application — Candidate's application to a requisition
+/// Candidate application linking a requisition, posting, and pipeline stage. Stores workflow state, recruiter assignment, and interview/offer history; cross-reference consistency requires application validation.
 model RecruitmentApplication {
+  id              String                   @id @default(cuid())
+  requisitionId   String
+  requisition     JobRequisition           @relation(fields: [requisitionId], references: [id], onDelete: Restrict)
+  candidateId     String
+  candidate       Candidate                @relation(fields: [candidateId], references: [id], onDelete: Restrict)
+  postingId       String
+  posting         JobPosting               @relation(fields: [postingId], references: [id], onDelete: Restrict)
   id              String                   @id @default(cuid())
   requisitionId   String
   requisition     JobRequisition           @relation(fields: [requisitionId], references: [id], onDelete: Restrict)
@@ -1776,8 +2183,8 @@ model RecruitmentApplication {
   posting         JobPosting               @relation(fields: [postingId], references: [id], onDelete: Restrict)
   pipelineStageId String
   pipelineStage   RecruitmentPipelineStage @relation(fields: [pipelineStageId], references: [id], onDelete: Restrict)
+  pipelineStage   RecruitmentPipelineStage @relation(fields: [pipelineStageId], references: [id], onDelete: Restrict)
 
-  /// Legacy lifecycle compatibility. Kanban position is owned exclusively by pipelineStageId.
   status         RecruitmentApplicationStatus @default(new)
   rejectReason   String?                      @db.Text
   withdrawReason String?
@@ -1797,6 +2204,9 @@ model RecruitmentApplication {
   interviewRounds    InterviewRound[]
   offers             RecruitmentOffer[]
   notes              ApplicationNote[]
+  interviewRounds    InterviewRound[]
+  offers             RecruitmentOffer[]
+  notes              ApplicationNote[]
   connectorResponses RecruitmentConnectorResponse[]
   postingActivities  RecruitmentPostingActivity[]
 
@@ -1812,6 +2222,7 @@ model RecruitmentApplication {
   @@index([id, version])
 }
 
+/// Ordered recruitment workflow stage with optional posting and requisition scope. Referenced by applications; the schema does not require exactly one scope.
 model RecruitmentPipelineStage {
   id            String                   @id @default(cuid())
   postingId     String?
@@ -1833,7 +2244,7 @@ model RecruitmentPipelineStage {
   @@index([requisitionId, position])
 }
 
-// Recruitment Posting Activity — immutable workspace history for a posting
+/// Posting activity event with optional candidate application and employee actor. Stores an event type and extensible JSON metadata.
 model RecruitmentPostingActivity {
   id            String                  @id @default(cuid())
   postingId     String
@@ -1852,22 +2263,28 @@ model RecruitmentPostingActivity {
   @@index([type])
 }
 
+/// External response processed for a posting, with optional linked application and error details. Posting/external-response pairs are unique; an application can link to at most one response.
 model RecruitmentConnectorResponse {
+  id                 String                  @id @default(cuid())
   id                 String                  @id @default(cuid())
   postingId          String
   posting            JobPosting              @relation(fields: [postingId], references: [id], onDelete: Cascade)
+  posting            JobPosting              @relation(fields: [postingId], references: [id], onDelete: Cascade)
   externalResponseId String
+  applicationId      String?                 @unique
   applicationId      String?                 @unique
   application        RecruitmentApplication? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
   errorCode          String?
   errorMessage       String?                 @db.Text
+  errorMessage       String?                 @db.Text
   responseData       Json?
+  processedAt        DateTime                @default(now())
   processedAt        DateTime                @default(now())
 
   @@unique([postingId, externalResponseId])
 }
 
-// Application Note — Recruiter notes on an application
+/// Recruiter-authored note attached to a candidate recruitment application. This model belongs to recruitment, not employee request applications.
 model ApplicationNote {
   id            String                 @id @default(cuid())
   applicationId String
@@ -1883,7 +2300,7 @@ model ApplicationNote {
   @@index([addedById])
 }
 
-// Interview Round — Scheduled interview
+/// Scheduled interview for a recruitment application, with format, result, and feedback. Interviewer identifiers are stored as an array; evaluator scorecards are related records.
 model InterviewRound {
   id            String                 @id @default(cuid())
   applicationId String
@@ -1913,7 +2330,7 @@ model InterviewRound {
   @@index([status])
 }
 
-// Scorecard — Evaluation per interviewer
+/// Evaluator assessment of an interview round with ratings, structured scores, and answers. Each evaluator can submit one scorecard per interview.
 model Scorecard {
   id          String         @id @default(cuid())
   interviewId String
@@ -1939,7 +2356,7 @@ model Scorecard {
   @@index([evaluatorId])
 }
 
-// Recruitment Offer — Job offer with versioning
+/// Candidate employment offer linked to a recruitment application and its creator. Stores current terms, version records, and an optional background check.
 model RecruitmentOffer {
   id            String                 @id @default(cuid())
   applicationId String
@@ -1981,7 +2398,7 @@ model RecruitmentOffer {
   @@index([createdById])
 }
 
-// Offer Version — Negotiation history
+/// Versioned compensation and date terms for a recruitment offer. Version numbers are unique within an offer; createdById has no Prisma relation.
 model OfferVersion {
   id      String           @id @default(cuid())
   offerId String
@@ -2003,7 +2420,7 @@ model OfferVersion {
   @@index([offerId])
 }
 
-// Background Check
+/// Candidate screening record for an offer, with verification flags and outcome timestamps. Each offer has at most one check, optionally attributed to an employee reviewer.
 model BackgroundCheck {
   id          String           @id @default(cuid())
   offerId     String           @unique
@@ -2014,19 +2431,15 @@ model BackgroundCheck {
   group  BgcGroup
   status BgcStatus @default(pending)
 
-  // Group A checks
   idVerified      Boolean?
   addressVerified Boolean?
 
-  // Group B checks
   criminalRecordCheck Boolean?
   legalStatusCheck    Boolean?
 
-  // Group C checks
   certificationVerified     Boolean?
   employmentHistoryVerified Boolean?
 
-  // Group D checks
   financialCheckCompleted Boolean?
   creditScoreCheck        Boolean?
 

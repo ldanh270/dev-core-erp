@@ -1,7 +1,7 @@
 {
   "name": "CustomQuery",
   "dbName": "CustomQuery",
-  "module": "SYSTEM",
+  "module": "PROJECT",
   "description": "Bảng dữ liệu CustomQuery trong hệ thống ERP",
   "columns": [
     {

@@ -89,6 +89,7 @@ export const GANTT_FILTER_OPERATOR = {
   AFTER: "after",
   BEFORE: "before",
   BETWEEN: "between",
+  OVERDUE: "overdue",
   OPEN: "open",
   DONG: "đóng",
   TAT_CA: "tất cả",
@@ -119,43 +120,43 @@ export const FILTER_DEFINITIONS = {
   [GANTT_FILTER_KEY.SUBPROJECT]: { label: "Dự án con", type: GANTT_FILTER_TYPE.TEXT, group: "" },
   [GANTT_FILTER_KEY.ISSUE]: { label: "Vấn đề", type: GANTT_FILTER_TYPE.TEXT, group: "" },
   
-  // Group: Văn bản
+  // Text search filter group
   [GANTT_FILTER_KEY.TXT_SUBJECT]: { label: "Chủ đề", type: GANTT_FILTER_TYPE.TEXT, group: "Văn bản" },
   [GANTT_FILTER_KEY.TXT_DESC]: { label: "Mô tả", type: GANTT_FILTER_TYPE.TEXT, group: "Văn bản" },
   [GANTT_FILTER_KEY.TXT_NOTES]: { label: "Ghi chú", type: GANTT_FILTER_TYPE.TEXT, group: "Văn bản" },
-  [GANTT_FILTER_KEY.TXT_ANY]: { label: "Any searchable text", type: GANTT_FILTER_TYPE.TEXT, group: "Vn bбn" },
+  [GANTT_FILTER_KEY.TXT_ANY]: { label: "Nội dung bất kỳ", type: GANTT_FILTER_TYPE.TEXT, group: "Văn bản" },
 
-  // Group: Ngày
+  // Date filter group
+  [GANTT_FILTER_KEY.DATE_DUE]: { label: "Hạn hoàn thành (Ngày hết hạn)", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
+  [GANTT_FILTER_KEY.DATE_START]: { label: "Bắt đầu", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
   [GANTT_FILTER_KEY.DATE_CREATED]: { label: "Tạo", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
   [GANTT_FILTER_KEY.DATE_UPDATED]: { label: "Cập nhật", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
   [GANTT_FILTER_KEY.DATE_CLOSED]: { label: "Đã đóng", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
-  [GANTT_FILTER_KEY.DATE_START]: { label: "Bắt đầu", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
-  [GANTT_FILTER_KEY.DATE_DUE]: { label: "Hết hạn", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
 
-  // Group: Theo dõi thời gian
+  // Time tracking filter group
   [GANTT_FILTER_KEY.TIME_EST]: { label: "Thời gian ước lượng", type: GANTT_FILTER_TYPE.NUMBER, group: "Theo dõi thời gian" },
   [GANTT_FILTER_KEY.TIME_SPENT]: { label: "Thời gian", type: GANTT_FILTER_TYPE.NUMBER, group: "Theo dõi thời gian" },
 
-  // Group: Tập tin
+  // File filter group
   [GANTT_FILTER_KEY.FILE_NAME]: { label: "Tập tin", type: GANTT_FILTER_TYPE.TEXT, group: "Tập tin" },
   [GANTT_FILTER_KEY.FILE_DESC]: { label: "File description", type: GANTT_FILTER_TYPE.TEXT, group: "Tập tin" },
 
-  // Group: Tác giả
+  // Author filter group
   [GANTT_FILTER_KEY.AUTHOR_GROUP]: { label: "Của tác giả : Nhóm", type: GANTT_FILTER_TYPE.TEXT, group: "Tác giả" },
   [GANTT_FILTER_KEY.AUTHOR_ROLE]: { label: "Của tác giả : Quyền", type: GANTT_FILTER_TYPE.TEXT, group: "Tác giả" },
 
-  // Group: Phân công cho
+  // Assignee filter group
   [GANTT_FILTER_KEY.ASSIGNEE_GROUP]: { label: "Nhóm thụ hưởng", type: GANTT_FILTER_TYPE.TEXT, group: "Phân công cho" },
   [GANTT_FILTER_KEY.ASSIGNEE_ROLE]: { label: "Quyền thụ hưởng", type: GANTT_FILTER_TYPE.TEXT, group: "Phân công cho" },
 
-  // Group: Phiên bản
+  // Target version filter group
   [GANTT_FILTER_KEY.VER_DATE]: { label: "Phiên bản mục tiêu của Ngày", type: GANTT_FILTER_TYPE.DATE, group: "Phiên bản" },
   [GANTT_FILTER_KEY.VER_STATUS]: { label: "Phiên bản mục tiêu của Trạng thái", type: GANTT_FILTER_TYPE.TEXT, group: "Phiên bản" },
 
-  // Group: Dự án
+  // Project filter group
   [GANTT_FILTER_KEY.PROJ_STATUS]: { label: "Của dự án : Trạng thái", type: GANTT_FILTER_TYPE.TEXT, group: "Dự án" },
 
-  // Group: Mối quan hệ
+  // Task relationship filter group
   [GANTT_FILTER_KEY.REL_RELATED]: { label: "liên quan", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
   [GANTT_FILTER_KEY.REL_DUPLICATE]: { label: "trùng với", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
   [GANTT_FILTER_KEY.REL_DUPLICATED_BY]: { label: "bị trùng bởi", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
