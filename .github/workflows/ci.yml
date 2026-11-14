@@ -1,0 +1,182 @@
+name: CI & Quality Gate
+
+# Trigger on PR and push to main/dev branches
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+  push:
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
+
+# Cancel redundant in-progress runs on the same branch or PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # 1. Check code formatting with Prettier
+  format-check:
+    name: Format Check (Prettier)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify code formatting
+        run: pnpm format:check
+
+  # 2. Check code style and rules with ESLint & Stylelint
+  lint-check:
+    name: Lint Check (ESLint & Stylelint)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run linters
+        run: pnpm lint
+
+  # 3. Check TypeScript types across backend and frontend
+  type-check:
+    name: Type Check (TypeScript)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --dir backend exec prisma generate
+
+      - name: Run TypeScript typecheck
+        run: pnpm typecheck
+
+  # 4. Simulate Render production build for Backend
+  render-backend-build:
+    name: Render Backend Production Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        working-directory: ./backend
+        run: npx prisma generate
+
+      - name: Validate Backend typecheck
+        working-directory: ./backend
+        run: pnpm run typecheck
+
+  # 5. Simulate Vercel production build for Frontend
+  vercel-frontend-build:
+    name: Vercel Frontend Production Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend application
+        working-directory: ./frontend
+        run: pnpm run build
+
+  # 6. Quality Gate: verify all previous jobs passed before allowing PR merge
+  quality-gate:
+    name: CI Quality Gate & Merge Protection
+    needs:
+      - format-check
+      - lint-check
+      - type-check
+      - render-backend-build
+      - vercel-frontend-build
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify all checks passed
+        run: |
+          if [ "${{ needs.format-check.result }}" != "success" ] || \
+             [ "${{ needs.lint-check.result }}" != "success" ] || \
+             [ "${{ needs.type-check.result }}" != "success" ] || \
+             [ "${{ needs.render-backend-build.result }}" != "success" ] || \
+             [ "${{ needs.vercel-frontend-build.result }}" != "success" ]; then
+            echo "[ERROR] CI Quality Gate Failed! One or more checks failed:"
+            echo "  - Format Check (Prettier):            ${{ needs.format-check.result }}"
+            echo "  - Lint Check (ESLint & Stylelint):    ${{ needs.lint-check.result }}"
+            echo "  - Type Check (TypeScript):            ${{ needs.type-check.result }}"
+            echo "  - Render Backend Production Build:    ${{ needs.render-backend-build.result }}"
+            echo "  - Vercel Frontend Production Build:   ${{ needs.vercel-frontend-build.result }}"
+            exit 1
+          fi
+          echo "[SUCCESS] All CI checks passed successfully! PR is ready to merge."

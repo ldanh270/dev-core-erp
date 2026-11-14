@@ -22,6 +22,14 @@ import { PrismaClient } from "@prisma/client"
  * Service implementing business logic for organizational positions and dynamic rules.
  */
 export class PositionService implements IPositionService {
+  /**
+   * Initializes PositionService with required repository dependencies.
+   *
+   * @param positionRepo - Position repository
+   * @param employeeRepo - Employee repository
+   * @param projectRepo - Project repository
+   * @param prisma - Prisma database client
+   */
   constructor(
     private readonly positionRepo: IPositionRepository,
     private readonly employeeRepo: IEmployeeRepository,
@@ -31,16 +39,19 @@ export class PositionService implements IPositionService {
 
   /**
    * Retrieves all positions configured in the organization.
-   * @returns Array of positions.
+   *
+   * @returns Array of positions
    */
   async getAllPositions(): Promise<Position[]> {
     return this.positionRepo.findAll()
   }
 
   /**
-   * Retrieves a single position by ID.
-   * @param id - Position ID.
-   * @returns The position.
+   * Retrieves a single position by primary ID.
+   *
+   * @param id - Position ID
+   * @returns The position record
+   * @throws {AppError} If position is not found
    */
   async getPositionById(id: string): Promise<Position> {
     const position = await this.positionRepo.findById(id)
@@ -51,12 +62,13 @@ export class PositionService implements IPositionService {
   }
 
   /**
-   * Creates a new position. Sanitizes inputs and checks for duplicates.
-   * @param data - Position details.
-   * @returns The created position.
+   * Creates a new position, sanitizing name/code and ensuring unique code constraint.
+   *
+   * @param data - Position details
+   * @returns Newly created position
+   * @throws {AppError} If name/code empty or code already exists
    */
   async createPosition(data: CreatePositionDto): Promise<Position> {
-    // Clean inputs
     const name = data.name.trim()
     const code = data.code.trim().toLowerCase()
 
@@ -68,7 +80,6 @@ export class PositionService implements IPositionService {
       )
     }
 
-    // Check if code is unique
     const existing = await this.positionRepo.findByCode(code)
     if (existing) {
       throw new AppError("Mã chức vụ đã tồn tại", HttpStatusCode.CONFLICT, ErrorLayer.SERVICE)
@@ -82,10 +93,12 @@ export class PositionService implements IPositionService {
   }
 
   /**
-   * Updates an existing position.
-   * @param id - Position ID.
-   * @param data - Updated details.
-   * @returns The updated position.
+   * Updates an existing position definition.
+   *
+   * @param id - Position ID
+   * @param data - Updated details
+   * @returns The updated position
+   * @throws {AppError} If position not found or new code already taken
    */
   async updatePosition(id: string, data: UpdatePositionDto): Promise<Position> {
     const position = await this.getPositionById(id)
@@ -115,22 +128,22 @@ export class PositionService implements IPositionService {
   }
 
   /**
-   * Soft deletes a position.
-   * @param id - Position ID to delete.
-   * @returns The deleted position metadata.
+   * Soft deletes a position by ID.
+   *
+   * @param id - Position ID to delete
+   * @returns The deleted position metadata
+   * @throws {AppError} If position is not found
    */
   async deletePosition(id: string): Promise<Position> {
     await this.getPositionById(id)
-    // Check if position is currently assigned to any employee
-    // To do this simply, we will soft delete the position. Any new employees cannot be assigned to it,
-    // and we soft delete to maintain integrity.
     return this.positionRepo.delete(id)
   }
 
   /**
    * Stub helper to retrieve project-scoped rules.
-   * @param projectId - Project ID.
-   * @returns Array of project rules.
+   *
+   * @param projectId - Project ID
+   * @returns Array of project rules
    */
   async getProjectRules(projectId: string): Promise<ProjectPositionRule[]> {
     return []
@@ -138,9 +151,10 @@ export class PositionService implements IPositionService {
 
   /**
    * Stub helper to save project-scoped rules.
-   * @param projectId - Project ID.
-   * @param rules - Rules payload.
-   * @returns Saved project rules array.
+   *
+   * @param projectId - Project ID
+   * @param rules - Rules payload
+   * @returns Saved project rules array
    */
   async saveProjectRules(
     projectId: string,
@@ -152,9 +166,11 @@ export class PositionService implements IPositionService {
   /**
    * Validates whether an employee is permitted to create a task with a specific tracker in a project.
    * Admin/GM and Project Team Leaders are bypassed. Viewer role is blocked. Allowed trackers are validated.
-   * @param projectId - Project ID.
-   * @param employeeId - Employee ID.
-   * @param tracker - Task tracker code (feature, bug, etc.).
+   *
+   * @param projectId - Project unique identifier
+   * @param employeeId - Employee unique identifier
+   * @param tracker - Task tracker code (feature, bug, etc.)
+   * @throws {AppError} If employee or project not found, or employee role lacks permission
    */
   async validateTaskCreation(
     projectId: string,
@@ -226,7 +242,11 @@ export class PositionService implements IPositionService {
   }
 
   /**
-   * Stub validator for application submission check.
+   * Validates application submission eligibility based on position rules.
+   *
+   * @param employeeId - Employee unique identifier
+   * @param type - Application category type
+   * @returns Resolves when validation succeeds
    */
   async validateApplicationSubmission(employeeId: string, type: IApplicationType): Promise<void> {
     return
