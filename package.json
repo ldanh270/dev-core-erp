@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "DevCore ERP: Web-Based Enterprise Resource Planning System for IT Outsourcing Companies",
   "packageManager": "pnpm@11.15.1",
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
     "dev": "concurrently \"nr dev:backend\" \"nr dev:frontend\"",
     "dev:all": "concurrently \"nr dev:backend\" \"nr dev:frontend\" \"nr dev:mcp\" \"nr dev:gateway\"",
