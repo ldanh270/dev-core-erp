@@ -20,6 +20,7 @@ jest.mock("@/configs/entities/attendance.config.ts", () => ({
     LATE_EARLY: { LABEL: "late_early" },
     SHIFT_SWAP: { LABEL: "shift_swap" },
     RESIGNATION: { LABEL: "resignation" },
+    FORGOT_CARD: { LABEL: "forgot_card" },
   },
   LEAVE_BALANCE_DEFAULTS: {},
   PAID_LEAVE_TYPES: {},

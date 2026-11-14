@@ -82,6 +82,7 @@ jest.mock("@/utils/attendance/attendance-record.util.ts", () => ({
 jest.mock("@/utils/attendance/attendance-shift.util.ts", () => ({
   assertCheckInWindow: jest.fn(),
   getMinutesFromDateTime: jest.fn(),
+  getShiftDateTimes: jest.fn().mockReturnValue({ start: new Date(), end: new Date() }),
   isActualShiftMatched: jest.fn(),
   isBeforeCheckOutWindow: jest.fn(),
   isWithinShiftSelectionWindow: jest.fn(),
@@ -231,7 +232,7 @@ describe("AttendanceService.checkIn", () => {
     jest.useRealTimers()
   })
 
-  it("UTCID01 - returns attendance record for full-time employee using fallback shift", async () => {
+  it("UTCID01 - returns attendance record for full-time employee using weekly schedule", async () => {
     // Arrange
     const employee = { id: employeeId, employmentType: "FULL_TIME" }
     const fallbackShift = { id: "shift-1", isActive: true }
@@ -245,8 +246,11 @@ describe("AttendanceService.checkIn", () => {
 
     employeeRepo.findById.mockResolvedValue(employee as never)
     employeeShiftRepo.getShiftForEmployeeDate.mockResolvedValue(null as never)
-    scheduleRepo.getScheduleByEmployee.mockResolvedValue(null as never)
-    workingShiftRepo.listAll.mockResolvedValue([fallbackShift] as never)
+    scheduleRepo.getScheduleByEmployee.mockResolvedValue({
+      id: "sch-1",
+      workingShiftId: "shift-1",
+    } as never)
+    mockedResolveShiftFromSchedule.mockReturnValue({ shiftId: "shift-1" } as never)
     workingShiftRepo.findById.mockResolvedValue(fallbackShift as never)
     employeeShiftRepo.ensureShiftForEmployeeDate.mockResolvedValue(employeeShift as never)
     attendanceRepo.checkIn.mockResolvedValue(attendanceRecord as never)
@@ -262,7 +266,6 @@ describe("AttendanceService.checkIn", () => {
       atMinutes: 480,
     })
     expect(scheduleRepo.getScheduleByEmployee).toHaveBeenCalledWith(employeeId, today)
-    expect(workingShiftRepo.listAll).toHaveBeenCalledTimes(1)
     expect(workingShiftRepo.findById).toHaveBeenCalledWith("shift-1")
     expect(mockedAssertCheckInWindow).toHaveBeenCalledWith(now, today, fallbackShift)
     expect(mockedAssertWithinShiftGps).toHaveBeenCalledWith(location, fallbackShift)
@@ -273,7 +276,12 @@ describe("AttendanceService.checkIn", () => {
       createdById,
     )
     expect(holidayRepo.checkIsHoliday).toHaveBeenCalledWith(today)
-    expect(attendanceRepo.checkIn).toHaveBeenCalledWith(employeeId, location, "emp-shift-1")
+    expect(attendanceRepo.checkIn).toHaveBeenCalledWith(
+      employeeId,
+      location,
+      "emp-shift-1",
+      expect.objectContaining({ lateMinutes: 0, status: "on_time" }),
+    )
     expect(result).toEqual(attendanceRecord)
   })
 

@@ -116,11 +116,12 @@ export class PartTimeAvailabilityService implements IPartTimeAvailabilityService
     const weekDates = DAY_OF_WEEK_VALUES.map((dayOfWeek) =>
       getDateForWeekDay(normalized, dayOfWeek),
     )
-    const shifts = await this.employeeShiftRepo.listByEmployeesAndDateRange(
-      items.map((item) => item.employeeId),
-      weekDates[0],
-      weekDates[weekDates.length - 1],
-    )
+    const shifts =
+      (await this.employeeShiftRepo.listByEmployeesAndDateRange(
+        items.map((item) => item.employeeId),
+        weekDates[0],
+        weekDates[weekDates.length - 1],
+      )) ?? []
 
     const shiftsByEmployee = new Map<string, typeof shifts>()
     for (const row of shifts) {

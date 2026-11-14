@@ -38,6 +38,11 @@ jest.mock("@/configs/entities/part-time-availability.config.ts", () => ({
     APPROVED: "APPROVED",
     REJECTED: "REJECTED",
   },
+  PART_TIME_SUGGESTION_DECISION: {
+    ACCEPTED: "accepted",
+    EDITED: "edited",
+    MANUAL: "manual",
+  },
 }))
 
 jest.mock("@/configs/messages/part-time-availability.message.ts", () => ({
@@ -268,7 +273,11 @@ function createServiceBundle(): ServiceBundle {
   const employeeShiftRepo: EmployeeShiftRepoMock = {
     hasOverridesForEmployeeDates:
       jest.fn() as EmployeeShiftRepoMock["hasOverridesForEmployeeDates"],
-    listByEmployeesAndDateRange: jest.fn() as EmployeeShiftRepoMock["listByEmployeesAndDateRange"],
+    listByEmployeesAndDateRange: jest
+      .fn()
+      .mockReturnValue(
+        Promise.resolve([]),
+      ) as unknown as EmployeeShiftRepoMock["listByEmployeesAndDateRange"],
     replacePartTimeOverrides: jest.fn() as EmployeeShiftRepoMock["replacePartTimeOverrides"],
   }
 
@@ -514,7 +523,20 @@ describe("PartTimeAvailabilityService.listForWeek", () => {
     // Assert
     expect(mockNormalizeWeekStart).toHaveBeenCalledWith("2025-01-08")
     expect(availabilityRepo.listByWeek).toHaveBeenCalledWith("2025-01-06")
-    expect(result).toEqual(items)
+    expect(result).toEqual([
+      {
+        ...items[0],
+        assignedDaySlots: {},
+        assignedDaySummaries: {},
+        hasAssignedShifts: false,
+      },
+      {
+        ...items[1],
+        assignedDaySlots: {},
+        assignedDaySummaries: {},
+        hasAssignedShifts: false,
+      },
+    ])
   })
 
   it("UTCID02 - returns empty array when no availability exists for the week", async () => {
@@ -880,6 +902,7 @@ describe("PartTimeAvailabilityService.assignShifts", () => {
         weekStart: "2025-01-06",
         assigned: 1,
         skipped: 1,
+        suggestionDecision: "manual",
       },
     })
     expect(result).toEqual({ assigned: 1, skipped: 1 })
