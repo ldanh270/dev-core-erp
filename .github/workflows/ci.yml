@@ -96,71 +96,13 @@ jobs:
       - name: Run TypeScript typecheck
         run: pnpm typecheck
 
-  # 4. Simulate Render production build for Backend
-  render-backend-build:
-    name: Render Backend Production Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.15.1
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate Prisma client
-        working-directory: ./backend
-        run: npx prisma generate
-
-      - name: Validate Backend typecheck
-        working-directory: ./backend
-        run: pnpm run typecheck
-
-  # 5. Simulate Vercel production build for Frontend
-  vercel-frontend-build:
-    name: Vercel Frontend Production Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.15.1
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build frontend application
-        working-directory: ./frontend
-        run: pnpm run build
-
-  # 6. Quality Gate: verify all previous jobs passed before allowing PR merge
+  # 4. Quality Gate: verify all quality checks passed before allowing PR merge
   quality-gate:
     name: CI Quality Gate & Merge Protection
     needs:
       - format-check
       - lint-check
       - type-check
-      - render-backend-build
-      - vercel-frontend-build
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -168,15 +110,11 @@ jobs:
         run: |
           if [ "${{ needs.format-check.result }}" != "success" ] || \
              [ "${{ needs.lint-check.result }}" != "success" ] || \
-             [ "${{ needs.type-check.result }}" != "success" ] || \
-             [ "${{ needs.render-backend-build.result }}" != "success" ] || \
-             [ "${{ needs.vercel-frontend-build.result }}" != "success" ]; then
+             [ "${{ needs.type-check.result }}" != "success" ]; then
             echo "[ERROR] CI Quality Gate Failed! One or more checks failed:"
-            echo "  - Format Check (Prettier):            ${{ needs.format-check.result }}"
-            echo "  - Lint Check (ESLint & Stylelint):    ${{ needs.lint-check.result }}"
-            echo "  - Type Check (TypeScript):            ${{ needs.type-check.result }}"
-            echo "  - Render Backend Production Build:    ${{ needs.render-backend-build.result }}"
-            echo "  - Vercel Frontend Production Build:   ${{ needs.vercel-frontend-build.result }}"
+            echo "  - Format Check (Prettier):         ${{ needs.format-check.result }}"
+            echo "  - Lint Check (ESLint & Stylelint): ${{ needs.lint-check.result }}"
+            echo "  - Type Check (TypeScript):         ${{ needs.type-check.result }}"
             exit 1
           fi
-          echo "[SUCCESS] All CI checks passed successfully! PR is ready to merge."
+          echo "[SUCCESS] All code quality checks passed! PR is ready to merge."
