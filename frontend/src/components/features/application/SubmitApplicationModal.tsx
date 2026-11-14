@@ -1,9 +1,9 @@
 "use client"
 
+import { APP_TYPE_META, LEAVE_TYPE_OPTIONS } from "@/components/attendance/attendance-ui.meta"
 import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
   SelectContent,
@@ -11,8 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-import { APP_TYPE_META, LEAVE_TYPE_OPTIONS } from "@/components/attendance/attendance-ui.meta"
+import { Textarea } from "@/components/ui/textarea"
 import { APPLICATION_TYPES, REGIME_TYPE } from "@/config/entities/attendance.config"
 import { ROUTES } from "@/config/routes.config"
 import { useSubmitApplication } from "@/hooks/application/useSubmitApplication"
@@ -218,7 +217,9 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                     </div>
                     <div>
                       <p className="text-[14px] font-semibold text-foreground">{m.label}</p>
-                      <p className="text-[12px] text-muted-foreground mt-0.5 leading-snug">{m.hint}</p>
+                      <p className="text-[12px] text-muted-foreground mt-0.5 leading-snug">
+                        {m.hint}
+                      </p>
                     </div>
                   </button>
                 )
@@ -256,7 +257,7 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                   <DatePicker
                     value={form.startDate || null}
                     onChange={(val) => {
-                      set("startDate", val || "");
+                      set("startDate", val || "")
                     }}
                     placeholder="Chọn ngày..."
                     size="sm"
@@ -271,12 +272,14 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                   ] as string[]
                 ).includes(selectedType) && (
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">Ngày kết thúc</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Ngày kết thúc
+                    </label>
                     <DatePicker
                       value={form.endDate || null}
                       minDate={form.startDate}
                       onChange={(val) => {
-                        set("endDate", val || "");
+                        set("endDate", val || "")
                       }}
                       placeholder="Chọn ngày kết thúc..."
                       size="sm"
@@ -289,7 +292,9 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
               {selectedType === APPLICATION_TYPES.LEAVE.LABEL && (
                 <>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">Loại nghỉ phép *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Loại nghỉ phép *
+                    </label>
                     <Select
                       value={form.leaveType}
                       onValueChange={(val) => {
@@ -309,7 +314,9 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                     </Select>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">Chế độ lương *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Chế độ lương *
+                    </label>
                     <div className="grid grid-cols-2 gap-2">
                       {([REGIME_TYPE.PAID, REGIME_TYPE.UNPAID] as const).map((rt) => (
                         <Button
@@ -332,7 +339,9 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
               {/* ── OVERTIME ── */}
               {selectedType === APPLICATION_TYPES.OVERTIME.LABEL && (
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">ID Ca làm việc *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    ID Ca làm việc *
+                  </label>
                   <Input
                     required
                     placeholder="Nhập CUID ca làm việc..."
@@ -349,7 +358,9 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
               {selectedType === APPLICATION_TYPES.LATE_EARLY.LABEL && (
                 <>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">ID Ca làm việc *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      ID Ca làm việc *
+                    </label>
                     <Input
                       required
                       placeholder="Nhập CUID ca làm việc..."
@@ -401,7 +412,9 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
               {selectedType === APPLICATION_TYPES.SHIFT_SWAP.LABEL && (
                 <>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">ID Ca của bạn *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      ID Ca của bạn *
+                    </label>
                     <Input
                       required
                       placeholder="Nhập CUID ca làm việc..."
@@ -444,7 +457,9 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
               {/* ── WFH ── */}
               {selectedType === APPLICATION_TYPES.WORK_FROM_HOME.LABEL && (
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">Địa điểm làm việc</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Địa điểm làm việc
+                  </label>
                   <Input
                     placeholder="VD: Tại nhà, Quán cà phê..."
                     value={form.location}
@@ -460,7 +475,9 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-muted-foreground">
                   Lý do{" "}
-                  <span className="text-muted-foreground/70 font-normal">(tối thiểu 5 ký tự nếu điền)</span>
+                  <span className="text-muted-foreground/70 font-normal">
+                    (tối thiểu 5 ký tự nếu điền)
+                  </span>
                 </label>
                 <Textarea
                   rows={3}

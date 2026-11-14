@@ -16,6 +16,4 @@ export const bulkAssignSalaryTemplateSchema = z.object({
 })
 
 export type AssignSalaryConfigSchemaType = z.infer<typeof assignSalaryConfigSchema>
-export type BulkAssignSalaryTemplateSchemaType = z.infer<
-  typeof bulkAssignSalaryTemplateSchema
->
+export type BulkAssignSalaryTemplateSchemaType = z.infer<typeof bulkAssignSalaryTemplateSchema>

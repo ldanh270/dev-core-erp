@@ -1,7 +1,7 @@
 import {
   HOLIDAY_TYPE_LABELS,
-  UNKNOWN_HOLIDAY_TYPE_LABEL,
   type IHolidayType,
+  UNKNOWN_HOLIDAY_TYPE_LABEL,
 } from "@/config/entities/attendance.config"
 
 /** Resolves a holiday type enum to its display label. */

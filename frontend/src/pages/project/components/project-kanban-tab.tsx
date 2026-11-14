@@ -1,39 +1,57 @@
-import { KANBAN_PALETTE_COLORS } from "@/config/entities/project.config"
-import { useProjectKanban } from "../hooks/use-project-kanban"
-import { ROUTES } from "@/config/routes.config"
-import { 
-  Plus, 
-  Settings, 
-  Check, 
-  AlertCircle, 
-  MoreHorizontal, 
-  Sparkles, 
-  RefreshCw, 
-  FolderKanban 
-} from "lucide-react"
+import { BoardAddColumnCard, BoardColumn, BoardColumnHeader, BoardView } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { BoardView, BoardColumn, BoardColumnHeader, BoardAddColumnCard } from "@/components/common"
+import { KANBAN_PALETTE_COLORS } from "@/config/entities/project.config"
+import { ROUTES } from "@/config/routes.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn } from "@/lib/utils"
+import type { ProjectMember } from "@/types/project.types"
+import type { Task } from "@/types/task.types"
+
+import {
+  AlertCircle,
+  Check,
+  FolderKanban,
+  MoreHorizontal,
+  Plus,
+  RefreshCw,
+  Settings,
+  Sparkles,
+} from "lucide-react"
 import { Link } from "react-router-dom"
 
-import type { Task } from "@/types/task.types"
-import type { ProjectMember } from "@/types/project.types"
+import { useProjectKanban } from "../hooks/use-project-kanban"
 
 interface ProjectKanbanTabProps {
   projectId: string
   members: ProjectMember[]
   teamLeader?: {
-    id: string;
-    fullName: string;
-    email: string;
+    id: string
+    fullName: string
+    email: string
   } | null
   user: {
     id: string
@@ -42,11 +60,7 @@ interface ProjectKanbanTabProps {
   } | null
 }
 
-export function ProjectKanbanTab({
-  projectId,
-  teamLeader,
-  user,
-}: ProjectKanbanTabProps) {
+export function ProjectKanbanTab({ projectId, teamLeader, user }: ProjectKanbanTabProps) {
   const {
     canManageStatuses,
 
@@ -166,14 +180,19 @@ export function ProjectKanbanTab({
             </div>
             <div>
               <h3 className="font-bold text-base text-foreground">Kanban Board</h3>
-              <p className="text-xs text-muted-foreground">Kéo thả để cập nhật tiến độ công việc động</p>
+              <p className="text-xs text-muted-foreground">
+                Kéo thả để cập nhật tiến độ công việc động
+              </p>
             </div>
           </div>
         }
         toolbarRight={
           canManageStatuses ? (
-            <Button 
-              onClick={() => { resetForm(); setIsAddColumnOpen(true); }}
+            <Button
+              onClick={() => {
+                resetForm()
+                setIsAddColumnOpen(true)
+              }}
               className="rounded-full text-xs font-bold gap-1 px-4 shadow-sm"
             >
               <Plus className="size-3.5" />
@@ -191,9 +210,13 @@ export function ProjectKanbanTab({
               key={status.id}
               scrollType="always"
               className={`w-[290px] h-full ${
-                draggingColumnId === status.id ? "opacity-45 scale-[0.98] border-dashed border-muted-foreground/50" : ""
+                draggingColumnId === status.id
+                  ? "opacity-45 scale-[0.98] border-dashed border-muted-foreground/50"
+                  : ""
               } ${
-                dragOverColumnId === status.id ? "border-primary ring-2 ring-primary/20 bg-primary/5" : ""
+                dragOverColumnId === status.id
+                  ? "border-primary ring-2 ring-primary/20 bg-primary/5"
+                  : ""
               }`}
               onDragOver={(e) => {
                 if (draggingColumnId) {
@@ -219,7 +242,9 @@ export function ProjectKanbanTab({
               header={
                 <div
                   draggable={canManageStatuses}
-                  onDragStart={(e) => { handleColumnDragStart(e, status.id); }}
+                  onDragStart={(e) => {
+                    handleColumnDragStart(e, status.id)
+                  }}
                   onDragEnd={handleColumnDragEnd}
                   className={canManageStatuses ? "cursor-grab active:cursor-grabbing" : ""}
                 >
@@ -235,8 +260,11 @@ export function ProjectKanbanTab({
                               <MoreHorizontal className="size-4" />
                             </button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="rounded-xl border-border bg-popover">
-                            <DropdownMenuItem 
+                          <DropdownMenuContent
+                            align="end"
+                            className="rounded-xl border-border bg-popover"
+                          >
+                            <DropdownMenuItem
                               onClick={() => {
                                 setSelectedColumn(status)
                                 setColumnName(status.name)
@@ -250,10 +278,12 @@ export function ProjectKanbanTab({
                               Cấu hình cột
                             </DropdownMenuItem>
                             {!status.isDefault && statuses.length > 1 && (
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => {
                                   setSelectedColumn(status)
-                                  setFallbackColumnId(statuses.find((s) => s.id !== status.id)?.id || "")
+                                  setFallbackColumnId(
+                                    statuses.find((s) => s.id !== status.id)?.id || "",
+                                  )
                                   setIsDeleteConfirmOpen(true)
                                 }}
                                 className="rounded-lg text-xs font-semibold text-destructive cursor-pointer"
@@ -272,7 +302,9 @@ export function ProjectKanbanTab({
               emptyState={
                 <div className="flex flex-col items-center justify-center py-10 text-center border-2 border-dashed border-border/40 rounded-xl w-full">
                   <Sparkles className="size-5 text-muted-foreground/30 mb-1" />
-                  <p className="text-[10px] font-medium text-muted-foreground/60">Không có công việc</p>
+                  <p className="text-[10px] font-medium text-muted-foreground/60">
+                    Không có công việc
+                  </p>
                 </div>
               }
               bodyProps={{
@@ -288,14 +320,23 @@ export function ProjectKanbanTab({
             >
               {colTasks.map((task) => {
                 let priorityColor = "bg-secondary text-secondary-foreground border-border"
-                if (task.priority === "urgent") priorityColor = "bg-destructive/10 text-destructive border-destructive/20"
-                else if (task.priority === "high") priorityColor = "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:text-amber-500"
-                else if (task.priority === "medium") priorityColor = "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400"
+                if (task.priority === "urgent")
+                  priorityColor = "bg-destructive/10 text-destructive border-destructive/20"
+                else if (task.priority === "high")
+                  priorityColor =
+                    "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:text-amber-500"
+                else if (task.priority === "medium")
+                  priorityColor =
+                    "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400"
 
                 let trackerColor = "bg-secondary text-secondary-foreground border-border"
-                if (task.tracker === "bug") trackerColor = "bg-destructive/10 text-destructive border-destructive/20"
-                else if (task.tracker === "feature") trackerColor = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400"
-                else if (task.tracker === "support") trackerColor = "bg-sky-500/10 text-sky-600 border-sky-500/20 dark:text-sky-400"
+                if (task.tracker === "bug")
+                  trackerColor = "bg-destructive/10 text-destructive border-destructive/20"
+                else if (task.tracker === "feature")
+                  trackerColor =
+                    "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400"
+                else if (task.tracker === "support")
+                  trackerColor = "bg-sky-500/10 text-sky-600 border-sky-500/20 dark:text-sky-400"
 
                 return (
                   <div key={task.id} className="relative">
@@ -305,61 +346,90 @@ export function ProjectKanbanTab({
                     )}
                     <div
                       draggable="true"
-                      onDragStart={(e) => { handleDragStart(e, task) }}
+                      onDragStart={(e) => {
+                        handleDragStart(e, task)
+                      }}
                       onDragEnd={handleDragEnd}
-                      onDragOver={(e) => { handleCardDragOver(e, task.id) }}
-                      onDragLeave={() => { setDragOverInfo(null) }}
-                      onDrop={(e) => { handleCardDrop(e, task) }}
+                      onDragOver={(e) => {
+                        handleCardDragOver(e, task.id)
+                      }}
+                      onDragLeave={() => {
+                        setDragOverInfo(null)
+                      }}
+                      onDrop={(e) => {
+                        handleCardDrop(e, task)
+                      }}
                       className={`bg-card border border-border/80 rounded-xl p-3.5 space-y-3 shadow-sm hover:shadow-md hover:border-primary/40 transition-all cursor-grab active:cursor-grabbing group/card ${
                         draggingTaskId === task.id ? "opacity-40 scale-[0.98]" : ""
                       }`}
                     >
-                    <div className="flex items-center justify-between gap-2">
-                      <Badge variant="outline" className={`rounded-full text-xs px-2 py-0.5 font-semibold uppercase ${trackerColor}`}>
-                        {task.tracker}
-                      </Badge>
-                      <Badge variant="outline" className={`rounded-full text-xs px-2 py-0.5 font-semibold ${priorityColor}`}>
-                        {task.priority === "urgent" ? "Khẩn cấp" : task.priority === "high" ? "Cao" : task.priority === "medium" ? "Trung bình" : "Thấp"}
-                      </Badge>
-                    </div>
+                      <div className="flex items-center justify-between gap-2">
+                        <Badge
+                          variant="outline"
+                          className={`rounded-full text-xs px-2 py-0.5 font-semibold uppercase ${trackerColor}`}
+                        >
+                          {task.tracker}
+                        </Badge>
+                        <Badge
+                          variant="outline"
+                          className={`rounded-full text-xs px-2 py-0.5 font-semibold ${priorityColor}`}
+                        >
+                          {task.priority === "urgent"
+                            ? "Khẩn cấp"
+                            : task.priority === "high"
+                              ? "Cao"
+                              : task.priority === "medium"
+                                ? "Trung bình"
+                                : "Thấp"}
+                        </Badge>
+                      </div>
 
-                    <Link 
-                      to={`${ROUTES.PROJECT.TASK_DETAIL}/${task.id}`}
-                      className={cn(TYPOGRAPHY.BOARD_CARD_TITLE, "block group-hover/card:text-primary transition-colors line-clamp-2 hover:underline")}
-                    >
-                      {task.title}
-                    </Link>
-
-                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-border/40 text-xs">
-                      <span className={TYPOGRAPHY.CELL_CODE}>#{task.id.substring(0, 5)}</span>
-                      
-                      <div className="flex items-center gap-1.5 max-w-[150px]">
-                        {task.assignee ? (
-                          <span className={cn(TYPOGRAPHY.BOARD_CARD_SUB, "font-medium text-foreground max-w-[100px]")} title={task.assignee.fullName}>
-                            {task.assignee.fullName}
-                          </span>
-                        ) : (
-                          <span className="text-xs text-muted-foreground italic">Chưa giao</span>
+                      <Link
+                        to={`${ROUTES.PROJECT.TASK_DETAIL}/${task.id}`}
+                        className={cn(
+                          TYPOGRAPHY.BOARD_CARD_TITLE,
+                          "block group-hover/card:text-primary transition-colors line-clamp-2 hover:underline",
                         )}
-                        <div className="size-5 rounded-full bg-secondary flex items-center justify-center text-[10px] font-bold text-muted-foreground shadow-sm">
-                          {task.assignee ? task.assignee.fullName.substring(0, 1) : "?"}
+                      >
+                        {task.title}
+                      </Link>
+
+                      <div className="flex items-center justify-between gap-2 pt-2 border-t border-border/40 text-xs">
+                        <span className={TYPOGRAPHY.CELL_CODE}>#{task.id.substring(0, 5)}</span>
+
+                        <div className="flex items-center gap-1.5 max-w-[150px]">
+                          {task.assignee ? (
+                            <span
+                              className={cn(
+                                TYPOGRAPHY.BOARD_CARD_SUB,
+                                "font-medium text-foreground max-w-[100px]",
+                              )}
+                              title={task.assignee.fullName}
+                            >
+                              {task.assignee.fullName}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-muted-foreground italic">Chưa giao</span>
+                          )}
+                          <div className="size-5 rounded-full bg-secondary flex items-center justify-center text-[10px] font-bold text-muted-foreground shadow-sm">
+                            {task.assignee ? task.assignee.fullName.substring(0, 1) : "?"}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Progress Bar inside card */}
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
-                        <span>Tiến độ</span>
-                        <span className="tabular-nums">{task.progress}%</span>
+                      {/* Progress Bar inside card */}
+                      <div className="space-y-1">
+                        <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
+                          <span>Tiến độ</span>
+                          <span className="tabular-nums">{task.progress}%</span>
+                        </div>
+                        <div className="w-full bg-secondary/70 h-1.5 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-primary transition-all duration-300 rounded-full"
+                            style={{ width: `${task.progress}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="w-full bg-secondary/70 h-1.5 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-primary transition-all duration-300 rounded-full" 
-                          style={{ width: `${task.progress}%` }} 
-                        />
-                      </div>
-                    </div>
                     </div>
                     {/* Drop indicator BELOW this card */}
                     {dragOverInfo?.taskId === task.id && dragOverInfo.position === "bottom" && (
@@ -374,8 +444,11 @@ export function ProjectKanbanTab({
 
         {/* Add status column box using standard BoardAddColumnCard */}
         {canManageStatuses && (
-          <BoardAddColumnCard 
-            onClick={() => { resetForm(); setIsAddColumnOpen(true); }}
+          <BoardAddColumnCard
+            onClick={() => {
+              resetForm()
+              setIsAddColumnOpen(true)
+            }}
             label="Thêm cột trạng thái"
             className="w-[290px] h-full min-h-[160px]"
           />
@@ -393,11 +466,15 @@ export function ProjectKanbanTab({
           </DialogHeader>
           <form onSubmit={handleCreateColumn} className="space-y-4 pt-2">
             <div className="space-y-1.5">
-              <Label htmlFor="name" className="text-xs font-bold text-foreground">Tên cột trạng thái</Label>
-              <Input 
+              <Label htmlFor="name" className="text-xs font-bold text-foreground">
+                Tên cột trạng thái
+              </Label>
+              <Input
                 id="name"
                 value={columnName}
-                onChange={(e) => { setColumnName(e.target.value) }}
+                onChange={(e) => {
+                  setColumnName(e.target.value)
+                }}
                 placeholder="Ví dụ: Đang đợi, QC, Hoàn tất..."
                 required
                 className="h-9 text-xs border-border rounded-full"
@@ -411,13 +488,19 @@ export function ProjectKanbanTab({
                   <button
                     key={hex}
                     type="button"
-                    onClick={() => { setColumnColor(hex) }}
+                    onClick={() => {
+                      setColumnColor(hex)
+                    }}
                     className={`size-6 rounded-full border transition-all relative shrink-0 cursor-pointer ${
-                      columnColor === hex ? "scale-110 ring-2 ring-primary/45 border-transparent" : "border-border hover:scale-105"
+                      columnColor === hex
+                        ? "scale-110 ring-2 ring-primary/45 border-transparent"
+                        : "border-border hover:scale-105"
                     }`}
                     style={{ backgroundColor: hex }}
                   >
-                    {columnColor === hex && <Check className="size-3 text-white absolute inset-0 m-auto font-black" />}
+                    {columnColor === hex && (
+                      <Check className="size-3 text-white absolute inset-0 m-auto font-black" />
+                    )}
                   </button>
                 ))}
               </div>
@@ -425,20 +508,24 @@ export function ProjectKanbanTab({
 
             <div className="flex flex-col gap-2 pt-2 border-t border-border/40">
               <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={columnIsCompleted}
-                  onChange={(e) => { setColumnIsCompleted(e.target.checked) }}
+                  onChange={(e) => {
+                    setColumnIsCompleted(e.target.checked)
+                  }}
                   className="size-4 text-primary border-border rounded"
                 />
                 Đánh dấu là cột hoàn thành (isCompleted)
               </label>
-              
+
               <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={columnIsDefault}
-                  onChange={(e) => { setColumnIsDefault(e.target.checked) }}
+                  onChange={(e) => {
+                    setColumnIsDefault(e.target.checked)
+                  }}
                   className="size-4 text-primary border-border rounded"
                 />
                 Trạng thái mặc định khi tạo issue (isDefault)
@@ -446,16 +533,18 @@ export function ProjectKanbanTab({
             </div>
 
             <DialogFooter className="pt-2">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => { setIsAddColumnOpen(false) }}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsAddColumnOpen(false)
+                }}
                 className="h-9 text-xs rounded-full"
               >
                 Hủy
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={createStatusMutation.isPending}
                 className="h-9 text-xs rounded-full font-bold px-4"
               >
@@ -477,11 +566,15 @@ export function ProjectKanbanTab({
           </DialogHeader>
           <form onSubmit={handleUpdateColumn} className="space-y-4 pt-2">
             <div className="space-y-1.5">
-              <Label htmlFor="edit-name" className="text-xs font-bold text-foreground">Tên cột trạng thái</Label>
-              <Input 
+              <Label htmlFor="edit-name" className="text-xs font-bold text-foreground">
+                Tên cột trạng thái
+              </Label>
+              <Input
                 id="edit-name"
                 value={columnName}
-                onChange={(e) => { setColumnName(e.target.value) }}
+                onChange={(e) => {
+                  setColumnName(e.target.value)
+                }}
                 placeholder="Ví dụ: Đang đợi, QC, Hoàn tất..."
                 required
                 className="h-9 text-xs border-border rounded-full"
@@ -495,13 +588,19 @@ export function ProjectKanbanTab({
                   <button
                     key={hex}
                     type="button"
-                    onClick={() => { setColumnColor(hex) }}
+                    onClick={() => {
+                      setColumnColor(hex)
+                    }}
                     className={`size-6 rounded-full border transition-all relative shrink-0 cursor-pointer ${
-                      columnColor === hex ? "scale-110 ring-2 ring-primary/45 border-transparent" : "border-border hover:scale-105"
+                      columnColor === hex
+                        ? "scale-110 ring-2 ring-primary/45 border-transparent"
+                        : "border-border hover:scale-105"
                     }`}
                     style={{ backgroundColor: hex }}
                   >
-                    {columnColor === hex && <Check className="size-3 text-white absolute inset-0 m-auto font-black" />}
+                    {columnColor === hex && (
+                      <Check className="size-3 text-white absolute inset-0 m-auto font-black" />
+                    )}
                   </button>
                 ))}
               </div>
@@ -509,20 +608,24 @@ export function ProjectKanbanTab({
 
             <div className="flex flex-col gap-2 pt-2 border-t border-border/40">
               <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={columnIsCompleted}
-                  onChange={(e) => { setColumnIsCompleted(e.target.checked) }}
+                  onChange={(e) => {
+                    setColumnIsCompleted(e.target.checked)
+                  }}
                   className="size-4 text-primary border-border rounded"
                 />
                 Đánh dấu là cột hoàn thành (isCompleted)
               </label>
-              
+
               <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={columnIsDefault}
-                  onChange={(e) => { setColumnIsDefault(e.target.checked) }}
+                  onChange={(e) => {
+                    setColumnIsDefault(e.target.checked)
+                  }}
                   disabled={selectedColumn?.isDefault} // Cannot unset default unless setting another status
                   className="size-4 text-primary border-border rounded disabled:opacity-40"
                 />
@@ -531,16 +634,18 @@ export function ProjectKanbanTab({
             </div>
 
             <DialogFooter className="pt-2">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => { setIsEditColumnOpen(false) }}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsEditColumnOpen(false)
+                }}
                 className="h-9 text-xs rounded-full"
               >
                 Hủy
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={updateStatusMutation.isPending}
                 className="h-9 text-xs rounded-full font-bold px-4"
               >
@@ -560,10 +665,11 @@ export function ProjectKanbanTab({
               Xóa cột trạng thái?
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="space-y-4 pt-2 text-xs">
             <p className="text-muted-foreground leading-relaxed">
-              Bạn đang yêu cầu xóa trạng thái <span className="font-bold text-foreground">&quot;{selectedColumn?.name}&quot;</span>. 
+              Bạn đang yêu cầu xóa trạng thái{" "}
+              <span className="font-bold text-foreground">&quot;{selectedColumn?.name}&quot;</span>.
               Các công việc thuộc cột này sẽ bị ảnh hưởng.
             </p>
 
@@ -582,7 +688,11 @@ export function ProjectKanbanTab({
                     {statuses
                       .filter((s) => s.id !== selectedColumn?.id)
                       .map((s) => (
-                        <SelectItem key={s.id} value={s.id} className="rounded-lg text-xs font-semibold">
+                        <SelectItem
+                          key={s.id}
+                          value={s.id}
+                          className="rounded-lg text-xs font-semibold"
+                        >
                           {s.name}
                         </SelectItem>
                       ))}
@@ -593,19 +703,23 @@ export function ProjectKanbanTab({
           </div>
 
           <DialogFooter className="pt-2">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => { setIsDeleteConfirmOpen(false) }}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsDeleteConfirmOpen(false)
+              }}
               className="h-9 text-xs rounded-full"
             >
               Hủy
             </Button>
-            <Button 
-              type="button" 
-              variant="destructive" 
+            <Button
+              type="button"
+              variant="destructive"
               onClick={handleDeleteColumn}
-              disabled={deleteStatusMutation.isPending || (statuses.length > 1 && !fallbackColumnId)}
+              disabled={
+                deleteStatusMutation.isPending || (statuses.length > 1 && !fallbackColumnId)
+              }
               className="h-9 text-xs rounded-full font-bold px-4"
             >
               Xác nhận xóa

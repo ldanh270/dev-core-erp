@@ -1,7 +1,7 @@
 import { prisma } from "../libs/database.ts"
-import { ICacheService, AuthorizationContext, IAuthorizationService } from "../types/index.ts"
-import { cacheService } from "./cache.service.ts"
+import { AuthorizationContext, IAuthorizationService, ICacheService } from "../types/index.ts"
 import { logger } from "../utils/logger.util.ts"
+import { cacheService } from "./cache.service.ts"
 
 /**
  * Authorization service responsible for resolving, caching, and invalidating user access context.
@@ -56,7 +56,7 @@ export class AuthorizationService implements IAuthorizationService {
           permission,
           allowed,
           source,
-        })
+        }),
       )
     }
   }
@@ -66,21 +66,21 @@ export class AuthorizationService implements IAuthorizationService {
    */
   async getAuthorizationContext(
     employeeId: string,
-    options?: { skipCache?: boolean }
+    options?: { skipCache?: boolean },
   ): Promise<AuthorizationContext> {
     const skipCache = options?.skipCache ?? false
 
     // Fetch user's current authorizationVersion from DB
     const employeeVersionRecord = await prisma.employee.findUnique({
       where: { id: employeeId, status: "active", deletedAt: null },
-      select: { authorizationVersion: true }
+      select: { authorizationVersion: true },
     })
 
     if (!employeeVersionRecord) {
       return {
         isDynamicAdmin: false,
         roles: new Set<string>(),
-        permissions: new Set<string>()
+        permissions: new Set<string>(),
       }
     }
 
@@ -89,13 +89,17 @@ export class AuthorizationService implements IAuthorizationService {
 
     if (!skipCache) {
       try {
-        const cached = await this.cache.get<{ isDynamicAdmin: boolean; roles: string[]; permissions: string[] }>(cacheKey)
+        const cached = await this.cache.get<{
+          isDynamicAdmin: boolean
+          roles: string[]
+          permissions: string[]
+        }>(cacheKey)
         if (cached) {
           this.metrics.authorization_cache_hits_total++
           return {
             isDynamicAdmin: cached.isDynamicAdmin,
             roles: new Set(cached.roles),
-            permissions: new Set(cached.permissions)
+            permissions: new Set(cached.permissions),
           }
         }
       } catch (err) {
@@ -124,7 +128,7 @@ export class AuthorizationService implements IAuthorizationService {
   private async fetchAndCacheContext(
     employeeId: string,
     snapshotVersion: number,
-    cacheKey: string
+    cacheKey: string,
   ): Promise<AuthorizationContext> {
     const start = performance.now()
 
@@ -136,8 +140,8 @@ export class AuthorizationService implements IAuthorizationService {
           where: {
             role: {
               isActive: true,
-              deletedAt: null
-            }
+              deletedAt: null,
+            },
           },
           select: {
             role: {
@@ -148,22 +152,22 @@ export class AuthorizationService implements IAuthorizationService {
                   where: {
                     permission: {
                       isActive: true,
-                      deletedAt: null
-                    }
+                      deletedAt: null,
+                    },
                   },
                   select: {
                     permission: {
                       select: {
-                        code: true
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                        code: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     })
 
     const duration = performance.now() - start
@@ -173,7 +177,7 @@ export class AuthorizationService implements IAuthorizationService {
       return {
         isDynamicAdmin: false,
         roles: new Set<string>(),
-        permissions: new Set<string>()
+        permissions: new Set<string>(),
       }
     }
 
@@ -195,11 +199,11 @@ export class AuthorizationService implements IAuthorizationService {
       const activePermissions = await prisma.permission.findMany({
         where: {
           isActive: true,
-          deletedAt: null
+          deletedAt: null,
         },
         select: {
-          code: true
-        }
+          code: true,
+        },
       })
 
       for (const permission of activePermissions) {
@@ -210,14 +214,14 @@ export class AuthorizationService implements IAuthorizationService {
     const context: AuthorizationContext = {
       isDynamicAdmin,
       roles: rolesSet,
-      permissions: permissionsSet
+      permissions: permissionsSet,
     }
 
     // Convert Set to Array for Redis serialization
     const cachePayload = {
       isDynamicAdmin,
       roles: Array.from(rolesSet),
-      permissions: Array.from(permissionsSet)
+      permissions: Array.from(permissionsSet),
     }
 
     try {
@@ -237,9 +241,9 @@ export class AuthorizationService implements IAuthorizationService {
       where: { id: employeeId },
       data: {
         authorizationVersion: {
-          increment: 1
-        }
-      }
+          increment: 1,
+        },
+      },
     })
   }
 
@@ -260,9 +264,9 @@ export class AuthorizationService implements IAuthorizationService {
       where: { deletedAt: null, status: "active" },
       data: {
         authorizationVersion: {
-          increment: 1
-        }
-      }
+          increment: 1,
+        },
+      },
     })
   }
 
@@ -275,21 +279,21 @@ export class AuthorizationService implements IAuthorizationService {
         roleId,
         employee: {
           deletedAt: null,
-          status: "active"
-        }
+          status: "active",
+        },
       },
-      select: { employeeId: true }
+      select: { employeeId: true },
     })
-    
+
     if (mappings.length > 0) {
       const employeeIds = mappings.map((m) => m.employeeId)
       await prisma.employee.updateMany({
         where: { id: { in: employeeIds } },
         data: {
           authorizationVersion: {
-            increment: 1
-          }
-        }
+            increment: 1,
+          },
+        },
       })
     }
   }
@@ -300,9 +304,9 @@ export class AuthorizationService implements IAuthorizationService {
   async invalidatePermissionCache(permissionId: string): Promise<void> {
     const rolePermissions = await prisma.rolePermission.findMany({
       where: { permissionId },
-      select: { roleId: true }
+      select: { roleId: true },
     })
-    
+
     const roleIds = rolePermissions.map((rp) => rp.roleId)
     if (roleIds.length > 0) {
       const mappings = await prisma.employeeRole.findMany({
@@ -310,21 +314,21 @@ export class AuthorizationService implements IAuthorizationService {
           roleId: { in: roleIds },
           employee: {
             deletedAt: null,
-            status: "active"
-          }
+            status: "active",
+          },
         },
-        select: { employeeId: true }
+        select: { employeeId: true },
       })
-      
+
       if (mappings.length > 0) {
         const employeeIds = mappings.map((m) => m.employeeId)
         await prisma.employee.updateMany({
           where: { id: { in: employeeIds } },
           data: {
             authorizationVersion: {
-              increment: 1
-            }
-          }
+              increment: 1,
+            },
+          },
         })
       }
     }

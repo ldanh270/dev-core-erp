@@ -1,11 +1,11 @@
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import {
+  AuditLogQuery,
+  AuthorizationAuditLog,
   CreateAuditLogDto,
   IAuditRepository,
   IAuditService,
   PaginatedAuditLogsDto,
-  AuthorizationAuditLog,
-  AuditLogQuery,
 } from "@/types"
 import { AppError } from "@/utils/error.util.ts"
 
@@ -53,17 +53,22 @@ export class AuditService implements IAuditService {
   /**
    * Lists audit logs associated with a specific employee.
    */
-  async listLogsByEmployee(employeeId: string, query: Omit<AuditLogQuery, "targetEmployeeId">): Promise<PaginatedAuditLogsDto> {
+  async listLogsByEmployee(
+    employeeId: string,
+    query: Omit<AuditLogQuery, "targetEmployeeId">,
+  ): Promise<PaginatedAuditLogsDto> {
     return this.auditRepository.listLogsByEmployeeId(employeeId, query)
   }
 
   /**
    * Lists audit logs associated with a specific role.
    */
-  async listLogsByRole(roleId: string, query: Omit<AuditLogQuery, "targetRoleId">): Promise<PaginatedAuditLogsDto> {
+  async listLogsByRole(
+    roleId: string,
+    query: Omit<AuditLogQuery, "targetRoleId">,
+  ): Promise<PaginatedAuditLogsDto> {
     return this.auditRepository.listLogsByRoleId(roleId, query)
   }
 }
 
 export const auditService = new AuditService(new PrismaAuditRepository(prisma))
-

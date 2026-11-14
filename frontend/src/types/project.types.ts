@@ -1,5 +1,7 @@
 import { PROJECT_STATUS, TASK_CREATION_POLICY } from "@/config/entities/project.config"
 
+import type { Task } from "./task.types"
+
 export type ProjectStatus = (typeof PROJECT_STATUS)[keyof typeof PROJECT_STATUS]
 export type TaskCreationPolicy = (typeof TASK_CREATION_POLICY)[keyof typeof TASK_CREATION_POLICY]
 
@@ -96,8 +98,6 @@ export interface ProjectMember {
     status: string
   }
 }
-
-import type { Task } from "./task.types"
 
 export interface GanttMember {
   id: string

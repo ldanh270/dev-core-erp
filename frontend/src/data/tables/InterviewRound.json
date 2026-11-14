@@ -233,33 +233,25 @@
   "indexes": [
     {
       "name": "IX_InterviewRound_applicationId",
-      "columns": [
-        "applicationId"
-      ],
+      "columns": ["applicationId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_InterviewRound_scheduledAt",
-      "columns": [
-        "scheduledAt"
-      ],
+      "columns": ["scheduledAt"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_InterviewRound_status",
-      "columns": [
-        "status"
-      ],
+      "columns": ["status"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_InterviewRound",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -269,12 +261,8 @@
       "virtualName": "application",
       "targetModel": "RecruitmentApplication",
       "relationName": null,
-      "foreignKeyFields": [
-        "applicationId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["applicationId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

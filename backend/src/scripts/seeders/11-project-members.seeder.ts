@@ -1,11 +1,9 @@
-import {
-  PROJECT_MEMBER_WORK_MODE,
-} from "@/configs/entities/project.config.ts"
-import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util.ts"
+import { PROJECT_MEMBER_WORK_MODE } from "@/configs/entities/project.config.ts"
 import { prisma } from "@/libs/database.ts"
 import { SeedContext, createEmptyContext } from "@/scripts/seeders/seed-context.ts"
 import { ISeeder } from "@/scripts/seeders/seeder.interface.ts"
 import { registry } from "@/scripts/seeders/seeder.registry.ts"
+import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util.ts"
 
 import { faker } from "@faker-js/faker"
 
@@ -42,7 +40,11 @@ export class ProjectMembersSeeder implements ISeeder {
       const shuffledEmployees = [...employees].sort(() => 0.5 - Math.random())
       const selectedEmployees = shuffledEmployees.slice(0, numMembers)
 
-      if (projectIndex === 0 && partTimeUser && !selectedEmployees.some((e) => e.id === partTimeUser.id)) {
+      if (
+        projectIndex === 0 &&
+        partTimeUser &&
+        !selectedEmployees.some((e) => e.id === partTimeUser.id)
+      ) {
         // Ensure demo PT user is on first project for spent-time / payroll samples.
         selectedEmployees[0] = { id: partTimeUser.id, position: null, username: "part_time" }
       }
@@ -82,7 +84,9 @@ registry.register(new ProjectMembersSeeder())
 
 if (import.meta.main) {
   const seeder = new ProjectMembersSeeder()
-  const emps = await prisma.employee.findMany({ select: { id: true, position: true, username: true } })
+  const emps = await prisma.employee.findMany({
+    select: { id: true, position: true, username: true },
+  })
   const projects = await prisma.project.findMany()
 
   const ctx = createEmptyContext()

@@ -1,10 +1,13 @@
+import type { DataTableColumn } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import type { DataTableColumn } from "@/components/common"
+
+import { useMemo } from "react"
+
+import { ArrowUpRight } from "lucide-react"
+
 import type { TableDef } from "../database-reference.types"
 import { buildTableRelations, getModuleTheme } from "../database-reference.utils"
-import { ArrowUpRight } from "lucide-react"
-import { useMemo } from "react"
 
 // Maximum relationship badges to display inline before showing +N overflow indicator.
 const MAX_VISIBLE_RELATION_CHIPS = 8
@@ -37,7 +40,9 @@ export function useDatabaseTableColumns({
         cell: (table) => (
           <div className="flex flex-col gap-1 py-1 font-mono">
             <div className="flex flex-col gap-0.5">
-              <span className="font-semibold text-foreground transition-colors group-hover:text-primary">{table.name}</span>
+              <span className="font-semibold text-foreground transition-colors group-hover:text-primary">
+                {table.name}
+              </span>
               <span className="text-[11px] text-muted-foreground">{table.dbName}</span>
             </div>
             <div>
@@ -139,9 +144,7 @@ export function useDatabaseTableColumns({
                     className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[10px] transition-colors hover:bg-muted ${relTheme.badge}`}
                     title={rel.title}
                   >
-                    <span className="font-sans font-bold">
-                      {rel.type === "out" ? "→" : "←"}
-                    </span>
+                    <span className="font-sans font-bold">{rel.type === "out" ? "→" : "←"}</span>
                     <span>{rel.targetTableName}</span>
                   </button>
                 )

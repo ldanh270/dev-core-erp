@@ -1,13 +1,22 @@
-import { IPositionService, Position, ProjectPositionRule, CreatePositionDto, UpdatePositionDto, ProjectPositionRuleDto, IPositionRepository } from "@/types/position.types.ts"
-import { TaskTracker } from "@/types/task.types.ts"
-import { IApplicationType } from "@/types/attendance.types.ts"
+import { PROJECT_ROLE } from "@/configs/entities/project.config.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
-import { AppError } from "@/utils/error.util.ts"
+import { IApplicationType } from "@/types/attendance.types.ts"
 import { IEmployeeRepository } from "@/types/employee.types.ts"
+import {
+  CreatePositionDto,
+  IPositionRepository,
+  IPositionService,
+  Position,
+  ProjectPositionRule,
+  ProjectPositionRuleDto,
+  UpdatePositionDto,
+} from "@/types/position.types.ts"
 import { IProjectRepository } from "@/types/project.types.ts"
+import { TaskTracker } from "@/types/task.types.ts"
+import { AppError } from "@/utils/error.util.ts"
+
 import { PrismaClient } from "@prisma/client"
-import { PROJECT_ROLE } from "@/configs/entities/project.config.ts"
 
 /**
  * Service implementing business logic for organizational positions and dynamic rules.
@@ -17,7 +26,7 @@ export class PositionService implements IPositionService {
     private readonly positionRepo: IPositionRepository,
     private readonly employeeRepo: IEmployeeRepository,
     private readonly projectRepo: IProjectRepository,
-    private readonly prisma: PrismaClient
+    private readonly prisma: PrismaClient,
   ) {}
 
   /**
@@ -52,7 +61,11 @@ export class PositionService implements IPositionService {
     const code = data.code.trim().toLowerCase()
 
     if (!name || !code) {
-      throw new AppError("Tên và mã chức vụ không được để trống", HttpStatusCode.BAD_REQUEST, ErrorLayer.SERVICE)
+      throw new AppError(
+        "Tên và mã chức vụ không được để trống",
+        HttpStatusCode.BAD_REQUEST,
+        ErrorLayer.SERVICE,
+      )
     }
 
     // Check if code is unique
@@ -64,7 +77,7 @@ export class PositionService implements IPositionService {
     return this.positionRepo.create({
       ...data,
       name,
-      code
+      code,
     })
   }
 
@@ -80,7 +93,7 @@ export class PositionService implements IPositionService {
     const updatedData: UpdatePositionDto = {
       description: data.description,
       allowedTaskTrackers: data.allowedTaskTrackers,
-      allowedApplicationTypes: data.allowedApplicationTypes
+      allowedApplicationTypes: data.allowedApplicationTypes,
     }
 
     if (data.name) {
@@ -129,7 +142,10 @@ export class PositionService implements IPositionService {
    * @param rules - Rules payload.
    * @returns Saved project rules array.
    */
-  async saveProjectRules(projectId: string, rules: ProjectPositionRuleDto[]): Promise<ProjectPositionRule[]> {
+  async saveProjectRules(
+    projectId: string,
+    rules: ProjectPositionRuleDto[],
+  ): Promise<ProjectPositionRule[]> {
     return []
   }
 
@@ -140,7 +156,11 @@ export class PositionService implements IPositionService {
    * @param employeeId - Employee ID.
    * @param tracker - Task tracker code (feature, bug, etc.).
    */
-  async validateTaskCreation(projectId: string, employeeId: string, tracker: TaskTracker): Promise<void> {
+  async validateTaskCreation(
+    projectId: string,
+    employeeId: string,
+    tracker: TaskTracker,
+  ): Promise<void> {
     const employee = await this.employeeRepo.findById(employeeId)
     if (!employee) {
       throw new AppError("Nhân viên không tồn tại", HttpStatusCode.NOT_FOUND, ErrorLayer.SERVICE)
@@ -153,8 +173,8 @@ export class PositionService implements IPositionService {
 
     // Admin or GM bypass rules
     const roles = await this.employeeRepo.findRolesByEmployeeId(employeeId)
-    const isAdminOrGM = roles.some(role => role.isAdministrative)
-    
+    const isAdminOrGM = roles.some((role) => role.isAdministrative)
+
     // Query project member relation
     const member = await this.prisma.projectMember.findUnique({
       where: {
@@ -165,7 +185,9 @@ export class PositionService implements IPositionService {
       },
     })
 
-    const isLeader = project.teamLeaderId === employeeId || (member?.role && member.role.code === PROJECT_ROLE.LEADER)
+    const isLeader =
+      project.teamLeaderId === employeeId ||
+      (member?.role && member.role.code === PROJECT_ROLE.LEADER)
 
     if (isAdminOrGM || isLeader) {
       return
@@ -176,7 +198,7 @@ export class PositionService implements IPositionService {
       throw new AppError(
         "Vai trò 'Người xem' không được phép tạo công việc trong dự án này",
         HttpStatusCode.FORBIDDEN,
-        ErrorLayer.SERVICE
+        ErrorLayer.SERVICE,
       )
     }
 
@@ -186,7 +208,7 @@ export class PositionService implements IPositionService {
         throw new AppError(
           `Dự án này không hỗ trợ loại yêu cầu '${tracker}'`,
           HttpStatusCode.FORBIDDEN,
-          ErrorLayer.SERVICE
+          ErrorLayer.SERVICE,
         )
       }
     }
@@ -197,7 +219,7 @@ export class PositionService implements IPositionService {
         throw new AppError(
           `Vai trò của bạn (${member.role.name}) không được phép tạo công việc loại '${tracker}' trong dự án này`,
           HttpStatusCode.FORBIDDEN,
-          ErrorLayer.SERVICE
+          ErrorLayer.SERVICE,
         )
       }
     }

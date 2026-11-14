@@ -105,26 +105,19 @@
   "indexes": [
     {
       "name": "IX_CandidateMeta_candidateId_metaKey",
-      "columns": [
-        "candidateId",
-        "metaKey"
-      ],
+      "columns": ["candidateId", "metaKey"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_CandidateMeta_metaKey",
-      "columns": [
-        "metaKey"
-      ],
+      "columns": ["metaKey"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_CandidateMeta",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -134,12 +127,8 @@
       "virtualName": "candidate",
       "targetModel": "Candidate",
       "relationName": null,
-      "foreignKeyFields": [
-        "candidateId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["candidateId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

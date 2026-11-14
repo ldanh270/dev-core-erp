@@ -170,44 +170,31 @@
   "indexes": [
     {
       "name": "IX_RecruitmentPipelineStage_id_postingId",
-      "columns": [
-        "id",
-        "postingId"
-      ],
+      "columns": ["id", "postingId"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentPipelineStage_postingId",
-      "columns": [
-        "postingId"
-      ],
+      "columns": ["postingId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentPipelineStage_postingId_position",
-      "columns": [
-        "postingId",
-        "position"
-      ],
+      "columns": ["postingId", "position"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentPipelineStage_requisitionId_position",
-      "columns": [
-        "requisitionId",
-        "position"
-      ],
+      "columns": ["requisitionId", "position"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_RecruitmentPipelineStage",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -217,23 +204,15 @@
       "virtualName": "posting",
       "targetModel": "JobPosting",
       "relationName": null,
-      "foreignKeyFields": [
-        "postingId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["postingId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "requisition",
       "targetModel": "JobRequisition",
       "relationName": null,
-      "foreignKeyFields": [
-        "requisitionId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["requisitionId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

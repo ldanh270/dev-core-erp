@@ -1,12 +1,6 @@
-import { 
-  FileText, 
-  CheckCircle2, 
-  XCircle, 
-  CornerDownRight, 
-  AlertTriangle,
-  Clock
-} from "lucide-react"
-
+import { SafeHtml } from "@/components/common"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -14,14 +8,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import type { Task } from "@/types/task.types"
-import { useTaskReview } from "../hooks/use-task-review"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
-import { SafeHtml } from "@/components/common"
+import { Textarea } from "@/components/ui/textarea"
+import type { Task } from "@/types/task.types"
+
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  CornerDownRight,
+  FileText,
+  XCircle,
+} from "lucide-react"
+
+import { useTaskReview } from "../hooks/use-task-review"
 
 interface TaskReviewModalProps {
   isOpen: boolean
@@ -56,7 +57,6 @@ export function TaskReviewModal({
 
   const canApprove = isLeader || isAdminOrGM
 
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] rounded-xl bg-background border-border p-6 shadow-lg">
@@ -82,7 +82,10 @@ export function TaskReviewModal({
         <div className="space-y-4 pt-3">
           <div className="flex items-center justify-between text-xs border-b border-border/40 pb-2">
             <span className="text-muted-foreground font-medium">Trạng thái hiện tại:</span>
-            <Badge variant="outline" className="capitalize rounded-full font-semibold px-2.5 py-0.5">
+            <Badge
+              variant="outline"
+              className="capitalize rounded-full font-semibold px-2.5 py-0.5"
+            >
               {task.status}
             </Badge>
           </div>
@@ -94,9 +97,7 @@ export function TaskReviewModal({
                 <AlertTriangle className="size-4" />
                 <span>Yêu cầu sửa đổi từ Team Leader:</span>
               </div>
-              <p className="text-xs text-muted-foreground italic pl-5">
-                "{task.rejectionReason}"
-              </p>
+              <p className="text-xs text-muted-foreground italic pl-5">"{task.rejectionReason}"</p>
             </div>
           )}
 
@@ -110,7 +111,7 @@ export function TaskReviewModal({
               {task.resultNotes && (
                 <div className="text-xs text-muted-foreground pl-5 space-y-1">
                   <span className="font-bold">Ghi chú kết quả: </span>
-                  <SafeHtml 
+                  <SafeHtml
                     content={task.resultNotes}
                     className="prose prose-sm dark:prose-invert max-w-none text-xs text-foreground mt-1"
                   />
@@ -125,7 +126,10 @@ export function TaskReviewModal({
           {task.status !== "done" && task.status !== "in_review" && !canApprove && (
             <form onSubmit={handleSubmitWork} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="resultNotes" className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                <Label
+                  htmlFor="resultNotes"
+                  className="text-xs font-semibold text-muted-foreground flex items-center gap-1"
+                >
                   <CornerDownRight className="size-3.5 text-muted-foreground" />
                   Mô tả / Ghi chú kết quả
                 </Label>
@@ -141,7 +145,9 @@ export function TaskReviewModal({
                 className="w-full rounded-full text-xs font-bold"
                 disabled={submitReviewMutation.isPending}
               >
-                {submitReviewMutation.isPending ? "Đang gửi báo cáo..." : "Gửi yêu cầu đánh giá (Submit for Review)"}
+                {submitReviewMutation.isPending
+                  ? "Đang gửi báo cáo..."
+                  : "Gửi yêu cầu đánh giá (Submit for Review)"}
               </Button>
             </form>
           )}
@@ -157,7 +163,7 @@ export function TaskReviewModal({
                 {task.resultNotes && (
                   <div className="space-y-1">
                     <span className="font-bold text-muted-foreground">Mô tả đã gửi: </span>
-                    <SafeHtml 
+                    <SafeHtml
                       content={task.resultNotes}
                       className="prose prose-sm dark:prose-invert max-w-none text-xs text-foreground bg-muted/20 p-2.5 rounded-lg border border-border/40 mt-1"
                     />
@@ -176,8 +182,10 @@ export function TaskReviewModal({
                 </span>
                 {task.resultNotes && (
                   <div className="bg-muted/10 p-2.5 rounded-lg border border-border/40 space-y-1">
-                    <span className="font-bold text-[10px] uppercase text-muted-foreground">Mô tả: </span>
-                    <SafeHtml 
+                    <span className="font-bold text-[10px] uppercase text-muted-foreground">
+                      Mô tả:{" "}
+                    </span>
+                    <SafeHtml
                       content={task.resultNotes}
                       className="prose prose-sm dark:prose-invert max-w-none text-xs text-foreground"
                     />
@@ -190,14 +198,18 @@ export function TaskReviewModal({
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   <Button
                     variant="outline"
-                    onClick={() => { setIsRejecting(true); }}
+                    onClick={() => {
+                      setIsRejecting(true)
+                    }}
                     className="rounded-full text-xs font-bold border-rose-500/40 text-rose-600 hover:bg-rose-500/10 hover:text-rose-700"
                     disabled={submitReviewMutation.isPending}
                   >
                     <XCircle className="size-4 mr-1.5 shrink-0" /> Yêu cầu sửa đổi
                   </Button>
                   <Button
-                    onClick={() => { handleApprove(); }}
+                    onClick={() => {
+                      handleApprove()
+                    }}
                     className="rounded-full text-xs font-bold bg-green-600 hover:bg-green-700 text-white"
                     disabled={submitReviewMutation.isPending}
                   >
@@ -205,7 +217,10 @@ export function TaskReviewModal({
                   </Button>
                 </div>
               ) : (
-                <form onSubmit={handleReject} className="space-y-3.5 border-t border-border/40 pt-4">
+                <form
+                  onSubmit={handleReject}
+                  className="space-y-3.5 border-t border-border/40 pt-4"
+                >
                   <div className="space-y-1.5">
                     <Label htmlFor="rejectionReason" className="text-xs font-bold text-rose-600">
                       Lý do yêu cầu sửa đổi công việc
@@ -214,7 +229,9 @@ export function TaskReviewModal({
                       id="rejectionReason"
                       placeholder="Giải thích chi tiết các điểm cần chỉnh sửa cho nhân sự..."
                       value={rejectionReason}
-                      onChange={(e) => { setRejectionReason(e.target.value); }}
+                      onChange={(e) => {
+                        setRejectionReason(e.target.value)
+                      }}
                       className="rounded-xl text-xs resize-none h-20"
                     />
                   </div>
@@ -223,7 +240,9 @@ export function TaskReviewModal({
                       type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() => { setIsRejecting(false); }}
+                      onClick={() => {
+                        setIsRejecting(false)
+                      }}
                       className="rounded-full text-xs font-semibold"
                     >
                       Hủy bỏ
@@ -247,14 +266,18 @@ export function TaskReviewModal({
           {task.status !== "in_review" && task.status !== "done" && canApprove && (
             <div className="space-y-3 pt-2">
               <p className="text-xs text-muted-foreground font-medium">
-                Công việc chưa gửi kết quả đánh giá. Là Team Leader, bạn có thể phê duyệt hoàn thành trực tiếp:
+                Công việc chưa gửi kết quả đánh giá. Là Team Leader, bạn có thể phê duyệt hoàn thành
+                trực tiếp:
               </p>
               <Button
-                onClick={() => { handleApprove(); }}
+                onClick={() => {
+                  handleApprove()
+                }}
                 className="w-full rounded-full text-xs font-bold bg-green-600 hover:bg-green-700 text-white"
                 disabled={submitReviewMutation.isPending}
               >
-                <CheckCircle2 className="size-4 mr-1.5 shrink-0" /> Duyệt hoàn thành trực tiếp (Done)
+                <CheckCircle2 className="size-4 mr-1.5 shrink-0" /> Duyệt hoàn thành trực tiếp
+                (Done)
               </Button>
             </div>
           )}

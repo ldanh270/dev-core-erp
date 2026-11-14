@@ -1,6 +1,7 @@
 import { EMPLOYEE_STATUS } from "@/configs/entities/employee.config.ts"
 import { assertCloudinaryConfigured, cloudinary } from "@/configs/system/cloudinary.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
+import { UPLOAD_CONFIG } from "@/configs/system/upload.config.ts"
 import { authorizationService } from "@/services/authorization.service.ts"
 import type {
   IProfileRepository,
@@ -11,10 +12,9 @@ import type {
   UpdatePersonalEmployeeLinkDto,
   UpdateProfileDto,
 } from "@/types/profile.types.ts"
+import { CloudinaryUtil } from "@/utils/cloudinary.util.ts"
 import { AppError } from "@/utils/error.util.ts"
 import { HashUtil } from "@/utils/hash.util.ts"
-import { CloudinaryUtil } from "@/utils/cloudinary.util.ts"
-import { UPLOAD_CONFIG } from "@/configs/system/upload.config.ts"
 
 const LAYER_NAME = "ProfileService"
 /**
@@ -56,7 +56,6 @@ async function toProfileDto(emp: ProfileEmployeeDocument): Promise<ProfileDto> {
     updatedAt: emp.updatedAt.toISOString(),
   }
 }
-
 
 /**
  * ProfileService implements business logic for profile read, update, and avatar upload

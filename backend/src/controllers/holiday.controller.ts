@@ -51,7 +51,10 @@ export class HolidayController {
     }
   }
 
-  update = async (req: Request<{ id: string }>, res: Response<ApiResponse<IHolidayCalendarDTO>>) => {
+  update = async (
+    req: Request<{ id: string }>,
+    res: Response<ApiResponse<IHolidayCalendarDTO>>,
+  ) => {
     const data = updateHolidaySchema.parse(req.body)
     const holiday = await this.service.updateHoliday(req.params.id, data)
     res.status(HttpStatusCode.OK).json({ data: holiday, error: null })

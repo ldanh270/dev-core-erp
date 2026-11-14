@@ -1,7 +1,9 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import type { ColumnDef, OutgoingRelation } from "../database-reference.types"
+
 import { ExternalLink } from "lucide-react"
+
+import type { ColumnDef, OutgoingRelation } from "../database-reference.types"
 
 interface ColumnConstraintsCellProps {
   column: ColumnDef
@@ -37,7 +39,9 @@ export function ColumnConstraintsCell({
                 type="button"
                 variant="link"
                 className="h-auto p-0 font-mono text-xs font-semibold text-primary justify-start"
-                onClick={() => { onSelectTable(rel.targetTable); }}
+                onClick={() => {
+                  onSelectTable(rel.targetTable)
+                }}
               >
                 → {rel.targetTable}.{rel.targetColumn}
                 <ExternalLink className="ml-1 size-3" />

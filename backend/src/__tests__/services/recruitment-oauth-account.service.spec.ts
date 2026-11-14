@@ -1,5 +1,6 @@
-import { RecruitmentChannel } from "@prisma/client"
 import { toPublicOAuthAccount } from "@/services/recruitment-oauth-account.service"
+
+import { RecruitmentChannel } from "@prisma/client"
 
 describe("toPublicOAuthAccount", () => {
   it("removes OAuth secrets from the public DTO", () => {
@@ -15,11 +16,13 @@ describe("toPublicOAuthAccount", () => {
       updatedAt: new Date("2026-07-29T00:00:00.000Z"),
     })
 
-    expect(account).toEqual(expect.objectContaining({
-      id: "account-1",
-      clientId: "public-client-id",
-      hasRefreshToken: true,
-    }))
+    expect(account).toEqual(
+      expect.objectContaining({
+        id: "account-1",
+        clientId: "public-client-id",
+        hasRefreshToken: true,
+      }),
+    )
     expect(account).not.toHaveProperty("clientSecret")
     expect(account).not.toHaveProperty("refreshToken")
   })

@@ -1,26 +1,26 @@
+import { TASK_STATUS } from "@/configs/entities/project.config.ts"
 import {
   CompletedTaskSuggestionRow,
   CreateTaskDto,
-  Task,
-  TaskListQuery,
   ITaskRepository,
   PaginatedTasksDto,
-  UpdateTaskDto,
-  TaskTracker,
+  Task,
+  TaskListQuery,
   TaskPriority,
   TaskStatus,
+  TaskTracker,
+  UpdateTaskDto,
 } from "@/types"
 
 import {
   Prisma,
   PrismaClient,
   Task as PrismaTask,
-  TaskStatus as PrismaTaskStatus,
   TaskPriority as PrismaTaskPriority,
+  TaskStatus as PrismaTaskStatus,
 } from "@prisma/client"
 
 import { BaseRepository } from "./base.repository.ts"
-import { TASK_STATUS } from "@/configs/entities/project.config.ts"
 
 const TASK_PROJECT_SELECT = {
   id: true,
@@ -173,7 +173,12 @@ export class PrismaTaskRepository extends BaseRepository implements ITaskReposit
           {
             statusId: null,
             status: {
-              in: [TASK_STATUS.TODO, TASK_STATUS.IN_PROGRESS, TASK_STATUS.IN_REVIEW, TASK_STATUS.REOPENED],
+              in: [
+                TASK_STATUS.TODO,
+                TASK_STATUS.IN_PROGRESS,
+                TASK_STATUS.IN_REVIEW,
+                TASK_STATUS.REOPENED,
+              ],
             },
           },
         ]
@@ -314,7 +319,11 @@ export class PrismaTaskRepository extends BaseRepository implements ITaskReposit
    * Reassigns all tasks under a project from one custom status ID to another (or null).
    * Typically used as a fallback mapping when deleting a status column.
    */
-  async updateTasksStatusId(projectId: string, fromStatusId: string, toStatusId: string | null): Promise<void> {
+  async updateTasksStatusId(
+    projectId: string,
+    fromStatusId: string,
+    toStatusId: string | null,
+  ): Promise<void> {
     await this.prisma.task.updateMany({
       where: { projectId, statusId: fromStatusId },
       data: { statusId: toStatusId },

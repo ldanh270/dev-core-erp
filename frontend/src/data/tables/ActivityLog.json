@@ -137,44 +137,31 @@
   "indexes": [
     {
       "name": "IX_ActivityLog_category",
-      "columns": [
-        "category"
-      ],
+      "columns": ["category"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_ActivityLog_category_actionType_createdAt",
-      "columns": [
-        "category",
-        "actionType",
-        "createdAt"
-      ],
+      "columns": ["category", "actionType", "createdAt"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_ActivityLog_employeeId_createdAt",
-      "columns": [
-        "employeeId",
-        "createdAt"
-      ],
+      "columns": ["employeeId", "createdAt"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_ActivityLog_expiresAt",
-      "columns": [
-        "expiresAt"
-      ],
+      "columns": ["expiresAt"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_ActivityLog",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -184,12 +171,8 @@
       "virtualName": "employee",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "employeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

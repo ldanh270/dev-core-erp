@@ -29,7 +29,8 @@ export class SalaryConfigsSeeder implements ISeeder {
       let baseSalary = 10000000 // default 10M
       if (emp.username === "admin" || emp.username === "general_manager") baseSalary = 40000000
       else if (emp.username === "hr_manager") baseSalary = 30000000
-      else if (emp.position === "Team Leader" || emp.username === "team_leader") baseSalary = 25000000
+      else if (emp.position === "Team Leader" || emp.username === "team_leader")
+        baseSalary = 25000000
 
       // Add some randomness
       baseSalary += faker.number.int({ min: 0, max: 10 }) * 1000000
@@ -60,7 +61,9 @@ registry.register(new SalaryConfigsSeeder())
 if (import.meta.main) {
   const seeder = new SalaryConfigsSeeder()
   const admin = await prisma.employee.findFirst({ where: { username: "admin" } })
-  const emps = await prisma.employee.findMany({ select: { id: true, position: true, username: true } })
+  const emps = await prisma.employee.findMany({
+    select: { id: true, position: true, username: true },
+  })
   const templates = await prisma.payslipTemplate.findMany()
 
   const ctx = createEmptyContext()

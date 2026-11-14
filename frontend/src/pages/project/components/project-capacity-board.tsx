@@ -15,7 +15,13 @@ import { TYPOGRAPHY } from "@/config/typography.config"
 import { usePermission } from "@/hooks/use-permission"
 import { capacityCopilotApi } from "@/lib/api/capacity-copilot.api"
 import { cn } from "@/lib/utils"
-import type { CapacityBoardProjectSnapshot, CapacityForecastResult } from "@/types/capacity-copilot.types"
+import type {
+  CapacityBoardProjectSnapshot,
+  CapacityForecastResult,
+} from "@/types/capacity-copilot.types"
+
+import { useState } from "react"
+
 import { useQuery } from "@tanstack/react-query"
 import {
   AlertTriangle,
@@ -26,7 +32,6 @@ import {
   Info,
   RefreshCw,
 } from "lucide-react"
-import { useState } from "react"
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
 const PERCENT_WARNING_THRESHOLD = 0
@@ -63,8 +68,14 @@ const getWeekRangeLabel = (weekStart: string) => {
   return `${start.toLocaleDateString("vi-VN")} - ${end.toLocaleDateString("vi-VN")}`
 }
 
-const sortByGapDescending = (left: CapacityBoardProjectSnapshot, right: CapacityBoardProjectSnapshot) => {
-  return (right.forecast?.percentGap ?? Number.NEGATIVE_INFINITY) - (left.forecast?.percentGap ?? Number.NEGATIVE_INFINITY)
+const sortByGapDescending = (
+  left: CapacityBoardProjectSnapshot,
+  right: CapacityBoardProjectSnapshot,
+) => {
+  return (
+    (right.forecast?.percentGap ?? Number.NEGATIVE_INFINITY) -
+    (left.forecast?.percentGap ?? Number.NEGATIVE_INFINITY)
+  )
 }
 
 const getConfidenceLabel = (confidenceLevel: CapacityConfidenceLevel) => {
@@ -87,7 +98,9 @@ const ForecastRow = ({ item }: { item: CapacityBoardProjectSnapshot }) => {
   if (!forecast) {
     return (
       <div className="rounded-xl border border-border bg-card p-4 text-sm">
-        <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-bold text-foreground")}>{projectName}</div>
+        <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-bold text-foreground")}>
+          {projectName}
+        </div>
         <p className="mt-1 text-xs text-muted-foreground">{errorMessage}</p>
       </div>
     )
@@ -103,9 +116,12 @@ const ForecastRow = ({ item }: { item: CapacityBoardProjectSnapshot }) => {
     <div className="rounded-xl border border-border bg-card p-4 shadow-2xs hover:border-border/90 transition-colors">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-bold text-foreground")}>{projectName}</div>
+          <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-bold text-foreground")}>
+            {projectName}
+          </div>
           <p className={cn(TYPOGRAPHY.CELL_SECONDARY, "mt-1")}>
-            Target {forecast.targetPercent}% · Predicted {forecast.predictedPercent}% · Gap {forecast.percentGap}%
+            Target {forecast.targetPercent}% · Predicted {forecast.predictedPercent}% · Gap{" "}
+            {forecast.percentGap}%
           </p>
           <p className="mt-0.5 text-xs text-muted-foreground font-medium">
             {getConfidenceLabel(forecast.confidenceLevel)}
@@ -125,19 +141,29 @@ const ForecastRow = ({ item }: { item: CapacityBoardProjectSnapshot }) => {
       </div>
       <div className="mt-3 grid grid-cols-1 gap-2 text-xs text-muted-foreground sm:grid-cols-3">
         <div className="rounded-lg bg-muted/50 p-2.5">
-          <span className="block font-semibold text-foreground text-sm">{forecast.totalEffectiveHours}h</span>
+          <span className="block font-semibold text-foreground text-sm">
+            {forecast.totalEffectiveHours}h
+          </span>
           Effective hours
         </div>
         <div className="rounded-lg bg-muted/50 p-2.5">
-          <span className="block font-semibold text-foreground text-sm">{forecast.neededEffectiveHours}h</span>
+          <span className="block font-semibold text-foreground text-sm">
+            {forecast.neededEffectiveHours}h
+          </span>
           Cần thêm
         </div>
         <div className="rounded-lg bg-muted/50 p-2.5">
           <span
             className="block font-semibold text-foreground text-sm truncate"
-            title={isShortage ? getWeakestRoleName(forecast) : strongestRole?.roleName ?? "Chưa có role"}
+            title={
+              isShortage
+                ? getWeakestRoleName(forecast)
+                : (strongestRole?.roleName ?? "Chưa có role")
+            }
           >
-            {isShortage ? getWeakestRoleName(forecast) : strongestRole?.roleName ?? "Chưa có role"}
+            {isShortage
+              ? getWeakestRoleName(forecast)
+              : (strongestRole?.roleName ?? "Chưa có role")}
           </span>
           {isShortage ? "Role nên bổ sung" : "Role đang dư"}
         </div>
@@ -177,8 +203,12 @@ export function ProjectCapacityBoard() {
     .sort(sortByGapDescending)
   const failedItems = forecastItems.filter((item) => !item.forecast)
   const selectedWeekDate = parseLocalDateParam(weekStart)
-  const nextWeekStart = new Date(selectedWeekDate.getTime() + CAPACITY_COPILOT_RULES.DAYS_PER_WEEK * MILLISECONDS_PER_DAY)
-  const previousWeekStart = new Date(selectedWeekDate.getTime() - CAPACITY_COPILOT_RULES.DAYS_PER_WEEK * MILLISECONDS_PER_DAY)
+  const nextWeekStart = new Date(
+    selectedWeekDate.getTime() + CAPACITY_COPILOT_RULES.DAYS_PER_WEEK * MILLISECONDS_PER_DAY,
+  )
+  const previousWeekStart = new Date(
+    selectedWeekDate.getTime() - CAPACITY_COPILOT_RULES.DAYS_PER_WEEK * MILLISECONDS_PER_DAY,
+  )
 
   if (!canForecast) return null
 
@@ -190,15 +220,15 @@ export function ProjectCapacityBoard() {
             <BrainCircuit className="size-5" />
           </div>
           <div>
-            <h3 className="font-bold text-base text-foreground">
-              Project Capacity Board
-            </h3>
+            <h3 className="font-bold text-base text-foreground">Project Capacity Board</h3>
             <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-              Cronjob chạy ngầm mỗi tuần để refresh dự báo. Màn hình tải kết quả forecast mới nhất để Admin/PM thấy project thiếu hoặc dư capacity.
+              Cronjob chạy ngầm mỗi tuần để refresh dự báo. Màn hình tải kết quả forecast mới nhất
+              để Admin/PM thấy project thiếu hoặc dư capacity.
             </p>
             {forecastQuery.data?.generatedAt && (
               <p className="mt-1 text-xs text-muted-foreground">
-                Cập nhật gần nhất: {new Date(forecastQuery.data.generatedAt).toLocaleString("vi-VN")}
+                Cập nhật gần nhất:{" "}
+                {new Date(forecastQuery.data.generatedAt).toLocaleString("vi-VN")}
               </p>
             )}
           </div>

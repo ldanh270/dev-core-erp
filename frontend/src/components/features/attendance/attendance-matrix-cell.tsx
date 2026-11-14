@@ -29,7 +29,10 @@ export function AttendanceMatrixCell({
   return (
     <div className="space-y-2">
       {visibleShifts.map((shift) => (
-        <div key={shift.id} className="min-w-32 space-y-1 rounded-lg border border-border bg-muted/20 p-2">
+        <div
+          key={shift.id}
+          className="min-w-32 space-y-1 rounded-lg border border-border bg-muted/20 p-2"
+        >
           <p className="truncate text-xs font-medium">{shift.shiftName ?? "Ca làm"}</p>
           <p
             className="font-mono text-xs text-foreground"

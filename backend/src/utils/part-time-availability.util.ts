@@ -72,4 +72,3 @@ export function shiftFitsAvailabilityDay(
     (slot) => shift.startTime >= slot.startTime && shift.endTime <= slot.endTime,
   )
 }
-

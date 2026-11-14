@@ -1,25 +1,26 @@
-import { randomUUID } from "node:crypto"
-import type { Prisma, RecruitmentChannel } from "@prisma/client"
 import {
   RECRUITMENT_CHANNEL,
-  RECRUITMENT_SOURCE,
   RECRUITMENT_POSTING_ACTIVITY_TYPE,
+  RECRUITMENT_SOURCE,
   REQUISITION_STATUS,
 } from "@/configs/entities/recruitment.config"
 import { GOOGLE_FORM_SOURCE_CODE_PREFIX } from "@/configs/rules/google-form.config"
 import { GOOGLE_FORM_DEFAULT_FIELDS } from "@/configs/rules/google-form.config"
 import { HttpStatusCode } from "@/configs/system/http.config"
-import { jobRequisitionRepository } from "@/repositories/job-requisition.repository"
+import { googleFormsConnector } from "@/connectors/google-forms.connector"
 import { jobPostingRepository } from "@/repositories/job-posting.repository"
+import { jobRequisitionRepository } from "@/repositories/job-requisition.repository"
+import { recruitmentApplicationRepository } from "@/repositories/recruitment-application.repository"
 import { recruitmentOAuthAccountRepository } from "@/repositories/recruitment-oauth-account.repository"
 import type { CreateJobPostingInput, UpdateJobPostingInput } from "@/schemas/recruitment.schema"
 import type { CreatePostingCandidateInput } from "@/schemas/recruitment.schema"
-import { AppError } from "@/utils/error.util"
 import { recruitmentIntakeService } from "@/services/recruitment-intake.service"
-import type { ConnectorSyncResult } from "@/types/recruitment-connector.types"
-import { googleFormsConnector } from "@/connectors/google-forms.connector"
 import { recruitmentPostingActivityService } from "@/services/recruitment-posting-activity.service"
-import { recruitmentApplicationRepository } from "@/repositories/recruitment-application.repository"
+import type { ConnectorSyncResult } from "@/types/recruitment-connector.types"
+import { AppError } from "@/utils/error.util"
+
+import type { Prisma, RecruitmentChannel } from "@prisma/client"
+import { randomUUID } from "node:crypto"
 
 const LAYER = "JobPostingService"
 export interface RecruitmentConnector {
@@ -29,13 +30,12 @@ export interface RecruitmentConnector {
 
 export class JobPostingService {
   private readonly syncingPostingIds = new Set<string>()
-  constructor(
-    private readonly connectors: ReadonlyMap<string, RecruitmentConnector> = new Map(),
-  ) {}
+  constructor(private readonly connectors: ReadonlyMap<string, RecruitmentConnector> = new Map()) {}
 
   async create(input: CreateJobPostingInput, actorId: string) {
     const requisition = await jobRequisitionRepository.findById(input.requisitionId)
-    if (!requisition) throw new AppError("Không tìm thấy yêu cầu tuyển dụng", HttpStatusCode.NOT_FOUND, LAYER)
+    if (!requisition)
+      throw new AppError("Không tìm thấy yêu cầu tuyển dụng", HttpStatusCode.NOT_FOUND, LAYER)
     if (requisition.status !== REQUISITION_STATUS.APPROVED) {
       throw new AppError(
         "Không thể tạo bài đăng cho yêu cầu chưa được duyệt",
@@ -48,7 +48,10 @@ export class JobPostingService {
     let oauthAccountId = input.oauthAccountId ?? null
 
     if (oauthAccountId) {
-      const oauthAccount = await recruitmentOAuthAccountRepository.findByIdForUser(oauthAccountId, actorId)
+      const oauthAccount = await recruitmentOAuthAccountRepository.findByIdForUser(
+        oauthAccountId,
+        actorId,
+      )
       if (!oauthAccount) {
         throw new AppError(
           "Tài khoản OAuth không tồn tại hoặc không thuộc quyền sở hữu của bạn",
@@ -75,17 +78,26 @@ export class JobPostingService {
     }
 
     const sourceCode = `${GOOGLE_FORM_SOURCE_CODE_PREFIX}_${randomUUID().replaceAll("-", "")}`
-    const fields = requisition.candidateFields.length > 0
-      ? requisition.candidateFields.map(({ key, label, type, required }) => ({ key, label, type, required }))
-      : input.fields ?? GOOGLE_FORM_DEFAULT_FIELDS
-    const posting = await jobPostingRepository.create({
-      requisitionId: input.requisitionId,
-      channel: channel as RecruitmentChannel,
-      source: RECRUITMENT_SOURCE.GOOGLE_FORM,
-      sourceCode,
-      formFields: this.toFormFieldsJson(fields),
-      oauthAccountId,
-    }, fields)
+    const fields =
+      requisition.candidateFields.length > 0
+        ? requisition.candidateFields.map(({ key, label, type, required }) => ({
+            key,
+            label,
+            type,
+            required,
+          }))
+        : (input.fields ?? GOOGLE_FORM_DEFAULT_FIELDS)
+    const posting = await jobPostingRepository.create(
+      {
+        requisitionId: input.requisitionId,
+        channel: channel as RecruitmentChannel,
+        source: RECRUITMENT_SOURCE.GOOGLE_FORM,
+        sourceCode,
+        formFields: this.toFormFieldsJson(fields),
+        oauthAccountId,
+      },
+      fields,
+    )
     await jobRequisitionRepository.ensurePipeline(input.requisitionId)
     await recruitmentPostingActivityService.record(
       posting.id,
@@ -124,68 +136,170 @@ export class JobPostingService {
     return jobPostingRepository.listConnectorResponses(id)
   }
 
-  async listPipelineStages(id: string) { const posting = await this.findById(id); await jobRequisitionRepository.ensurePipeline(posting.requisitionId); return jobRequisitionRepository.listPipelineStages(posting.requisitionId) }
+  async listPipelineStages(id: string) {
+    const posting = await this.findById(id)
+    await jobRequisitionRepository.ensurePipeline(posting.requisitionId)
+    return jobRequisitionRepository.listPipelineStages(posting.requisitionId)
+  }
 
-  async createPipelineStage(id: string, data: { name: string; color?: string; isDefault?: boolean; isCompleted?: boolean }, actorId: string) {
+  async createPipelineStage(
+    id: string,
+    data: { name: string; color?: string; isDefault?: boolean; isCompleted?: boolean },
+    actorId: string,
+  ) {
     const posting = await this.findById(id)
     const stage = await jobRequisitionRepository.createPipelineStage(posting.requisitionId, data)
-    await recruitmentPostingActivityService.record(id, RECRUITMENT_POSTING_ACTIVITY_TYPE.STAGE_CREATED, actorId, { stageId: stage.id, name: stage.name })
+    await recruitmentPostingActivityService.record(
+      id,
+      RECRUITMENT_POSTING_ACTIVITY_TYPE.STAGE_CREATED,
+      actorId,
+      { stageId: stage.id, name: stage.name },
+    )
     return stage
   }
 
-  async updatePipelineStage(postingId: string, stageId: string, data: { name?: string; color?: string; isDefault?: boolean; isCompleted?: boolean }, actorId: string) {
+  async updatePipelineStage(
+    postingId: string,
+    stageId: string,
+    data: { name?: string; color?: string; isDefault?: boolean; isCompleted?: boolean },
+    actorId: string,
+  ) {
     const posting = await this.findById(postingId)
     const stage = await this.getPostingStage(postingId, stageId)
     if (stage.isDefault && data.isDefault === false) {
-      throw new AppError("Cần chọn một giai đoạn mặc định khác trước", HttpStatusCode.CONFLICT, LAYER, "DEFAULT_STAGE_REQUIRED")
+      throw new AppError(
+        "Cần chọn một giai đoạn mặc định khác trước",
+        HttpStatusCode.CONFLICT,
+        LAYER,
+        "DEFAULT_STAGE_REQUIRED",
+      )
     }
-    const updated = await jobRequisitionRepository.updatePipelineStage(posting.requisitionId, stageId, data)
-    await recruitmentPostingActivityService.record(postingId, RECRUITMENT_POSTING_ACTIVITY_TYPE.STAGE_UPDATED, actorId, { stageId, fields: Object.keys(data) })
+    const updated = await jobRequisitionRepository.updatePipelineStage(
+      posting.requisitionId,
+      stageId,
+      data,
+    )
+    await recruitmentPostingActivityService.record(
+      postingId,
+      RECRUITMENT_POSTING_ACTIVITY_TYPE.STAGE_UPDATED,
+      actorId,
+      { stageId, fields: Object.keys(data) },
+    )
     return updated
   }
 
-  async deletePipelineStage(postingId: string, stageId: string, fallbackStageId: string, actorId: string) {
+  async deletePipelineStage(
+    postingId: string,
+    stageId: string,
+    fallbackStageId: string,
+    actorId: string,
+  ) {
     const posting = await this.findById(postingId)
     const stages = await this.listPipelineStages(postingId)
     const stage = stages.find((item) => item.id === stageId)
     const fallback = stages.find((item) => item.id === fallbackStageId)
     if (!stage || !fallback || stageId === fallbackStageId) {
-      throw new AppError("Giai đoạn thay thế không hợp lệ", HttpStatusCode.BAD_REQUEST, LAYER, "INVALID_STAGE_FALLBACK")
+      throw new AppError(
+        "Giai đoạn thay thế không hợp lệ",
+        HttpStatusCode.BAD_REQUEST,
+        LAYER,
+        "INVALID_STAGE_FALLBACK",
+      )
     }
     if (stage.isDefault) {
-      throw new AppError("Không thể xóa giai đoạn mặc định", HttpStatusCode.CONFLICT, LAYER, "DEFAULT_STAGE_DELETE")
+      throw new AppError(
+        "Không thể xóa giai đoạn mặc định",
+        HttpStatusCode.CONFLICT,
+        LAYER,
+        "DEFAULT_STAGE_DELETE",
+      )
     }
     if (stages.length < 2) {
-      throw new AppError("Bài đăng phải có ít nhất một giai đoạn", HttpStatusCode.CONFLICT, LAYER, "LAST_STAGE_DELETE")
+      throw new AppError(
+        "Bài đăng phải có ít nhất một giai đoạn",
+        HttpStatusCode.CONFLICT,
+        LAYER,
+        "LAST_STAGE_DELETE",
+      )
     }
-    await jobRequisitionRepository.deletePipelineStage(posting.requisitionId, stageId, fallbackStageId)
-    await recruitmentPostingActivityService.record(postingId, RECRUITMENT_POSTING_ACTIVITY_TYPE.STAGE_DELETED, actorId, { stageId, fallbackStageId, name: stage.name })
+    await jobRequisitionRepository.deletePipelineStage(
+      posting.requisitionId,
+      stageId,
+      fallbackStageId,
+    )
+    await recruitmentPostingActivityService.record(
+      postingId,
+      RECRUITMENT_POSTING_ACTIVITY_TYPE.STAGE_DELETED,
+      actorId,
+      { stageId, fallbackStageId, name: stage.name },
+    )
   }
 
   async reorderPipelineStages(postingId: string, stageIds: string[], actorId: string) {
     const posting = await this.findById(postingId)
-    const stages = await jobRequisitionRepository.reorderPipelineStages(posting.requisitionId, stageIds)
-    await recruitmentPostingActivityService.record(postingId, RECRUITMENT_POSTING_ACTIVITY_TYPE.STAGES_REORDERED, actorId, { stageIds })
+    const stages = await jobRequisitionRepository.reorderPipelineStages(
+      posting.requisitionId,
+      stageIds,
+    )
+    await recruitmentPostingActivityService.record(
+      postingId,
+      RECRUITMENT_POSTING_ACTIVITY_TYPE.STAGES_REORDERED,
+      actorId,
+      { stageIds },
+    )
     return stages
   }
 
-  async moveApplicationToPipelineStage(postingId: string, applicationId: string, pipelineStageId: string, actorId: string) {
+  async moveApplicationToPipelineStage(
+    postingId: string,
+    applicationId: string,
+    pipelineStageId: string,
+    actorId: string,
+  ) {
     const application = await recruitmentApplicationRepository.findById(applicationId)
     const posting = await this.findById(postingId)
     if (!application || application.postingId !== postingId) {
-      throw new AppError("Ứng viên không thuộc bài đăng này", HttpStatusCode.BAD_REQUEST, LAYER, "APPLICATION_POSTING_MISMATCH")
+      throw new AppError(
+        "Ứng viên không thuộc bài đăng này",
+        HttpStatusCode.BAD_REQUEST,
+        LAYER,
+        "APPLICATION_POSTING_MISMATCH",
+      )
     }
     await this.getPostingStage(postingId, pipelineStageId)
-    const updated = await jobRequisitionRepository.moveApplicationToPipelineStage(posting.requisitionId, applicationId, pipelineStageId)
-    await recruitmentPostingActivityService.record(postingId, RECRUITMENT_POSTING_ACTIVITY_TYPE.APPLICATION_STAGE_CHANGED, actorId, { pipelineStageId }, applicationId)
+    const updated = await jobRequisitionRepository.moveApplicationToPipelineStage(
+      posting.requisitionId,
+      applicationId,
+      pipelineStageId,
+    )
+    await recruitmentPostingActivityService.record(
+      postingId,
+      RECRUITMENT_POSTING_ACTIVITY_TYPE.APPLICATION_STAGE_CHANGED,
+      actorId,
+      { pipelineStageId },
+      applicationId,
+    )
     return updated
   }
 
-  async createCandidateApplication(postingId: string, input: CreatePostingCandidateInput, actorId: string) {
+  async createCandidateApplication(
+    postingId: string,
+    input: CreatePostingCandidateInput,
+    actorId: string,
+  ) {
     const posting = await this.findById(postingId)
     await jobRequisitionRepository.ensurePipeline(posting.requisitionId)
-    const application = await jobPostingRepository.createCandidateApplication(postingId, { ...input, source: posting.source })
-    await recruitmentPostingActivityService.record(postingId, RECRUITMENT_POSTING_ACTIVITY_TYPE.CANDIDATE_CREATED, actorId, { candidateId: application.candidateId }, application.id)
+    const application = await jobPostingRepository.createCandidateApplication(postingId, {
+      ...input,
+      source: posting.source,
+    })
+    await recruitmentPostingActivityService.record(
+      postingId,
+      RECRUITMENT_POSTING_ACTIVITY_TYPE.CANDIDATE_CREATED,
+      actorId,
+      { candidateId: application.candidateId },
+      application.id,
+    )
     return application
   }
 
@@ -219,7 +333,11 @@ export class JobPostingService {
     if (!connector) this.throwConnectorNotConfigured(posting.channel)
     try {
       const result = await connector.publish(id)
-      const published = await jobPostingRepository.markConnectorPublished(id, result.externalId, result.postingUrl)
+      const published = await jobPostingRepository.markConnectorPublished(
+        id,
+        result.externalId,
+        result.postingUrl,
+      )
       await recruitmentPostingActivityService.record(
         id,
         RECRUITMENT_POSTING_ACTIVITY_TYPE.PUBLISHED,
@@ -234,7 +352,12 @@ export class JobPostingService {
 
   async sync(id: string, actorId: string) {
     if (this.syncingPostingIds.has(id)) {
-      throw new AppError("Bài đăng đang đồng bộ", HttpStatusCode.CONFLICT, LAYER, "SYNC_ALREADY_RUNNING")
+      throw new AppError(
+        "Bài đăng đang đồng bộ",
+        HttpStatusCode.CONFLICT,
+        LAYER,
+        "SYNC_ALREADY_RUNNING",
+      )
     }
     this.syncingPostingIds.add(id)
     try {
@@ -324,9 +447,16 @@ export class JobPostingService {
 
   private async getPostingStage(postingId: string, stageId: string) {
     const posting = await this.findById(postingId)
-    const stage = (await jobRequisitionRepository.listPipelineStages(posting.requisitionId)).find((item) => item.id === stageId)
+    const stage = (await jobRequisitionRepository.listPipelineStages(posting.requisitionId)).find(
+      (item) => item.id === stageId,
+    )
     if (!stage) {
-      throw new AppError("Giai đoạn không thuộc yêu cầu tuyển dụng này", HttpStatusCode.BAD_REQUEST, LAYER, "STAGE_REQUISITION_MISMATCH")
+      throw new AppError(
+        "Giai đoạn không thuộc yêu cầu tuyển dụng này",
+        HttpStatusCode.BAD_REQUEST,
+        LAYER,
+        "STAGE_REQUISITION_MISMATCH",
+      )
     }
     return stage
   }

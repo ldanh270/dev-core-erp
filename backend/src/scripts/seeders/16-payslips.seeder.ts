@@ -1,10 +1,10 @@
 import { prisma } from "@/libs/database.ts"
-import { PAYROLL_DEMO } from "@/scripts/seeders/payroll-demo.config.ts"
 import {
   createPayrollDemoPayslipValues,
   payrollDemoSalaryConfigInclude,
   summarizePayrollDemoAttendance,
 } from "@/scripts/seeders/payroll-demo-payslip.util.ts"
+import { PAYROLL_DEMO } from "@/scripts/seeders/payroll-demo.config.ts"
 import { SeedContext, createEmptyContext } from "@/scripts/seeders/seed-context.ts"
 import { ISeeder } from "@/scripts/seeders/seeder.interface.ts"
 import { registry } from "@/scripts/seeders/seeder.registry.ts"
@@ -47,7 +47,8 @@ export class PayslipsSeeder implements ISeeder {
       })
       const configsByEmployee = new Map<string, (typeof configs)[number]>()
       configs.forEach((config) => {
-        if (!configsByEmployee.has(config.employeeId)) configsByEmployee.set(config.employeeId, config)
+        if (!configsByEmployee.has(config.employeeId))
+          configsByEmployee.set(config.employeeId, config)
       })
 
       let payrollTotal = 0
@@ -101,7 +102,10 @@ export class PayslipsSeeder implements ISeeder {
         })
         totalPayslipsSeeded += 1
       }
-      await prisma.payroll.update({ where: { id: payroll.id }, data: { totalAmount: payrollTotal } })
+      await prisma.payroll.update({
+        where: { id: payroll.id },
+        data: { totalAmount: payrollTotal },
+      })
     }
 
     console.log(`  Seeded ${totalPayslipsSeeded} payslips.`)
@@ -114,7 +118,9 @@ registry.register(new PayslipsSeeder())
 if (import.meta.main) {
   const seeder = new PayslipsSeeder()
   const ctx = createEmptyContext()
-  ctx.employees = await prisma.employee.findMany({ select: { id: true, position: true, username: true } })
+  ctx.employees = await prisma.employee.findMany({
+    select: { id: true, position: true, username: true },
+  })
   ctx.payrollIds = (await prisma.payroll.findMany()).map((payroll) => payroll.id)
   await seeder.run(ctx)
   await prisma.$disconnect()

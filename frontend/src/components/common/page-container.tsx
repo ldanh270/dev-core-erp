@@ -1,7 +1,8 @@
 import { cn } from "@/lib/utils"
 
-import { cva, type VariantProps } from "class-variance-authority"
 import type { ReactNode } from "react"
+
+import { type VariantProps, cva } from "class-variance-authority"
 
 export const pageContainerVariants = cva("w-full flex flex-col min-w-0", {
   variants: {
@@ -26,7 +27,9 @@ export const pageContainerVariants = cva("w-full flex flex-col min-w-0", {
   },
 })
 
-export type PageContainerVariant = NonNullable<VariantProps<typeof pageContainerVariants>["variant"]>
+export type PageContainerVariant = NonNullable<
+  VariantProps<typeof pageContainerVariants>["variant"]
+>
 
 export interface PageContainerProps extends VariantProps<typeof pageContainerVariants> {
   children: ReactNode
@@ -39,14 +42,6 @@ export interface PageContainerProps extends VariantProps<typeof pageContainerVar
  * locks viewport height on desktop data tables to guarantee internal scrolling,
  * and maintains token-based spacing across breakpoints.
  */
-export function PageContainer({
-  children,
-  variant,
-  className,
-}: PageContainerProps) {
-  return (
-    <div className={cn(pageContainerVariants({ variant }), className)}>
-      {children}
-    </div>
-  )
+export function PageContainer({ children, variant, className }: PageContainerProps) {
+  return <div className={cn(pageContainerVariants({ variant }), className)}>{children}</div>
 }

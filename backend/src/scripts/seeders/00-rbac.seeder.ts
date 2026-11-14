@@ -1,8 +1,9 @@
-import { Prisma } from '@prisma/client';
 import { prisma } from "@/libs/database.ts"
 import { SeedContext, createEmptyContext } from "@/scripts/seeders/seed-context.ts"
 import { ISeeder } from "@/scripts/seeders/seeder.interface.ts"
 import { registry } from "@/scripts/seeders/seeder.registry.ts"
+
+import { Prisma } from "@prisma/client"
 
 export class RBACSeeder implements ISeeder {
   readonly name = "RBAC"
@@ -521,7 +522,9 @@ export class RBACSeeder implements ISeeder {
           data: employeeRolesData,
         })
       }
-      console.info(`    [✓] Assigned dynamic roles to ${employeeRolesData.length} seeded employees.`)
+      console.info(
+        `    [✓] Assigned dynamic roles to ${employeeRolesData.length} seeded employees.`,
+      )
     }
 
     return {}

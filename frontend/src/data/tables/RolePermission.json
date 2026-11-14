@@ -74,18 +74,13 @@
   "indexes": [
     {
       "name": "IX_role_permissions_permissionId",
-      "columns": [
-        "permissionId"
-      ],
+      "columns": ["permissionId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_role_permissions",
-      "columns": [
-        "roleId",
-        "permissionId"
-      ],
+      "columns": ["roleId", "permissionId"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -95,23 +90,15 @@
       "virtualName": "role",
       "targetModel": "AppRole",
       "relationName": null,
-      "foreignKeyFields": [
-        "roleId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["roleId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "permission",
       "targetModel": "Permission",
       "relationName": null,
-      "foreignKeyFields": [
-        "permissionId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["permissionId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

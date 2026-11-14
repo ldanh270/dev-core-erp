@@ -1,5 +1,5 @@
-import { usePermission } from "@/hooks/use-permission"
 import { ROUTES } from "@/config/routes.config"
+import { usePermission } from "@/hooks/use-permission"
 
 import { useState } from "react"
 

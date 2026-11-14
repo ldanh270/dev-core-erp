@@ -9,15 +9,18 @@ import {
   REQUISITION_PRIORITY_LABELS,
   REQUISITION_STATUS_LABELS,
 } from "@/config/entities/recruitment.config"
+import { usePersonalEmployeeId } from "@/hooks/attendance/use-personal-employee-id"
 import {
   useApproveRequisition,
   useRequisition,
   useSubmitRequisitionForApproval,
 } from "@/hooks/recruitment/use-recruitment-queries"
-import { usePersonalEmployeeId } from "@/hooks/attendance/use-personal-employee-id"
 import { usePermission } from "@/hooks/use-permission"
 import { routerNavigate } from "@/lib/router-navigator"
 import type { JobRequisition } from "@/types/recruitment.types"
+
+import { useState } from "react"
+
 import {
   Briefcase,
   Building,
@@ -36,7 +39,6 @@ import {
   X,
   XCircle,
 } from "lucide-react"
-import { useState } from "react"
 
 interface RequisitionDetailsDrawerProps {
   /** The unique ID of the requisition to load, or null to close the drawer */
@@ -65,7 +67,11 @@ const statusVariantMap: Record<string, "success" | "warning" | "danger" | "info"
 
 function formatCurrencyRange(salaryMin: number | null, salaryMax: number | null) {
   const format = (value: number) =>
-    new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(value)
+    new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      maximumFractionDigits: 0,
+    }).format(value)
   if (salaryMin && salaryMax) return `${format(salaryMin)} – ${format(salaryMax)}`
   return salaryMin ? `Từ ${format(salaryMin)}` : "Chưa xác định"
 }
@@ -84,7 +90,11 @@ function formatDate(value?: string | null) {
  * Slide-out drawer displaying comprehensive details for a specific Job Requisition.
  * Styled matching EmployeeDetailsDrawer in /hrm/employees.
  */
-export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: RequisitionDetailsDrawerProps) {
+export function RequisitionDetailsDrawer({
+  requisitionId,
+  onClose,
+  onEdit,
+}: RequisitionDetailsDrawerProps) {
   const { data: requisition, isLoading, error } = useRequisition(requisitionId || "")
   const { hasPermission } = usePermission()
   const employeeId = usePersonalEmployeeId()
@@ -95,7 +105,10 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
 
   const canCreateJd = hasPermission("recruitment.jd.create")
   const canSubmit =
-    requisition && hasPermission("recruitment.update") && Boolean(requisition.approverId) && requisition.status === "draft"
+    requisition &&
+    hasPermission("recruitment.update") &&
+    Boolean(requisition.approverId) &&
+    requisition.status === "draft"
   const canApprove =
     requisition &&
     hasPermission("recruitment.requisition.approve") &&
@@ -150,7 +163,10 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                     <span className="font-mono bg-background border border-border px-2 py-0.5 rounded text-xs font-semibold text-primary">
                       {requisition.code}
                     </span>
-                    <Badge variant={priorityVariantMap[requisition.priority]} className="rounded-full px-2.5 py-0.5 text-xs">
+                    <Badge
+                      variant={priorityVariantMap[requisition.priority]}
+                      className="rounded-full px-2.5 py-0.5 text-xs"
+                    >
                       {REQUISITION_PRIORITY_LABELS[requisition.priority]}
                     </Badge>
                   </div>
@@ -161,7 +177,9 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold tracking-tight text-foreground">{requisition.title}</h2>
+                  <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                    {requisition.title}
+                  </h2>
                   <p className="text-sm text-muted-foreground mt-0.5">
                     {requisition.department || "Chưa chọn phòng ban"}{" "}
                     {requisition.positionLevel ? `• Cấp bậc: ${requisition.positionLevel}` : ""}
@@ -197,7 +215,9 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                           size="sm"
                           className="rounded-full gap-1.5"
                           disabled={submitMutation.isPending}
-                          onClick={() => { submitMutation.mutate(requisition.id); }}
+                          onClick={() => {
+                            submitMutation.mutate(requisition.id)
+                          }}
                         >
                           <Send size={14} /> Gửi phê duyệt
                         </Button>
@@ -215,7 +235,12 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                             size="sm"
                             className="rounded-full gap-1.5 bg-success text-success-foreground hover:bg-success/90"
                             disabled={approveMutation.isPending}
-                            onClick={() => { approveMutation.mutate({ id: requisition.id, data: { approved: true } }); }}
+                            onClick={() => {
+                              approveMutation.mutate({
+                                id: requisition.id,
+                                data: { approved: true },
+                              })
+                            }}
                           >
                             <Check size={14} /> Chấp nhận
                           </Button>
@@ -230,7 +255,9 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                             size="sm"
                             className="rounded-full gap-1.5"
                             disabled={approveMutation.isPending}
-                            onClick={() => { setIsRejectOpen(true) }}
+                            onClick={() => {
+                              setIsRejectOpen(true)
+                            }}
                           >
                             <X size={14} /> Từ chối
                           </Button>
@@ -249,13 +276,17 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                           className="rounded-full gap-1.5 text-primary border-primary/30 hover:bg-primary/10"
                           onClick={() => {
                             onClose()
-                            routerNavigate(`/recruitment/requisitions/${requisition.id}/postings?createPosting=1`)
+                            routerNavigate(
+                              `/recruitment/requisitions/${requisition.id}/postings?createPosting=1`,
+                            )
                           }}
                         >
                           <FilePlus2 size={14} /> Tạo bài đăng tuyển dụng
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>Tạo bài đăng tuyển dụng trực tiếp cho yêu cầu này</TooltipContent>
+                      <TooltipContent>
+                        Tạo bài đăng tuyển dụng trực tiếp cho yêu cầu này
+                      </TooltipContent>
                     </Tooltip>
                   )}
                 </div>
@@ -275,7 +306,9 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                       <Briefcase size={14} />
                       <span className="text-xs font-medium">Vị trí tuyển dụng</span>
                     </div>
-                    <div className="text-sm font-semibold text-foreground pl-6">{requisition.title}</div>
+                    <div className="text-sm font-semibold text-foreground pl-6">
+                      {requisition.title}
+                    </div>
                   </div>
 
                   <div className="border border-border rounded-xl p-4 bg-card">
@@ -283,7 +316,9 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                       <Building size={14} />
                       <span className="text-xs font-medium">Phòng ban</span>
                     </div>
-                    <div className="text-sm font-semibold text-foreground pl-6">{requisition.department || "—"}</div>
+                    <div className="text-sm font-semibold text-foreground pl-6">
+                      {requisition.department || "—"}
+                    </div>
                   </div>
 
                   <div className="border border-border rounded-xl p-4 bg-card">
@@ -291,7 +326,9 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                       <Users size={14} />
                       <span className="text-xs font-medium">Số lượng cần tuyển</span>
                     </div>
-                    <div className="text-sm font-semibold text-foreground pl-6">{requisition.headcount} người</div>
+                    <div className="text-sm font-semibold text-foreground pl-6">
+                      {requisition.headcount} người
+                    </div>
                   </div>
 
                   <div className="border border-border rounded-xl p-4 bg-card">
@@ -317,7 +354,9 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                       <UserCheck size={16} />
                       <span className="text-xs">Người yêu cầu</span>
                     </div>
-                    <span className="text-sm font-medium">{requisition.requestedBy?.fullName ?? "—"}</span>
+                    <span className="text-sm font-medium">
+                      {requisition.requestedBy?.fullName ?? "—"}
+                    </span>
                   </div>
 
                   <div className="p-4 flex items-center justify-between">
@@ -330,7 +369,9 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                         {requisition.approver?.fullName ?? "Chưa chỉ định"}
                       </span>
                       {requisition.approver?.position && (
-                        <span className="text-xs text-muted-foreground">{requisition.approver.position}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {requisition.approver.position}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -340,7 +381,9 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                       <Calendar size={16} />
                       <span className="text-xs">Hạn tuyển dụng mong muốn</span>
                     </div>
-                    <span className="text-sm font-medium">{formatDate(requisition.targetHireDate)}</span>
+                    <span className="text-sm font-medium">
+                      {formatDate(requisition.targetHireDate)}
+                    </span>
                   </div>
 
                   {requisition.targetCloseDate && (
@@ -349,7 +392,9 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
                         <Calendar size={16} />
                         <span className="text-xs">Hạn đóng yêu cầu</span>
                       </div>
-                      <span className="text-sm font-medium">{formatDate(requisition.targetCloseDate)}</span>
+                      <span className="text-sm font-medium">
+                        {formatDate(requisition.targetCloseDate)}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -422,7 +467,23 @@ export function RequisitionDetailsDrawer({ requisitionId, onClose, onEdit }: Req
           </div>
         )}
       </TooltipProvider>
-      <RejectRequisitionDialog requisitionCode={requisition?.code ?? ""} open={isRejectOpen} pending={approveMutation.isPending} onOpenChange={setIsRejectOpen} onConfirm={(comment) => { if (requisition) approveMutation.mutate({ id: requisition.id, data: { approved: false, comment } }, { onSuccess: () => { setIsRejectOpen(false); } }); }} />
+      <RejectRequisitionDialog
+        requisitionCode={requisition?.code ?? ""}
+        open={isRejectOpen}
+        pending={approveMutation.isPending}
+        onOpenChange={setIsRejectOpen}
+        onConfirm={(comment) => {
+          if (requisition)
+            approveMutation.mutate(
+              { id: requisition.id, data: { approved: false, comment } },
+              {
+                onSuccess: () => {
+                  setIsRejectOpen(false)
+                },
+              },
+            )
+        }}
+      />
     </AppDrawer>
   )
 }

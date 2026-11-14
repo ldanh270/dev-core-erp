@@ -1,11 +1,11 @@
-import { Request, Response } from "express"
-import { HttpStatusCode } from "@/configs/system/http.config.ts"
-import { ErrorCode } from "@/configs/system/error-code.config.ts"
-import { AuthRequest } from "@/middlewares/auth.middleware.ts"
-import { ICustomQueryService, CustomQuery, CustomQueryType } from "@/types/custom-query.types.ts"
-import { ApiResponse } from "@/types"
-
 import { CUSTOM_QUERY_TYPE } from "@/configs/entities/project.config.ts"
+import { ErrorCode } from "@/configs/system/error-code.config.ts"
+import { HttpStatusCode } from "@/configs/system/http.config.ts"
+import { AuthRequest } from "@/middlewares/auth.middleware.ts"
+import { ApiResponse } from "@/types"
+import { CustomQuery, CustomQueryType, ICustomQueryService } from "@/types/custom-query.types.ts"
+
+import { Request, Response } from "express"
 
 export class CustomQueryController {
   constructor(private service: ICustomQueryService) {}
@@ -47,13 +47,14 @@ export class CustomQueryController {
       const { name, type, projectId, queryData } = req.body
       const newQuery = await this.service.saveQuery(
         { name, type, projectId, queryData },
-        employeeId
+        employeeId,
       )
 
       res.status(HttpStatusCode.CREATED).json({ data: newQuery, error: null })
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Lỗi máy chủ"
-      const statusCode = (error as { statusCode?: number }).statusCode || HttpStatusCode.INTERNAL_SERVER_ERROR
+      const statusCode =
+        (error as { statusCode?: number }).statusCode || HttpStatusCode.INTERNAL_SERVER_ERROR
       res.status(statusCode).json({
         data: null,
         error: { message, code: ErrorCode.BAD_REQUEST },
@@ -77,7 +78,8 @@ export class CustomQueryController {
       res.status(HttpStatusCode.OK).json({ data: success, error: null })
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Lỗi máy chủ"
-      const statusCode = (error as { statusCode?: number }).statusCode || HttpStatusCode.INTERNAL_SERVER_ERROR
+      const statusCode =
+        (error as { statusCode?: number }).statusCode || HttpStatusCode.INTERNAL_SERVER_ERROR
       res.status(statusCode).json({
         data: false,
         error: { message, code: ErrorCode.BAD_REQUEST },

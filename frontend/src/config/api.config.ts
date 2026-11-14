@@ -93,7 +93,8 @@ export const API_ENDPOINTS = {
     BASE: "/roles",
     DETAIL: (id: string) => `/roles/${id}`,
     PERMISSIONS: (id: string) => `/roles/${id}/permissions`,
-    PERMISSION_DETAIL: (id: string, permissionId: string) => `/roles/${id}/permissions/${permissionId}`,
+    PERMISSION_DETAIL: (id: string, permissionId: string) =>
+      `/roles/${id}/permissions/${permissionId}`,
   },
   PERMISSIONS: {
     BASE: "/permissions",

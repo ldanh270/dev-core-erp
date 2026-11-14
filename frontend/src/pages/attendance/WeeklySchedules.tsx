@@ -1,6 +1,6 @@
+import { type DataTableColumn, DataTablePage, StatusPill } from "@/components/common"
 import { ApplyWeeklyScheduleTemplateDialog } from "@/components/features/attendance/weekly-schedules/apply-weekly-schedule-template-dialog"
 import { WeeklyScheduleTemplateDialog } from "@/components/features/attendance/weekly-schedules/weekly-schedule-template-dialog"
-import { DataTablePage, type DataTableColumn, StatusPill } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils"
 import type { IWeeklyScheduleTemplate } from "@/types/attendance.types"
 
 import { useCallback, useMemo, useState } from "react"
+
 import { MoreHorizontal, Plus } from "lucide-react"
 import { toast } from "sonner"
 
@@ -117,10 +118,7 @@ export default function WeeklySchedules() {
               {template.name}
             </button>
             {template.description && (
-              <p
-                className={cn("mt-0.5", TYPOGRAPHY.CELL_SECONDARY)}
-                title={template.description}
-              >
+              <p className={cn("mt-0.5", TYPOGRAPHY.CELL_SECONDARY)} title={template.description}>
                 {template.description}
               </p>
             )}

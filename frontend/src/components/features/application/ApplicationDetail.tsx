@@ -345,7 +345,8 @@ export function ApplicationDetail({
                       ? "success"
                       : application.status === APPLICATION_STATUS.REJECTED
                         ? "danger"
-                        : application.status === APPLICATION_STATUS.PARTNER_PENDING || application.status === APPLICATION_STATUS.PENDING
+                        : application.status === APPLICATION_STATUS.PARTNER_PENDING ||
+                            application.status === APPLICATION_STATUS.PENDING
                           ? "warning"
                           : "neutral"
                   }

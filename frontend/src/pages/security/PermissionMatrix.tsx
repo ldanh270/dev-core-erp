@@ -1,9 +1,4 @@
-import {
-  type DataTableColumn,
-  DataTablePage,
-  PageCard,
-  TYPOGRAPHY,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage, PageCard, TYPOGRAPHY } from "@/components/common"
 import {
   Select,
   SelectContent,
@@ -18,14 +13,7 @@ import type { RouteManifestEntry } from "@/types/system/route.types"
 
 import { useEffect, useMemo, useState } from "react"
 
-import {
-  ArrowUpDown,
-  CheckCircle2,
-  Filter,
-  Lock,
-  ShieldCheck,
-  Unlock,
-} from "lucide-react"
+import { ArrowUpDown, CheckCircle2, Filter, Lock, ShieldCheck, Unlock } from "lucide-react"
 import { toast } from "sonner"
 
 const BADGE_STYLES_MAP = new Map<string, string>([
@@ -43,7 +31,12 @@ const BADGE_STYLES_MAP = new Map<string, string>([
 const renderMethodBadge = (method: string) => {
   const className = BADGE_STYLES_MAP.get(method) ?? "bg-muted text-muted-foreground border-border"
   return (
-    <span className={cn("text-[10px] font-bold px-2.5 py-0.5 rounded-full border shadow-xs inline-block", className)}>
+    <span
+      className={cn(
+        "text-[10px] font-bold px-2.5 py-0.5 rounded-full border shadow-xs inline-block",
+        className,
+      )}
+    >
       {method}
     </span>
   )
@@ -352,7 +345,8 @@ export default function PermissionMatrix() {
       isLoading={loading}
       emptyState={{
         title: "Không tìm thấy API nào",
-        description: "Không có route nào khớp với từ khóa tìm kiếm hoặc bộ lọc phương thức hiện tại.",
+        description:
+          "Không có route nào khớp với từ khóa tìm kiếm hoặc bộ lọc phương thức hiện tại.",
       }}
       pagination={{
         currentPage,

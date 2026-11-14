@@ -1,6 +1,4 @@
-import {
-  CONTRACT_QUERY_KEYS,
-} from "@/config/entities/employee-contract.config"
+import { CONTRACT_QUERY_KEYS } from "@/config/entities/employee-contract.config"
 import {
   createContract,
   deleteContract,
@@ -55,7 +53,10 @@ export function useContract(id: string | null) {
 export function useEmployeeContracts(employeeId: string | null, includeInactive = false) {
   return useQuery({
     queryKey: [...CONTRACT_QUERY_KEYS.EMPLOYEE(employeeId || ""), includeInactive],
-    queryFn: () => (employeeId ? getContractsByEmployee(employeeId, includeInactive) : Promise.reject(new Error("No employee ID"))),
+    queryFn: () =>
+      employeeId
+        ? getContractsByEmployee(employeeId, includeInactive)
+        : Promise.reject(new Error("No employee ID")),
     enabled: !!employeeId,
   })
 }

@@ -1,17 +1,3 @@
-import { useEffect, useState } from "react"
-import {
-  CONTRACT_TYPE_LABELS,
-  CONTRACT_TYPES,
-  type ContractType,
-} from "@/config/entities/employee-contract.config"
-import {
-  useCreateContract,
-  useRenewContract,
-  useTerminateContract,
-  useUpdateContract,
-} from "@/hooks/employee-contract/use-contracts"
-import type { IContract } from "@/types/employee-contract.types"
-
 import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
@@ -32,6 +18,20 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  CONTRACT_TYPES,
+  CONTRACT_TYPE_LABELS,
+  type ContractType,
+} from "@/config/entities/employee-contract.config"
+import {
+  useCreateContract,
+  useRenewContract,
+  useTerminateContract,
+  useUpdateContract,
+} from "@/hooks/employee-contract/use-contracts"
+import type { IContract } from "@/types/employee-contract.types"
+
+import { useEffect, useState } from "react"
 
 export type ContractModalMode = "create" | "edit" | "renew" | "terminate"
 
@@ -43,13 +43,7 @@ interface ContractModalProps {
   contract?: IContract | null
 }
 
-export function ContractModal({
-  isOpen,
-  onClose,
-  employeeId,
-  mode,
-  contract,
-}: ContractModalProps) {
+export function ContractModal({ isOpen, onClose, employeeId, mode, contract }: ContractModalProps) {
   const createMutation = useCreateContract()
   const updateMutation = useUpdateContract()
   const terminateMutation = useTerminateContract()
@@ -103,7 +97,7 @@ export function ContractModal({
       setStartDate(
         contract.endDate
           ? new Date(contract.endDate).toISOString().slice(0, 10)
-          : new Date().toISOString().slice(0, 10)
+          : new Date().toISOString().slice(0, 10),
       )
       setEndDate("")
       setTrialEndDate("")
@@ -114,10 +108,12 @@ export function ContractModal({
       setContractType(contract.contractType)
       setContractNumber(contract.contractNumber)
       setTitle(contract.title || "")
-      setStartDate(contract.startDate ? new Date(contract.startDate).toISOString().slice(0, 10) : "")
+      setStartDate(
+        contract.startDate ? new Date(contract.startDate).toISOString().slice(0, 10) : "",
+      )
       setEndDate(contract.endDate ? new Date(contract.endDate).toISOString().slice(0, 10) : "")
       setTrialEndDate(
-        contract.trialEndDate ? new Date(contract.trialEndDate).toISOString().slice(0, 10) : ""
+        contract.trialEndDate ? new Date(contract.trialEndDate).toISOString().slice(0, 10) : "",
       )
       setSalary(String(contract.salary || ""))
       setProbationSalary(String(contract.probationSalary || ""))
@@ -199,7 +195,14 @@ export function ContractModal({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) { onClose(); } }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          onClose()
+        }
+      }}
+    >
       <DialogContent className="sm:max-w-[540px] rounded-xl bg-card border-border">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-foreground">
@@ -212,7 +215,12 @@ export function ContractModal({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={(e) => { void handleSubmit(e); }} className="space-y-4 py-2">
+        <form
+          onSubmit={(e) => {
+            void handleSubmit(e)
+          }}
+          className="space-y-4 py-2"
+        >
           {mode === "terminate" ? (
             <div className="space-y-4">
               <div className="space-y-2">
@@ -222,7 +230,9 @@ export function ContractModal({
                 <DatePicker
                   id="terminationDate"
                   value={terminationDate || null}
-                  onChange={(val) => { setTerminationDate(val || ""); }}
+                  onChange={(val) => {
+                    setTerminationDate(val || "")
+                  }}
                   placeholder="Chọn ngày chấm dứt..."
                 />
               </div>
@@ -235,7 +245,9 @@ export function ContractModal({
                   id="terminationReason"
                   placeholder="Nhập lý do chấm dứt hợp đồng..."
                   value={terminationReason}
-                  onChange={(e) => { setTerminationReason(e.target.value); }}
+                  onChange={(e) => {
+                    setTerminationReason(e.target.value)
+                  }}
                   className="rounded-xl border-border resize-none"
                   rows={3}
                   required
@@ -250,7 +262,9 @@ export function ContractModal({
                 </Label>
                 <Select
                   value={contractType}
-                  onValueChange={(val) => { setContractType(val as ContractType); }}
+                  onValueChange={(val) => {
+                    setContractType(val as ContractType)
+                  }}
                 >
                   <SelectTrigger className="rounded-full">
                     <SelectValue placeholder="Chọn loại HĐ" />
@@ -272,7 +286,9 @@ export function ContractModal({
                 <Input
                   id="contractNumber"
                   value={contractNumber}
-                  onChange={(e) => { setContractNumber(e.target.value); }}
+                  onChange={(e) => {
+                    setContractNumber(e.target.value)
+                  }}
                   placeholder="HD-XXXX"
                   className="rounded-full"
                   required
@@ -286,7 +302,9 @@ export function ContractModal({
                 <Input
                   id="title"
                   value={title}
-                  onChange={(e) => { setTitle(e.target.value); }}
+                  onChange={(e) => {
+                    setTitle(e.target.value)
+                  }}
                   placeholder="VD: Hợp đồng lao động chính thức"
                   className="rounded-full"
                 />
@@ -299,7 +317,9 @@ export function ContractModal({
                 <DatePicker
                   id="startDate"
                   value={startDate || null}
-                  onChange={(val) => { setStartDate(val || ""); }}
+                  onChange={(val) => {
+                    setStartDate(val || "")
+                  }}
                   placeholder="Chọn ngày bắt đầu..."
                 />
               </div>
@@ -312,7 +332,9 @@ export function ContractModal({
                   id="endDate"
                   value={endDate || null}
                   minDate={startDate}
-                  onChange={(val) => { setEndDate(val || ""); }}
+                  onChange={(val) => {
+                    setEndDate(val || "")
+                  }}
                   placeholder="Chọn ngày kết thúc..."
                 />
               </div>
@@ -325,7 +347,9 @@ export function ContractModal({
                   <DatePicker
                     id="trialEndDate"
                     value={trialEndDate || null}
-                    onChange={(val) => { setTrialEndDate(val || ""); }}
+                    onChange={(val) => {
+                      setTrialEndDate(val || "")
+                    }}
                     placeholder="Chọn ngày kết thúc thử việc..."
                   />
                 </div>
@@ -339,7 +363,9 @@ export function ContractModal({
                   id="salary"
                   type="number"
                   value={salary}
-                  onChange={(e) => { setSalary(e.target.value); }}
+                  onChange={(e) => {
+                    setSalary(e.target.value)
+                  }}
                   placeholder="0"
                   className="rounded-full"
                   required
@@ -355,7 +381,9 @@ export function ContractModal({
                     id="probationSalary"
                     type="number"
                     value={probationSalary}
-                    onChange={(e) => { setProbationSalary(e.target.value); }}
+                    onChange={(e) => {
+                      setProbationSalary(e.target.value)
+                    }}
                     placeholder="0"
                     className="rounded-full"
                   />
@@ -370,7 +398,9 @@ export function ContractModal({
                   id="note"
                   placeholder="Ghi chú thêm về điều khoản..."
                   value={note}
-                  onChange={(e) => { setNote(e.target.value) }}
+                  onChange={(e) => {
+                    setNote(e.target.value)
+                  }}
                   className="rounded-xl border-border resize-none"
                   rows={2}
                 />
@@ -394,7 +424,11 @@ export function ContractModal({
               className="rounded-full"
               disabled={isPending}
             >
-              {isPending ? "Đang xử lý..." : mode === "terminate" ? "Xác nhận chấm dứt" : "Lưu hợp đồng"}
+              {isPending
+                ? "Đang xử lý..."
+                : mode === "terminate"
+                  ? "Xác nhận chấm dứt"
+                  : "Lưu hợp đồng"}
             </Button>
           </DialogFooter>
         </form>

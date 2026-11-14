@@ -37,7 +37,9 @@ async function callGeminiFallback(prompt: string, isJson: boolean): Promise<stri
 
   // 30 seconds timeout for fallback Gemini request
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => { controller.abort() }, 30000)
+  const timeoutId = setTimeout(() => {
+    controller.abort()
+  }, 30000)
 
   try {
     const response = await fetch(url, {
@@ -111,7 +113,9 @@ export const aiClient = {
 
     // Set 35 seconds timeout for local AI server request
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => { controller.abort() }, 35000)
+    const timeoutId = setTimeout(() => {
+      controller.abort()
+    }, 35000)
 
     try {
       console.log(`Calling AI server at ${baseURL} using model ${model}...`)
@@ -206,7 +210,9 @@ export const aiClient = {
 
     // Set 35 seconds timeout for local AI server request
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => { controller.abort() }, 35000)
+    const timeoutId = setTimeout(() => {
+      controller.abort()
+    }, 35000)
 
     try {
       console.log(`Calling AI server at ${baseURL} using model ${model}...`)

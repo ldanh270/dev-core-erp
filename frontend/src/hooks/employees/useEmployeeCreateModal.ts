@@ -1,18 +1,19 @@
 import {
   EMPLOYEE_STATUSES,
   EMPLOYMENT_CATEGORY_TYPES,
-  WORK_SCHEDULE_TYPES,
   WORK_SCHEDULE_TYPE,
+  WORK_SCHEDULE_TYPES,
 } from "@/config/entities/employee.config"
+import { useRoles } from "@/hooks/security/queries/use-security-query"
 import type { CreateEmployeeDto } from "@/types/employee.types"
 
-import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
+
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { useRoles } from "@/hooks/security/queries/use-security-query"
 import { useCreateEmployee } from "./queries/useEmployeeQuery"
 
 const createSchema = z.object({

@@ -85,7 +85,9 @@ export interface IPartTimeAvailabilityRepository {
     weekStart: Date,
   ): Promise<IPartTimeWeeklyAvailability | null>
   listByWeek(weekStart: Date): Promise<IPartTimeWeeklyAvailability[]>
-  upsert(data: IUpsertPartTimeAvailabilityDTO & { employeeId: string }): Promise<IPartTimeWeeklyAvailability>
+  upsert(
+    data: IUpsertPartTimeAvailabilityDTO & { employeeId: string },
+  ): Promise<IPartTimeWeeklyAvailability>
   findById(id: string): Promise<IPartTimeWeeklyAvailability | null>
   updateStatus(
     id: string,
@@ -186,4 +188,3 @@ export const partTimeAvailabilityInclude = {
     },
   },
 } as const
-

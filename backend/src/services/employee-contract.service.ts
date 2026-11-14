@@ -1,6 +1,7 @@
 import { CONTRACT_STATUS } from "@/configs/entities/employee-contract.config.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
+import { IEmployeeContractRepository } from "@/repositories/employee-contract.repository.ts"
 import {
   ContractListQuery,
   CreateContractDto,
@@ -10,10 +11,8 @@ import {
   TerminateContractDto,
   UpdateContractDto,
 } from "@/types/employee-contract.types.ts"
-import { AppError } from "@/utils/error.util.ts"
 import { handleDbUniqueError } from "@/utils/db-error.util.ts"
-
-import { IEmployeeContractRepository } from "@/repositories/employee-contract.repository.ts"
+import { AppError } from "@/utils/error.util.ts"
 
 const CONTRACT_UNIQUE_FIELD_MAP: Record<string, string> = {
   contractNumber: "Contract number",
@@ -232,7 +231,11 @@ export class EmployeeContractService implements IEmployeeContractService {
    * @returns Updated contract
    * @throws {AppError} If contract not found (404) or contract is inactive (400)
    */
-  async updateContract(id: string, data: UpdateContractDto, actorId: string): Promise<EmployeeContract> {
+  async updateContract(
+    id: string,
+    data: UpdateContractDto,
+    actorId: string,
+  ): Promise<EmployeeContract> {
     const existing = await this.repository.findById(id)
     if (!existing) {
       throw new AppError("Contract not found", HttpStatusCode.NOT_FOUND, ErrorLayer.SERVICE)
@@ -250,7 +253,11 @@ export class EmployeeContractService implements IEmployeeContractService {
     try {
       const updated = await this.repository.update(id, data, actorId)
       if (!updated) {
-        throw new AppError("Failed to update contract", HttpStatusCode.INTERNAL_SERVER_ERROR, ErrorLayer.SERVICE)
+        throw new AppError(
+          "Failed to update contract",
+          HttpStatusCode.INTERNAL_SERVER_ERROR,
+          ErrorLayer.SERVICE,
+        )
       }
       return updated
     } catch (error) {
@@ -277,12 +284,20 @@ export class EmployeeContractService implements IEmployeeContractService {
     }
 
     if (existing.status === "renewed") {
-      throw new AppError("Cannot terminate renewed contract", HttpStatusCode.BAD_REQUEST, ErrorLayer.SERVICE)
+      throw new AppError(
+        "Cannot terminate renewed contract",
+        HttpStatusCode.BAD_REQUEST,
+        ErrorLayer.SERVICE,
+      )
     }
 
     const terminated = await this.repository.terminate(id, data)
     if (!terminated) {
-      throw new AppError("Failed to terminate contract", HttpStatusCode.INTERNAL_SERVER_ERROR, ErrorLayer.SERVICE)
+      throw new AppError(
+        "Failed to terminate contract",
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
+        ErrorLayer.SERVICE,
+      )
     }
     return terminated
   }
@@ -296,7 +311,11 @@ export class EmployeeContractService implements IEmployeeContractService {
    * @returns Newly created contract record
    * @throws {AppError} If contract not found (404) or contract status cannot be renewed (400)
    */
-  async renewContract(id: string, data: RenewContractDto, actorId: string): Promise<EmployeeContract> {
+  async renewContract(
+    id: string,
+    data: RenewContractDto,
+    actorId: string,
+  ): Promise<EmployeeContract> {
     const existing = await this.repository.findById(id)
     if (!existing) {
       throw new AppError("Contract not found", HttpStatusCode.NOT_FOUND, ErrorLayer.SERVICE)
@@ -331,7 +350,11 @@ export class EmployeeContractService implements IEmployeeContractService {
     }
 
     if (existing.status === "active") {
-      throw new AppError("Cannot delete active contract. Terminate it first.", HttpStatusCode.BAD_REQUEST, ErrorLayer.SERVICE)
+      throw new AppError(
+        "Cannot delete active contract. Terminate it first.",
+        HttpStatusCode.BAD_REQUEST,
+        ErrorLayer.SERVICE,
+      )
     }
 
     return this.repository.softDelete(id)

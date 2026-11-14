@@ -380,34 +380,25 @@
   "indexes": [
     {
       "name": "IX_EmployeeContract_contractNumber",
-      "columns": [
-        "contractNumber"
-      ],
+      "columns": ["contractNumber"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_EmployeeContract_employeeId",
-      "columns": [
-        "employeeId"
-      ],
+      "columns": ["employeeId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_EmployeeContract_status_endDate",
-      "columns": [
-        "status",
-        "endDate"
-      ],
+      "columns": ["status", "endDate"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_EmployeeContract",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -417,45 +408,29 @@
       "virtualName": "employee",
       "targetModel": "Employee",
       "relationName": "EmployeeContracts",
-      "foreignKeyFields": [
-        "employeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "createdBy",
       "targetModel": "Employee",
       "relationName": "ContractCreator",
-      "foreignKeyFields": [
-        "createdById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["createdById"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "updatedBy",
       "targetModel": "Employee",
       "relationName": "ContractUpdater",
-      "foreignKeyFields": [
-        "updatedById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["updatedById"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "renewedFrom",
       "targetModel": "EmployeeContract",
       "relationName": "ContractRenewal",
-      "foreignKeyFields": [
-        "renewedFromId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["renewedFromId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "renewedTo",

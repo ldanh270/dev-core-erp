@@ -29,7 +29,13 @@ const availability = (
   createdAt: "",
   updatedAt: "",
   employee: { id: employeeId, fullName: employeeId, email: "", employeeType: "part_time" },
-  days: [{ dayOfWeek: 1, isBusyAllDay: false, slots: slots.map((slot, sortOrder) => ({ ...slot, sortOrder })) }],
+  days: [
+    {
+      dayOfWeek: 1,
+      isBusyAllDay: false,
+      slots: slots.map((slot, sortOrder) => ({ ...slot, sortOrder })),
+    },
+  ],
 })
 
 describe("buildPartTimeShiftSuggestions", () => {
@@ -46,23 +52,42 @@ describe("buildPartTimeShiftSuggestions", () => {
   it("V2/V3 picks eligible highest reliability employee", () => {
     const result = buildPartTimeShiftSuggestions({
       weekStart: "2026-07-20",
-      availabilities: [availability("a1", "e1", [{ startTime: 480, endTime: 720 }]), availability("a2", "e2", [{ startTime: 480, endTime: 720 }])],
-      scoresByEmployeeId: new Map([["e1", { score: 70, reasons: [] }], ["e2", { score: 95, reasons: [] }]]),
+      availabilities: [
+        availability("a1", "e1", [{ startTime: 480, endTime: 720 }]),
+        availability("a2", "e2", [{ startTime: 480, endTime: 720 }]),
+      ],
+      scoresByEmployeeId: new Map([
+        ["e1", { score: 70, reasons: [] }],
+        ["e2", { score: 95, reasons: [] }],
+      ]),
       coverageRequirements: [requirement],
       assignedMinutesByEmployeeId: new Map(),
     })
     expect(result.suggestions).toHaveLength(1)
     expect(result.suggestions[0]?.employeeId).toBe("e2")
-    expect(result.coverage[0]).toMatchObject({ requiredCount: 1, assignedCount: 1, coverageScore: 100 })
+    expect(result.coverage[0]).toMatchObject({
+      requiredCount: 1,
+      assignedCount: 1,
+      coverageScore: 100,
+    })
   })
 
   it("V3 tie-breaks equal score by fewer assigned minutes", () => {
     const result = buildPartTimeShiftSuggestions({
       weekStart: "2026-07-20",
-      availabilities: [availability("a1", "e1", [{ startTime: 480, endTime: 720 }]), availability("a2", "e2", [{ startTime: 480, endTime: 720 }])],
-      scoresByEmployeeId: new Map([["e1", { score: 80, reasons: [] }], ["e2", { score: 80, reasons: [] }]]),
+      availabilities: [
+        availability("a1", "e1", [{ startTime: 480, endTime: 720 }]),
+        availability("a2", "e2", [{ startTime: 480, endTime: 720 }]),
+      ],
+      scoresByEmployeeId: new Map([
+        ["e1", { score: 80, reasons: [] }],
+        ["e2", { score: 80, reasons: [] }],
+      ]),
       coverageRequirements: [requirement],
-      assignedMinutesByEmployeeId: new Map([["e1", 480], ["e2", 120]]),
+      assignedMinutesByEmployeeId: new Map([
+        ["e1", 480],
+        ["e2", 120],
+      ]),
     })
     expect(result.suggestions[0]?.employeeId).toBe("e2")
   })
@@ -84,7 +109,10 @@ describe("buildPartTimeShiftSuggestions", () => {
       weekStart: "2026-07-20",
       availabilities: [availability("a1", "e1", [{ startTime: 480, endTime: 1020 }])],
       scoresByEmployeeId: new Map([["e1", { score: 100, reasons: [] }]]),
-      coverageRequirements: [requirement, { ...requirement, shiftId: "overlap", startTime: 600, endTime: 840 }],
+      coverageRequirements: [
+        requirement,
+        { ...requirement, shiftId: "overlap", startTime: 600, endTime: 840 },
+      ],
       assignedMinutesByEmployeeId: new Map(),
     })
     expect(result.suggestions[0]?.assignments).toHaveLength(1)

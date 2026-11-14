@@ -1,11 +1,11 @@
 import { PERMISSION_CODE } from "@/configs/entities/permission.config.ts"
 import { CapacityCopilotController } from "@/controllers/capacity-copilot.controller.ts"
+import { capacityCopilotService } from "@/libs/capacity-copilot-runtime.ts"
 /**
  * Express routes for project capacity forecasting.
  */
 import { authenticate } from "@/middlewares/auth.middleware.ts"
 import { requirePermission } from "@/middlewares/permission.middleware.ts"
-import { capacityCopilotService } from "@/libs/capacity-copilot-runtime.ts"
 
 import express from "express"
 

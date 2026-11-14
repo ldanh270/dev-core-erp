@@ -1,7 +1,11 @@
-import { prisma } from "@/libs/database"
-import { Prisma, type PrismaClient, $Enums } from "@prisma/client"
-import type { CreateBackgroundCheckInput, UpdateBackgroundCheckInput } from "@/types/recruitment.types"
 import { RECRUITMENT_APPLICATION_STATUS } from "@/configs/entities/recruitment.config"
+import { prisma } from "@/libs/database"
+import type {
+  CreateBackgroundCheckInput,
+  UpdateBackgroundCheckInput,
+} from "@/types/recruitment.types"
+
+import { $Enums, Prisma, type PrismaClient } from "@prisma/client"
 
 export class BackgroundCheckRepository {
   constructor(private readonly db: PrismaClient = prisma) {}
@@ -10,7 +14,10 @@ export class BackgroundCheckRepository {
     return this.createForOffer(data.offerId, data.group)
   }
 
-  async createForOffer(offerId: string, group: CreateBackgroundCheckInput["group"]): Promise<{ id: string }> {
+  async createForOffer(
+    offerId: string,
+    group: CreateBackgroundCheckInput["group"],
+  ): Promise<{ id: string }> {
     const offer = await this.db.recruitmentOffer.findUnique({
       where: { id: offerId },
       select: { candidateId: true },
@@ -111,14 +118,19 @@ export class BackgroundCheckRepository {
 
     if (data.idVerified !== undefined) updateData.idVerified = data.idVerified
     if (data.addressVerified !== undefined) updateData.addressVerified = data.addressVerified
-    if (data.criminalRecordCheck !== undefined) updateData.criminalRecordCheck = data.criminalRecordCheck
+    if (data.criminalRecordCheck !== undefined)
+      updateData.criminalRecordCheck = data.criminalRecordCheck
     if (data.legalStatusCheck !== undefined) updateData.legalStatusCheck = data.legalStatusCheck
-    if (data.certificationVerified !== undefined) updateData.certificationVerified = data.certificationVerified
-    if (data.employmentHistoryVerified !== undefined) updateData.employmentHistoryVerified = data.employmentHistoryVerified
-    if (data.financialCheckCompleted !== undefined) updateData.financialCheckCompleted = data.financialCheckCompleted
+    if (data.certificationVerified !== undefined)
+      updateData.certificationVerified = data.certificationVerified
+    if (data.employmentHistoryVerified !== undefined)
+      updateData.employmentHistoryVerified = data.employmentHistoryVerified
+    if (data.financialCheckCompleted !== undefined)
+      updateData.financialCheckCompleted = data.financialCheckCompleted
     if (data.creditScoreCheck !== undefined) updateData.creditScoreCheck = data.creditScoreCheck
     if (data.failReason !== undefined) updateData.failReason = data.failReason
-    if (data.documents !== undefined) updateData.documents = (data.documents as unknown) as Prisma.InputJsonValue
+    if (data.documents !== undefined)
+      updateData.documents = data.documents as unknown as Prisma.InputJsonValue
     if (checkedById) updateData.checkedBy = { connect: { id: checkedById } }
 
     return this.db.backgroundCheck.update({
@@ -148,7 +160,8 @@ export class BackgroundCheckRepository {
         where: { id },
         include: { offer: { select: { applicationId: true } } },
       })
-      if (!bgc || bgc.status !== "in_progress") throw new Error("Background check must be in progress to complete")
+      if (!bgc || bgc.status !== "in_progress")
+        throw new Error("Background check must be in progress to complete")
 
       const nextApplicationStatus = passed
         ? RECRUITMENT_APPLICATION_STATUS.PENDING_ONBOARDING
@@ -160,7 +173,9 @@ export class BackgroundCheckRepository {
         },
         data: {
           status: nextApplicationStatus,
-          ...(passed ? {} : { rejectReason: `Background check failed: ${failReason ?? "Unknown reason"}` }),
+          ...(passed
+            ? {}
+            : { rejectReason: `Background check failed: ${failReason ?? "Unknown reason"}` }),
         },
       })
       if (application.count !== 1) {
@@ -177,7 +192,13 @@ export class BackgroundCheckRepository {
           checkedById: completedById,
         },
         include: {
-          offer: { include: { application: { include: { candidate: { select: { id: true, fullName: true, email: true } } } } } },
+          offer: {
+            include: {
+              application: {
+                include: { candidate: { select: { id: true, fullName: true, email: true } } },
+              },
+            },
+          },
         },
       })
     })
@@ -204,11 +225,11 @@ export class BackgroundCheckRepository {
       total,
       byStatus: byStatus.reduce(
         (acc, { status, _count }) => ({ ...acc, [status]: _count.id }),
-        {} as Record<string, number>
+        {} as Record<string, number>,
       ),
       byGroup: byGroup.reduce(
         (acc, { group, _count }) => ({ ...acc, [group]: _count.id }),
-        {} as Record<string, number>
+        {} as Record<string, number>,
       ),
     }
   }

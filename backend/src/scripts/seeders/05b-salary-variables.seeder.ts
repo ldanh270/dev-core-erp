@@ -1,5 +1,5 @@
-import { prisma } from "@/libs/database.ts"
 import { PART_TIME_PAYROLL_VARIABLE_SEED } from "@/configs/entities/part-time-payroll.config.ts"
+import { prisma } from "@/libs/database.ts"
 
 import { SeedContext } from "./seed-context.ts"
 import { ISeeder } from "./seeder.interface.ts"

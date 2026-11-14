@@ -57,18 +57,13 @@
   "indexes": [
     {
       "name": "IX_WeeklyScheduleTemplateWeek_templateId_weekIndex",
-      "columns": [
-        "templateId",
-        "weekIndex"
-      ],
+      "columns": ["templateId", "weekIndex"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "PK_WeeklyScheduleTemplateWeek",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -78,12 +73,8 @@
       "virtualName": "template",
       "targetModel": "WeeklyScheduleTemplate",
       "relationName": null,
-      "foreignKeyFields": [
-        "templateId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["templateId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

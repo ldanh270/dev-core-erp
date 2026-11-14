@@ -1,8 +1,14 @@
-import { prisma } from "@/libs/database"
-import { Prisma, type PostingStatus, type PrismaClient, type RecruitmentChannel } from "@prisma/client"
-import type { UpdateJobPostingInput } from "@/schemas/recruitment.schema"
 import { RECRUITMENT_PIPELINE_STAGE_TEMPLATE } from "@/configs/entities/recruitment.config"
 import type { GoogleFormFieldDefinition } from "@/configs/rules/google-form.config"
+import { prisma } from "@/libs/database"
+import type { UpdateJobPostingInput } from "@/schemas/recruitment.schema"
+
+import {
+  type PostingStatus,
+  Prisma,
+  type PrismaClient,
+  type RecruitmentChannel,
+} from "@prisma/client"
 
 export interface ListJobPostingsQuery {
   requisitionId?: string
@@ -15,7 +21,10 @@ export interface ListJobPostingsQuery {
 export class JobPostingRepository {
   constructor(private readonly db: PrismaClient = prisma) {}
 
-  create(data: Prisma.JobPostingUncheckedCreateInput, fields: readonly GoogleFormFieldDefinition[]) {
+  create(
+    data: Prisma.JobPostingUncheckedCreateInput,
+    fields: readonly GoogleFormFieldDefinition[],
+  ) {
     return this.db.$transaction(async (tx) => {
       const posting = await tx.jobPosting.create({ data })
       await tx.postingFieldSnapshot.createMany({
@@ -39,21 +48,56 @@ export class JobPostingRepository {
   }
 
   listPipelineStages(postingId: string) {
-    return this.db.recruitmentPipelineStage.findMany({ where: { postingId }, orderBy: { position: "asc" } })
-  }
-
-  createPipelineStage(postingId: string, data: { name: string; color?: string; isDefault?: boolean; isCompleted?: boolean }) {
-    return this.db.$transaction(async (tx) => {
-      if (data.isDefault) await tx.recruitmentPipelineStage.updateMany({ where: { postingId }, data: { isDefault: false } })
-      const max = await tx.recruitmentPipelineStage.aggregate({ where: { postingId }, _max: { position: true } })
-      return tx.recruitmentPipelineStage.create({ data: { postingId, name: data.name, color: data.color ?? "#6366F1", position: (max._max.position ?? -1) + 1, isDefault: data.isDefault ?? false, isCompleted: data.isCompleted ?? false } })
+    return this.db.recruitmentPipelineStage.findMany({
+      where: { postingId },
+      orderBy: { position: "asc" },
     })
   }
 
-  updatePipelineStage(id: string, data: { name?: string; color?: string; position?: number; isDefault?: boolean; isCompleted?: boolean }) {
+  createPipelineStage(
+    postingId: string,
+    data: { name: string; color?: string; isDefault?: boolean; isCompleted?: boolean },
+  ) {
+    return this.db.$transaction(async (tx) => {
+      if (data.isDefault)
+        await tx.recruitmentPipelineStage.updateMany({
+          where: { postingId },
+          data: { isDefault: false },
+        })
+      const max = await tx.recruitmentPipelineStage.aggregate({
+        where: { postingId },
+        _max: { position: true },
+      })
+      return tx.recruitmentPipelineStage.create({
+        data: {
+          postingId,
+          name: data.name,
+          color: data.color ?? "#6366F1",
+          position: (max._max.position ?? -1) + 1,
+          isDefault: data.isDefault ?? false,
+          isCompleted: data.isCompleted ?? false,
+        },
+      })
+    })
+  }
+
+  updatePipelineStage(
+    id: string,
+    data: {
+      name?: string
+      color?: string
+      position?: number
+      isDefault?: boolean
+      isCompleted?: boolean
+    },
+  ) {
     return this.db.$transaction(async (tx) => {
       const stage = await tx.recruitmentPipelineStage.findUniqueOrThrow({ where: { id } })
-      if (data.isDefault) await tx.recruitmentPipelineStage.updateMany({ where: { postingId: stage.postingId }, data: { isDefault: false } })
+      if (data.isDefault)
+        await tx.recruitmentPipelineStage.updateMany({
+          where: { postingId: stage.postingId },
+          data: { isDefault: false },
+        })
       return tx.recruitmentPipelineStage.update({ where: { id }, data })
     })
   }
@@ -67,7 +111,10 @@ export class JobPostingRepository {
       if (stage.id === fallback.id || stage.postingId !== fallback.postingId) {
         throw new Error("Giai đoạn thay thế phải thuộc cùng bài đăng tuyển dụng")
       }
-      await tx.recruitmentApplication.updateMany({ where: { pipelineStageId: id }, data: { pipelineStageId: fallbackStageId } })
+      await tx.recruitmentApplication.updateMany({
+        where: { pipelineStageId: id },
+        data: { pipelineStageId: fallbackStageId },
+      })
       await tx.recruitmentPipelineStage.delete({ where: { id } })
       const remaining = await tx.recruitmentPipelineStage.findMany({
         where: { postingId: stage.postingId },
@@ -76,8 +123,19 @@ export class JobPostingRepository {
       })
       const maxPosition = remaining.reduce((max, item) => Math.max(max, item.position), -1)
       const temporaryOffset = maxPosition + remaining.length + 1
-      await Promise.all(remaining.map((item, position) => tx.recruitmentPipelineStage.update({ where: { id: item.id }, data: { position: temporaryOffset + position } })))
-      await Promise.all(remaining.map((item, position) => tx.recruitmentPipelineStage.update({ where: { id: item.id }, data: { position } })))
+      await Promise.all(
+        remaining.map((item, position) =>
+          tx.recruitmentPipelineStage.update({
+            where: { id: item.id },
+            data: { position: temporaryOffset + position },
+          }),
+        ),
+      )
+      await Promise.all(
+        remaining.map((item, position) =>
+          tx.recruitmentPipelineStage.update({ where: { id: item.id }, data: { position } }),
+        ),
+      )
     })
   }
 
@@ -87,14 +145,35 @@ export class JobPostingRepository {
         where: { postingId },
         select: { id: true },
       })
-      if (stages.length !== stageIds.length || new Set(stageIds).size !== stageIds.length || stages.some((stage) => !stageIds.includes(stage.id))) {
+      if (
+        stages.length !== stageIds.length ||
+        new Set(stageIds).size !== stageIds.length ||
+        stages.some((stage) => !stageIds.includes(stage.id))
+      ) {
         throw new Error("Danh sách thứ tự giai đoạn không hợp lệ")
       }
-      const currentMax = await tx.recruitmentPipelineStage.aggregate({ where: { postingId }, _max: { position: true } })
+      const currentMax = await tx.recruitmentPipelineStage.aggregate({
+        where: { postingId },
+        _max: { position: true },
+      })
       const temporaryOffset = (currentMax._max.position ?? -1) + stages.length + 1
-      await Promise.all(stages.map((stage, index) => tx.recruitmentPipelineStage.update({ where: { id: stage.id }, data: { position: temporaryOffset + index } })))
-      await Promise.all(stageIds.map((id, position) => tx.recruitmentPipelineStage.update({ where: { id }, data: { position } })))
-      return tx.recruitmentPipelineStage.findMany({ where: { postingId }, orderBy: { position: "asc" } })
+      await Promise.all(
+        stages.map((stage, index) =>
+          tx.recruitmentPipelineStage.update({
+            where: { id: stage.id },
+            data: { position: temporaryOffset + index },
+          }),
+        ),
+      )
+      await Promise.all(
+        stageIds.map((id, position) =>
+          tx.recruitmentPipelineStage.update({ where: { id }, data: { position } }),
+        ),
+      )
+      return tx.recruitmentPipelineStage.findMany({
+        where: { postingId },
+        orderBy: { position: "asc" },
+      })
     })
   }
 
@@ -104,8 +183,12 @@ export class JobPostingRepository {
         tx.recruitmentApplication.findUniqueOrThrow({ where: { id: applicationId } }),
         tx.recruitmentPipelineStage.findUniqueOrThrow({ where: { id: pipelineStageId } }),
       ])
-      if (application.postingId !== stage.postingId) throw new Error("Ứng viên và giai đoạn không thuộc cùng bài đăng")
-      return tx.recruitmentApplication.update({ where: { id: applicationId }, data: { pipelineStageId } })
+      if (application.postingId !== stage.postingId)
+        throw new Error("Ứng viên và giai đoạn không thuộc cùng bài đăng")
+      return tx.recruitmentApplication.update({
+        where: { id: applicationId },
+        data: { pipelineStageId },
+      })
     })
   }
 
@@ -131,7 +214,9 @@ export class JobPostingRepository {
           sourceRef: posting.sourceCode,
         },
         include: {
-          candidate: { select: { id: true, fullName: true, email: true, phone: true, avatarUrl: true } },
+          candidate: {
+            select: { id: true, fullName: true, email: true, phone: true, avatarUrl: true },
+          },
           pipelineStage: { select: { id: true, name: true, color: true, position: true } },
         },
       })
@@ -212,10 +297,12 @@ export class JobPostingRepository {
     mappings: ReadonlyArray<{ fieldKey: string; externalQuestionId: string }>,
   ) {
     return this.db.$transaction(
-      mappings.map((mapping) => this.db.postingFieldSnapshot.update({
-        where: { postingId_fieldKey: { postingId, fieldKey: mapping.fieldKey } },
-        data: { externalQuestionId: mapping.externalQuestionId },
-      })),
+      mappings.map((mapping) =>
+        this.db.postingFieldSnapshot.update({
+          where: { postingId_fieldKey: { postingId, fieldKey: mapping.fieldKey } },
+          data: { externalQuestionId: mapping.externalQuestionId },
+        }),
+      ),
     )
   }
 

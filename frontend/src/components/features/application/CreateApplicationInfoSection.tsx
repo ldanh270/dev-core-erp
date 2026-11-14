@@ -82,7 +82,7 @@ export function CreateApplicationInfoSection({
               <DatePicker
                 value={form.startDate || null}
                 onChange={(val) => {
-                  set("startDate", val || "");
+                  set("startDate", val || "")
                 }}
                 placeholder="Chọn ngày thôi việc..."
                 size="sm"

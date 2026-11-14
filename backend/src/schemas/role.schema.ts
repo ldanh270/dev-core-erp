@@ -1,4 +1,5 @@
 import { SORT_ORDER_VALUES } from "@/configs/system/db.config.ts"
+
 import { z } from "zod"
 
 /**
@@ -19,7 +20,12 @@ export type CreateRoleSchemaType = z.infer<typeof createRoleSchema>
  */
 export const updateRoleSchema = z
   .object({
-    name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name too long").trim().optional(),
+    name: z
+      .string()
+      .min(2, "Name must be at least 2 characters")
+      .max(100, "Name too long")
+      .trim()
+      .optional(),
     description: z.string().max(255, "Description too long").optional().nullable(),
     isActive: z.boolean().optional(),
     isDefault: z.boolean().optional(),

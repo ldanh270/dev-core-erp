@@ -3,12 +3,6 @@
  * Creates pending SpentTime rows — lead must approve before payroll includes them.
  * workTimeType=overtime applies OT multiplier; backend blocks edits after approval.
  */
-import {
-  SPENT_TIME_ACTIVITIES,
-  SPENT_TIME_WORK_TIME_TYPES,
-  SPENT_TIME_ACTIVITY,
-  SPENT_TIME_WORK_TIME_TYPE,
-} from "@/config/entities/project.config"
 import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
@@ -28,10 +22,18 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  SPENT_TIME_ACTIVITIES,
+  SPENT_TIME_ACTIVITY,
+  SPENT_TIME_WORK_TIME_TYPE,
+  SPENT_TIME_WORK_TIME_TYPES,
+} from "@/config/entities/project.config"
 import { taskApi } from "@/lib/api/task.api"
 import type { SpentTime, SpentTimeActivity, SpentTimeWorkTimeType } from "@/types/spent-time.types"
+
+import React, { startTransition, useEffect, useState } from "react"
+
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import React, { startTransition, useState, useEffect } from "react"
 
 interface LogTimeModalProps {
   open: boolean
@@ -58,7 +60,9 @@ export default function LogTimeModal({
   const [date, setDate] = useState(() => new Date().toISOString().split("T")[0])
   const [hours, setHours] = useState("")
   const [activity, setActivity] = useState<SpentTimeActivity>(SPENT_TIME_ACTIVITY.DEVELOP)
-  const [workTimeType, setWorkTimeType] = useState<SpentTimeWorkTimeType>(SPENT_TIME_WORK_TIME_TYPE.WORKING_DAY)
+  const [workTimeType, setWorkTimeType] = useState<SpentTimeWorkTimeType>(
+    SPENT_TIME_WORK_TIME_TYPE.WORKING_DAY,
+  )
   const [comment, setComment] = useState("")
   const [error, setError] = useState<string | null>(null)
 
@@ -186,7 +190,8 @@ export default function LogTimeModal({
 
           {remainingEstimate != null && remainingEstimate < 0 && (
             <div className="rounded-xl bg-amber-500/10 px-4 py-2 text-xs text-amber-700 dark:text-amber-400 font-medium border border-amber-500/20">
-              Cảnh báo: vượt ước tính {Math.abs(remainingEstimate).toFixed(1)} giờ (ước tính: {estimatedTime}h)
+              Cảnh báo: vượt ước tính {Math.abs(remainingEstimate).toFixed(1)} giờ (ước tính:{" "}
+              {estimatedTime}h)
             </div>
           )}
 
@@ -198,7 +203,9 @@ export default function LogTimeModal({
               <DatePicker
                 id="date"
                 value={date}
-                onChange={(val) => { setDate(val || "") }}
+                onChange={(val) => {
+                  setDate(val || "")
+                }}
                 placeholder="Chọn ngày thực hiện..."
               />
             </div>
@@ -215,7 +222,9 @@ export default function LogTimeModal({
                 max="24"
                 placeholder="Ví dụ: 2.5"
                 value={hours}
-                onChange={(e) => { setHours(e.target.value) }}
+                onChange={(e) => {
+                  setHours(e.target.value)
+                }}
                 className="h-10 text-sm border-border rounded-full px-4"
                 required
               />
@@ -227,8 +236,16 @@ export default function LogTimeModal({
               <Label htmlFor="activity" className="text-xs font-semibold text-muted-foreground">
                 Hoạt động
               </Label>
-              <Select value={activity} onValueChange={(val) => { setActivity(val as SpentTimeActivity) }}>
-                <SelectTrigger id="activity" className="w-full h-10 border-border rounded-full px-4 bg-background">
+              <Select
+                value={activity}
+                onValueChange={(val) => {
+                  setActivity(val as SpentTimeActivity)
+                }}
+              >
+                <SelectTrigger
+                  id="activity"
+                  className="w-full h-10 border-border rounded-full px-4 bg-background"
+                >
                   <SelectValue placeholder="Chọn hoạt động" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-border bg-popover text-popover-foreground">
@@ -245,8 +262,16 @@ export default function LogTimeModal({
               <Label htmlFor="workTimeType" className="text-xs font-semibold text-muted-foreground">
                 Loại giờ
               </Label>
-              <Select value={workTimeType} onValueChange={(val) => { setWorkTimeType(val as SpentTimeWorkTimeType) }}>
-                <SelectTrigger id="workTimeType" className="w-full h-10 border-border rounded-full px-4 bg-background">
+              <Select
+                value={workTimeType}
+                onValueChange={(val) => {
+                  setWorkTimeType(val as SpentTimeWorkTimeType)
+                }}
+              >
+                <SelectTrigger
+                  id="workTimeType"
+                  className="w-full h-10 border-border rounded-full px-4 bg-background"
+                >
                   <SelectValue placeholder="Chọn loại giờ" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-border bg-popover text-popover-foreground">
@@ -268,7 +293,9 @@ export default function LogTimeModal({
               id="comment"
               placeholder="Nhập nội dung công việc đã làm..."
               value={comment}
-              onChange={(e) => { setComment(e.target.value) }}
+              onChange={(e) => {
+                setComment(e.target.value)
+              }}
               className="min-h-[80px] rounded-xl border-border p-3 text-sm focus-visible:ring-1 focus-visible:ring-ring"
               maxLength={255}
             />
@@ -278,7 +305,9 @@ export default function LogTimeModal({
             <Button
               type="button"
               variant="outline"
-              onClick={() => { onOpenChange(false) }}
+              onClick={() => {
+                onOpenChange(false)
+              }}
               className="h-10 rounded-full px-5 text-sm"
               disabled={mutation.isPending}
             >

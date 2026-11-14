@@ -60,7 +60,9 @@ registry.register(new ApplicationsSeeder())
 if (import.meta.main) {
   const seeder = new ApplicationsSeeder()
   const admin = await prisma.employee.findFirst({ where: { username: "admin" } })
-  const emps = await prisma.employee.findMany({ select: { id: true, position: true, username: true } })
+  const emps = await prisma.employee.findMany({
+    select: { id: true, position: true, username: true },
+  })
   const ctx = createEmptyContext()
   if (admin) ctx.adminId = admin.id
   ctx.employees = emps

@@ -1,14 +1,8 @@
 "use client"
 
-import { useSubmitApplication } from "@/hooks/application/useSubmitApplication"
-import { employeeApi, type IApprover } from "@/lib/api/employee.api"
-import { ArrowLeft, Send, UserCheck, X } from "lucide-react"
-import React, { useEffect, useState } from "react"
-import { toast } from "sonner"
 import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
   SelectContent,
@@ -16,6 +10,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { useSubmitApplication } from "@/hooks/application/useSubmitApplication"
+import { type IApprover, employeeApi } from "@/lib/api/employee.api"
+
+import React, { useEffect, useState } from "react"
+
+import { ArrowLeft, Send, UserCheck, X } from "lucide-react"
+import { toast } from "sonner"
+
 import { APP_TYPE_META, LEAVE_TYPE_OPTIONS } from "./attendance-ui.meta"
 
 export interface SubmitModalProps {
@@ -60,7 +63,10 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
   })
 
   useEffect(() => {
-    employeeApi.getApprovers().then(setApprovers).catch(() => {})
+    employeeApi
+      .getApprovers()
+      .then(setApprovers)
+      .catch(() => {})
   }, [])
 
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => {
@@ -115,7 +121,8 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
           return
         }
         detail = { employeeShiftId: form.employeeShiftId.trim() }
-        if (form.swapWithEmployeeId.trim()) detail.swapWithEmployeeId = form.swapWithEmployeeId.trim()
+        if (form.swapWithEmployeeId.trim())
+          detail.swapWithEmployeeId = form.swapWithEmployeeId.trim()
         if (form.swapWithShiftId.trim()) detail.swapWithShiftId = form.swapWithShiftId.trim()
         break
 
@@ -159,7 +166,8 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
     }
   }
 
-  const meta = Object.entries(APP_TYPE_META).find(([k]) => k === selectedType)?.[1] || APP_TYPE_META["leave"]
+  const meta =
+    Object.entries(APP_TYPE_META).find(([k]) => k === selectedType)?.[1] || APP_TYPE_META["leave"]
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
@@ -172,7 +180,9 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                 type="button"
                 variant="ghost"
                 size="icon"
-                onClick={() => { setStep("type"); }}
+                onClick={() => {
+                  setStep("type")
+                }}
                 className="h-8 w-8 rounded-full text-muted-foreground hover:bg-muted"
               >
                 <ArrowLeft size={16} />
@@ -216,12 +226,16 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                     }}
                     className={`flex flex-col items-start gap-2 p-4 rounded-xl border-2 text-left hover:shadow-md transition-all active:scale-[0.98] ${m.border} ${m.bg}`}
                   >
-                    <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${m.color}`}>
+                    <div
+                      className={`h-9 w-9 rounded-lg flex items-center justify-center ${m.color}`}
+                    >
                       <Icon size={18} />
                     </div>
                     <div>
                       <p className={`text-sm font-semibold ${m.color}`}>{m.label}</p>
-                      <p className="text-xs text-muted-foreground/70 mt-0.5 leading-snug">{m.hint}</p>
+                      <p className="text-xs text-muted-foreground/70 mt-0.5 leading-snug">
+                        {m.hint}
+                      </p>
                     </div>
                   </button>
                 )
@@ -231,9 +245,17 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
 
           {/* Step 2: Details form */}
           {step === "details" && (
-            <form id="submit-form" onSubmit={(e) => { void handleSubmit(e); }} className="p-5 flex flex-col gap-4">
+            <form
+              id="submit-form"
+              onSubmit={(e) => {
+                void handleSubmit(e)
+              }}
+              className="p-5 flex flex-col gap-4"
+            >
               {/* Type badge */}
-              <div className={`flex items-center gap-2.5 p-3 rounded-xl border ${meta.border} ${meta.bg}`}>
+              <div
+                className={`flex items-center gap-2.5 p-3 rounded-xl border ${meta.border} ${meta.bg}`}
+              >
                 <meta.icon size={16} className={meta.color} />
                 <span className={`text-sm font-semibold ${meta.color}`}>{meta.label}</span>
               </div>
@@ -241,20 +263,28 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               {/* Dates */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">Ngày bắt đầu *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Ngày bắt đầu *
+                  </label>
                   <DatePicker
                     value={form.startDate || null}
-                    onChange={(val) => { set("startDate", val || ""); }}
+                    onChange={(val) => {
+                      set("startDate", val || "")
+                    }}
                     placeholder="Chọn ngày bắt đầu..."
                     size="sm"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">Ngày kết thúc</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Ngày kết thúc
+                  </label>
                   <DatePicker
                     value={form.endDate || null}
                     minDate={form.startDate}
-                    onChange={(val) => { set("endDate", val || ""); }}
+                    onChange={(val) => {
+                      set("endDate", val || "")
+                    }}
                     placeholder="Chọn ngày kết thúc..."
                     size="sm"
                   />
@@ -265,10 +295,14 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               {selectedType === "leave" && (
                 <>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">Loại nghỉ phép *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Loại nghỉ phép *
+                    </label>
                     <Select
                       value={form.leaveType}
-                      onValueChange={(val) => { set("leaveType", val); }}
+                      onValueChange={(val) => {
+                        set("leaveType", val)
+                      }}
                     >
                       <SelectTrigger className="h-10 rounded-full bg-background">
                         <SelectValue placeholder="Chọn loại nghỉ phép..." />
@@ -283,14 +317,18 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                     </Select>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">Chế độ lương *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Chế độ lương *
+                    </label>
                     <div className="grid grid-cols-2 gap-2">
                       {(["paid", "unpaid"] as const).map((rt) => (
                         <Button
                           key={rt}
                           type="button"
                           variant={form.leaveRegimeType === rt ? "default" : "outline"}
-                          onClick={() => { set("leaveRegimeType", rt); }}
+                          onClick={() => {
+                            set("leaveRegimeType", rt)
+                          }}
                           className="rounded-full h-10 text-xs font-semibold"
                         >
                           {rt === "paid" ? "Có lương" : "Không lương"}
@@ -304,12 +342,16 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               {/* ── OVERTIME ── */}
               {selectedType === "overtime" && (
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">ID Ca làm việc *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    ID Ca làm việc *
+                  </label>
                   <Input
                     required
                     placeholder="Nhập CUID ca làm việc..."
                     value={form.employeeShiftId}
-                    onChange={(e) => { set("employeeShiftId", e.target.value); }}
+                    onChange={(e) => {
+                      set("employeeShiftId", e.target.value)
+                    }}
                     className="font-mono bg-background"
                   />
                 </div>
@@ -319,12 +361,16 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               {selectedType === "late_early" && (
                 <>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">ID Ca làm việc *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      ID Ca làm việc *
+                    </label>
                     <Input
                       required
                       placeholder="Nhập CUID ca làm việc..."
                       value={form.employeeShiftId}
-                      onChange={(e) => { set("employeeShiftId", e.target.value); }}
+                      onChange={(e) => {
+                        set("employeeShiftId", e.target.value)
+                      }}
                       className="font-mono bg-background"
                     />
                   </div>
@@ -336,7 +382,9 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                           key={String(v)}
                           type="button"
                           variant={form.isLate === v ? "default" : "outline"}
-                          onClick={() => { set("isLate", v); }}
+                          onClick={() => {
+                            set("isLate", v)
+                          }}
                           className="rounded-full h-10 text-xs font-semibold"
                         >
                           {v ? "Đi muộn" : "Về sớm"}
@@ -345,14 +393,18 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">Số phút (1–480) *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Số phút (1–480) *
+                    </label>
                     <Input
                       type="number"
                       required
                       min={1}
                       max={480}
                       value={form.durationMinutes}
-                      onChange={(e) => { set("durationMinutes", Number(e.target.value)); }}
+                      onChange={(e) => {
+                        set("durationMinutes", Number(e.target.value))
+                      }}
                       className="bg-background"
                     />
                   </div>
@@ -363,30 +415,42 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               {selectedType === "shift_swap" && (
                 <>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">ID Ca của bạn *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      ID Ca của bạn *
+                    </label>
                     <Input
                       required
                       placeholder="Nhập CUID ca làm việc..."
                       value={form.employeeShiftId}
-                      onChange={(e) => { set("employeeShiftId", e.target.value); }}
+                      onChange={(e) => {
+                        set("employeeShiftId", e.target.value)
+                      }}
                       className="font-mono bg-background"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">ID Nhân viên muốn đổi (tùy chọn)</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      ID Nhân viên muốn đổi (tùy chọn)
+                    </label>
                     <Input
                       placeholder="CUID nhân viên..."
                       value={form.swapWithEmployeeId}
-                      onChange={(e) => { set("swapWithEmployeeId", e.target.value); }}
+                      onChange={(e) => {
+                        set("swapWithEmployeeId", e.target.value)
+                      }}
                       className="font-mono bg-background"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">ID Ca muốn đổi sang (tùy chọn)</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      ID Ca muốn đổi sang (tùy chọn)
+                    </label>
                     <Input
                       placeholder="CUID ca làm việc..."
                       value={form.swapWithShiftId}
-                      onChange={(e) => { set("swapWithShiftId", e.target.value); }}
+                      onChange={(e) => {
+                        set("swapWithShiftId", e.target.value)
+                      }}
                       className="font-mono bg-background"
                     />
                   </div>
@@ -396,11 +460,15 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               {/* ── WFH ── */}
               {selectedType === "work_from_home" && (
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground">Địa điểm làm việc</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Địa điểm làm việc
+                  </label>
                   <Input
                     placeholder="VD: Tại nhà, Quán cà phê..."
                     value={form.location}
-                    onChange={(e) => { set("location", e.target.value); }}
+                    onChange={(e) => {
+                      set("location", e.target.value)
+                    }}
                     className="bg-background"
                   />
                 </div>
@@ -410,21 +478,29 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               {selectedType === "business_trip" && (
                 <>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">Địa điểm công tác *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Địa điểm công tác *
+                    </label>
                     <Input
                       required
                       placeholder="VD: Hà Nội, TP.HCM..."
                       value={form.destination}
-                      onChange={(e) => { set("destination", e.target.value); }}
+                      onChange={(e) => {
+                        set("destination", e.target.value)
+                      }}
                       className="bg-background"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">Mục đích chuyến đi</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Mục đích chuyến đi
+                    </label>
                     <Input
                       placeholder="Mô tả mục đích..."
                       value={form.purpose}
-                      onChange={(e) => { set("purpose", e.target.value); }}
+                      onChange={(e) => {
+                        set("purpose", e.target.value)
+                      }}
                       className="bg-background"
                     />
                   </div>
@@ -435,14 +511,18 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               {selectedType === "regime" && (
                 <>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-muted-foreground">Chế độ lương *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Chế độ lương *
+                    </label>
                     <div className="grid grid-cols-2 gap-2">
                       {(["paid", "unpaid"] as const).map((rt) => (
                         <Button
                           key={rt}
                           type="button"
                           variant={form.regimeType === rt ? "default" : "outline"}
-                          onClick={() => { set("regimeType", rt); }}
+                          onClick={() => {
+                            set("regimeType", rt)
+                          }}
                           className="rounded-full h-10 text-xs font-semibold"
                         >
                           {rt === "paid" ? "Có lương" : "Không lương"}
@@ -460,7 +540,9 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                       min={0}
                       max={480}
                       value={form.reducedMinutesPerDay}
-                      onChange={(e) => { set("reducedMinutesPerDay", Number(e.target.value)); }}
+                      onChange={(e) => {
+                        set("reducedMinutesPerDay", Number(e.target.value))
+                      }}
                       className="bg-background"
                     />
                   </div>
@@ -477,7 +559,9 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                           <input
                             type="checkbox"
                             checked={key === "applyToStart" ? form.applyToStart : form.applyToEnd}
-                            onChange={(e) => { set(key, e.target.checked); }}
+                            onChange={(e) => {
+                              set(key, e.target.checked)
+                            }}
                             className="accent-primary"
                           />
                           <span className="text-sm text-foreground">{label}</span>
@@ -493,7 +577,9 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                       type="url"
                       placeholder="https://..."
                       value={form.documentUrl}
-                      onChange={(e) => { set("documentUrl", e.target.value); }}
+                      onChange={(e) => {
+                        set("documentUrl", e.target.value)
+                      }}
                       className="bg-background"
                     />
                   </div>
@@ -504,14 +590,18 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-muted-foreground">
                   Lý do{" "}
-                  <span className="text-muted-foreground/70 font-normal">(tối thiểu 5 ký tự nếu điền)</span>
+                  <span className="text-muted-foreground/70 font-normal">
+                    (tối thiểu 5 ký tự nếu điền)
+                  </span>
                 </label>
                 <Textarea
                   rows={3}
                   minLength={5}
                   placeholder="Nhập lý do gửi đơn..."
                   value={form.reason}
-                  onChange={(e) => { set("reason", e.target.value); }}
+                  onChange={(e) => {
+                    set("reason", e.target.value)
+                  }}
                   className="rounded-xl border border-input bg-background resize-none"
                 />
               </div>
@@ -526,18 +616,21 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                   </label>
                   <Select
                     value={form.assignedToId || "none"}
-                    onValueChange={(val) => { set("assignedToId", val === "none" ? "" : val); }}
+                    onValueChange={(val) => {
+                      set("assignedToId", val === "none" ? "" : val)
+                    }}
                   >
                     <SelectTrigger className="h-10 rounded-full bg-background">
                       <SelectValue placeholder="-- Không chỉ định (bất kỳ ai có thẩm quyền) --" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">-- Không chỉ định (bất kỳ ai có thẩm quyền) --</SelectItem>
+                      <SelectItem value="none">
+                        -- Không chỉ định (bất kỳ ai có thẩm quyền) --
+                      </SelectItem>
                       {approvers.map((a) => (
                         <SelectItem key={a.id} value={a.id}>
                           {a.fullName}
-                          {a.position ? ` — ${a.position}` : ""}
-                          {" "}({a.role.replace(/_/g, " ")})
+                          {a.position ? ` — ${a.position}` : ""} ({a.role.replace(/_/g, " ")})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -551,7 +644,9 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
                 <Input
                   placeholder="Thông tin bổ sung (nếu có)..."
                   value={form.note}
-                  onChange={(e) => { set("note", e.target.value); }}
+                  onChange={(e) => {
+                    set("note", e.target.value)
+                  }}
                   className="bg-background"
                 />
               </div>
@@ -565,7 +660,9 @@ export function SubmitApplicationModal({ onClose, onSuccess }: SubmitModalProps)
             <Button
               type="button"
               variant="outline"
-              onClick={() => { setStep("type"); }}
+              onClick={() => {
+                setStep("type")
+              }}
               className="flex-1 rounded-full h-10 font-semibold"
             >
               Quay lại

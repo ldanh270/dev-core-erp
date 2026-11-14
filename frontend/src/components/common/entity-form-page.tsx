@@ -1,9 +1,8 @@
+import { BackButton } from "@/components/common/back-button"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 import type { ReactNode } from "react"
-
-import { BackButton } from "@/components/common/back-button"
 
 interface EntityFormPageProps {
   title: string

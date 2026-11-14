@@ -153,26 +153,19 @@
   "indexes": [
     {
       "name": "IX_ProjectTaskStatus_projectId",
-      "columns": [
-        "projectId"
-      ],
+      "columns": ["projectId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_ProjectTaskStatus_projectId_name",
-      "columns": [
-        "projectId",
-        "name"
-      ],
+      "columns": ["projectId", "name"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "PK_ProjectTaskStatus",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -182,12 +175,8 @@
       "virtualName": "project",
       "targetModel": "Project",
       "relationName": null,
-      "foreignKeyFields": [
-        "projectId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["projectId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

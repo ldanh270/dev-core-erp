@@ -1,10 +1,4 @@
-import {
-  EmptyState,
-  PageCard,
-  PageContainer,
-  PageHeader,
-  StatusPill,
-} from "@/components/common"
+import { EmptyState, PageCard, PageContainer, PageHeader, StatusPill } from "@/components/common"
 import { HolidayFormDialog } from "@/components/features/attendance/holiday-form-dialog"
 import {
   AlertDialog,
@@ -18,9 +12,9 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import {
+  ATTENDANCE_QUERY_KEYS,
   HOLIDAY_SCOPE,
   HOLIDAY_SCOPE_LABELS,
-  ATTENDANCE_QUERY_KEYS,
   type IHolidayScope,
 } from "@/config/entities/attendance.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
@@ -31,7 +25,9 @@ import type { IHoliday, IHolidayPayload } from "@/types/attendance.types"
 import { getHolidayTypeLabel } from "@/utils/attendance/get-holiday-type-label"
 
 import { useState } from "react"
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { isAxiosError } from "axios"
 import {
   CalendarDays,
   ChevronLeft,
@@ -43,7 +39,6 @@ import {
   Trash2,
 } from "lucide-react"
 import { toast } from "sonner"
-import { isAxiosError } from "axios"
 
 interface IApiErrorResponse {
   error?: { message?: string }
@@ -204,12 +199,15 @@ export default function Holidays() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <p className={cn(TYPOGRAPHY.CELL_PRIMARY, "truncate font-semibold text-foreground")}>
+                    <p
+                      className={cn(
+                        TYPOGRAPHY.CELL_PRIMARY,
+                        "truncate font-semibold text-foreground",
+                      )}
+                    >
                       {holiday.name}
                     </p>
-                    <p className={cn(TYPOGRAPHY.CELL_DATE, "mt-1")}>
-                      {formatDate(holiday.date)}
-                    </p>
+                    <p className={cn(TYPOGRAPHY.CELL_DATE, "mt-1")}>{formatDate(holiday.date)}</p>
                     <p className={cn(TYPOGRAPHY.CELL_SECONDARY, "mt-1 truncate")}>
                       {getScopeLabel(holiday)}
                     </p>

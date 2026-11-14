@@ -1,5 +1,9 @@
 import { candidateRepository } from "@/repositories/candidate.repository"
-import type { CreateCandidateInput, UpdateCandidateInput, ListCandidatesQuery } from "@/types/recruitment.types"
+import type {
+  CreateCandidateInput,
+  ListCandidatesQuery,
+  UpdateCandidateInput,
+} from "@/types/recruitment.types"
 
 /**
  * Service managing recruitment candidates, lifecycle, queries, and constraints.
@@ -81,7 +85,15 @@ export class CandidateService {
 
     // Prevent deletion if candidate has active applications
     if (existing.applications && existing.applications.length > 0) {
-      const activeStatuses = ["new", "reviewing", "shortlisted", "interviewing", "final_review", "offer_sent", "offer_accepted"]
+      const activeStatuses = [
+        "new",
+        "reviewing",
+        "shortlisted",
+        "interviewing",
+        "final_review",
+        "offer_sent",
+        "offer_accepted",
+      ]
       const hasActive = existing.applications.some((app) => activeStatuses.includes(app.status))
       if (hasActive) {
         throw new Error("Cannot delete candidate with active applications")

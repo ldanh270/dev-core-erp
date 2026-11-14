@@ -1,6 +1,7 @@
 import { HttpStatusCode } from "@/configs/system/http.config"
 import { recruitmentOAuthAccountRepository } from "@/repositories/recruitment-oauth-account.repository"
 import { AppError } from "@/utils/error.util"
+
 import { RecruitmentOAuthAccount } from "@prisma/client"
 
 const LAYER = "RecruitmentOAuthAccountService"
@@ -12,7 +13,9 @@ export type RecruitmentOAuthAccountPublic = Pick<
   hasRefreshToken: boolean
 }
 
-export const toPublicOAuthAccount = (account: RecruitmentOAuthAccount): RecruitmentOAuthAccountPublic => ({
+export const toPublicOAuthAccount = (
+  account: RecruitmentOAuthAccount,
+): RecruitmentOAuthAccountPublic => ({
   id: account.id,
   userId: account.userId,
   channel: account.channel,
@@ -24,13 +27,17 @@ export const toPublicOAuthAccount = (account: RecruitmentOAuthAccount): Recruitm
 })
 
 export class RecruitmentOAuthAccountService {
-  async upsert(userId: string, input: {
-    channel: string
-    name: string
-    clientId: string
-    clientSecret: string
-    refreshToken: string
-  }, accountId?: string) {
+  async upsert(
+    userId: string,
+    input: {
+      channel: string
+      name: string
+      clientId: string
+      clientSecret: string
+      refreshToken: string
+    },
+    accountId?: string,
+  ) {
     const account = await recruitmentOAuthAccountRepository.upsert(userId, input, accountId)
     return toPublicOAuthAccount(account)
   }
@@ -59,11 +66,7 @@ export class RecruitmentOAuthAccountService {
   async delete(userId: string, id: string) {
     const result = await recruitmentOAuthAccountRepository.delete(userId, id)
     if (result.count === 0) {
-      throw new AppError(
-        "Không tìm thấy tài khoản OAuth để xóa",
-        HttpStatusCode.NOT_FOUND,
-        LAYER,
-      )
+      throw new AppError("Không tìm thấy tài khoản OAuth để xóa", HttpStatusCode.NOT_FOUND, LAYER)
     }
     return result
   }
@@ -85,16 +88,26 @@ export class RecruitmentOAuthAccountService {
     }
   }
 
-  async saveFromOAuthFlow(userId: string, channel: string, name: string, tokens: {
-    clientId: string
-    clientSecret: string
-    refreshToken: string
-  }, accountId?: string) {
-    const account = await recruitmentOAuthAccountRepository.upsert(userId, {
-      channel,
-      name,
-      ...tokens,
-    }, accountId)
+  async saveFromOAuthFlow(
+    userId: string,
+    channel: string,
+    name: string,
+    tokens: {
+      clientId: string
+      clientSecret: string
+      refreshToken: string
+    },
+    accountId?: string,
+  ) {
+    const account = await recruitmentOAuthAccountRepository.upsert(
+      userId,
+      {
+        channel,
+        name,
+        ...tokens,
+      },
+      accountId,
+    )
     return toPublicOAuthAccount(account)
   }
 }

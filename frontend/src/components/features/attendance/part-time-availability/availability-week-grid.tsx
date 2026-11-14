@@ -23,7 +23,10 @@ export function AvailabilityWeekGrid({
   disabled,
   onDayChange,
 }: AvailabilityWeekGridProps) {
-  const weekDates = getWeekDates(weekStart, (dayOfWeek) => DAY_OF_WEEK_FULL_LABELS.get(dayOfWeek) ?? "")
+  const weekDates = getWeekDates(
+    weekStart,
+    (dayOfWeek) => DAY_OF_WEEK_FULL_LABELS.get(dayOfWeek) ?? "",
+  )
   const todayKey = formatDateParam(new Date())
 
   const orderedWeekDays = WORK_WEEK_DISPLAY_DAY_ORDER.map((dayOfWeek) =>

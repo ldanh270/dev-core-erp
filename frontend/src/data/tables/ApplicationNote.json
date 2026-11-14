@@ -106,25 +106,19 @@
   "indexes": [
     {
       "name": "IX_ApplicationNote_addedById",
-      "columns": [
-        "addedById"
-      ],
+      "columns": ["addedById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_ApplicationNote_applicationId",
-      "columns": [
-        "applicationId"
-      ],
+      "columns": ["applicationId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_ApplicationNote",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -134,23 +128,15 @@
       "virtualName": "application",
       "targetModel": "RecruitmentApplication",
       "relationName": null,
-      "foreignKeyFields": [
-        "applicationId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["applicationId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "addedBy",
       "targetModel": "Employee",
       "relationName": "RecruitmentNoteCreator",
-      "foreignKeyFields": [
-        "addedById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["addedById"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

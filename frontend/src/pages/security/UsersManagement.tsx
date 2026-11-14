@@ -1,24 +1,13 @@
-import {
-  DataTablePage,
-  StatusPill,
-  type DataTableColumn,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage, StatusPill } from "@/components/common"
 import { Button } from "@/components/ui/button"
-import { SYSTEM_CONFIG } from "@/config/system.config"
 import { ROLE_LABELS } from "@/config/entities/employee.config"
+import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useUsersManagementMaster } from "@/hooks/security/use-users-management-master"
 import { cn } from "@/lib/utils"
 
 import { useMemo } from "react"
 
-import {
-  Lock,
-  ShieldAlert,
-  ShieldCheck,
-  Unlock,
-  User,
-  Users as UsersIcon,
-} from "lucide-react"
+import { Lock, ShieldAlert, ShieldCheck, Unlock, User, Users as UsersIcon } from "lucide-react"
 
 interface UserListItem {
   id?: string

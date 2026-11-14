@@ -1,4 +1,5 @@
 import { PROJECT_STATUS, TASK_CREATION_POLICY } from "@/configs/entities/project.config.ts"
+
 import { Task, TaskTracker } from "./task.types.ts"
 
 /**
@@ -170,16 +171,9 @@ export interface GanttDataDto {
  */
 export interface IProjectService {
   getProject(id: string, userId: string): Promise<Project | null>
-  listProjects(
-    query: ProjectListQuery,
-    userId: string,
-  ): Promise<PaginatedProjectsDto>
+  listProjects(query: ProjectListQuery, userId: string): Promise<PaginatedProjectsDto>
   createProject(data: CreateProjectDto, userId: string): Promise<Project>
-  updateProject(
-    id: string,
-    data: UpdateProjectDto,
-    userId: string,
-  ): Promise<Project | null>
+  updateProject(id: string, data: UpdateProjectDto, userId: string): Promise<Project | null>
   deleteProject(id: string, userId: string): Promise<boolean>
   addMember(
     projectId: string,
@@ -187,11 +181,7 @@ export interface IProjectService {
     userId: string,
     options?: { hourlyRate?: number | null; workMode?: string; roleId?: string | null },
   ): Promise<boolean>
-  removeMember(
-    projectId: string,
-    employeeId: string,
-    userId: string,
-  ): Promise<boolean>
+  removeMember(projectId: string, employeeId: string, userId: string): Promise<boolean>
   getMembers(projectId: string, userId: string): Promise<any[]>
   getGanttData(projectId: string, userId: string): Promise<GanttDataDto>
   updateMember(

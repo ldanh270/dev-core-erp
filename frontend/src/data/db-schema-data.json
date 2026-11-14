@@ -17,12 +17,7 @@
       "icon": "Users",
       "description": "Quản lý nhân viên, hợp đồng lao động, bảo hiểm, phòng ban, chức vụ và chi nhánh",
       "tableCount": 4,
-      "tables": [
-        "EmployeeContract",
-        "Employee",
-        "RegimeCategory",
-        "Position"
-      ]
+      "tables": ["EmployeeContract", "Employee", "RegimeCategory", "Position"]
     },
     {
       "id": "ATTENDANCE",
@@ -150,10 +145,7 @@
       "icon": "Sliders",
       "description": "Nhật ký hệ thống (Audit log), quy trình phê duyệt đa cấp, thông báo và cấu hình",
       "tableCount": 2,
-      "tables": [
-        "ActivityLog",
-        "CustomQuery"
-      ]
+      "tables": ["ActivityLog", "CustomQuery"]
     }
   ],
   "tables": {
@@ -541,45 +533,29 @@
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": "EmployeeContracts",
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": "ContractCreator",
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "updatedBy",
           "targetModel": "Employee",
           "relationName": "ContractUpdater",
-          "foreignKeyFields": [
-            "updatedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["updatedById"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "renewedFrom",
           "targetModel": "EmployeeContract",
           "relationName": "ContractRenewal",
-          "foreignKeyFields": [
-            "renewedFromId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["renewedFromId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "renewedTo",
@@ -1070,23 +1046,15 @@
           "virtualName": "positionRel",
           "targetModel": "Position",
           "relationName": null,
-          "foreignKeyFields": [
-            "positionId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["positionId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "personalEmployee",
           "targetModel": "Employee",
           "relationName": "PersonalEmployeeLink",
-          "foreignKeyFields": [
-            "personalEmployeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["personalEmployeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "personalEmployeeLinks",
@@ -1950,12 +1918,8 @@
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "applicationShiftSwapDetails",
@@ -2141,12 +2105,8 @@
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": "WeeklyScheduleTemplateCreator",
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -2233,12 +2193,8 @@
           "virtualName": "template",
           "targetModel": "WeeklyScheduleTemplate",
           "relationName": null,
-          "foreignKeyFields": [
-            "templateId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["templateId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -2336,23 +2292,15 @@
           "virtualName": "week",
           "targetModel": "WeeklyScheduleTemplateWeek",
           "relationName": null,
-          "foreignKeyFields": [
-            "weekId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["weekId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "shift",
           "targetModel": "WorkingShift",
           "relationName": null,
-          "foreignKeyFields": [
-            "shiftId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["shiftId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -2530,34 +2478,22 @@
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": "ShiftScheduleEmployee",
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "template",
           "targetModel": "WeeklyScheduleTemplate",
           "relationName": null,
-          "foreignKeyFields": [
-            "templateId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["templateId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": "ShiftScheduleCreator",
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -2689,23 +2625,15 @@
           "virtualName": "schedule",
           "targetModel": "ShiftSchedule",
           "relationName": null,
-          "foreignKeyFields": [
-            "scheduleId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["scheduleId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "shift",
           "targetModel": "WorkingShift",
           "relationName": null,
-          "foreignKeyFields": [
-            "shiftId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["shiftId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -2916,45 +2844,29 @@
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": "EmployeeShiftEmployee",
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "shift",
           "targetModel": "WorkingShift",
           "relationName": null,
-          "foreignKeyFields": [
-            "shiftId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["shiftId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "schedule",
           "targetModel": "ShiftSchedule",
           "relationName": null,
-          "foreignKeyFields": [
-            "scheduleId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["scheduleId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": "EmployeeShiftCreator",
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "overtimeDetails",
@@ -3398,34 +3310,22 @@
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "employeeShift",
           "targetModel": "EmployeeShift",
           "relationName": null,
-          "foreignKeyFields": [
-            "employeeShiftId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeShiftId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "correctedByApplication",
           "targetModel": "Application",
           "relationName": "AttendanceRecordCorrection",
-          "foreignKeyFields": [
-            "correctedByApplicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["correctedByApplicationId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -3631,23 +3531,15 @@
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "attendanceRecord",
           "targetModel": "AttendanceRecord",
           "relationName": null,
-          "foreignKeyFields": [
-            "attendanceRecordId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["attendanceRecordId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -4098,45 +3990,29 @@
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": "ApplicationEmployee",
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "approvedBy",
           "targetModel": "Employee",
           "relationName": "ApplicationApprover",
-          "foreignKeyFields": [
-            "approvedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["approvedById"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "partnerApprovedBy",
           "targetModel": "Employee",
           "relationName": "ApplicationPartnerApprover",
-          "foreignKeyFields": [
-            "partnerApprovedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["partnerApprovedById"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "assignedTo",
           "targetModel": "Employee",
           "relationName": "ApplicationAssignedTo",
-          "foreignKeyFields": [
-            "assignedToId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["assignedToId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "attendanceRecordCorrection",
@@ -4312,12 +4188,8 @@
           "virtualName": "application",
           "targetModel": "Application",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -4427,56 +4299,36 @@
           "virtualName": "application",
           "targetModel": "Application",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "employeeShift",
           "targetModel": "EmployeeShift",
           "relationName": "ApplicationEmployeeShift",
-          "foreignKeyFields": [
-            "employeeShiftId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeShiftId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "workingShift",
           "targetModel": "WorkingShift",
           "relationName": "ShiftSwapWorkingShift",
-          "foreignKeyFields": [
-            "workingShiftId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["workingShiftId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "swapWithEmployee",
           "targetModel": "Employee",
           "relationName": "ApplicationSwapWith",
-          "foreignKeyFields": [
-            "swapWithEmployeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["swapWithEmployeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "swapWithShift",
           "targetModel": "EmployeeShift",
           "relationName": "ApplicationSwapWithShift",
-          "foreignKeyFields": [
-            "swapWithShiftId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["swapWithShiftId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -4559,23 +4411,15 @@
           "virtualName": "application",
           "targetModel": "Application",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "employeeShift",
           "targetModel": "EmployeeShift",
           "relationName": "ApplicationOvertimeShift",
-          "foreignKeyFields": [
-            "employeeShiftId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeShiftId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -4735,12 +4579,8 @@
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -4854,23 +4694,15 @@
           "virtualName": "application",
           "targetModel": "Application",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "regimeCategory",
           "targetModel": "RegimeCategory",
           "relationName": null,
-          "foreignKeyFields": [
-            "regimeCategoryId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["regimeCategoryId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -4967,23 +4799,15 @@
           "virtualName": "application",
           "targetModel": "Application",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "employeeShift",
           "targetModel": "EmployeeShift",
           "relationName": "ApplicationLateEarlyShift",
-          "foreignKeyFields": [
-            "employeeShiftId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeShiftId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -5079,12 +4903,8 @@
           "virtualName": "application",
           "targetModel": "Application",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -5143,23 +4963,15 @@
           "virtualName": "application",
           "targetModel": "Application",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "employeeShift",
           "targetModel": "EmployeeShift",
           "relationName": null,
-          "foreignKeyFields": [
-            "employeeShiftId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeShiftId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -5352,23 +5164,15 @@
           "virtualName": "position",
           "targetModel": "Position",
           "relationName": null,
-          "foreignKeyFields": [
-            "positionId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["positionId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -5440,23 +5244,15 @@
           "virtualName": "holiday",
           "targetModel": "HolidayCalendar",
           "relationName": null,
-          "foreignKeyFields": [
-            "holidayId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["holidayId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -5664,12 +5460,8 @@
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -5820,12 +5612,8 @@
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -5913,23 +5701,15 @@
           "virtualName": "template",
           "targetModel": "PayslipTemplate",
           "relationName": null,
-          "foreignKeyFields": [
-            "templateId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["templateId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "component",
           "targetModel": "SalaryComponent",
           "relationName": null,
-          "foreignKeyFields": [
-            "componentId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["componentId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -6123,34 +5903,22 @@
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "template",
           "targetModel": "PayslipTemplate",
           "relationName": null,
-          "foreignKeyFields": [
-            "templateId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["templateId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": "SalaryConfigCreator",
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -6339,12 +6107,8 @@
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -6530,12 +6294,8 @@
           "virtualName": "updatedBy",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "updatedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["updatedById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -6689,12 +6449,8 @@
           "virtualName": "updatedBy",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "updatedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["updatedById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -6897,23 +6653,15 @@
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": "PartTimeAvailabilityEmployee",
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "reviewedBy",
           "targetModel": "Employee",
           "relationName": "PartTimeAvailabilityReviewer",
-          "foreignKeyFields": [
-            "reviewedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["reviewedById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -7016,12 +6764,8 @@
           "virtualName": "availability",
           "targetModel": "PartTimeWeeklyAvailability",
           "relationName": null,
-          "foreignKeyFields": [
-            "availabilityId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["availabilityId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -7134,12 +6878,8 @@
           "virtualName": "day",
           "targetModel": "PartTimeAvailabilityDay",
           "relationName": null,
-          "foreignKeyFields": [
-            "dayId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["dayId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -7341,12 +7081,8 @@
           "virtualName": "approvedBy",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "approvedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["approvedById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -7573,34 +7309,22 @@
           "virtualName": "payroll",
           "targetModel": "Payroll",
           "relationName": null,
-          "foreignKeyFields": [
-            "payrollId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["payrollId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "salaryConfig",
           "targetModel": "EmployeeSalaryConfig",
           "relationName": null,
-          "foreignKeyFields": [
-            "salaryConfigId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["salaryConfigId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -7742,23 +7466,15 @@
           "virtualName": "payslip",
           "targetModel": "Payslip",
           "relationName": null,
-          "foreignKeyFields": [
-            "payslipId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["payslipId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "component",
           "targetModel": "SalaryComponent",
           "relationName": null,
-          "foreignKeyFields": [
-            "componentId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["componentId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -7999,23 +7715,15 @@
           "virtualName": "teamLeader",
           "targetModel": "Employee",
           "relationName": "ProjectTeamLeader",
-          "foreignKeyFields": [
-            "teamLeaderId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["teamLeaderId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": "ProjectCreator",
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -8198,34 +7906,22 @@
           "virtualName": "project",
           "targetModel": "Project",
           "relationName": null,
-          "foreignKeyFields": [
-            "projectId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["projectId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "role",
           "targetModel": "ProjectRole",
           "relationName": null,
-          "foreignKeyFields": [
-            "roleId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["roleId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -8603,45 +8299,29 @@
           "virtualName": "project",
           "targetModel": "Project",
           "relationName": null,
-          "foreignKeyFields": [
-            "projectId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["projectId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "assignee",
           "targetModel": "Employee",
           "relationName": "TaskAssignee",
-          "foreignKeyFields": [
-            "assigneeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["assigneeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": "TaskCreator",
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "parentTask",
           "targetModel": "Task",
           "relationName": "TaskSubtasks",
-          "foreignKeyFields": [
-            "parentTaskId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["parentTaskId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "subtasks",
@@ -8654,12 +8334,8 @@
           "virtualName": "customStatus",
           "targetModel": "ProjectTaskStatus",
           "relationName": null,
-          "foreignKeyFields": [
-            "statusId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["statusId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "spentTimes",
@@ -8857,12 +8533,8 @@
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -9033,23 +8705,15 @@
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": "PasswordResetRequestEmployee",
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "approvedBy",
           "targetModel": "Employee",
           "relationName": "PasswordResetRequestApprover",
-          "foreignKeyFields": [
-            "approvedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["approvedById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -9177,12 +8841,8 @@
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -9434,34 +9094,22 @@
           "virtualName": "task",
           "targetModel": "Task",
           "relationName": "TaskSpentTimes",
-          "foreignKeyFields": [
-            "taskId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["taskId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": "EmployeeSpentTimes",
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "approvedBy",
           "targetModel": "Employee",
           "relationName": "SpentTimeApprover",
-          "foreignKeyFields": [
-            "approvedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["approvedById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -10017,23 +9665,15 @@
           "virtualName": "role",
           "targetModel": "AppRole",
           "relationName": null,
-          "foreignKeyFields": [
-            "roleId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["roleId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "permission",
           "targetModel": "Permission",
           "relationName": null,
-          "foreignKeyFields": [
-            "permissionId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["permissionId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -10130,23 +9770,15 @@
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "role",
           "targetModel": "AppRole",
           "relationName": null,
-          "foreignKeyFields": [
-            "roleId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["roleId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -10339,23 +9971,15 @@
           "virtualName": "actor",
           "targetModel": "Employee",
           "relationName": "AuditLogActor",
-          "foreignKeyFields": [
-            "actorId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["actorId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "targetEmployee",
           "targetModel": "Employee",
           "relationName": "AuditLogTarget",
-          "foreignKeyFields": [
-            "targetEmployeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["targetEmployeeId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -10516,23 +10140,15 @@
           "virtualName": "project",
           "targetModel": "Project",
           "relationName": null,
-          "foreignKeyFields": [
-            "projectId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["projectId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -10708,12 +10324,8 @@
           "virtualName": "project",
           "targetModel": "Project",
           "relationName": null,
-          "foreignKeyFields": [
-            "projectId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["projectId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -10984,12 +10596,8 @@
           "virtualName": "project",
           "targetModel": "Project",
           "relationName": null,
-          "foreignKeyFields": [
-            "projectId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["projectId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -11134,12 +10742,8 @@
           "virtualName": "project",
           "targetModel": "Project",
           "relationName": null,
-          "foreignKeyFields": [
-            "projectId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["projectId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -11277,12 +10881,8 @@
           "virtualName": "employee",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "employeeId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -11389,23 +10989,15 @@
           "virtualName": "application",
           "targetModel": "Application",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "employeeShift",
           "targetModel": "EmployeeShift",
           "relationName": "ApplicationForgotCardShift",
-          "foreignKeyFields": [
-            "employeeShiftId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["employeeShiftId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -11517,12 +11109,8 @@
           "virtualName": "application",
           "targetModel": "Application",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -11999,45 +11587,29 @@
           "virtualName": "requestedBy",
           "targetModel": "Employee",
           "relationName": "RequisitionRequester",
-          "foreignKeyFields": [
-            "requestedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["requestedById"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "approver",
           "targetModel": "Employee",
           "relationName": "RequisitionDesignatedApprover",
-          "foreignKeyFields": [
-            "approverId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["approverId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "approvedBy",
           "targetModel": "Employee",
           "relationName": "RequisitionApprover",
-          "foreignKeyFields": [
-            "approvedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["approvedById"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "position",
           "targetModel": "Position",
           "relationName": null,
-          "foreignKeyFields": [
-            "positionId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["positionId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -12396,34 +11968,22 @@
           "virtualName": "requisition",
           "targetModel": "JobRequisition",
           "relationName": null,
-          "foreignKeyFields": [
-            "requisitionId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["requisitionId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "oauthAccount",
           "targetModel": "RecruitmentOAuthAccount",
           "relationName": null,
-          "foreignKeyFields": [
-            "oauthAccountId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["oauthAccountId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "archivedBy",
           "targetModel": "Employee",
           "relationName": "RecruitmentPostingArchiver",
-          "foreignKeyFields": [
-            "archivedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["archivedById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -12642,12 +12202,8 @@
           "virtualName": "requisition",
           "targetModel": "JobRequisition",
           "relationName": null,
-          "foreignKeyFields": [
-            "requisitionId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["requisitionId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -12833,12 +12389,8 @@
           "virtualName": "posting",
           "targetModel": "JobPosting",
           "relationName": null,
-          "foreignKeyFields": [
-            "postingId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["postingId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -13024,12 +12576,8 @@
           "virtualName": "posting",
           "targetModel": "JobPosting",
           "relationName": null,
-          "foreignKeyFields": [
-            "postingId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["postingId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -13199,12 +12747,8 @@
           "virtualName": "user",
           "targetModel": "Employee",
           "relationName": null,
-          "foreignKeyFields": [
-            "userId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["userId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -13684,12 +13228,8 @@
           "virtualName": "candidate",
           "targetModel": "Candidate",
           "relationName": null,
-          "foreignKeyFields": [
-            "candidateId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["candidateId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -13975,56 +13515,36 @@
           "virtualName": "requisition",
           "targetModel": "JobRequisition",
           "relationName": null,
-          "foreignKeyFields": [
-            "requisitionId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["requisitionId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "candidate",
           "targetModel": "Candidate",
           "relationName": null,
-          "foreignKeyFields": [
-            "candidateId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["candidateId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "posting",
           "targetModel": "JobPosting",
           "relationName": null,
-          "foreignKeyFields": [
-            "postingId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["postingId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "pipelineStage",
           "targetModel": "RecruitmentPipelineStage",
           "relationName": null,
-          "foreignKeyFields": [
-            "pipelineStageId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["pipelineStageId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "assignedTo",
           "targetModel": "Employee",
           "relationName": "RecruitmentAppRecruiter",
-          "foreignKeyFields": [
-            "assignedToId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["assignedToId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -14266,23 +13786,15 @@
           "virtualName": "posting",
           "targetModel": "JobPosting",
           "relationName": null,
-          "foreignKeyFields": [
-            "postingId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["postingId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "requisition",
           "targetModel": "JobRequisition",
           "relationName": null,
-          "foreignKeyFields": [
-            "requisitionId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["requisitionId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -14435,34 +13947,22 @@
           "virtualName": "posting",
           "targetModel": "JobPosting",
           "relationName": null,
-          "foreignKeyFields": [
-            "postingId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["postingId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "application",
           "targetModel": "RecruitmentApplication",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "actor",
           "targetModel": "Employee",
           "relationName": "RecruitmentPostingActivityActor",
-          "foreignKeyFields": [
-            "actorId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["actorId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -14629,23 +14129,15 @@
           "virtualName": "posting",
           "targetModel": "JobPosting",
           "relationName": null,
-          "foreignKeyFields": [
-            "postingId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["postingId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "application",
           "targetModel": "RecruitmentApplication",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -14774,23 +14266,15 @@
           "virtualName": "application",
           "targetModel": "RecruitmentApplication",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "addedBy",
           "targetModel": "Employee",
           "relationName": "RecruitmentNoteCreator",
-          "foreignKeyFields": [
-            "addedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["addedById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -15046,12 +14530,8 @@
           "virtualName": "application",
           "targetModel": "RecruitmentApplication",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -15277,23 +14757,15 @@
           "virtualName": "interview",
           "targetModel": "InterviewRound",
           "relationName": null,
-          "foreignKeyFields": [
-            "interviewId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["interviewId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "evaluator",
           "targetModel": "Employee",
           "relationName": "ScorecardEvaluator",
-          "foreignKeyFields": [
-            "evaluatorId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["evaluatorId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -15679,34 +15151,22 @@
           "virtualName": "application",
           "targetModel": "RecruitmentApplication",
           "relationName": null,
-          "foreignKeyFields": [
-            "applicationId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["applicationId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "candidate",
           "targetModel": "Candidate",
           "relationName": null,
-          "foreignKeyFields": [
-            "candidateId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["candidateId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "createdBy",
           "targetModel": "Employee",
           "relationName": "OfferCreator",
-          "foreignKeyFields": [
-            "createdById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["createdById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -15933,12 +15393,8 @@
           "virtualName": "offer",
           "targetModel": "RecruitmentOffer",
           "relationName": null,
-          "foreignKeyFields": [
-            "offerId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["offerId"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -16302,34 +15758,22 @@
           "virtualName": "offer",
           "targetModel": "RecruitmentOffer",
           "relationName": null,
-          "foreignKeyFields": [
-            "offerId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["offerId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "candidate",
           "targetModel": "Candidate",
           "relationName": null,
-          "foreignKeyFields": [
-            "candidateId"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["candidateId"],
+          "referenceFields": ["id"]
         },
         {
           "virtualName": "checkedBy",
           "targetModel": "Employee",
           "relationName": "BgcChecker",
-          "foreignKeyFields": [
-            "checkedById"
-          ],
-          "referenceFields": [
-            "id"
-          ]
+          "foreignKeyFields": ["checkedById"],
+          "referenceFields": ["id"]
         }
       ],
       "outgoingRelations": [
@@ -16358,12 +15802,7 @@
   "enums": {
     "EmployeeStatus": {
       "name": "EmployeeStatus",
-      "values": [
-        "active",
-        "inactive",
-        "on_leave",
-        "terminated"
-      ],
+      "values": ["active", "inactive", "on_leave", "terminated"],
       "description": "Kiểu danh mục liệt kê EmployeeStatus (4 giá trị)"
     },
     "EmployeeType": {
@@ -16378,65 +15817,37 @@
     },
     "WorkScheduleType": {
       "name": "WorkScheduleType",
-      "values": [
-        "full_time",
-        "part_time"
-      ],
+      "values": ["full_time", "part_time"],
       "description": "Kiểu danh mục liệt kê WorkScheduleType (2 giá trị)"
     },
     "SpentTimeStatus": {
       "name": "SpentTimeStatus",
-      "values": [
-        "pending",
-        "approved",
-        "rejected"
-      ],
+      "values": ["pending", "approved", "rejected"],
       "description": "Kiểu danh mục liệt kê SpentTimeStatus (3 giá trị)"
     },
     "ProjectMemberWorkMode": {
       "name": "ProjectMemberWorkMode",
-      "values": [
-        "remote",
-        "onsite"
-      ],
+      "values": ["remote", "onsite"],
       "description": "Kiểu danh mục liệt kê ProjectMemberWorkMode (2 giá trị)"
     },
     "AttendanceStatus": {
       "name": "AttendanceStatus",
-      "values": [
-        "on_time",
-        "late",
-        "early_leave",
-        "absent",
-        "overtime"
-      ],
+      "values": ["on_time", "late", "early_leave", "absent", "overtime"],
       "description": "Kiểu danh mục liệt kê AttendanceStatus (5 giá trị)"
     },
     "ShiftStatus": {
       "name": "ShiftStatus",
-      "values": [
-        "scheduled",
-        "holiday_pending",
-        "confirmed",
-        "cancelled"
-      ],
+      "values": ["scheduled", "holiday_pending", "confirmed", "cancelled"],
       "description": "Kiểu danh mục liệt kê ShiftStatus (4 giá trị)"
     },
     "HolidayType": {
       "name": "HolidayType",
-      "values": [
-        "national",
-        "company"
-      ],
+      "values": ["national", "company"],
       "description": "Kiểu danh mục liệt kê HolidayType (2 giá trị)"
     },
     "HolidayScope": {
       "name": "HolidayScope",
-      "values": [
-        "all",
-        "position",
-        "employees"
-      ],
+      "values": ["all", "position", "employees"],
       "description": "Kiểu danh mục liệt kê HolidayScope (3 giá trị)"
     },
     "LeaveType": {
@@ -16470,120 +15881,62 @@
     },
     "ApplicationStatus": {
       "name": "ApplicationStatus",
-      "values": [
-        "pending",
-        "partner_pending",
-        "approved",
-        "rejected",
-        "cancelled"
-      ],
+      "values": ["pending", "partner_pending", "approved", "rejected", "cancelled"],
       "description": "Kiểu danh mục liệt kê ApplicationStatus (5 giá trị)"
     },
     "RegimeType": {
       "name": "RegimeType",
-      "values": [
-        "paid",
-        "unpaid"
-      ],
+      "values": ["paid", "unpaid"],
       "description": "Kiểu danh mục liệt kê RegimeType (2 giá trị)"
     },
     "PayrollStatus": {
       "name": "PayrollStatus",
-      "values": [
-        "draft",
-        "pending_approval",
-        "approved",
-        "rejected",
-        "paid"
-      ],
+      "values": ["draft", "pending_approval", "approved", "rejected", "paid"],
       "description": "Kiểu danh mục liệt kê PayrollStatus (5 giá trị)"
     },
     "PartTimeAvailabilityStatus": {
       "name": "PartTimeAvailabilityStatus",
-      "values": [
-        "draft",
-        "submitted",
-        "approved",
-        "rejected"
-      ],
+      "values": ["draft", "submitted", "approved", "rejected"],
       "description": "Kiểu danh mục liệt kê PartTimeAvailabilityStatus (4 giá trị)"
     },
     "ComponentType": {
       "name": "ComponentType",
-      "values": [
-        "addition",
-        "deduction"
-      ],
+      "values": ["addition", "deduction"],
       "description": "Kiểu danh mục liệt kê ComponentType (2 giá trị)"
     },
     "ComponentValueType": {
       "name": "ComponentValueType",
-      "values": [
-        "currency",
-        "number",
-        "percentage"
-      ],
+      "values": ["currency", "number", "percentage"],
       "description": "Kiểu danh mục liệt kê ComponentValueType (3 giá trị)"
     },
     "ProjectStatus": {
       "name": "ProjectStatus",
-      "values": [
-        "planning",
-        "active",
-        "on_hold",
-        "completed",
-        "cancelled"
-      ],
+      "values": ["planning", "active", "on_hold", "completed", "cancelled"],
       "description": "Kiểu danh mục liệt kê ProjectStatus (5 giá trị)"
     },
     "TaskCreationPolicy": {
       "name": "TaskCreationPolicy",
-      "values": [
-        "leader_only",
-        "all_members"
-      ],
+      "values": ["leader_only", "all_members"],
       "description": "Kiểu danh mục liệt kê TaskCreationPolicy (2 giá trị)"
     },
     "TaskStatus": {
       "name": "TaskStatus",
-      "values": [
-        "todo",
-        "in_progress",
-        "in_review",
-        "done",
-        "cancelled",
-        "reopened"
-      ],
+      "values": ["todo", "in_progress", "in_review", "done", "cancelled", "reopened"],
       "description": "Kiểu danh mục liệt kê TaskStatus (6 giá trị)"
     },
     "TaskPriority": {
       "name": "TaskPriority",
-      "values": [
-        "low",
-        "medium",
-        "high",
-        "urgent"
-      ],
+      "values": ["low", "medium", "high", "urgent"],
       "description": "Kiểu danh mục liệt kê TaskPriority (4 giá trị)"
     },
     "PasswordResetStatus": {
       "name": "PasswordResetStatus",
-      "values": [
-        "pending",
-        "approved",
-        "rejected",
-        "used",
-        "expired"
-      ],
+      "values": ["pending", "approved", "rejected", "used", "expired"],
       "description": "Kiểu danh mục liệt kê PasswordResetStatus (5 giá trị)"
     },
     "ActivityCategory": {
       "name": "ActivityCategory",
-      "values": [
-        "auth",
-        "role",
-        "security"
-      ],
+      "values": ["auth", "role", "security"],
       "description": "Kiểu danh mục liệt kê ActivityCategory (3 giá trị)"
     },
     "ActivityAction": {
@@ -16601,57 +15954,27 @@
     },
     "ContractType": {
       "name": "ContractType",
-      "values": [
-        "trial",
-        "definite",
-        "indefinite",
-        "service"
-      ],
+      "values": ["trial", "definite", "indefinite", "service"],
       "description": "Kiểu danh mục liệt kê ContractType (4 giá trị)"
     },
     "ContractStatus": {
       "name": "ContractStatus",
-      "values": [
-        "draft",
-        "pending_signature",
-        "active",
-        "expired",
-        "terminated",
-        "renewed"
-      ],
+      "values": ["draft", "pending_signature", "active", "expired", "terminated", "renewed"],
       "description": "Kiểu danh mục liệt kê ContractStatus (6 giá trị)"
     },
     "RequisitionStatus": {
       "name": "RequisitionStatus",
-      "values": [
-        "draft",
-        "pending_approval",
-        "approved",
-        "rejected",
-        "closed",
-        "filled"
-      ],
+      "values": ["draft", "pending_approval", "approved", "rejected", "closed", "filled"],
       "description": "Kiểu danh mục liệt kê RequisitionStatus (6 giá trị)"
     },
     "RequisitionPriority": {
       "name": "RequisitionPriority",
-      "values": [
-        "low",
-        "medium",
-        "high",
-        "urgent"
-      ],
+      "values": ["low", "medium", "high", "urgent"],
       "description": "Kiểu danh mục liệt kê RequisitionPriority (4 giá trị)"
     },
     "PostingStatus": {
       "name": "PostingStatus",
-      "values": [
-        "draft",
-        "open",
-        "paused",
-        "closed",
-        "archived"
-      ],
+      "values": ["draft", "open", "paused", "closed", "archived"],
       "description": "Kiểu danh mục liệt kê PostingStatus (5 giá trị)"
     },
     "RecruitmentChannel": {
@@ -16669,11 +15992,7 @@
     },
     "ConnectorStatus": {
       "name": "ConnectorStatus",
-      "values": [
-        "not_configured",
-        "ready",
-        "error"
-      ],
+      "values": ["not_configured", "ready", "error"],
       "description": "Kiểu danh mục liệt kê ConnectorStatus (3 giá trị)"
     },
     "RecruitmentApplicationStatus": {
@@ -16713,81 +16032,42 @@
     },
     "InterviewFormat": {
       "name": "InterviewFormat",
-      "values": [
-        "in_person",
-        "video_call",
-        "phone"
-      ],
+      "values": ["in_person", "video_call", "phone"],
       "description": "Kiểu danh mục liệt kê InterviewFormat (3 giá trị)"
     },
     "InterviewRoundStatus": {
       "name": "InterviewRoundStatus",
-      "values": [
-        "scheduled",
-        "completed",
-        "cancelled",
-        "no_show"
-      ],
+      "values": ["scheduled", "completed", "cancelled", "no_show"],
       "description": "Kiểu danh mục liệt kê InterviewRoundStatus (4 giá trị)"
     },
     "InterviewResult": {
       "name": "InterviewResult",
-      "values": [
-        "pass",
-        "fail",
-        "pending",
-        "no_show"
-      ],
+      "values": ["pass", "fail", "pending", "no_show"],
       "description": "Kiểu danh mục liệt kê InterviewResult (4 giá trị)"
     },
     "BgcGroup": {
       "name": "BgcGroup",
-      "values": [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
+      "values": ["a", "b", "c", "d"],
       "description": "Kiểu danh mục liệt kê BgcGroup (4 giá trị)"
     },
     "BgcStatus": {
       "name": "BgcStatus",
-      "values": [
-        "pending",
-        "in_progress",
-        "completed",
-        "passed",
-        "failed"
-      ],
+      "values": ["pending", "in_progress", "completed", "passed", "failed"],
       "description": "Kiểu danh mục liệt kê BgcStatus (5 giá trị)"
     },
     "RecruitmentOfferStatus": {
       "name": "RecruitmentOfferStatus",
-      "values": [
-        "draft",
-        "sent",
-        "accepted",
-        "declined",
-        "rescinded",
-        "expired"
-      ],
+      "values": ["draft", "sent", "accepted", "declined", "rescinded", "expired"],
       "description": "Kiểu danh mục liệt kê RecruitmentOfferStatus (6 giá trị)"
     },
     "IntakeStatus": {
       "name": "IntakeStatus",
-      "values": [
-        "received",
-        "processed",
-        "failed"
-      ],
+      "values": ["received", "processed", "failed"],
       "description": "Kiểu danh mục liệt kê IntakeStatus (3 giá trị)"
     },
     "RecruitmentFieldType": {
       "name": "RecruitmentFieldType",
-      "values": [
-        "short_text",
-        "paragraph"
-      ],
+      "values": ["short_text", "paragraph"],
       "description": "Kiểu danh mục liệt kê RecruitmentFieldType (2 giá trị)"
     }
   }

@@ -1,6 +1,7 @@
-import { createHmac, randomBytes, timingSafeEqual } from "node:crypto"
 import { OAUTH_STATE_SECRET } from "@/configs/auth/auth.config"
 import { prisma } from "@/libs/database"
+
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto"
 
 const STATE_TTL_MS = 10 * 60 * 1000
 
@@ -60,7 +61,10 @@ export async function createOAuthState(
  * @returns Decoded and verified OAuthStatePayload
  * @throws {Error} If format invalid, signature mismatched, state expired, or nonce already consumed
  */
-export async function consumeOAuthState(state: string, now = Date.now()): Promise<OAuthStatePayload> {
+export async function consumeOAuthState(
+  state: string,
+  now = Date.now(),
+): Promise<OAuthStatePayload> {
   const [encodedPayload, encodedSignature, ...extra] = state.split(".")
   if (!encodedPayload || !encodedSignature || extra.length > 0) {
     throw new Error("Invalid OAuth state format")
@@ -79,7 +83,13 @@ export async function consumeOAuthState(state: string, now = Date.now()): Promis
   } catch {
     throw new Error("Invalid OAuth state payload")
   }
-  if (!payload.userId || !payload.channel || !payload.name || !payload.nonce || payload.expiresAt <= now) {
+  if (
+    !payload.userId ||
+    !payload.channel ||
+    !payload.name ||
+    !payload.nonce ||
+    payload.expiresAt <= now
+  ) {
     throw new Error("Expired OAuth state")
   }
 

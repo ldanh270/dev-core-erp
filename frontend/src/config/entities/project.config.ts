@@ -200,7 +200,10 @@ export const PROJECT_MEMBER_WORK_MODES = [
   PROJECT_MEMBER_WORK_MODE.ONSITE,
 ] as const
 
-export const PROJECT_MEMBER_WORK_MODE_LABELS: Record<(typeof PROJECT_MEMBER_WORK_MODES)[number], string> = {
+export const PROJECT_MEMBER_WORK_MODE_LABELS: Record<
+  (typeof PROJECT_MEMBER_WORK_MODES)[number],
+  string
+> = {
   [PROJECT_MEMBER_WORK_MODE.REMOTE]: "Remote",
   [PROJECT_MEMBER_WORK_MODE.ONSITE]: "Onsite",
 }

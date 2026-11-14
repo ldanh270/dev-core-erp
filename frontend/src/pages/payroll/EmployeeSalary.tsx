@@ -1,4 +1,4 @@
-import { DataTablePage, type DataTableColumn } from "@/components/common"
+import { type DataTableColumn, DataTablePage } from "@/components/common"
 import EmployeePayslipHistoryDialog from "@/components/features/payroll/EmployeePayslipHistoryDialog"
 import EmployeeSalaryConfigDialog from "@/components/features/payroll/employee-salary-config-dialog"
 import { Button } from "@/components/ui/button"
@@ -20,6 +20,7 @@ import { cn, formatCurrency } from "@/lib/utils"
 import type { Employee } from "@/types/employee.types"
 
 import { useCallback, useMemo, useState } from "react"
+
 import { FileText, History, Inbox, MoreHorizontal, User } from "lucide-react"
 
 function EmployeeSalaryInfoCell({
@@ -117,9 +118,7 @@ export default function EmployeeSalary() {
         align: "center",
         sticky: true,
         cell: (_, index) => (
-          <span className={TYPOGRAPHY.CELL_CODE}>
-            {(page - 1) * limit + index + 1}
-          </span>
+          <span className={TYPOGRAPHY.CELL_CODE}>{(page - 1) * limit + index + 1}</span>
         ),
       },
       {
@@ -148,10 +147,17 @@ export default function EmployeeSalary() {
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-medium text-foreground truncate hover:text-primary transition-colors")}>
+              <div
+                className={cn(
+                  TYPOGRAPHY.CELL_PRIMARY,
+                  "font-medium text-foreground truncate hover:text-primary transition-colors",
+                )}
+              >
                 {emp.fullName}
               </div>
-              <div className={cn(TYPOGRAPHY.CELL_CODE, "text-[10px] text-muted-foreground font-mono")}>
+              <div
+                className={cn(TYPOGRAPHY.CELL_CODE, "text-[10px] text-muted-foreground font-mono")}
+              >
                 {emp.id.split("-")[0].toUpperCase()}
               </div>
             </div>
@@ -166,10 +172,20 @@ export default function EmployeeSalary() {
         hideBelow: "md",
         cell: (emp) => (
           <div>
-            <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-semibold text-foreground/85 text-xs truncate")}>
+            <div
+              className={cn(
+                TYPOGRAPHY.CELL_PRIMARY,
+                "font-semibold text-foreground/85 text-xs truncate",
+              )}
+            >
               {emp.position || "—"}
             </div>
-            <div className={cn(TYPOGRAPHY.CELL_SECONDARY, "text-[10px] text-muted-foreground uppercase mt-0.5")}>
+            <div
+              className={cn(
+                TYPOGRAPHY.CELL_SECONDARY,
+                "text-[10px] text-muted-foreground uppercase mt-0.5",
+              )}
+            >
               {emp.role}
             </div>
           </div>
@@ -180,9 +196,7 @@ export default function EmployeeSalary() {
         header: "Lương cơ bản & Mẫu phiếu lương",
         width: getTableColWidthPx("TITLE"),
         minWidth: "240px",
-        cell: (emp) => (
-          <EmployeeSalaryInfoCell employeeId={emp.id} templates={templates} />
-        ),
+        cell: (emp) => <EmployeeSalaryInfoCell employeeId={emp.id} templates={templates} />,
       },
       {
         id: "actions",
@@ -255,7 +269,9 @@ export default function EmployeeSalary() {
         }}
         emptyState={{
           icon: Inbox,
-          title: searchQuery.trim() ? "Không tìm thấy nhân viên" : "Chưa có dữ liệu lương nhân viên",
+          title: searchQuery.trim()
+            ? "Không tìm thấy nhân viên"
+            : "Chưa có dữ liệu lương nhân viên",
           description: searchQuery.trim()
             ? `Không có nhân viên nào khớp với từ khóa "${searchQuery}".`
             : "Chưa có nhân viên nào được thiết lập cấu hình lương.",

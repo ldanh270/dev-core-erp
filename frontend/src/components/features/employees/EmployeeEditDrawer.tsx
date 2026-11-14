@@ -1,6 +1,6 @@
 import { AppDrawer } from "@/components/common"
-import { EmployeeWeeklyScheduleSection } from "@/components/features/employees/employee-weekly-schedule-section"
 import { DatePicker } from "@/components/common"
+import { EmployeeWeeklyScheduleSection } from "@/components/features/employees/employee-weekly-schedule-section"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -28,7 +28,12 @@ import {
   useUpdateEmployeeRoles,
 } from "@/hooks/security/queries/use-security-query"
 import { usePositions } from "@/hooks/use-position-query"
-import type { Employee, EmployeeStatus, EmployeeType, WorkScheduleType } from "@/types/employee.types"
+import type {
+  Employee,
+  EmployeeStatus,
+  EmployeeType,
+  WorkScheduleType,
+} from "@/types/employee.types"
 import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util"
 
 import { useState } from "react"
@@ -170,7 +175,7 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                       key={roleSeedKey}
                       value={selectedRoleIds[0] || (employeeRoles?.[0]?.id ?? "none")}
                       onValueChange={(val) => {
-                        handleRoleSelectionChange(val === "none" ? [] : [val]);
+                        handleRoleSelectionChange(val === "none" ? [] : [val])
                       }}
                     >
                       <SelectTrigger id="role-select" className="h-10 bg-background">
@@ -232,7 +237,10 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                       id="dateOfBirth"
                       value={watch("dateOfBirth") || null}
                       onChange={(val) => {
-                        setValue("dateOfBirth", val || "", { shouldValidate: true, shouldDirty: true });
+                        setValue("dateOfBirth", val || "", {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        })
                       }}
                       placeholder="Chọn ngày sinh..."
                     />
@@ -285,7 +293,10 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                     <Select
                       value={watch("positionId") || "none"}
                       onValueChange={(val) => {
-                        setValue("positionId", val === "none" ? "" : val, { shouldValidate: true, shouldDirty: true });
+                        setValue("positionId", val === "none" ? "" : val, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        })
                       }}
                     >
                       <SelectTrigger
@@ -315,7 +326,10 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                     <Select
                       value={watch("employeeType") || EMPLOYMENT_CATEGORY_TYPES[0]}
                       onValueChange={(val) => {
-                        setValue("employeeType", val as EmployeeType, { shouldValidate: true, shouldDirty: true });
+                        setValue("employeeType", val as EmployeeType, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        })
                       }}
                     >
                       <SelectTrigger id="employeeType" className="h-10 bg-background">
@@ -340,7 +354,10 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                     <Select
                       value={watch("status") || EMPLOYEE_STATUSES[0]}
                       onValueChange={(val) => {
-                        setValue("status", val as EmployeeStatus, { shouldValidate: true, shouldDirty: true });
+                        setValue("status", val as EmployeeStatus, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        })
                       }}
                     >
                       <SelectTrigger id="status" className="h-10 bg-background">
@@ -363,7 +380,10 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                     <Select
                       value={watch("workScheduleType") || WORK_SCHEDULE_TYPES[0]}
                       onValueChange={(val) => {
-                        setValue("workScheduleType", val as WorkScheduleType, { shouldValidate: true, shouldDirty: true });
+                        setValue("workScheduleType", val as WorkScheduleType, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        })
                       }}
                     >
                       <SelectTrigger id="workScheduleType" className="h-10 bg-background">
@@ -389,7 +409,10 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                       id="startDate"
                       value={watch("startDate") || null}
                       onChange={(val) => {
-                        setValue("startDate", val || "", { shouldValidate: true, shouldDirty: true });
+                        setValue("startDate", val || "", {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        })
                       }}
                       placeholder="Chọn ngày bắt đầu..."
                     />
@@ -406,7 +429,7 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
                       id="endDate"
                       value={watch("endDate") || null}
                       onChange={(val) => {
-                        setValue("endDate", val || "", { shouldValidate: true, shouldDirty: true });
+                        setValue("endDate", val || "", { shouldValidate: true, shouldDirty: true })
                       }}
                       placeholder="Chọn ngày kết thúc..."
                     />

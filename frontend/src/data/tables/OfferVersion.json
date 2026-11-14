@@ -185,26 +185,19 @@
   "indexes": [
     {
       "name": "IX_OfferVersion_offerId",
-      "columns": [
-        "offerId"
-      ],
+      "columns": ["offerId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_OfferVersion_offerId_version",
-      "columns": [
-        "offerId",
-        "version"
-      ],
+      "columns": ["offerId", "version"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "PK_OfferVersion",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -214,12 +207,8 @@
       "virtualName": "offer",
       "targetModel": "RecruitmentOffer",
       "relationName": null,
-      "foreignKeyFields": [
-        "offerId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["offerId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

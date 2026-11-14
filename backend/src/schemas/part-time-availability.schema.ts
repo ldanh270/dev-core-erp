@@ -2,21 +2,19 @@
  * Zod boundaries for employee availability and admin assignment payloads.
  * Business enum values and limits are imported from config instead of duplicated here.
  */
+import { DAY_OF_WEEK_VALUES } from "@/configs/entities/attendance.config.ts"
 import {
   PART_TIME_AVAILABILITY_RULES,
   PART_TIME_AVAILABILITY_STATUSES,
   PART_TIME_SUGGESTION_DECISIONS,
 } from "@/configs/entities/part-time-availability.config.ts"
-import { DAY_OF_WEEK_VALUES } from "@/configs/entities/attendance.config.ts"
 
 import { z } from "zod"
 
 const timeStringSchema = z
   .string()
   .regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, "Format must be HH:mm")
-const dateOnlyStringSchema = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, "Format must be YYYY-MM-DD")
+const dateOnlyStringSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format must be YYYY-MM-DD")
 
 const slotSchema = z
   .object({

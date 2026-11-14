@@ -186,42 +186,31 @@
   "indexes": [
     {
       "name": "IX_PartTimeWeeklyAvailability_employeeId_weekStart",
-      "columns": [
-        "employeeId",
-        "weekStart"
-      ],
+      "columns": ["employeeId", "weekStart"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_PartTimeWeeklyAvailability_reviewedById",
-      "columns": [
-        "reviewedById"
-      ],
+      "columns": ["reviewedById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_PartTimeWeeklyAvailability_status",
-      "columns": [
-        "status"
-      ],
+      "columns": ["status"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_PartTimeWeeklyAvailability_weekStart",
-      "columns": [
-        "weekStart"
-      ],
+      "columns": ["weekStart"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_PartTimeWeeklyAvailability",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -231,23 +220,15 @@
       "virtualName": "employee",
       "targetModel": "Employee",
       "relationName": "PartTimeAvailabilityEmployee",
-      "foreignKeyFields": [
-        "employeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "reviewedBy",
       "targetModel": "Employee",
       "relationName": "PartTimeAvailabilityReviewer",
-      "foreignKeyFields": [
-        "reviewedById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["reviewedById"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

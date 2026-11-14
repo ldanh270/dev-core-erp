@@ -72,17 +72,13 @@
   "indexes": [
     {
       "name": "IX_RecruitmentOAuthStateNonce_expiresAt",
-      "columns": [
-        "expiresAt"
-      ],
+      "columns": ["expiresAt"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_RecruitmentOAuthStateNonce",
-      "columns": [
-        "nonce"
-      ],
+      "columns": ["nonce"],
       "isUnique": true,
       "isPrimary": true
     }

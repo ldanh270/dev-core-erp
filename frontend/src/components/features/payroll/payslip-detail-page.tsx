@@ -1,6 +1,6 @@
+import { DatePicker, TimePicker } from "@/components/common"
 import { EntityFormPage } from "@/components/common/entity-form-page"
 import { Badge } from "@/components/ui/badge"
-import { DatePicker, TimePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -192,7 +192,10 @@ export function PayslipDetailPage({ payslip, onClose }: PayslipDetailPageProps) 
           </div>
         </div>
 
-        <Tabs defaultValue="daily-work" className="bg-background border border-border rounded-xl overflow-hidden shadow-none gap-0">
+        <Tabs
+          defaultValue="daily-work"
+          className="bg-background border border-border rounded-xl overflow-hidden shadow-none gap-0"
+        >
           <div className="px-6 py-4 border-b border-border bg-muted/50 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <TabsList className="w-full sm:w-auto justify-start">
               <TabsTrigger value="daily-work" className="gap-2">
@@ -347,21 +350,27 @@ export function PayslipDetailPage({ payslip, onClose }: PayslipDetailPageProps) 
           </DialogHeader>
           <div className="px-5 py-4 space-y-3">
             <div className="space-y-2">
-              <Label htmlFor="payroll-feedback-date" className="text-xs font-medium text-muted-foreground">
+              <Label
+                htmlFor="payroll-feedback-date"
+                className="text-xs font-medium text-muted-foreground"
+              >
                 Ngày sai lệch
               </Label>
               <DatePicker
                 id="payroll-feedback-date"
                 value={feedbackDate || null}
                 onChange={(val) => {
-                  setFeedbackDate(val || "");
+                  setFeedbackDate(val || "")
                 }}
                 placeholder="Chọn ngày sai lệch..."
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="payroll-feedback-check-in" className="text-xs font-medium text-muted-foreground">
+                <Label
+                  htmlFor="payroll-feedback-check-in"
+                  className="text-xs font-medium text-muted-foreground"
+                >
                   Giờ vào đúng
                 </Label>
                 <TimePicker
@@ -372,7 +381,10 @@ export function PayslipDetailPage({ payslip, onClose }: PayslipDetailPageProps) 
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="payroll-feedback-check-out" className="text-xs font-medium text-muted-foreground">
+                <Label
+                  htmlFor="payroll-feedback-check-out"
+                  className="text-xs font-medium text-muted-foreground"
+                >
                   Giờ ra đúng
                 </Label>
                 <TimePicker
@@ -384,7 +396,10 @@ export function PayslipDetailPage({ payslip, onClose }: PayslipDetailPageProps) 
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="payroll-feedback-reason" className="text-xs font-medium text-muted-foreground">
+              <Label
+                htmlFor="payroll-feedback-reason"
+                className="text-xs font-medium text-muted-foreground"
+              >
                 Nội dung
               </Label>
               <Textarea

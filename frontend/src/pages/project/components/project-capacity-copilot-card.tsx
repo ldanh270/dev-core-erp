@@ -170,12 +170,15 @@ export function ProjectCapacityCopilotCard({
 
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/20 px-3 py-2">
-            <RefreshCw className={`size-4 text-primary ${forecastQuery.isFetching ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`size-4 text-primary ${forecastQuery.isFetching ? "animate-spin" : ""}`}
+            />
             Cronjob chạy ngầm hằng tuần; màn hình tự tải dự báo mới nhất
           </span>
           {!hasDealTargetPercent && (
             <span className="rounded-full border border-destructive/30 bg-destructive/10 px-3 py-2 text-destructive">
-              Project chưa có target % trong deal. Hãy bấm Chỉnh sửa dự án để nhập target trước khi dự báo.
+              Project chưa có target % trong deal. Hãy bấm Chỉnh sửa dự án để nhập target trước khi
+              dự báo.
             </span>
           )}
           {hasDealTargetPercent && forecastQuery.error && (
@@ -188,88 +191,93 @@ export function ProjectCapacityCopilotCard({
         {!hasDealTargetPercent ? (
           <div className="rounded-lg border border-border bg-muted/20 p-4 text-xs text-muted-foreground">
             {/* Deal target is mandatory because forecast compares predicted delivery against a client commitment. */}
-            Capacity Copilot cần cam kết tuần/milestone từ deal để biết nên so sánh dự báo với mức nào.
+            Capacity Copilot cần cam kết tuần/milestone từ deal để biết nên so sánh dự báo với mức
+            nào.
           </div>
         ) : forecastQuery.isLoading ? (
           <div className="rounded-lg border border-border bg-muted/20 p-4 text-xs text-muted-foreground">
             Đang tự động dự đoán capacity...
           </div>
-        ) : forecast && (
-          <div className="space-y-4 border-t border-border pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-              <div className="rounded-lg border border-border p-3 bg-muted/20">
-                <span className="text-xs text-muted-foreground">Cam kết (Target)</span>
-                <div className="text-lg font-black">{forecast.targetPercent}%</div>
-              </div>
-              <div className="rounded-lg border border-border p-3 bg-muted/20">
-                <span className="text-xs text-muted-foreground">Dự đoán (Predicted)</span>
-                <div className="text-lg font-black">{forecast.predictedPercent}%</div>
-              </div>
-              <div className="rounded-lg border border-border p-3 bg-muted/20">
-                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  {riskIcon}
-                  Chênh lệch (Gap)
-                </span>
-                <div className="text-lg font-black">{forecast.percentGap}%</div>
-              </div>
-              <div className="rounded-lg border border-border p-3 bg-muted/20">
-                <span className="text-xs text-muted-foreground">Độ tin cậy (Confidence)</span>
-                <div className="text-lg font-black">{getConfidenceLabel(forecast.confidenceLevel)}</div>
-              </div>
-            </div>
-
-            {forecast.confidenceReasons.length > 0 ? (
-              <div className="rounded-lg border border-border bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
-                {forecast.confidenceReasons.join(" ")}
-              </div>
-            ) : null}
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-              <div className="rounded-lg border border-border p-3 bg-muted/20">
-                <span className="text-muted-foreground">
-                  Capacity tuần được chọn (Selected week)
-                </span>
-                <div className="text-base font-black">
-                  {forecast.totalEffectiveHours} effective hours
+        ) : (
+          forecast && (
+            <div className="space-y-4 border-t border-border pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div className="rounded-lg border border-border p-3 bg-muted/20">
+                  <span className="text-xs text-muted-foreground">Cam kết (Target)</span>
+                  <div className="text-lg font-black">{forecast.targetPercent}%</div>
+                </div>
+                <div className="rounded-lg border border-border p-3 bg-muted/20">
+                  <span className="text-xs text-muted-foreground">Dự đoán (Predicted)</span>
+                  <div className="text-lg font-black">{forecast.predictedPercent}%</div>
+                </div>
+                <div className="rounded-lg border border-border p-3 bg-muted/20">
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    {riskIcon}
+                    Chênh lệch (Gap)
+                  </span>
+                  <div className="text-lg font-black">{forecast.percentGap}%</div>
+                </div>
+                <div className="rounded-lg border border-border p-3 bg-muted/20">
+                  <span className="text-xs text-muted-foreground">Độ tin cậy (Confidence)</span>
+                  <div className="text-lg font-black">
+                    {getConfidenceLabel(forecast.confidenceLevel)}
+                  </div>
                 </div>
               </div>
-              <div className="rounded-lg border border-border p-3 bg-muted/20">
-                <span className="text-muted-foreground">Năng suất lịch sử (Productivity)</span>
-                <div className="text-base font-black">{forecast.productivityRate}% / hour</div>
-              </div>
-              <div className="rounded-lg border border-border p-3 bg-muted/20">
-                <span className="text-muted-foreground">Cần thêm (Needed)</span>
-                <div className="text-base font-black">
-                  {forecast.productivityRate > 0
-                    ? `${forecast.neededEffectiveHours} effective hours`
-                    : "Chưa đủ dữ liệu"}
+
+              {forecast.confidenceReasons.length > 0 ? (
+                <div className="rounded-lg border border-border bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+                  {forecast.confidenceReasons.join(" ")}
+                </div>
+              ) : null}
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <div className="rounded-lg border border-border p-3 bg-muted/20">
+                  <span className="text-muted-foreground">
+                    Capacity tuần được chọn (Selected week)
+                  </span>
+                  <div className="text-base font-black">
+                    {forecast.totalEffectiveHours} effective hours
+                  </div>
+                </div>
+                <div className="rounded-lg border border-border p-3 bg-muted/20">
+                  <span className="text-muted-foreground">Năng suất lịch sử (Productivity)</span>
+                  <div className="text-base font-black">{forecast.productivityRate}% / hour</div>
+                </div>
+                <div className="rounded-lg border border-border p-3 bg-muted/20">
+                  <span className="text-muted-foreground">Cần thêm (Needed)</span>
+                  <div className="text-base font-black">
+                    {forecast.productivityRate > 0
+                      ? `${forecast.neededEffectiveHours} effective hours`
+                      : "Chưa đủ dữ liệu"}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="rounded-lg border border-border overflow-hidden">
-              {forecast.roles.map((role) => (
-                <div
-                  key={role.roleCode}
-                  className="grid grid-cols-2 gap-2 px-3 py-2 border-b border-border last:border-b-0 text-xs"
-                >
-                  <span className="font-semibold text-foreground">{role.roleName}</span>
-                  <span>Dự đoán năng lực (Role forecast) {role.effectiveHours}h</span>
-                </div>
-              ))}
-            </div>
+              <div className="rounded-lg border border-border overflow-hidden">
+                {forecast.roles.map((role) => (
+                  <div
+                    key={role.roleCode}
+                    className="grid grid-cols-2 gap-2 px-3 py-2 border-b border-border last:border-b-0 text-xs"
+                  >
+                    <span className="font-semibold text-foreground">{role.roleName}</span>
+                    <span>Dự đoán năng lực (Role forecast) {role.effectiveHours}h</span>
+                  </div>
+                ))}
+              </div>
 
-            <div className="space-y-2">
-              {forecast.recommendations.map((recommendation) => (
-                <p
-                  key={recommendation}
-                  className="rounded-lg bg-muted/20 border border-border px-3 py-2 text-xs text-muted-foreground"
-                >
-                  {recommendation}
-                </p>
-              ))}
+              <div className="space-y-2">
+                {forecast.recommendations.map((recommendation) => (
+                  <p
+                    key={recommendation}
+                    className="rounded-lg bg-muted/20 border border-border px-3 py-2 text-xs text-muted-foreground"
+                  >
+                    {recommendation}
+                  </p>
+                ))}
+              </div>
             </div>
-          </div>
+          )
         )}
       </div>
     </PageCard>

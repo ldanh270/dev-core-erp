@@ -1,4 +1,5 @@
 import { prisma } from "@/libs/database"
+
 import type { Prisma, PrismaClient } from "@prisma/client"
 
 export class RecruitmentPostingActivityRepository {

@@ -1,8 +1,4 @@
-import {
-  DataTablePage,
-  StatusPill,
-  type DataTableColumn,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage, StatusPill } from "@/components/common"
 import { ViewOfferDialog } from "@/components/features/recruitment/view-offer-dialog"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -132,7 +128,9 @@ export default function OffersPage() {
         cell: (offer) => (
           <div
             className="flex items-center gap-3 cursor-pointer group"
-            onClick={() => { handleViewDetails(offer); }}
+            onClick={() => {
+              handleViewDetails(offer)
+            }}
           >
             <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
               <span className="text-xs font-semibold text-primary">
@@ -217,7 +215,9 @@ export default function OffersPage() {
         cell: (offer) => (
           <div
             className="flex items-center justify-end gap-1"
-            onClick={(e) => { e.stopPropagation(); }}
+            onClick={(e) => {
+              e.stopPropagation()
+            }}
           >
             {offer.status === "draft" && hasPermission("recruitment.approve") && (
               <Tooltip>
@@ -242,7 +242,9 @@ export default function OffersPage() {
                   variant="ghost"
                   size="icon"
                   className="rounded-full hover:bg-muted h-8 w-8"
-                  onClick={() => { handleViewDetails(offer); }}
+                  onClick={() => {
+                    handleViewDetails(offer)
+                  }}
                 >
                   <Eye className="h-3.5 w-3.5" />
                 </Button>
@@ -294,7 +296,9 @@ export default function OffersPage() {
         primaryAction={
           <Button
             className="rounded-full font-semibold"
-            onClick={() => { routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS); }}
+            onClick={() => {
+              routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS)
+            }}
             disabled={!hasPermission("recruitment.create")}
           >
             <Plus className="mr-2 h-4 w-4" />
@@ -321,11 +325,7 @@ export default function OffersPage() {
         }}
       />
 
-      <ViewOfferDialog
-        open={viewOfferOpen}
-        onOpenChange={setViewOfferOpen}
-        offer={selectedOffer}
-      />
+      <ViewOfferDialog open={viewOfferOpen} onOpenChange={setViewOfferOpen} offer={selectedOffer} />
     </>
   )
 }

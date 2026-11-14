@@ -6,8 +6,8 @@ import {
 } from "@/configs/auth/auth.config.ts"
 import { JwtPayload } from "@/types/auth.types.ts"
 
-import jwt from "jsonwebtoken"
 import crypto from "crypto"
+import jwt from "jsonwebtoken"
 
 /**
  * JwtUtil provides helper methods for signing and verifying JSON Web Tokens

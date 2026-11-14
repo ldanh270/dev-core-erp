@@ -292,7 +292,9 @@ export class PayrollService implements IPayrollService {
     }
 
     const entries = await Promise.all(
-      employeeIds.map(async (id) => [id, await this.salaryConfigRepo.findActiveByEmployee(id, atDate)] as const),
+      employeeIds.map(
+        async (id) => [id, await this.salaryConfigRepo.findActiveByEmployee(id, atDate)] as const,
+      ),
     )
     const map = new Map<string, EmployeeSalaryConfigWithTemplate>()
     for (const [id, config] of entries) {
@@ -313,7 +315,8 @@ export class PayrollService implements IPayrollService {
 
     const entries = await Promise.all(
       employeeIds.map(
-        async (id) => [id, await this.spentTimeRepo.listApprovedForPayroll(id, startDate, endDate)] as const,
+        async (id) =>
+          [id, await this.spentTimeRepo.listApprovedForPayroll(id, startDate, endDate)] as const,
       ),
     )
     return new Map(entries)
@@ -323,7 +326,9 @@ export class PayrollService implements IPayrollService {
     employeeId: string,
     config: EmployeeSalaryConfigWithTemplate,
     attendanceRecords: IAttendanceRecordDTO[],
-    approvedApps: Array<Application & { lateEarlyDetail: { isLate: boolean; durationMinutes: number } | null }>,
+    approvedApps: Array<
+      Application & { lateEarlyDetail: { isLate: boolean; durationMinutes: number } | null }
+    >,
     variablesContext: Record<string, number>,
   ): ComputedPayslipDraft {
     const attendance = {
@@ -336,10 +341,7 @@ export class PayrollService implements IPayrollService {
       holidayDays: 0,
     }
     attendanceRecords.forEach((record) => {
-      if (
-        record.status === ATTENDANCE_STATUS.ON_TIME ||
-        record.status === ATTENDANCE_STATUS.LATE
-      )
+      if (record.status === ATTENDANCE_STATUS.ON_TIME || record.status === ATTENDANCE_STATUS.LATE)
         attendance.workingDays += 1
       if (record.status === ATTENDANCE_STATUS.ABSENT) {
         if (record.realShift?.isPaidLeave) {

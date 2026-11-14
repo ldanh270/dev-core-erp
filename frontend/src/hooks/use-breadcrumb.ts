@@ -25,7 +25,7 @@ export function useBreadcrumb(): BreadcrumbItem[] {
     let navItem = subsystem.sidebarItems.find((item) => {
       const [itemPathname, itemQuery] = item.path.split("?")
       if (pathname !== itemPathname) return false
-      
+
       if (itemQuery) {
         const itemParams = new URLSearchParams(itemQuery)
         const currentParams = new URLSearchParams(location.search)

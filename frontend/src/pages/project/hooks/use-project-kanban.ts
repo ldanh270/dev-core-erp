@@ -1,20 +1,26 @@
 import { DEFAULT_KANBAN_COLOR } from "@/config/entities/project.config"
-import { useState } from "react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { usePermission } from "@/hooks/use-permission"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
 import { taskApi } from "@/lib/api/task.api"
-import { extractErrorMessage } from "@/utils/error-helper"
-import { toast } from "sonner"
-import { usePermission } from "@/hooks/use-permission"
+import type {
+  CreateProjectTaskStatusDto,
+  ProjectTaskStatus,
+  UpdateProjectTaskStatusDto,
+} from "@/types/project-task-status.types"
 import type { Task } from "@/types/task.types"
-import type { ProjectTaskStatus, CreateProjectTaskStatusDto, UpdateProjectTaskStatusDto } from "@/types/project-task-status.types"
+import { extractErrorMessage } from "@/utils/error-helper"
+
+import { useState } from "react"
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 interface UseProjectKanbanProps {
   projectId: string
   teamLeader?: {
-    id: string;
-    fullName: string;
-    email: string;
+    id: string
+    fullName: string
+    email: string
   } | null
   user: {
     id: string
@@ -27,11 +33,7 @@ interface UseProjectKanbanProps {
 /**
  * Custom hook to manage projectkanban.
  */
-export function useProjectKanban({
-  projectId,
-  teamLeader,
-  user,
-}: UseProjectKanbanProps) {
+export function useProjectKanban({ projectId, teamLeader, user }: UseProjectKanbanProps) {
   const queryClient = useQueryClient()
   const isLeader = teamLeader?.id === user?.id
   const { hasAnyPermission } = usePermission()
@@ -85,7 +87,7 @@ export function useProjectKanban({
 
   // Update Status Mutation
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateProjectTaskStatusDto }) => 
+    mutationFn: ({ id, data }: { id: string; data: UpdateProjectTaskStatusDto }) =>
       projectTaskStatusApi.update(projectId, id, data),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["projectStatuses", projectId] })
@@ -102,7 +104,7 @@ export function useProjectKanban({
 
   // Delete Status Mutation
   const deleteStatusMutation = useMutation({
-    mutationFn: ({ id, fallbackId }: { id: string; fallbackId?: string }) => 
+    mutationFn: ({ id, fallbackId }: { id: string; fallbackId?: string }) =>
       projectTaskStatusApi.delete(projectId, id, fallbackId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["projectStatuses", projectId] })
@@ -133,9 +135,7 @@ export function useProjectKanban({
         if (!old) return old
         return {
           ...old,
-          data: old.data.map((t) =>
-            t.id === taskId ? { ...t, statusId } : t
-          ),
+          data: old.data.map((t) => (t.id === taskId ? { ...t, statusId } : t)),
         }
       })
 
@@ -203,7 +203,10 @@ export function useProjectKanban({
   }
 
   // Drag state: track which card is being hovered and position
-  const [dragOverInfo, setDragOverInfo] = useState<{ taskId: string; position: "top" | "bottom" } | null>(null)
+  const [dragOverInfo, setDragOverInfo] = useState<{
+    taskId: string
+    position: "top" | "bottom"
+  } | null>(null)
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null)
 
   // Column drag and drop states
@@ -241,9 +244,6 @@ export function useProjectKanban({
     if (!sourceStatus || !targetStatus) return false
 
     return !sourceStatus.isDefault && !sourceStatus.isCompleted && targetStatus.isDefault
-
-
-
   }
 
   const handleCardDrop = (e: React.DragEvent, targetTask: Task) => {
@@ -257,7 +257,9 @@ export function useProjectKanban({
       const sourceTask = tasks.find((t) => t.id === taskId)
       if (sourceTask && sourceTask.statusId !== targetTask.statusId) {
         if (isInvalidBackwardTransition(sourceTask.statusId, targetTask.statusId)) {
-          toast.warning("Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình")
+          toast.warning(
+            "Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình",
+          )
           return
         }
         moveTaskMutation.mutate({ taskId, statusId: targetTask.statusId })
@@ -274,7 +276,9 @@ export function useProjectKanban({
       const task = tasks.find((t) => t.id === taskId)
       if (task && task.statusId !== targetStatusId) {
         if (isInvalidBackwardTransition(task.statusId, targetStatusId)) {
-          toast.warning("Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình")
+          toast.warning(
+            "Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình",
+          )
           return
         }
         moveTaskMutation.mutate({ taskId, statusId: targetStatusId })
@@ -318,7 +322,7 @@ export function useProjectKanban({
     const targetIndex = statuses.findIndex((s) => s.id === targetId)
     if (sourceIndex === -1 || targetIndex === -1) return
 
-    const reorder = <T,>(list: T[], startIndex: number, endIndex: number): T[] => {
+    const reorder = <T>(list: T[], startIndex: number, endIndex: number): T[] => {
       const result = Array.from(list)
       const [removed] = result.splice(startIndex, 1)
       result.splice(endIndex, 0, removed)
@@ -343,9 +347,7 @@ export function useProjectKanban({
         const original = statuses.find((s) => s.id === status.id)
         return !original || original.order !== status.order
       })
-      .map((status) =>
-        projectTaskStatusApi.update(projectId, status.id, { order: status.order })
-      )
+      .map((status) => projectTaskStatusApi.update(projectId, status.id, { order: status.order }))
 
     try {
       await Promise.all(promises)

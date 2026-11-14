@@ -1,32 +1,3 @@
-import { useState, useMemo } from "react"
-import { useQuery } from "@tanstack/react-query"
-import {
-  addDays,
-  subDays,
-  startOfWeek,
-  endOfWeek,
-  eachDayOfInterval,
-  isSameDay,
-  isToday,
-  format,
-} from "date-fns"
-import {
-  Calendar as CalendarIcon,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  Grid,
-  List,
-  MapPin,
-  Search,
-  Star,
-  Video,
-  CheckCircle2,
-  CalendarDays,
-  Layers,
-  ArrowUpRight,
-} from "lucide-react"
-
 import {
   BoardCard,
   BoardColumn,
@@ -35,11 +6,11 @@ import {
   PageContainer,
   StatusPill,
 } from "@/components/common"
+import { InterviewFeedbackPanel } from "@/components/features/recruitment/interview-feedback-panel"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { InterviewFeedbackPanel } from "@/components/features/recruitment/interview-feedback-panel"
 import {
   INTERVIEW_FORMAT_LABELS,
   INTERVIEW_RESULT_LABELS,
@@ -50,6 +21,36 @@ import { routerNavigate } from "@/lib/router-navigator"
 import { cn } from "@/lib/utils"
 import type { InterviewRound } from "@/types/recruitment.types"
 
+import { useMemo, useState } from "react"
+
+import { useQuery } from "@tanstack/react-query"
+import {
+  addDays,
+  eachDayOfInterval,
+  endOfWeek,
+  format,
+  isSameDay,
+  isToday,
+  startOfWeek,
+  subDays,
+} from "date-fns"
+import {
+  ArrowUpRight,
+  CalendarDays,
+  Calendar as CalendarIcon,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Grid,
+  Layers,
+  List,
+  MapPin,
+  Search,
+  Star,
+  Video,
+} from "lucide-react"
+
 const WEEKDAY_NAMES = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"]
 
 export default function MyInterviewsPage() {
@@ -58,7 +59,7 @@ export default function MyInterviewsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedInterview, setSelectedInterview] = useState<InterviewRound | null>(null)
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() =>
-    startOfWeek(new Date(), { weekStartsOn: 1 })
+    startOfWeek(new Date(), { weekStartsOn: 1 }),
   )
 
   const { data: interviews = [], isLoading } = useQuery({
@@ -93,17 +94,18 @@ export default function MyInterviewsPage() {
   // Statistics
   const todayCount = useMemo(() => {
     const today = new Date()
-    return interviews.filter((i) => i.scheduledAt && isSameDay(new Date(i.scheduledAt), today)).length
+    return interviews.filter((i) => i.scheduledAt && isSameDay(new Date(i.scheduledAt), today))
+      .length
   }, [interviews])
 
   const pendingCount = useMemo(
     () => interviews.filter((i) => i.status === "scheduled").length,
-    [interviews]
+    [interviews],
   )
 
   const completedCount = useMemo(
     () => interviews.filter((i) => i.status === "completed").length,
-    [interviews]
+    [interviews],
   )
 
   return (
@@ -117,7 +119,9 @@ export default function MyInterviewsPage() {
             </div>
             <div>
               <h1 className={TYPOGRAPHY.PAGE_TITLE}>Lịch phỏng vấn của tôi</h1>
-              <p className={TYPOGRAPHY.PAGE_SUBTITLE}>Theo dõi thời khóa biểu và gửi đánh giá ứng viên các vòng phỏng vấn</p>
+              <p className={TYPOGRAPHY.PAGE_SUBTITLE}>
+                Theo dõi thời khóa biểu và gửi đánh giá ứng viên các vòng phỏng vấn
+              </p>
             </div>
           </div>
         </div>
@@ -127,7 +131,9 @@ export default function MyInterviewsPage() {
           <Button
             size="sm"
             variant={viewMode === "calendar" ? "default" : "ghost"}
-            onClick={() => { setViewMode("calendar"); }}
+            onClick={() => {
+              setViewMode("calendar")
+            }}
             className="h-8 rounded-full px-4 text-xs font-bold transition-all"
           >
             <Grid className="mr-1.5 size-3.5" />
@@ -136,7 +142,9 @@ export default function MyInterviewsPage() {
           <Button
             size="sm"
             variant={viewMode === "list" ? "default" : "ghost"}
-            onClick={() => { setViewMode("list"); }}
+            onClick={() => {
+              setViewMode("list")
+            }}
             className="h-8 rounded-full px-4 text-xs font-bold transition-all"
           >
             <List className="mr-1.5 size-3.5" />
@@ -203,7 +211,9 @@ export default function MyInterviewsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => { setCurrentWeekStart((prev) => subDays(prev, 7)); }}
+                onClick={() => {
+                  setCurrentWeekStart((prev) => subDays(prev, 7))
+                }}
                 className="size-8 rounded-full p-0 transition-colors hover:bg-secondary"
               >
                 <ChevronLeft className="size-4" />
@@ -212,7 +222,9 @@ export default function MyInterviewsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => { setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 })); }}
+                onClick={() => {
+                  setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }))
+                }}
                 className="h-8 rounded-full px-3 text-xs font-bold border-border/80 hover:bg-secondary"
               >
                 Hôm nay
@@ -221,7 +233,9 @@ export default function MyInterviewsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => { setCurrentWeekStart((prev) => addDays(prev, 7)); }}
+                onClick={() => {
+                  setCurrentWeekStart((prev) => addDays(prev, 7))
+                }}
                 className="size-8 rounded-full p-0 transition-colors hover:bg-secondary"
               >
                 <ChevronRight className="size-4" />
@@ -239,7 +253,9 @@ export default function MyInterviewsPage() {
                 placeholder="Lọc ứng viên..."
                 className="h-8 rounded-full pl-8 text-xs"
                 value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); }}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value)
+                }}
               />
             </div>
           }
@@ -265,7 +281,7 @@ export default function MyInterviewsPage() {
           {weekDays.map((day, idx) => {
             const dayIsToday = isToday(day)
             const dayInterviews = filteredInterviews.filter(
-              (i) => i.scheduledAt && isSameDay(new Date(i.scheduledAt), day)
+              (i) => i.scheduledAt && isSameDay(new Date(i.scheduledAt), day),
             )
 
             return (
@@ -283,7 +299,7 @@ export default function MyInterviewsPage() {
                           "flex size-6 items-center justify-center rounded-full text-xs font-bold shrink-0",
                           dayIsToday
                             ? "bg-primary text-primary-foreground shadow-xs"
-                            : "text-foreground"
+                            : "text-foreground",
                         )}
                       >
                         {format(day, "d")}
@@ -300,16 +316,32 @@ export default function MyInterviewsPage() {
                   dayInterviews.map((interview) => (
                     <BoardCard
                       key={interview.id}
-                      onClick={() => { setSelectedInterview(interview); }}
+                      onClick={() => {
+                        setSelectedInterview(interview)
+                      }}
                       className="p-2.5 space-y-2"
                     >
                       <div className="flex items-center justify-between gap-1">
-                        <span className={cn(TYPOGRAPHY.BOARD_CARD_SUB, "font-semibold text-primary truncate max-w-[120px]")}>
+                        <span
+                          className={cn(
+                            TYPOGRAPHY.BOARD_CARD_SUB,
+                            "font-semibold text-primary truncate max-w-[120px]",
+                          )}
+                        >
                           {interview.title}
                         </span>
-                        <div className={cn(TYPOGRAPHY.BOARD_CARD_TIME, "flex items-center gap-1 text-muted-foreground shrink-0")}>
+                        <div
+                          className={cn(
+                            TYPOGRAPHY.BOARD_CARD_TIME,
+                            "flex items-center gap-1 text-muted-foreground shrink-0",
+                          )}
+                        >
                           <Clock className="size-3 text-warning shrink-0" />
-                          <span>{interview.scheduledAt ? format(new Date(interview.scheduledAt), "HH:mm") : "--:--"}</span>
+                          <span>
+                            {interview.scheduledAt
+                              ? format(new Date(interview.scheduledAt), "HH:mm")
+                              : "--:--"}
+                          </span>
                         </div>
                       </div>
 
@@ -322,18 +354,37 @@ export default function MyInterviewsPage() {
                         </span>
                       </div>
 
-                      <div className={cn(TYPOGRAPHY.BOARD_CARD_SUB, "flex items-center justify-between pt-1.5 border-t border-border/30")}>
+                      <div
+                        className={cn(
+                          TYPOGRAPHY.BOARD_CARD_SUB,
+                          "flex items-center justify-between pt-1.5 border-t border-border/30",
+                        )}
+                      >
                         <div className="flex items-center gap-1 min-w-0">
                           {interview.format === "video_call" ? (
                             <Video className="size-3 text-info shrink-0" />
                           ) : (
                             <MapPin className="size-3 text-success shrink-0" />
                           )}
-                          <span className="truncate">{INTERVIEW_FORMAT_LABELS[interview.format] ?? interview.format}</span>
+                          <span className="truncate">
+                            {INTERVIEW_FORMAT_LABELS[interview.format] ?? interview.format}
+                          </span>
                         </div>
                         <StatusPill
-                          label={interview.status === "completed" ? "Đã xong" : interview.status === "cancelled" ? "Hủy" : "Chờ"}
-                          variant={interview.status === "completed" ? "success" : interview.status === "cancelled" ? "danger" : "info"}
+                          label={
+                            interview.status === "completed"
+                              ? "Đã xong"
+                              : interview.status === "cancelled"
+                                ? "Hủy"
+                                : "Chờ"
+                          }
+                          variant={
+                            interview.status === "completed"
+                              ? "success"
+                              : interview.status === "cancelled"
+                                ? "danger"
+                                : "info"
+                          }
                         />
                       </div>
                     </BoardCard>
@@ -354,7 +405,9 @@ export default function MyInterviewsPage() {
                 placeholder="Tìm kiếm ứng viên, vị trí phỏng vấn..."
                 className="h-10 rounded-full pl-9 text-xs"
                 value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); }}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value)
+                }}
               />
             </div>
 
@@ -375,11 +428,15 @@ export default function MyInterviewsPage() {
 
           {/* Cards List */}
           {isLoading ? (
-            <div className="py-12 text-center text-sm text-muted-foreground">Đang tải lịch phỏng vấn...</div>
+            <div className="py-12 text-center text-sm text-muted-foreground">
+              Đang tải lịch phỏng vấn...
+            </div>
           ) : filteredInterviews.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border/60 py-16 text-center space-y-3 bg-card/40">
               <CalendarXIcon className="mx-auto size-8 text-muted-foreground/50" />
-              <p className="text-sm font-medium text-muted-foreground">Không tìm thấy lịch phỏng vấn nào.</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Không tìm thấy lịch phỏng vấn nào.
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -387,7 +444,9 @@ export default function MyInterviewsPage() {
                 <InterviewCard
                   key={interview.id}
                   interview={interview}
-                  onFeedback={() => { setSelectedInterview(interview); }}
+                  onFeedback={() => {
+                    setSelectedInterview(interview)
+                  }}
                 />
               ))}
             </div>
@@ -410,7 +469,12 @@ export default function MyInterviewsPage() {
 function CalendarXIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+      />
     </svg>
   )
 }
@@ -429,27 +493,41 @@ function InterviewCard({
       <div className="flex items-start gap-4">
         <div className="flex size-12 items-center justify-center rounded-full border border-border/50 bg-primary/10 text-lg font-bold text-primary overflow-hidden shrink-0 shadow-2xs">
           {candidate?.avatarUrl ? (
-            <img src={candidate.avatarUrl} alt={candidate.fullName ?? "Ứng viên"} className="size-full object-cover" />
+            <img
+              src={candidate.avatarUrl}
+              alt={candidate.fullName ?? "Ứng viên"}
+              className="size-full object-cover"
+            />
           ) : (
-            candidate?.fullName?.charAt(0).toUpperCase() ?? "U"
+            (candidate?.fullName?.charAt(0).toUpperCase() ?? "U")
           )}
         </div>
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <h4 className={cn(TYPOGRAPHY.BOARD_CARD_TITLE, "text-base")}>{candidate?.fullName || "Ứng viên chưa cập nhật"}</h4>
-            <Badge variant="outline" className="rounded-full bg-primary/10 text-primary border-primary/20 font-bold text-xs">
+            <h4 className={cn(TYPOGRAPHY.BOARD_CARD_TITLE, "text-base")}>
+              {candidate?.fullName || "Ứng viên chưa cập nhật"}
+            </h4>
+            <Badge
+              variant="outline"
+              className="rounded-full bg-primary/10 text-primary border-primary/20 font-bold text-xs"
+            >
               Vòng {interview.roundNumber}: {interview.title}
             </Badge>
           </div>
           <p className="text-xs font-semibold text-muted-foreground">
-            Yêu cầu tuyển dụng: <span className="text-foreground">{interview.application?.requisition?.title || "N/A"}</span>
+            Yêu cầu tuyển dụng:{" "}
+            <span className="text-foreground">
+              {interview.application?.requisition?.title || "N/A"}
+            </span>
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground">
             <div className="flex items-center gap-1.5 rounded-full bg-secondary/50 px-3 py-1 text-foreground font-semibold">
               <CalendarIcon className="size-3.5 text-primary" />
               <span className="font-mono">
-                {interview.scheduledAt ? format(new Date(interview.scheduledAt), "HH:mm, dd/MM/yyyy") : "Chưa xếp lịch"}
+                {interview.scheduledAt
+                  ? format(new Date(interview.scheduledAt), "HH:mm, dd/MM/yyyy")
+                  : "Chưa xếp lịch"}
               </span>
             </div>
             <div className="flex items-center gap-1.5 rounded-full bg-secondary/50 px-3 py-1 text-foreground font-semibold">
@@ -468,7 +546,7 @@ function InterviewCard({
         <StatusPill
           label={
             interview.status === "completed"
-              ? INTERVIEW_RESULT_LABELS[interview.result as string] ?? "Đã xong"
+              ? (INTERVIEW_RESULT_LABELS[interview.result as string] ?? "Đã xong")
               : interview.status === "scheduled"
                 ? "Sắp diễn ra"
                 : interview.status === "cancelled"
@@ -478,7 +556,9 @@ function InterviewCard({
           variant={
             interview.result === "pass"
               ? "success"
-              : interview.result === "fail" || interview.status === "cancelled" || interview.status === "no_show"
+              : interview.result === "fail" ||
+                  interview.status === "cancelled" ||
+                  interview.status === "no_show"
                 ? "danger"
                 : interview.status === "scheduled"
                   ? "info"
@@ -491,7 +571,10 @@ function InterviewCard({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => { if (interview.application?.id) routerNavigate(`/recruitment/applications/${interview.application.id}`); }}
+              onClick={() => {
+                if (interview.application?.id)
+                  routerNavigate(`/recruitment/applications/${interview.application.id}`)
+              }}
               className="h-8 rounded-full text-xs font-semibold border-border/80 hover:bg-secondary"
             >
               Hồ sơ

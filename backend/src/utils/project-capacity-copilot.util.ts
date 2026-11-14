@@ -168,7 +168,9 @@ const buildConfidenceSignal = (
   history: CapacityForecastResult["history"],
   members: CapacityMemberForecast[],
 ): { level: CapacityConfidenceLevel; reasons: string[] } => {
-  const usableHistoryWeeks = history.filter((week) => week.spentHours > 0 && week.completedPercent > 0)
+  const usableHistoryWeeks = history.filter(
+    (week) => week.spentHours > 0 && week.completedPercent > 0,
+  )
   const membersWithoutPersonalVelocity = members.filter(
     (member) => member.velocity === CAPACITY_VELOCITY.DEFAULT,
   )

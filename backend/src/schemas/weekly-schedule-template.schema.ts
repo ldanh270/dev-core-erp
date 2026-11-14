@@ -54,10 +54,7 @@ export const updateWeeklyScheduleTemplateSchema = weeklyScheduleTemplateBodySche
   .strict()
   .superRefine((data, ctx) => {
     if (data.weeks === undefined || data.cycleWeeks === undefined) return
-    refineWeeklyTemplateWeeks(
-      { cycleWeeks: data.cycleWeeks, weeks: data.weeks },
-      ctx,
-    )
+    refineWeeklyTemplateWeeks({ cycleWeeks: data.cycleWeeks, weeks: data.weeks }, ctx)
   })
 
 export type UpdateWeeklyScheduleTemplateSchemaType = z.infer<

@@ -29,10 +29,14 @@ const buttonVariants = cva(
           "min-h-10 gap-2 px-4 py-[0.5625rem] text-sm font-semibold leading-5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3",
         lg: "min-h-12 gap-2.5 px-6 py-[0.6875rem] text-base font-semibold leading-6 has-data-[icon=inline-end]:pr-4 has-data-[icon=inline-start]:pl-4",
         icon: "min-h-8 min-w-8 p-1.5 aspect-square flex items-center justify-center [&_svg:not([class*='size-'])]:size-4",
-        "icon-xs": "min-h-6 min-w-6 p-1 aspect-square flex items-center justify-center [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm": "min-h-7 min-w-7 p-1.5 aspect-square flex items-center justify-center [&_svg:not([class*='size-'])]:size-3.5",
-        "icon-md": "min-h-10 min-w-10 p-2.5 aspect-square flex items-center justify-center [&_svg:not([class*='size-'])]:size-4",
-        "icon-lg": "min-h-12 min-w-12 p-3 aspect-square flex items-center justify-center [&_svg:not([class*='size-'])]:size-5",
+        "icon-xs":
+          "min-h-6 min-w-6 p-1 aspect-square flex items-center justify-center [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm":
+          "min-h-7 min-w-7 p-1.5 aspect-square flex items-center justify-center [&_svg:not([class*='size-'])]:size-3.5",
+        "icon-md":
+          "min-h-10 min-w-10 p-2.5 aspect-square flex items-center justify-center [&_svg:not([class*='size-'])]:size-4",
+        "icon-lg":
+          "min-h-12 min-w-12 p-3 aspect-square flex items-center justify-center [&_svg:not([class*='size-'])]:size-5",
       },
     },
     defaultVariants: {

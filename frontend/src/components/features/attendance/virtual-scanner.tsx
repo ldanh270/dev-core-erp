@@ -66,7 +66,9 @@ export function VirtualScanner() {
             <p className="text-sm font-semibold text-foreground">
               {ATTENDANCE_MESSAGES.SCANNER.TODAY_SHIFT}
             </p>
-            {isShiftLoading ? <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /> : null}
+            {isShiftLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            ) : null}
           </div>
 
           {todayShift ? (
@@ -133,7 +135,7 @@ export function VirtualScanner() {
             <span>
               {isProcessing
                 ? ATTENDANCE_MESSAGES.SCANNER.PROCESSING(nextActionLabel)
-                : scanDisabledLabel ?? nextActionLabel}
+                : (scanDisabledLabel ?? nextActionLabel)}
             </span>
           </Button>
         </div>

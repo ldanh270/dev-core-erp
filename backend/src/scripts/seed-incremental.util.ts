@@ -3,6 +3,7 @@
  * Used by `bun run seed -- --incremental` when DB already has admin/employees.
  */
 import { prisma } from "@/libs/database.ts"
+
 import { createEmptyContext, registry } from "./seeders/index.ts"
 import type { SeedContext } from "./seeders/seed-context.ts"
 
@@ -35,12 +36,18 @@ export async function hydrateSeedContext(context: SeedContext): Promise<SeedCont
     ...context,
     adminId: admin.id,
     employees,
-    workingShiftIds: (await prisma.workingShift.findMany({ select: { id: true } })).map((s) => s.id),
-    shiftScheduleMap: Object.fromEntries(schedules.map((schedule) => [schedule.employeeId, schedule.id])),
+    workingShiftIds: (await prisma.workingShift.findMany({ select: { id: true } })).map(
+      (s) => s.id,
+    ),
+    shiftScheduleMap: Object.fromEntries(
+      schedules.map((schedule) => [schedule.employeeId, schedule.id]),
+    ),
     employeeShiftIds: employeeShifts.map((shift) => shift.id),
     salaryComponentIds: salaryComponents.map((item) => item.id),
     payslipTemplateIds: payslipTemplates.map((item) => item.id),
-    salaryConfigMap: Object.fromEntries(salaryConfigs.map((config) => [config.employeeId, config.id])),
+    salaryConfigMap: Object.fromEntries(
+      salaryConfigs.map((config) => [config.employeeId, config.id]),
+    ),
     payrollIds: payrolls.map((item) => item.id),
     projectIds: projects.map((item) => item.id),
   }

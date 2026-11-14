@@ -3,8 +3,8 @@
  * Re-running it restores Lan instead of creating duplicate employee/auth records.
  */
 import {
-  EMPLOYEE_STATUS,
   EMPLOYEE_POSITION_CODE,
+  EMPLOYEE_STATUS,
   EMPLOYEE_TYPE,
   WORK_SCHEDULE_TYPE,
 } from "@/configs/entities/employee.config.ts"
@@ -36,10 +36,7 @@ export async function ensureCapacityDemoTester(
   })
   const existing = await client.employee.findFirst({
     where: {
-      OR: [
-        { username: CAPACITY_DEMO_TESTER.username },
-        { email: CAPACITY_DEMO_TESTER.email },
-      ],
+      OR: [{ username: CAPACITY_DEMO_TESTER.username }, { email: CAPACITY_DEMO_TESTER.email }],
     },
   })
 

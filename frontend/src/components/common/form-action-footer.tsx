@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { DialogFooter } from "@/components/ui/dialog"
+
 import { Loader2 } from "lucide-react"
 
 interface FormActionFooterProps {
@@ -12,11 +13,7 @@ interface FormActionFooterProps {
  * Shared footer component for dialog forms to maintain consistency
  * and reduce code duplication as suggested by Codacy.
  */
-export function FormActionFooter({
-  onCancel,
-  submitLabel,
-  isPending,
-}: FormActionFooterProps) {
+export function FormActionFooter({ onCancel, submitLabel, isPending }: FormActionFooterProps) {
   return (
     <DialogFooter className="mt-4">
       <Button

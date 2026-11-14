@@ -347,33 +347,25 @@
   "indexes": [
     {
       "name": "IX_BackgroundCheck_candidateId",
-      "columns": [
-        "candidateId"
-      ],
+      "columns": ["candidateId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_BackgroundCheck_offerId",
-      "columns": [
-        "offerId"
-      ],
+      "columns": ["offerId"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_BackgroundCheck_status",
-      "columns": [
-        "status"
-      ],
+      "columns": ["status"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_BackgroundCheck",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -383,34 +375,22 @@
       "virtualName": "offer",
       "targetModel": "RecruitmentOffer",
       "relationName": null,
-      "foreignKeyFields": [
-        "offerId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["offerId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "candidate",
       "targetModel": "Candidate",
       "relationName": null,
-      "foreignKeyFields": [
-        "candidateId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["candidateId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "checkedBy",
       "targetModel": "Employee",
       "relationName": "BgcChecker",
-      "foreignKeyFields": [
-        "checkedById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["checkedById"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

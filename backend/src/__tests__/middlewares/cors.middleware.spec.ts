@@ -24,7 +24,10 @@ describe("cors middleware", () => {
       next,
     )
 
-    expect(response.setHeader).toHaveBeenCalledWith("Access-Control-Allow-Origin", "https://hr.example.com")
+    expect(response.setHeader).toHaveBeenCalledWith(
+      "Access-Control-Allow-Origin",
+      "https://hr.example.com",
+    )
     expect(response.sendStatus).toHaveBeenCalledWith(204)
     expect(next).not.toHaveBeenCalled()
   })
@@ -45,7 +48,10 @@ describe("cors middleware", () => {
       next,
     )
 
-    expect(response.setHeader).toHaveBeenCalledWith("Access-Control-Allow-Origin", "http://localhost:5173")
+    expect(response.setHeader).toHaveBeenCalledWith(
+      "Access-Control-Allow-Origin",
+      "http://localhost:5173",
+    )
     expect(next).toHaveBeenCalled()
   })
 
@@ -66,9 +72,11 @@ describe("cors middleware", () => {
     )
 
     expect(response.status).toHaveBeenCalledWith(403)
-    expect(response.json).toHaveBeenCalledWith(expect.objectContaining({
-      error: expect.objectContaining({ code: "ORIGIN_NOT_ALLOWED" }),
-    }))
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: expect.objectContaining({ code: "ORIGIN_NOT_ALLOWED" }),
+      }),
+    )
     expect(next).not.toHaveBeenCalled()
   })
 

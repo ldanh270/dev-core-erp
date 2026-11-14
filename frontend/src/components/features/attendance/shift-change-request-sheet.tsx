@@ -1,5 +1,5 @@
-import { FormActionFooter } from "@/components/common/form-action-footer"
 import { DatePicker } from "@/components/common"
+import { FormActionFooter } from "@/components/common/form-action-footer"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -16,11 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form-ui"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
   Select,
   SelectContent,
@@ -30,8 +26,8 @@ import {
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
-import { useShifts } from "@/hooks/attendance/use-shifts"
 import { useSubmitShiftChangeRequest } from "@/hooks/attendance/use-shift-change-requests"
+import { useShifts } from "@/hooks/attendance/use-shifts"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import { cn } from "@/lib/utils"
 
@@ -87,12 +83,12 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
    * Limit is set to 10 for performance optimization, combined with server-side search.
    * Calls API: employeeApi.list
    */
-  const { data: employeeData, isLoading: isLoadingEmployees } = useEmployees({ 
-    page: 1, 
+  const { data: employeeData, isLoading: isLoadingEmployees } = useEmployees({
+    page: 1,
     limit: 10,
-    search: employeeSearch 
+    search: employeeSearch,
   })
-  
+
   const mutation = useSubmitShiftChangeRequest()
 
   const onSubmit = (values: FormValues) => {
@@ -129,11 +125,15 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
                   name="startDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Shift Date <span className="text-destructive">*</span></FormLabel>
+                      <FormLabel>
+                        Shift Date <span className="text-destructive">*</span>
+                      </FormLabel>
                       <FormControl>
                         <DatePicker
                           value={field.value || null}
-                          onChange={(val) => { field.onChange(val || ""); }}
+                          onChange={(val) => {
+                            field.onChange(val || "")
+                          }}
                           placeholder="Chọn ngày ca làm..."
                         />
                       </FormControl>
@@ -147,7 +147,9 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
                   name="employeeShiftId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Your Current Shift <span className="text-destructive">*</span></FormLabel>
+                      <FormLabel>
+                        Your Current Shift <span className="text-destructive">*</span>
+                      </FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger className="rounded-full border-border h-11 bg-muted/30 shadow-none">
@@ -156,7 +158,9 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
                         </FormControl>
                         <SelectContent className="border-border rounded-xl">
                           {shifts?.map((s) => (
-                            <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                            <SelectItem key={s.id} value={s.id}>
+                              {s.name}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -178,7 +182,9 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
                   name="swapWithEmployeeId"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Swap with Colleague <span className="text-destructive">*</span></FormLabel>
+                      <FormLabel>
+                        Swap with Colleague <span className="text-destructive">*</span>
+                      </FormLabel>
                       <Popover open={employeePopoverOpen} onOpenChange={setEmployeePopoverOpen}>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -187,48 +193,58 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
                               role="combobox"
                               className={cn(
                                 "w-full justify-between rounded-2xl border-border h-11 bg-muted/30 shadow-none font-normal px-3",
-                                !field.value && "text-muted-foreground"
+                                !field.value && "text-muted-foreground",
                               )}
                             >
                               {field.value
-                                ? employeeData?.data.find((emp) => emp.id === field.value)?.fullName || "Selected Employee"
+                                ? employeeData?.data.find((emp) => emp.id === field.value)
+                                    ?.fullName || "Selected Employee"
                                 : "-- Select colleague --"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                        <PopoverContent
+                          className="w-[--radix-popover-trigger-width] p-0"
+                          align="start"
+                        >
                           <div className="flex items-center border-b px-3">
                             <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
                             <input
                               className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
                               placeholder="Search employee name..."
                               value={employeeSearch}
-                              onChange={(e) => { setEmployeeSearch(e.target.value) }}
+                              onChange={(e) => {
+                                setEmployeeSearch(e.target.value)
+                              }}
                             />
                           </div>
                           <div className="max-h-60 overflow-y-auto p-1">
                             {isLoadingEmployees ? (
-                              <div className="p-4 text-center text-sm text-muted-foreground">Loading...</div>
+                              <div className="p-4 text-center text-sm text-muted-foreground">
+                                Loading...
+                              </div>
                             ) : employeeData?.data.length === 0 ? (
-                              <div className="p-4 text-center text-sm text-muted-foreground">No employee found.</div>
+                              <div className="p-4 text-center text-sm text-muted-foreground">
+                                No employee found.
+                              </div>
                             ) : (
                               employeeData?.data.map((emp) => (
                                 <div
                                   key={emp.id}
                                   className={cn(
                                     "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground",
-                                    field.value === emp.id && "bg-accent text-accent-foreground"
+                                    field.value === emp.id && "bg-accent text-accent-foreground",
                                   )}
                                   onClick={() => {
-                                    form.setValue("swapWithEmployeeId", emp.id);
-                                    setEmployeePopoverOpen(false);
+                                    form.setValue("swapWithEmployeeId", emp.id)
+                                    setEmployeePopoverOpen(false)
                                   }}
                                 >
                                   <Check
                                     className={cn(
                                       "mr-2 h-4 w-4",
-                                      field.value === emp.id ? "opacity-100" : "opacity-0"
+                                      field.value === emp.id ? "opacity-100" : "opacity-0",
                                     )}
                                   />
                                   {emp.fullName} ({emp.username})
@@ -248,7 +264,9 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
                   name="swapWithShiftId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Target Shift <span className="text-destructive">*</span></FormLabel>
+                      <FormLabel>
+                        Target Shift <span className="text-destructive">*</span>
+                      </FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger className="rounded-full border-border h-11 bg-muted/30 shadow-none">
@@ -257,7 +275,9 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
                         </FormControl>
                         <SelectContent className="border-border rounded-xl">
                           {shifts?.map((s) => (
-                            <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                            <SelectItem key={s.id} value={s.id}>
+                              {s.name}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -280,7 +300,9 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
                 name="reason"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Reason for Request <span className="text-destructive">*</span></FormLabel>
+                    <FormLabel>
+                      Reason for Request <span className="text-destructive">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="e.g., Personal business, swapping to visit doctor..."
@@ -294,8 +316,10 @@ export function ShiftChangeRequestDialog({ open, onOpenChange }: Props) {
               />
             </div>
 
-            <FormActionFooter 
-              onCancel={() => { onOpenChange(false); }}
+            <FormActionFooter
+              onCancel={() => {
+                onOpenChange(false)
+              }}
               submitLabel="Submit Request"
               isPending={mutation.isPending}
             />

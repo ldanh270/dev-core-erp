@@ -1,5 +1,5 @@
-import { HolidayEmployeePicker } from "@/components/features/attendance/holiday-employee-picker"
 import { DatePicker } from "@/components/common"
+import { HolidayEmployeePicker } from "@/components/features/attendance/holiday-employee-picker"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -177,7 +177,7 @@ export function HolidayFormDialog({
                 value={form.startDate || null}
                 disabled={isEdit}
                 onChange={(val) => {
-                  setForm((c) => ({ ...c, startDate: val || "" }));
+                  setForm((c) => ({ ...c, startDate: val || "" }))
                 }}
                 placeholder="Chọn từ ngày..."
               />
@@ -190,7 +190,7 @@ export function HolidayFormDialog({
                 disabled={isEdit}
                 minDate={form.startDate}
                 onChange={(val) => {
-                  setForm((c) => ({ ...c, endDate: val || "" }));
+                  setForm((c) => ({ ...c, endDate: val || "" }))
                 }}
                 placeholder="Chọn đến ngày..."
               />

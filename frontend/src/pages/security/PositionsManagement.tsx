@@ -1,11 +1,6 @@
-import { useState } from "react"
-import { usePositions, useCreatePosition, useUpdatePosition, useDeletePosition } from "@/hooks/use-position-query"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
 import { PageCard, PageContainer } from "@/components/common"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -14,7 +9,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Briefcase, Plus, Edit2, Trash2, CheckSquare } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import {
+  useCreatePosition,
+  useDeletePosition,
+  usePositions,
+  useUpdatePosition,
+} from "@/hooks/use-position-query"
+
+import { useState } from "react"
+
+import { Briefcase, CheckSquare, Edit2, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 // English to Vietnamese labels for trackers
@@ -57,7 +64,13 @@ export default function PositionsManagement() {
     setIsOpen(true)
   }
 
-  const handleOpenEdit = (pos: { id: string; name: string; code: string; description?: string | null; allowedTaskTrackers?: string[] }) => {
+  const handleOpenEdit = (pos: {
+    id: string
+    name: string
+    code: string
+    description?: string | null
+    allowedTaskTrackers?: string[]
+  }) => {
     setEditingId(pos.id)
     setName(pos.name)
     setCode(pos.code)
@@ -68,7 +81,7 @@ export default function PositionsManagement() {
 
   const handleToggleTracker = (tracker: string) => {
     setAllowedTrackers((prev) =>
-      prev.includes(tracker) ? prev.filter((t) => t !== tracker) : [...prev, tracker]
+      prev.includes(tracker) ? prev.filter((t) => t !== tracker) : [...prev, tracker],
     )
   }
 
@@ -125,12 +138,14 @@ export default function PositionsManagement() {
           </span>
           <h1 className="text-2xl font-bold text-foreground mt-0.5">Quản lý Chức vụ</h1>
           <p className="text-xs text-muted-foreground mt-1 max-w-[600px]">
-            Định nghĩa các chức vụ và cấu hình các quy tắc giới hạn tạo Công việc (Task) cũng như gửi Yêu cầu (Application) toàn hệ thống.
+            Định nghĩa các chức vụ và cấu hình các quy tắc giới hạn tạo Công việc (Task) cũng như
+            gửi Yêu cầu (Application) toàn hệ thống.
           </p>
         </div>
         <Button
           onClick={handleOpenCreate}
-          size="default" className="rounded-full shadow-xs gap-2 font-semibold"
+          size="default"
+          className="rounded-full shadow-xs gap-2 font-semibold"
         >
           <Plus className="size-4" />
           Thêm chức vụ mới
@@ -159,8 +174,13 @@ export default function PositionsManagement() {
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="font-bold text-base text-foreground leading-tight">{pos.name}</h3>
-                    <Badge variant="secondary" className="rounded-full text-[9px] font-mono mt-1 font-bold">
+                    <h3 className="font-bold text-base text-foreground leading-tight">
+                      {pos.name}
+                    </h3>
+                    <Badge
+                      variant="secondary"
+                      className="rounded-full text-[9px] font-mono mt-1 font-bold"
+                    >
                       {pos.code}
                     </Badge>
                   </div>
@@ -168,7 +188,9 @@ export default function PositionsManagement() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => { handleOpenEdit(pos); }}
+                      onClick={() => {
+                        handleOpenEdit(pos)
+                      }}
                       className="size-8 rounded-full hover:bg-muted"
                     >
                       <Edit2 className="size-3.5 text-muted-foreground hover:text-foreground" />
@@ -196,10 +218,16 @@ export default function PositionsManagement() {
                     </span>
                     <div className="flex flex-wrap gap-1">
                       {pos.allowedTaskTrackers.length === 0 ? (
-                        <span className="text-[10px] text-muted-foreground italic">Chưa giới hạn (Cho phép tất cả)</span>
+                        <span className="text-[10px] text-muted-foreground italic">
+                          Chưa giới hạn (Cho phép tất cả)
+                        </span>
                       ) : (
                         pos.allowedTaskTrackers.map((t: string) => (
-                          <Badge key={t} variant="outline" className="rounded-full text-[9px] px-2 py-0.5 border-border bg-background">
+                          <Badge
+                            key={t}
+                            variant="outline"
+                            className="rounded-full text-[9px] px-2 py-0.5 border-border bg-background"
+                          >
                             {TRACKER_LABELS[t] || t}
                           </Badge>
                         ))
@@ -228,22 +256,30 @@ export default function PositionsManagement() {
           <form onSubmit={handleSubmit} className="space-y-6 py-2">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="name" className="text-xs font-bold">Tên chức vụ *</Label>
+                <Label htmlFor="name" className="text-xs font-bold">
+                  Tên chức vụ *
+                </Label>
                 <Input
                   id="name"
                   value={name}
-                  onChange={(e) => { setName(e.target.value); }}
+                  onChange={(e) => {
+                    setName(e.target.value)
+                  }}
                   placeholder="Ví dụ: Lập trình viên"
                   className="rounded-full h-10 text-sm"
                   required
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="code" className="text-xs font-bold">Mã chức vụ (Duy nhất) *</Label>
+                <Label htmlFor="code" className="text-xs font-bold">
+                  Mã chức vụ (Duy nhất) *
+                </Label>
                 <Input
                   id="code"
                   value={code}
-                  onChange={(e) => { setCode(e.target.value); }}
+                  onChange={(e) => {
+                    setCode(e.target.value)
+                  }}
                   placeholder="Ví dụ: developer"
                   className="rounded-full h-10 text-sm font-mono"
                   disabled={!!editingId}
@@ -253,11 +289,15 @@ export default function PositionsManagement() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="desc" className="text-xs font-bold">Mô tả chức vụ</Label>
+              <Label htmlFor="desc" className="text-xs font-bold">
+                Mô tả chức vụ
+              </Label>
               <Textarea
                 id="desc"
                 value={description}
-                onChange={(e) => { setDescription(e.target.value); }}
+                onChange={(e) => {
+                  setDescription(e.target.value)
+                }}
                 placeholder="Nhập mô tả ngắn gọn về vai trò/chức năng của chức vụ này..."
                 className="rounded-xl min-h-[60px] text-sm"
               />
@@ -269,7 +309,8 @@ export default function PositionsManagement() {
                   1. Cấu hình loại công việc được tạo (Mặc định)
                 </Label>
                 <p className="text-[10px] text-muted-foreground mt-0.5 mb-3">
-                  Chọn các loại công việc mà chức vụ này được phép tạo (để trống nếu cho phép tạo tất cả).
+                  Chọn các loại công việc mà chức vụ này được phép tạo (để trống nếu cho phép tạo
+                  tất cả).
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {Object.entries(TRACKER_LABELS).map(([key, label]) => {
@@ -278,15 +319,21 @@ export default function PositionsManagement() {
                       <button
                         type="button"
                         key={key}
-                        onClick={() => { handleToggleTracker(key); }}
+                        onClick={() => {
+                          handleToggleTracker(key)
+                        }}
                         className={`flex items-center gap-2 p-2.5 rounded-full border text-left transition-all duration-200 cursor-pointer ${
                           isChecked
                             ? "bg-primary/5 border-primary text-primary"
                             : "bg-background border-border hover:bg-muted/30"
                         }`}
                       >
-                        <CheckSquare className={`size-4 shrink-0 ${isChecked ? "text-primary fill-primary/10" : "text-muted-foreground"}`} />
-                        <span className="text-xs font-semibold leading-tight line-clamp-1">{label}</span>
+                        <CheckSquare
+                          className={`size-4 shrink-0 ${isChecked ? "text-primary fill-primary/10" : "text-muted-foreground"}`}
+                        />
+                        <span className="text-xs font-semibold leading-tight line-clamp-1">
+                          {label}
+                        </span>
                       </button>
                     )
                   })}
@@ -298,7 +345,9 @@ export default function PositionsManagement() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => { setIsOpen(false); }}
+                onClick={() => {
+                  setIsOpen(false)
+                }}
                 className="rounded-full text-xs h-9"
               >
                 Hủy bỏ

@@ -1,6 +1,6 @@
 import { PageCard, PageHeader, SectionHeader, StatusPill } from "@/components/common"
-import { AvailabilityWeekGrid } from "@/components/features/attendance/part-time-availability/availability-week-grid"
 import { WeekPickerActions } from "@/components/features/attendance/calendar/week-picker-actions"
+import { AvailabilityWeekGrid } from "@/components/features/attendance/part-time-availability/availability-week-grid"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { DAY_OF_WEEK_LABELS } from "@/config/entities/attendance.config"
@@ -21,8 +21,10 @@ import {
   collectEmployeeAvailabilityIssues,
   mapAvailabilityToForm,
 } from "@/utils/attendance/part-time-availability.util"
-import { AlertCircle, ChevronLeft, ChevronRight, Info, Save, Send } from "lucide-react"
+
 import { useMemo, useState } from "react"
+
+import { AlertCircle, ChevronLeft, ChevronRight, Info, Save, Send } from "lucide-react"
 import { toast } from "sonner"
 
 export interface EmployeePartTimeAvailabilityFormProps {
@@ -180,8 +182,8 @@ export function EmployeePartTimeAvailabilityForm({
 
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/30 px-4 py-2.5">
           <p className="text-xs text-muted-foreground">
-            Chọn <span className="font-medium text-foreground">Rảnh</span> và khai báo khung giờ, hoặc
-            chọn <span className="font-medium text-foreground">Bận</span> nếu không làm.
+            Chọn <span className="font-medium text-foreground">Rảnh</span> và khai báo khung giờ,
+            hoặc chọn <span className="font-medium text-foreground">Bận</span> nếu không làm.
           </p>
           {availability ? (
             <StatusPill

@@ -109,63 +109,191 @@ export const DEFAULT_RECENT_DAYS_RANGE = 7
 export const FILTER_DEFINITIONS = {
   [GANTT_FILTER_KEY.STATUS]: { label: "Trạng thái", type: GANTT_FILTER_TYPE.STATUS, group: "" },
   [GANTT_FILTER_KEY.TRACKER]: { label: "Kiểu vấn đề", type: GANTT_FILTER_TYPE.TRACKER, group: "" },
-  [GANTT_FILTER_KEY.PRIORITY]: { label: "Mức ưu tiên", type: GANTT_FILTER_TYPE.PRIORITY, group: "" },
+  [GANTT_FILTER_KEY.PRIORITY]: {
+    label: "Mức ưu tiên",
+    type: GANTT_FILTER_TYPE.PRIORITY,
+    group: "",
+  },
   [GANTT_FILTER_KEY.AUTHOR]: { label: "Tác giả", type: GANTT_FILTER_TYPE.EMPLOYEE, group: "" },
-  [GANTT_FILTER_KEY.ASSIGNEE]: { label: "Phân công cho", type: GANTT_FILTER_TYPE.EMPLOYEE, group: "" },
-  [GANTT_FILTER_KEY.TARGET_VERSION]: { label: "Phiên bản", type: GANTT_FILTER_TYPE.VERSION, group: "" },
+  [GANTT_FILTER_KEY.ASSIGNEE]: {
+    label: "Phân công cho",
+    type: GANTT_FILTER_TYPE.EMPLOYEE,
+    group: "",
+  },
+  [GANTT_FILTER_KEY.TARGET_VERSION]: {
+    label: "Phiên bản",
+    type: GANTT_FILTER_TYPE.VERSION,
+    group: "",
+  },
   [GANTT_FILTER_KEY.SUBJECT]: { label: "Chủ đề", type: GANTT_FILTER_TYPE.TEXT, group: "" },
   [GANTT_FILTER_KEY.PROGRESS]: { label: "Tiến độ", type: GANTT_FILTER_TYPE.PROGRESS, group: "" },
-  [GANTT_FILTER_KEY.UPDATED_BY]: { label: "Cập nhật bởi", type: GANTT_FILTER_TYPE.EMPLOYEE, group: "" },
-  [GANTT_FILTER_KEY.LAST_UPDATED_BY]: { label: "Cập nhật lần cuối bởi", type: GANTT_FILTER_TYPE.EMPLOYEE, group: "" },
+  [GANTT_FILTER_KEY.UPDATED_BY]: {
+    label: "Cập nhật bởi",
+    type: GANTT_FILTER_TYPE.EMPLOYEE,
+    group: "",
+  },
+  [GANTT_FILTER_KEY.LAST_UPDATED_BY]: {
+    label: "Cập nhật lần cuối bởi",
+    type: GANTT_FILTER_TYPE.EMPLOYEE,
+    group: "",
+  },
   [GANTT_FILTER_KEY.SUBPROJECT]: { label: "Dự án con", type: GANTT_FILTER_TYPE.TEXT, group: "" },
   [GANTT_FILTER_KEY.ISSUE]: { label: "Vấn đề", type: GANTT_FILTER_TYPE.TEXT, group: "" },
-  
+
   // Text search filter group
-  [GANTT_FILTER_KEY.TXT_SUBJECT]: { label: "Chủ đề", type: GANTT_FILTER_TYPE.TEXT, group: "Văn bản" },
+  [GANTT_FILTER_KEY.TXT_SUBJECT]: {
+    label: "Chủ đề",
+    type: GANTT_FILTER_TYPE.TEXT,
+    group: "Văn bản",
+  },
   [GANTT_FILTER_KEY.TXT_DESC]: { label: "Mô tả", type: GANTT_FILTER_TYPE.TEXT, group: "Văn bản" },
-  [GANTT_FILTER_KEY.TXT_NOTES]: { label: "Ghi chú", type: GANTT_FILTER_TYPE.TEXT, group: "Văn bản" },
-  [GANTT_FILTER_KEY.TXT_ANY]: { label: "Nội dung bất kỳ", type: GANTT_FILTER_TYPE.TEXT, group: "Văn bản" },
+  [GANTT_FILTER_KEY.TXT_NOTES]: {
+    label: "Ghi chú",
+    type: GANTT_FILTER_TYPE.TEXT,
+    group: "Văn bản",
+  },
+  [GANTT_FILTER_KEY.TXT_ANY]: {
+    label: "Nội dung bất kỳ",
+    type: GANTT_FILTER_TYPE.TEXT,
+    group: "Văn bản",
+  },
 
   // Date filter group
-  [GANTT_FILTER_KEY.DATE_DUE]: { label: "Hạn hoàn thành (Ngày hết hạn)", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
+  [GANTT_FILTER_KEY.DATE_DUE]: {
+    label: "Hạn hoàn thành (Ngày hết hạn)",
+    type: GANTT_FILTER_TYPE.DATE,
+    group: "Ngày",
+  },
   [GANTT_FILTER_KEY.DATE_START]: { label: "Bắt đầu", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
   [GANTT_FILTER_KEY.DATE_CREATED]: { label: "Tạo", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
-  [GANTT_FILTER_KEY.DATE_UPDATED]: { label: "Cập nhật", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
+  [GANTT_FILTER_KEY.DATE_UPDATED]: {
+    label: "Cập nhật",
+    type: GANTT_FILTER_TYPE.DATE,
+    group: "Ngày",
+  },
   [GANTT_FILTER_KEY.DATE_CLOSED]: { label: "Đã đóng", type: GANTT_FILTER_TYPE.DATE, group: "Ngày" },
 
   // Time tracking filter group
-  [GANTT_FILTER_KEY.TIME_EST]: { label: "Thời gian ước lượng", type: GANTT_FILTER_TYPE.NUMBER, group: "Theo dõi thời gian" },
-  [GANTT_FILTER_KEY.TIME_SPENT]: { label: "Thời gian", type: GANTT_FILTER_TYPE.NUMBER, group: "Theo dõi thời gian" },
+  [GANTT_FILTER_KEY.TIME_EST]: {
+    label: "Thời gian ước lượng",
+    type: GANTT_FILTER_TYPE.NUMBER,
+    group: "Theo dõi thời gian",
+  },
+  [GANTT_FILTER_KEY.TIME_SPENT]: {
+    label: "Thời gian",
+    type: GANTT_FILTER_TYPE.NUMBER,
+    group: "Theo dõi thời gian",
+  },
 
   // File filter group
-  [GANTT_FILTER_KEY.FILE_NAME]: { label: "Tập tin", type: GANTT_FILTER_TYPE.TEXT, group: "Tập tin" },
-  [GANTT_FILTER_KEY.FILE_DESC]: { label: "File description", type: GANTT_FILTER_TYPE.TEXT, group: "Tập tin" },
+  [GANTT_FILTER_KEY.FILE_NAME]: {
+    label: "Tập tin",
+    type: GANTT_FILTER_TYPE.TEXT,
+    group: "Tập tin",
+  },
+  [GANTT_FILTER_KEY.FILE_DESC]: {
+    label: "File description",
+    type: GANTT_FILTER_TYPE.TEXT,
+    group: "Tập tin",
+  },
 
   // Author filter group
-  [GANTT_FILTER_KEY.AUTHOR_GROUP]: { label: "Của tác giả : Nhóm", type: GANTT_FILTER_TYPE.TEXT, group: "Tác giả" },
-  [GANTT_FILTER_KEY.AUTHOR_ROLE]: { label: "Của tác giả : Quyền", type: GANTT_FILTER_TYPE.TEXT, group: "Tác giả" },
+  [GANTT_FILTER_KEY.AUTHOR_GROUP]: {
+    label: "Của tác giả : Nhóm",
+    type: GANTT_FILTER_TYPE.TEXT,
+    group: "Tác giả",
+  },
+  [GANTT_FILTER_KEY.AUTHOR_ROLE]: {
+    label: "Của tác giả : Quyền",
+    type: GANTT_FILTER_TYPE.TEXT,
+    group: "Tác giả",
+  },
 
   // Assignee filter group
-  [GANTT_FILTER_KEY.ASSIGNEE_GROUP]: { label: "Nhóm thụ hưởng", type: GANTT_FILTER_TYPE.TEXT, group: "Phân công cho" },
-  [GANTT_FILTER_KEY.ASSIGNEE_ROLE]: { label: "Quyền thụ hưởng", type: GANTT_FILTER_TYPE.TEXT, group: "Phân công cho" },
+  [GANTT_FILTER_KEY.ASSIGNEE_GROUP]: {
+    label: "Nhóm thụ hưởng",
+    type: GANTT_FILTER_TYPE.TEXT,
+    group: "Phân công cho",
+  },
+  [GANTT_FILTER_KEY.ASSIGNEE_ROLE]: {
+    label: "Quyền thụ hưởng",
+    type: GANTT_FILTER_TYPE.TEXT,
+    group: "Phân công cho",
+  },
 
   // Target version filter group
-  [GANTT_FILTER_KEY.VER_DATE]: { label: "Phiên bản mục tiêu của Ngày", type: GANTT_FILTER_TYPE.DATE, group: "Phiên bản" },
-  [GANTT_FILTER_KEY.VER_STATUS]: { label: "Phiên bản mục tiêu của Trạng thái", type: GANTT_FILTER_TYPE.TEXT, group: "Phiên bản" },
+  [GANTT_FILTER_KEY.VER_DATE]: {
+    label: "Phiên bản mục tiêu của Ngày",
+    type: GANTT_FILTER_TYPE.DATE,
+    group: "Phiên bản",
+  },
+  [GANTT_FILTER_KEY.VER_STATUS]: {
+    label: "Phiên bản mục tiêu của Trạng thái",
+    type: GANTT_FILTER_TYPE.TEXT,
+    group: "Phiên bản",
+  },
 
   // Project filter group
-  [GANTT_FILTER_KEY.PROJ_STATUS]: { label: "Của dự án : Trạng thái", type: GANTT_FILTER_TYPE.TEXT, group: "Dự án" },
+  [GANTT_FILTER_KEY.PROJ_STATUS]: {
+    label: "Của dự án : Trạng thái",
+    type: GANTT_FILTER_TYPE.TEXT,
+    group: "Dự án",
+  },
 
   // Task relationship filter group
-  [GANTT_FILTER_KEY.REL_RELATED]: { label: "liên quan", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
-  [GANTT_FILTER_KEY.REL_DUPLICATE]: { label: "trùng với", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
-  [GANTT_FILTER_KEY.REL_DUPLICATED_BY]: { label: "bị trùng bởi", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
-  [GANTT_FILTER_KEY.REL_BLOCKS]: { label: "chặn", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
-  [GANTT_FILTER_KEY.REL_BLOCKED_BY]: { label: "chặn bởi", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
-  [GANTT_FILTER_KEY.REL_PRECEDES]: { label: "đi trước", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
-  [GANTT_FILTER_KEY.REL_FOLLOWS]: { label: "đi sau", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
-  [GANTT_FILTER_KEY.REL_COPIED_TO]: { label: "Sao chép đến", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
-  [GANTT_FILTER_KEY.REL_COPIED_FROM]: { label: "Sao chép từ", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
-  [GANTT_FILTER_KEY.REL_PARENT]: { label: "Tác vụ cha", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
-  [GANTT_FILTER_KEY.REL_CHILD]: { label: "Tác vụ con", type: GANTT_FILTER_TYPE.RELATION, group: "Mối quan hệ" },
+  [GANTT_FILTER_KEY.REL_RELATED]: {
+    label: "liên quan",
+    type: GANTT_FILTER_TYPE.RELATION,
+    group: "Mối quan hệ",
+  },
+  [GANTT_FILTER_KEY.REL_DUPLICATE]: {
+    label: "trùng với",
+    type: GANTT_FILTER_TYPE.RELATION,
+    group: "Mối quan hệ",
+  },
+  [GANTT_FILTER_KEY.REL_DUPLICATED_BY]: {
+    label: "bị trùng bởi",
+    type: GANTT_FILTER_TYPE.RELATION,
+    group: "Mối quan hệ",
+  },
+  [GANTT_FILTER_KEY.REL_BLOCKS]: {
+    label: "chặn",
+    type: GANTT_FILTER_TYPE.RELATION,
+    group: "Mối quan hệ",
+  },
+  [GANTT_FILTER_KEY.REL_BLOCKED_BY]: {
+    label: "chặn bởi",
+    type: GANTT_FILTER_TYPE.RELATION,
+    group: "Mối quan hệ",
+  },
+  [GANTT_FILTER_KEY.REL_PRECEDES]: {
+    label: "đi trước",
+    type: GANTT_FILTER_TYPE.RELATION,
+    group: "Mối quan hệ",
+  },
+  [GANTT_FILTER_KEY.REL_FOLLOWS]: {
+    label: "đi sau",
+    type: GANTT_FILTER_TYPE.RELATION,
+    group: "Mối quan hệ",
+  },
+  [GANTT_FILTER_KEY.REL_COPIED_TO]: {
+    label: "Sao chép đến",
+    type: GANTT_FILTER_TYPE.RELATION,
+    group: "Mối quan hệ",
+  },
+  [GANTT_FILTER_KEY.REL_COPIED_FROM]: {
+    label: "Sao chép từ",
+    type: GANTT_FILTER_TYPE.RELATION,
+    group: "Mối quan hệ",
+  },
+  [GANTT_FILTER_KEY.REL_PARENT]: {
+    label: "Tác vụ cha",
+    type: GANTT_FILTER_TYPE.RELATION,
+    group: "Mối quan hệ",
+  },
+  [GANTT_FILTER_KEY.REL_CHILD]: {
+    label: "Tác vụ con",
+    type: GANTT_FILTER_TYPE.RELATION,
+    group: "Mối quan hệ",
+  },
 } as const

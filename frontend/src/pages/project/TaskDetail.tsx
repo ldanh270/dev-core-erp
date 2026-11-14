@@ -1,8 +1,7 @@
 import { BackButton, PageCard, PageContainer, SafeHtml, StatusPill } from "@/components/common"
-import LogTimeModal from "@/components/features/project/LogTimeModal"
-import { TaskAssigneeAiModal } from "./components/task-assignee-ai-modal"
-import { Badge } from "@/components/ui/badge"
 import { DatePicker } from "@/components/common"
+import LogTimeModal from "@/components/features/project/LogTimeModal"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -24,32 +23,32 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
+  PROJECT_ROLE,
   SPENT_TIME_STATUS,
-
   TASK_PRIORITIES,
   TASK_STATUS,
   getSpentTimeStatusLabel,
-  PROJECT_ROLE,
 } from "@/config/entities/project.config"
 import { SPENT_TIME_UI, getSpentTimeStatusPillVariant } from "@/config/rules/spent-time.config"
 import { usePermission } from "@/hooks/use-permission"
+import { useProfile } from "@/hooks/use-profile"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
 import { projectApi } from "@/lib/api/project.api"
 import { taskApi } from "@/lib/api/task.api"
+import { useProjectTrackers } from "@/pages/project/hooks/use-project-tracker"
 import { useAuthStore } from "@/store/auth-store"
 import type { ProjectTaskStatus } from "@/types/project-task-status.types"
-import { useProfile } from "@/hooks/use-profile"
-import { useProjectTrackers } from "@/pages/project/hooks/use-project-tracker"
+import type { SpentTime } from "@/types/spent-time.types"
+import type { TaskPriority, TaskTracker } from "@/types/task.types"
+import { extractErrorMessage } from "@/utils/error-helper"
+
+import { useEffect, useState } from "react"
+
 // Import React Query hooks for fetching and mutations
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-// Import toast notification client
-import { toast } from "sonner"
-import { extractErrorMessage } from "@/utils/error-helper"
-import type { SpentTime } from "@/types/spent-time.types"
-import type { TaskTracker, TaskPriority } from "@/types/task.types"
-import { useEffect, useState } from "react"
 import {
   AlertCircle,
+  Brain,
   Calendar,
   Check,
   Clock,
@@ -60,9 +59,12 @@ import {
   Trash2,
   User,
   X,
-  Brain,
 } from "lucide-react"
 import { Link, useNavigate, useParams } from "react-router-dom"
+// Import toast notification client
+import { toast } from "sonner"
+
+import { TaskAssigneeAiModal } from "./components/task-assignee-ai-modal"
 
 /**
  * Helper function for cleanHtml.
@@ -201,22 +203,25 @@ export default function TaskDetail() {
 
   // Helper to determine allowed trackers for the current user in this project
   const allowedTrackers = (() => {
-    const activeTrackers = trackers.map(t => t.code)
+    const activeTrackers = trackers.map((t) => t.code)
 
     // Default allowed trackers based on project configuration (or fallback to all if empty)
-    const projectAllowed = project?.allowedTaskTrackers && project.allowedTaskTrackers.length > 0
-      ? project.allowedTaskTrackers
-      : activeTrackers
+    const projectAllowed =
+      project?.allowedTaskTrackers && project.allowedTaskTrackers.length > 0
+        ? project.allowedTaskTrackers
+        : activeTrackers
 
     const isAdminOrGM = hasAnyPermission(["project.update", "project.task.approve"])
 
-    const currentEmpId = profile?.personalEmployeeId || user?.personalEmployeeId || profile?.id || user?.id
+    const currentEmpId =
+      profile?.personalEmployeeId || user?.personalEmployeeId || profile?.id || user?.id
     const currentMember = members?.find((m) => m.employeeId === currentEmpId)
-    const isLeader = project?.teamLeaderId === user?.personalEmployeeId ||
-                     project?.teamLeaderId === profile?.personalEmployeeId ||
-                     project?.teamLeaderId === user?.id ||
-                     project?.teamLeaderId === profile?.id ||
-                     currentMember?.role?.code === PROJECT_ROLE.LEADER
+    const isLeader =
+      project?.teamLeaderId === user?.personalEmployeeId ||
+      project?.teamLeaderId === profile?.personalEmployeeId ||
+      project?.teamLeaderId === user?.id ||
+      project?.teamLeaderId === profile?.id ||
+      currentMember?.role?.code === PROJECT_ROLE.LEADER
 
     if (isAdminOrGM || isLeader) {
       return projectAllowed
@@ -229,7 +234,9 @@ export default function TaskDetail() {
 
     if (role) {
       if (role.allowedTaskTrackers && role.allowedTaskTrackers.length > 0) {
-        return role.allowedTaskTrackers.filter(tr => activeTrackers.length === 0 || activeTrackers.includes(tr))
+        return role.allowedTaskTrackers.filter(
+          (tr) => activeTrackers.length === 0 || activeTrackers.includes(tr),
+        )
       }
       return projectAllowed
     }
@@ -239,7 +246,7 @@ export default function TaskDetail() {
 
   // Format helper for display
   const formatTracker = (trackerCode: string) => {
-    const dbTracker = trackers.find(t => t.code === trackerCode)
+    const dbTracker = trackers.find((t) => t.code === trackerCode)
     return dbTracker ? dbTracker.name : trackerCode
   }
 
@@ -247,7 +254,7 @@ export default function TaskDetail() {
   const trackersToDisplay = allowedTrackers.includes(taskTracker)
     ? allowedTrackers
     : taskTracker
-      ? [taskTracker, ...allowedTrackers.filter(t => t !== taskTracker)]
+      ? [taskTracker, ...allowedTrackers.filter((t) => t !== taskTracker)]
       : allowedTrackers
 
   // PT task totals exclude rejected logs; pending + approved count toward estimate cap
@@ -291,10 +298,15 @@ export default function TaskDetail() {
         const sourceStatus = statuses.find((s) => s.id === task.statusId)
         const targetStatus = statuses.find((s) => s.id === taskStatusId)
         if (sourceStatus && targetStatus) {
-          const isMovingBackToDefault = !sourceStatus.isDefault && !sourceStatus.isCompleted && targetStatus.isDefault
+          const isMovingBackToDefault =
+            !sourceStatus.isDefault && !sourceStatus.isCompleted && targetStatus.isDefault
           if (isMovingBackToDefault) {
-            toast.warning("Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình")
-            throw new Error("Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình")
+            toast.warning(
+              "Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình",
+            )
+            throw new Error(
+              "Công việc đang thực hiện không thể chuyển ngược lại về cần làm theo quy trình",
+            )
           }
         }
       }
@@ -309,7 +321,7 @@ export default function TaskDetail() {
         dueDate: taskDue || null,
         estimatedTime: taskEstimate ? parseFloat(taskEstimate) : null,
         progress: Number(taskProgress),
-        resultUrl: resultTab === "report" ? (resultUrl.trim() || null) : null,
+        resultUrl: resultTab === "report" ? resultUrl.trim() || null : null,
         resultNotes: resultTab === "report" ? cleanHtml(resultNotes) : null,
       })
     },
@@ -466,76 +478,82 @@ export default function TaskDetail() {
           <BackButton fallbackHref={projectId ? `/project/${projectId}/issues` : "/project/list"} />
           <div>
             <div className="flex flex-wrap items-center justify-between gap-4 w-full md:min-w-[450px]">
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Link
-                to="/project/list"
-                className="hover:text-primary transition-colors flex items-center gap-1"
-              >
-                <Folder className="size-3.5" />
-                Dự án
-              </Link>
-              <span>/</span>
-              <Link to={`/project/${projectId}/overview`} className="hover:text-primary transition-colors font-semibold">
-                {task.project?.name || "Chi tiết dự án"}
-              </Link>
-              <span>/</span>
-              <span className="font-mono text-muted-foreground">#{task.id.substring(0, 5)}</span>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Link
+                  to="/project/list"
+                  className="hover:text-primary transition-colors flex items-center gap-1"
+                >
+                  <Folder className="size-3.5" />
+                  Dự án
+                </Link>
+                <span>/</span>
+                <Link
+                  to={`/project/${projectId}/overview`}
+                  className="hover:text-primary transition-colors font-semibold"
+                >
+                  {task.project?.name || "Chi tiết dự án"}
+                </Link>
+                <span>/</span>
+                <span className="font-mono text-muted-foreground">#{task.id.substring(0, 5)}</span>
+              </div>
+
+              {siblingTasks.length > 1 && (
+                <div className="flex items-center gap-1 bg-secondary/50 border border-border/40 rounded-full px-2 py-0.5">
+                  <Button
+                    variant="ghost"
+                    disabled={!prevTaskId}
+                    onClick={() => {
+                      if (prevTaskId) {
+                        sessionStorage.setItem("activeTaskId", prevTaskId)
+                        navigate(`/project/task/${prevTaskId}`)
+                      }
+                    }}
+                    className="rounded-full h-5 px-1.5 text-[9px] font-bold disabled:opacity-40 hover:bg-background cursor-pointer"
+                  >
+                    « Trước
+                  </Button>
+                  <span className="text-muted-foreground font-mono text-[9px] px-1 select-none">
+                    {currentTaskIndex !== -1
+                      ? `${currentTaskIndex + 1}/${siblingTasks.length}`
+                      : "-"}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    disabled={!nextTaskId}
+                    onClick={() => {
+                      if (nextTaskId) {
+                        sessionStorage.setItem("activeTaskId", nextTaskId)
+                        navigate(`/project/task/${nextTaskId}`)
+                      }
+                    }}
+                    className="rounded-full h-5 px-1.5 text-[9px] font-bold disabled:opacity-40 hover:bg-background cursor-pointer"
+                  >
+                    Sau »
+                  </Button>
+                </div>
+              )}
             </div>
 
-            {siblingTasks.length > 1 && (
-              <div className="flex items-center gap-1 bg-secondary/50 border border-border/40 rounded-full px-2 py-0.5">
-                <Button
-                  variant="ghost"
-                  disabled={!prevTaskId}
-                  onClick={() => {
-                    if (prevTaskId) {
-                      sessionStorage.setItem("activeTaskId", prevTaskId)
-                      navigate(`/project/task/${prevTaskId}`)
-                    }
-                  }}
-                  className="rounded-full h-5 px-1.5 text-[9px] font-bold disabled:opacity-40 hover:bg-background cursor-pointer"
-                >
-                  « Trước
-                </Button>
-                <span className="text-muted-foreground font-mono text-[9px] px-1 select-none">
-                  {currentTaskIndex !== -1 ? `${currentTaskIndex + 1}/${siblingTasks.length}` : "-"}
-                </span>
-                <Button
-                  variant="ghost"
-                  disabled={!nextTaskId}
-                  onClick={() => {
-                    if (nextTaskId) {
-                      sessionStorage.setItem("activeTaskId", nextTaskId)
-                      navigate(`/project/task/${nextTaskId}`)
-                    }
-                  }}
-                  className="rounded-full h-5 px-1.5 text-[9px] font-bold disabled:opacity-40 hover:bg-background cursor-pointer"
-                >
-                  Sau »
-                </Button>
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 mt-2">
-            <Badge
-              variant="outline"
-              className="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
-            >
-              {task.tracker}
-            </Badge>
-            <h1 className="text-xl font-bold text-foreground">{task.title}</h1>
+            <div className="flex items-center gap-2 mt-2">
+              <Badge
+                variant="outline"
+                className="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
+              >
+                {task.tracker}
+              </Badge>
+              <h1 className="text-xl font-bold text-foreground">{task.title}</h1>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <Button
             onClick={() => {
               setEditingSpentTime(undefined)
               setIsOpenLogTimeModal(true)
             }}
-            size="default" className="rounded-full shadow-xs gap-1.5 font-semibold"
+            size="default"
+            className="rounded-full shadow-xs gap-1.5 font-semibold"
           >
             <Plus className="size-4" />
             Ghi nhận thời gian (Log Time)
@@ -544,7 +562,9 @@ export default function TaskDetail() {
           {canEditTask && (
             <Button
               onClick={handleOpenEdit}
-              variant="outline" size="default" className="rounded-full border-border hover:bg-muted/50 gap-1.5 font-semibold shadow-xs"
+              variant="outline"
+              size="default"
+              className="rounded-full border-border hover:bg-muted/50 gap-1.5 font-semibold shadow-xs"
             >
               <Edit className="size-4" />
               Chỉnh sửa
@@ -554,7 +574,9 @@ export default function TaskDetail() {
           {(isAdminOrGM || isLeader || isCreator) && (
             <Button
               onClick={handleDeleteTask}
-              variant="destructive" size="default" className="rounded-full gap-1.5 font-semibold shadow-xs cursor-pointer"
+              variant="destructive"
+              size="default"
+              className="rounded-full gap-1.5 font-semibold shadow-xs cursor-pointer"
             >
               <Trash2 className="size-4" />
               Xóa công việc
@@ -900,15 +922,23 @@ export default function TaskDetail() {
               if (task?.parentTaskId) {
                 const parentTask = allTasks.find((t) => t.id === task.parentTaskId)
                 if (parentTask) {
-                  if (parentTask.startDate && taskStart && new Date(taskStart) < new Date(parentTask.startDate)) {
+                  if (
+                    parentTask.startDate &&
+                    taskStart &&
+                    new Date(taskStart) < new Date(parentTask.startDate)
+                  ) {
                     toast.warning(
-                      `Ngày bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha (${new Date(parentTask.startDate).toLocaleDateString("vi-VN")})`
+                      `Ngày bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha (${new Date(parentTask.startDate).toLocaleDateString("vi-VN")})`,
                     )
                     return
                   }
-                  if (parentTask.dueDate && taskDue && new Date(taskDue) > new Date(parentTask.dueDate)) {
+                  if (
+                    parentTask.dueDate &&
+                    taskDue &&
+                    new Date(taskDue) > new Date(parentTask.dueDate)
+                  ) {
                     toast.warning(
-                      `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${new Date(parentTask.dueDate).toLocaleDateString("vi-VN")})`
+                      `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${new Date(parentTask.dueDate).toLocaleDateString("vi-VN")})`,
                     )
                     return
                   }
@@ -919,15 +949,19 @@ export default function TaskDetail() {
               const childTasks = allTasks.filter((t) => t.parentTaskId === id)
               if (childTasks.length > 0) {
                 for (const child of childTasks) {
-                  if (child.startDate && taskStart && new Date(taskStart) > new Date(child.startDate)) {
+                  if (
+                    child.startDate &&
+                    taskStart &&
+                    new Date(taskStart) > new Date(child.startDate)
+                  ) {
                     toast.warning(
-                      `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (bắt đầu ${new Date(child.startDate).toLocaleDateString("vi-VN")})`
+                      `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (bắt đầu ${new Date(child.startDate).toLocaleDateString("vi-VN")})`,
                     )
                     return
                   }
                   if (child.dueDate && taskDue && new Date(taskDue) < new Date(child.dueDate)) {
                     toast.warning(
-                      `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (hạn hoàn thành ${new Date(child.dueDate).toLocaleDateString("vi-VN")})`
+                      `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (hạn hoàn thành ${new Date(child.dueDate).toLocaleDateString("vi-VN")})`,
                     )
                     return
                   }
@@ -1119,7 +1153,9 @@ export default function TaskDetail() {
                 <DatePicker
                   id="editStart"
                   value={taskStart || null}
-                  onChange={(val) => { setTaskStart(val || ""); }}
+                  onChange={(val) => {
+                    setTaskStart(val || "")
+                  }}
                   placeholder="Chọn ngày bắt đầu..."
                 />
               </div>
@@ -1131,7 +1167,9 @@ export default function TaskDetail() {
                 <DatePicker
                   id="editDue"
                   value={taskDue || null}
-                  onChange={(val) => { setTaskDue(val || ""); }}
+                  onChange={(val) => {
+                    setTaskDue(val || "")
+                  }}
                   placeholder="Chọn hạn hoàn thành..."
                 />
               </div>
@@ -1159,7 +1197,13 @@ export default function TaskDetail() {
 
             <div className="border-t border-border/60 pt-3 space-y-3">
               <div className="text-xs font-bold text-foreground">Kết quả công việc</div>
-              <Tabs value={resultTab} onValueChange={(val) => { setResultTab(val as "report" | "optional") }} className="w-full animate-in fade-in duration-300">
+              <Tabs
+                value={resultTab}
+                onValueChange={(val) => {
+                  setResultTab(val as "report" | "optional")
+                }}
+                className="w-full animate-in fade-in duration-300"
+              >
                 <TabsList className="grid w-full grid-cols-2 rounded-full h-9 p-1 bg-muted/60 border border-border/40">
                   <TabsTrigger value="report" className="rounded-full text-xs py-1">
                     Báo cáo kết quả
@@ -1168,10 +1212,13 @@ export default function TaskDetail() {
                     Không yêu cầu kết quả (Optional)
                   </TabsTrigger>
                 </TabsList>
-                
+
                 <TabsContent value="report" className="space-y-3 pt-3">
                   <div className="space-y-1.5">
-                    <Label htmlFor="editResultUrl" className="text-xs font-semibold text-muted-foreground">
+                    <Label
+                      htmlFor="editResultUrl"
+                      className="text-xs font-semibold text-muted-foreground"
+                    >
                       Đường dẫn sản phẩm (resultUrl)
                     </Label>
                     <Input
@@ -1185,9 +1232,12 @@ export default function TaskDetail() {
                       className="border-border rounded-full bg-background"
                     />
                   </div>
-                  
+
                   <div className="space-y-1.5">
-                    <Label htmlFor="editResultNotes" className="text-xs font-semibold text-muted-foreground">
+                    <Label
+                      htmlFor="editResultNotes"
+                      className="text-xs font-semibold text-muted-foreground"
+                    >
                       Ghi chú kết quả (resultNotes)
                     </Label>
                     <RichTextEditor
@@ -1197,7 +1247,7 @@ export default function TaskDetail() {
                     />
                   </div>
                 </TabsContent>
-                
+
                 <TabsContent value="optional" className="pt-3">
                   <div className="text-xs text-muted-foreground italic bg-muted/20 p-4 rounded-xl border border-border/40 text-center">
                     Công việc này không yêu cầu đính kèm kết quả hoặc ghi chú bàn giao.

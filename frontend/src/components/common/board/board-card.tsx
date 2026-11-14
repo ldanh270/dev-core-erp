@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils"
+
 import type { HTMLAttributes, ReactNode } from "react"
 
 export interface BoardCardProps extends HTMLAttributes<HTMLDivElement> {
@@ -7,13 +8,7 @@ export interface BoardCardProps extends HTMLAttributes<HTMLDivElement> {
   isDragging?: boolean
 }
 
-export function BoardCard({
-  children,
-  isActive,
-  isDragging,
-  className,
-  ...props
-}: BoardCardProps) {
+export function BoardCard({ children, isActive, isDragging, className, ...props }: BoardCardProps) {
   return (
     <div
       className={cn(
@@ -21,7 +16,7 @@ export function BoardCard({
         "hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md",
         isActive && "border-primary ring-1 ring-primary/30",
         isDragging && "opacity-50 shadow-lg scale-[0.98]",
-        className
+        className,
       )}
       {...props}
     >

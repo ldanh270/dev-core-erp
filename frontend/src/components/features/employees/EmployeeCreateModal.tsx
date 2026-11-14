@@ -13,16 +13,16 @@ import {
   EMPLOYEE_STATUSES,
   EMPLOYMENT_CATEGORY_TYPES,
   type IEmploymentCategoryType,
+  WORK_SCHEDULE_TYPE,
+  WORK_SCHEDULE_TYPES,
+  WORK_SCHEDULE_TYPE_LABELS,
   getEmployeeStatusLabel,
   getEmployeeTypeLabel,
   getRoleLabel,
-  WORK_SCHEDULE_TYPE,
-  WORK_SCHEDULE_TYPE_LABELS,
-  WORK_SCHEDULE_TYPES,
 } from "@/config/entities/employee.config"
-import type { EmployeeStatus, WorkScheduleType } from "@/types/employee.types"
 import { useEmployeeCreateModal } from "@/hooks/employees/useEmployeeCreateModal"
 import { usePositions } from "@/hooks/use-position-query"
+import type { EmployeeStatus, WorkScheduleType } from "@/types/employee.types"
 
 import { X } from "lucide-react"
 
@@ -43,7 +43,8 @@ interface Props {
  */
 export function EmployeeCreateModal({ isOpen, onClose }: Props) {
   // Extract react hook form fields, submission states, and error mappings
-  const { register, handleSubmit, setValue, watch, errors, isPending, handleClose, roles } = useEmployeeCreateModal(onClose)
+  const { register, handleSubmit, setValue, watch, errors, isPending, handleClose, roles } =
+    useEmployeeCreateModal(onClose)
   const { data: positions = [] } = usePositions()
 
   return (
@@ -226,7 +227,10 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                     id="dateOfBirth"
                     value={watch("dateOfBirth") || null}
                     onChange={(val) => {
-                      setValue("dateOfBirth", val || "", { shouldValidate: true, shouldDirty: true });
+                      setValue("dateOfBirth", val || "", {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      })
                     }}
                     placeholder="Chọn ngày sinh..."
                   />
@@ -277,7 +281,10 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   <Select
                     value={watch("positionId") || "none"}
                     onValueChange={(val) => {
-                      setValue("positionId", val === "none" ? "" : val, { shouldValidate: true, shouldDirty: true })
+                      setValue("positionId", val === "none" ? "" : val, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      })
                     }}
                   >
                     <SelectTrigger
@@ -310,7 +317,10 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   <Select
                     value={watch("employeeType") || EMPLOYMENT_CATEGORY_TYPES[0]}
                     onValueChange={(val) => {
-                      setValue("employeeType", val as IEmploymentCategoryType, { shouldValidate: true, shouldDirty: true })
+                      setValue("employeeType", val as IEmploymentCategoryType, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      })
                     }}
                   >
                     <SelectTrigger id="employeeType" className="h-10 bg-background">
@@ -333,7 +343,10 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   <Select
                     value={watch("status") || EMPLOYEE_STATUSES[0]}
                     onValueChange={(val) => {
-                      setValue("status", val as EmployeeStatus, { shouldValidate: true, shouldDirty: true })
+                      setValue("status", val as EmployeeStatus, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      })
                     }}
                   >
                     <SelectTrigger id="status" className="h-10 bg-background">
@@ -349,7 +362,6 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   </Select>
                 </div>
 
-
                 {/* Part-time schedule is separate from employment category (contract type). */}
                 <div className="space-y-1.5">
                   <Label
@@ -361,7 +373,10 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                   <Select
                     value={watch("workScheduleType") || WORK_SCHEDULE_TYPES[0]}
                     onValueChange={(val) => {
-                      setValue("workScheduleType", val as WorkScheduleType, { shouldValidate: true, shouldDirty: true })
+                      setValue("workScheduleType", val as WorkScheduleType, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      })
                     }}
                   >
                     <SelectTrigger id="workScheduleType" className="h-10 bg-background">
@@ -390,7 +405,7 @@ export function EmployeeCreateModal({ isOpen, onClose }: Props) {
                     id="startDate"
                     value={watch("startDate") || null}
                     onChange={(val) => {
-                      setValue("startDate", val || "", { shouldValidate: true, shouldDirty: true });
+                      setValue("startDate", val || "", { shouldValidate: true, shouldDirty: true })
                     }}
                     placeholder="Chọn ngày bắt đầu..."
                   />

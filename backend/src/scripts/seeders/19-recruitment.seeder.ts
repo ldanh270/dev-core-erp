@@ -1,25 +1,26 @@
 /* eslint-disable @typescript-eslint/no-confusing-void-expression */
+import { EMPLOYEE_TYPE } from "@/configs/entities/employee.config.ts"
+import {
+  BGC_GROUP,
+  BGC_STATUS,
+  INTERVIEW_FORMAT,
+  INTERVIEW_RESULT,
+  INTERVIEW_ROUND_STATUS,
+  POSTING_STATUS,
+  RECRUITMENT_APPLICATION_STATUS,
+  RECRUITMENT_CHANNEL,
+  RECRUITMENT_OFFER_STATUS,
+  RECRUITMENT_PIPELINE_STAGE_TEMPLATE,
+  RECRUITMENT_SOURCE,
+  REQUISITION_PRIORITY,
+  REQUISITION_STATUS,
+} from "@/configs/entities/recruitment.config.ts"
 import { prisma } from "@/libs/database.ts"
 import { SeedContext, createEmptyContext } from "@/scripts/seeders/seed-context.ts"
 import { ISeeder } from "@/scripts/seeders/seeder.interface.ts"
 import { registry } from "@/scripts/seeders/seeder.registry.ts"
+
 import { faker } from "@faker-js/faker"
-import {
-  REQUISITION_STATUS,
-  REQUISITION_PRIORITY,
-  POSTING_STATUS,
-  RECRUITMENT_CHANNEL,
-  RECRUITMENT_APPLICATION_STATUS,
-  RECRUITMENT_SOURCE,
-  INTERVIEW_FORMAT,
-  INTERVIEW_ROUND_STATUS,
-  INTERVIEW_RESULT,
-  BGC_GROUP,
-  BGC_STATUS,
-  RECRUITMENT_OFFER_STATUS,
-  RECRUITMENT_PIPELINE_STAGE_TEMPLATE,
-} from "@/configs/entities/recruitment.config.ts"
-import { EMPLOYEE_TYPE } from "@/configs/entities/employee.config.ts"
 
 function requireSeedRecord<T>(record: T | undefined | null, label: string): NonNullable<T> {
   if (record == null) throw new Error(`Failed to find seeded ${label}`)
@@ -41,8 +42,12 @@ export class RecruitmentSeeder implements ISeeder {
     }
 
     // Get positions
-    const devPos = await prisma.position.findFirst({ where: { code: "developer", deletedAt: null } })
-    const testerPos = await prisma.position.findFirst({ where: { code: "tester", deletedAt: null } })
+    const devPos = await prisma.position.findFirst({
+      where: { code: "developer", deletedAt: null },
+    })
+    const testerPos = await prisma.position.findFirst({
+      where: { code: "tester", deletedAt: null },
+    })
     const pmPos = await prisma.position.findFirst({ where: { code: "pm", deletedAt: null } })
     const hrPos = await prisma.position.findFirst({ where: { code: "hr", deletedAt: null } })
 
@@ -151,12 +156,20 @@ export class RecruitmentSeeder implements ISeeder {
     }
     console.log(`    Seeded ${createdReqs.length} Job Requisitions.`)
 
-    
-    const nodejsReq = requireSeedRecord(createdReqs.find((requisition) => requisition.code === "REQ-2026-001"), "Node.js requisition")
-    
-    const qaReq = requireSeedRecord(createdReqs.find((requisition) => requisition.code === "REQ-2026-002"), "QA requisition")
-    
-    const frontendReq = requireSeedRecord(createdReqs.find((requisition) => requisition.code === "REQ-2026-005"), "Frontend requisition")
+    const nodejsReq = requireSeedRecord(
+      createdReqs.find((requisition) => requisition.code === "REQ-2026-001"),
+      "Node.js requisition",
+    )
+
+    const qaReq = requireSeedRecord(
+      createdReqs.find((requisition) => requisition.code === "REQ-2026-002"),
+      "QA requisition",
+    )
+
+    const frontendReq = requireSeedRecord(
+      createdReqs.find((requisition) => requisition.code === "REQ-2026-005"),
+      "Frontend requisition",
+    )
 
     // 3. Create Job Postings
     const postingsToCreate = [
@@ -203,16 +216,26 @@ export class RecruitmentSeeder implements ISeeder {
     }
     console.log(`    Seeded ${createdPostings.length} Job Postings.`)
 
-    
-    const nodejsLinkedinPost = requireSeedRecord(createdPostings.find((posting) => posting.sourceCode === "PUB-LN-001"), "Node.js LinkedIn posting")
-    
-    const qaFacebookPost = requireSeedRecord(createdPostings.find((posting) => posting.sourceCode === "PUB-FB-002"), "QA Facebook posting")
-    
-    const frontendLinkedinPost = requireSeedRecord(createdPostings.find((posting) => posting.sourceCode === "PUB-LN-003"), "Frontend LinkedIn posting")
+    const nodejsLinkedinPost = requireSeedRecord(
+      createdPostings.find((posting) => posting.sourceCode === "PUB-LN-001"),
+      "Node.js LinkedIn posting",
+    )
+
+    const qaFacebookPost = requireSeedRecord(
+      createdPostings.find((posting) => posting.sourceCode === "PUB-FB-002"),
+      "QA Facebook posting",
+    )
+
+    const frontendLinkedinPost = requireSeedRecord(
+      createdPostings.find((posting) => posting.sourceCode === "PUB-LN-003"),
+      "Frontend LinkedIn posting",
+    )
 
     const defaultStageByPosting = new Map<string, string>()
     for (const posting of createdPostings) {
-      const stageCount = await prisma.recruitmentPipelineStage.count({ where: { postingId: posting.id } })
+      const stageCount = await prisma.recruitmentPipelineStage.count({
+        where: { postingId: posting.id },
+      })
       if (stageCount === 0) {
         await prisma.recruitmentPipelineStage.createMany({
           data: RECRUITMENT_PIPELINE_STAGE_TEMPLATE.map((stage) => ({
@@ -293,24 +316,42 @@ export class RecruitmentSeeder implements ISeeder {
     const createdCandidates = []
     for (const cand of candidatesData) {
       const existing = await prisma.candidate.findFirst({ where: { email: cand.email } })
-      const created = existing ?? await prisma.candidate.create({ data: cand })
+      const created = existing ?? (await prisma.candidate.create({ data: cand }))
       createdCandidates.push(created)
     }
     console.log(`    Seeded ${createdCandidates.length} Candidates.`)
 
     // Extract candidates
-    
-    const linhCandidate = requireSeedRecord(createdCandidates.find((candidate) => candidate.email.includes("linh")), "Linh candidate")
-    
-    const maiCandidate = requireSeedRecord(createdCandidates.find((candidate) => candidate.email.includes("mai")), "Mai candidate")
-    
-    const namCandidate = requireSeedRecord(createdCandidates.find((candidate) => candidate.email.includes("nam")), "Nam candidate")
-    
-    const ducCandidate = requireSeedRecord(createdCandidates.find((candidate) => candidate.email.includes("duc")), "Duc candidate")
-    
-    const vietCandidate = requireSeedRecord(createdCandidates.find((candidate) => candidate.email.includes("viet")), "Viet candidate")
-    
-    const lanCandidate = requireSeedRecord(createdCandidates.find((candidate) => candidate.email.includes("lan")), "Lan candidate")
+
+    const linhCandidate = requireSeedRecord(
+      createdCandidates.find((candidate) => candidate.email.includes("linh")),
+      "Linh candidate",
+    )
+
+    const maiCandidate = requireSeedRecord(
+      createdCandidates.find((candidate) => candidate.email.includes("mai")),
+      "Mai candidate",
+    )
+
+    const namCandidate = requireSeedRecord(
+      createdCandidates.find((candidate) => candidate.email.includes("nam")),
+      "Nam candidate",
+    )
+
+    const ducCandidate = requireSeedRecord(
+      createdCandidates.find((candidate) => candidate.email.includes("duc")),
+      "Duc candidate",
+    )
+
+    const vietCandidate = requireSeedRecord(
+      createdCandidates.find((candidate) => candidate.email.includes("viet")),
+      "Viet candidate",
+    )
+
+    const lanCandidate = requireSeedRecord(
+      createdCandidates.find((candidate) => candidate.email.includes("lan")),
+      "Lan candidate",
+    )
 
     const nodejsStageId = defaultStageByPosting.get(nodejsLinkedinPost.id)
     const qaStageId = defaultStageByPosting.get(qaFacebookPost.id)
@@ -394,12 +435,20 @@ export class RecruitmentSeeder implements ISeeder {
     }
     console.log(`    Seeded ${createdApps.length} Recruitment Applications.`)
 
-    
-    const linhApp = requireSeedRecord(createdApps.find((application) => application.candidateId === linhCandidate.id), "Linh application")
-    
-    const maiApp = requireSeedRecord(createdApps.find((application) => application.candidateId === maiCandidate.id), "Mai application")
-    
-    const namApp = requireSeedRecord(createdApps.find((application) => application.candidateId === namCandidate.id), "Nam application")
+    const linhApp = requireSeedRecord(
+      createdApps.find((application) => application.candidateId === linhCandidate.id),
+      "Linh application",
+    )
+
+    const maiApp = requireSeedRecord(
+      createdApps.find((application) => application.candidateId === maiCandidate.id),
+      "Mai application",
+    )
+
+    const namApp = requireSeedRecord(
+      createdApps.find((application) => application.candidateId === namCandidate.id),
+      "Nam application",
+    )
 
     // 6. Create Interview Rounds
     // Linh is interviewing: Round 1 (Completed, Pass), Round 2 (Scheduled)
@@ -446,7 +495,9 @@ export class RecruitmentSeeder implements ISeeder {
     }
     console.log(`    Seeded ${createdRounds.length} Interview Rounds.`)
 
-    const codingRound = createdRounds.find((r) => r.roundNumber === 1 && r.applicationId === linhApp.id)
+    const codingRound = createdRounds.find(
+      (r) => r.roundNumber === 1 && r.applicationId === linhApp.id,
+    )
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!codingRound) {
       throw new Error("Failed to find coding round")
@@ -461,7 +512,10 @@ export class RecruitmentSeeder implements ISeeder {
       weaknesses: "Slightly less familiar with high-scale system designs.",
       recommendation: "Strong hire for the senior role.",
       scores: { coding: 5, communication: 4, problemSolving: 5, architecture: 3 },
-      answers: { quest1: "Solved via hash map cleanly.", quest2: "Answered correctly regarding event loops." },
+      answers: {
+        quest1: "Solved via hash map cleanly.",
+        quest2: "Answered correctly regarding event loops.",
+      },
     }
 
     const existingScorecard = await prisma.scorecard.findUnique({
@@ -592,7 +646,9 @@ registry.register(new RecruitmentSeeder())
 if (import.meta.main) {
   const seeder = new RecruitmentSeeder()
   const admin = await prisma.employee.findFirst({ where: { username: "admin" } })
-  const emps = await prisma.employee.findMany({ select: { id: true, position: true, username: true } })
+  const emps = await prisma.employee.findMany({
+    select: { id: true, position: true, username: true },
+  })
   const ctx = createEmptyContext()
   if (admin) ctx.adminId = admin.id
   ctx.employees = emps

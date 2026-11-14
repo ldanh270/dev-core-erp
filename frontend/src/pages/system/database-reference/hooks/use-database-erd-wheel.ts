@@ -1,8 +1,8 @@
-import type { ErdPoint } from "../database-erd-geometry"
-import { MAX_SCALE, MIN_SCALE, ZOOM_STEP } from "./use-database-erd-viewport"
-
 import { useCallback, useEffect } from "react"
 import type { RefObject } from "react"
+
+import type { ErdPoint } from "../database-erd-geometry"
+import { MAX_SCALE, MIN_SCALE, ZOOM_STEP } from "./use-database-erd-viewport"
 
 interface UseDatabaseErdWheelParams {
   viewportRef: RefObject<HTMLDivElement | null>

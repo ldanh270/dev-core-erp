@@ -17,8 +17,7 @@ export const PART_TIME_AVAILABILITY_MESSAGES = {
   ASSIGN_INCOMPLETE_TIME: "Phải nhập đủ giờ bắt đầu và kết thúc",
   SHIFT_NOT_IN_SLOT: "Ca làm việc không nằm trong khung rảnh của nhân viên",
   ASSIGN_SUCCESS: "Đã xếp ca cho nhân viên",
-  WEEK_ALREADY_ASSIGNED:
-    "Tuần này đã được xếp ca. Liên hệ quản lý nếu cần chỉnh sửa lịch rảnh",
+  WEEK_ALREADY_ASSIGNED: "Tuần này đã được xếp ca. Liên hệ quản lý nếu cần chỉnh sửa lịch rảnh",
   EMPTY_DAY_SLOTS: "Ngày rảnh phải có ít nhất một khung giờ hoặc đánh dấu bận cả ngày",
   SLOT_TOO_SHORT: "Mỗi khung rảnh phải dài ít nhất 30 phút",
 } as const

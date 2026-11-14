@@ -7,8 +7,7 @@ import { NextFunction, Request, Response } from "express"
  * @returns Array of allowed origin strings or wildcards
  */
 export const getAllowedOrigins = (): string[] => {
-  const configured = process.env.CORS_ALLOWED_ORIGINS
-    ?.split(",")
+  const configured = process.env.CORS_ALLOWED_ORIGINS?.split(",")
     .map((origin) => origin.trim())
     .filter(Boolean)
 
@@ -37,9 +36,7 @@ export const isOriginAllowed = (origin: string, allowedOrigins: string[]): boole
           ? pattern
           : `https?://${pattern}`
 
-      const regexPattern = fullPattern
-        .replace(/[.+?^${}()|[\]\\]/g, "\\$&")
-        .replace(/\*/g, ".*")
+      const regexPattern = fullPattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*")
 
       return new RegExp(`^${regexPattern}$`, "i").test(origin)
     }

@@ -1,45 +1,45 @@
 /// <reference types="jest" />
-import { SalaryVariableService } from '../../services/salary-variable.service';
+import { SalaryVariableService } from "../../services/salary-variable.service"
 
-jest.mock('@/configs/messages/payroll.message', () => ({
+jest.mock("@/configs/messages/payroll.message", () => ({
   PAYROLL_MESSAGES: {
     ERRORS: {
-      SALARY_VARIABLE_NOT_FOUND: 'SALARY_VARIABLE_NOT_FOUND',
-      SALARY_VARIABLE_EXISTS: 'SALARY_VARIABLE_EXISTS',
+      SALARY_VARIABLE_NOT_FOUND: "SALARY_VARIABLE_NOT_FOUND",
+      SALARY_VARIABLE_EXISTS: "SALARY_VARIABLE_EXISTS",
     },
   },
-}));
+}))
 
-jest.mock('@/configs/system/error-code.config.ts', () => ({
+jest.mock("@/configs/system/error-code.config.ts", () => ({
   ErrorLayer: {
-    SERVICE: 'SERVICE',
+    SERVICE: "SERVICE",
   },
-}));
+}))
 
-jest.mock('@/configs/system/http.config.ts', () => ({
+jest.mock("@/configs/system/http.config.ts", () => ({
   HttpStatusCode: {
     NOT_FOUND: 404,
     BAD_REQUEST: 400,
     INTERNAL_SERVER_ERROR: 500,
   },
-}));
+}))
 
-jest.mock('@/utils/error.util.ts', () => ({
+jest.mock("@/utils/error.util.ts", () => ({
   AppError: class AppError extends Error {
     constructor(
       public message: string,
       public statusCode: number,
-      public layer: string
+      public layer: string,
     ) {
-      super(message);
-      this.name = 'AppError';
+      super(message)
+      this.name = "AppError"
     }
   },
-}));
+}))
 
-describe('SalaryVariableService', () => {
-  let service: SalaryVariableService;
-  let mockRepo: any;
+describe("SalaryVariableService", () => {
+  let service: SalaryVariableService
+  let mockRepo: any
 
   beforeEach(() => {
     mockRepo = {
@@ -49,268 +49,268 @@ describe('SalaryVariableService', () => {
       create: jest.fn(),
       update: jest.fn(),
       softDelete: jest.fn(),
-    };
-    service = new SalaryVariableService(mockRepo);
-  });
+    }
+    service = new SalaryVariableService(mockRepo)
+  })
 
-  describe('listVariables', () => {
-    it('UTCID01 - returns list of variables matching filter', async () => {
+  describe("listVariables", () => {
+    it("UTCID01 - returns list of variables matching filter", async () => {
       // Arrange
-      const mockFilter = { isActive: true };
+      const mockFilter = { isActive: true }
       const mockResult = [
         {
-          id: '1',
-          code: 'BASIC_SALARY',
-          name: 'Basic Salary',
+          id: "1",
+          code: "BASIC_SALARY",
+          name: "Basic Salary",
           value: 1000,
           description: null,
           isActive: true,
-          createdById: 'user-1',
+          createdById: "user-1",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
-      ];
-      mockRepo.findAll.mockResolvedValue(mockResult);
+      ]
+      mockRepo.findAll.mockResolvedValue(mockResult)
 
       // Act
-      const result = await service.listVariables(mockFilter);
+      const result = await service.listVariables(mockFilter)
 
       // Assert
-      expect(mockRepo.findAll).toHaveBeenCalledWith(mockFilter);
-      expect(result).toEqual(mockResult);
-    });
+      expect(mockRepo.findAll).toHaveBeenCalledWith(mockFilter)
+      expect(result).toEqual(mockResult)
+    })
 
-    it('UTCID02 - throws repository mapping error when search fails', async () => {
+    it("UTCID02 - throws repository mapping error when search fails", async () => {
       // Arrange
-      mockRepo.findAll.mockRejectedValue(new Error('DB_QUERY_FAILURE'));
+      mockRepo.findAll.mockRejectedValue(new Error("DB_QUERY_FAILURE"))
 
       // Act & Assert
-      await expect(service.listVariables()).rejects.toThrow('DB_QUERY_FAILURE');
-    });
+      await expect(service.listVariables()).rejects.toThrow("DB_QUERY_FAILURE")
+    })
 
-    it('UTCID03 - throws error when database connection times out', async () => {
+    it("UTCID03 - throws error when database connection times out", async () => {
       // Arrange
-      mockRepo.findAll.mockRejectedValue(new Error('CONNECTION_TIMEOUT'));
+      mockRepo.findAll.mockRejectedValue(new Error("CONNECTION_TIMEOUT"))
 
       // Act & Assert
-      await expect(service.listVariables()).rejects.toThrow('CONNECTION_TIMEOUT');
-    });
-  });
+      await expect(service.listVariables()).rejects.toThrow("CONNECTION_TIMEOUT")
+    })
+  })
 
-  describe('getVariable', () => {
-    it('UTCID01 - returns single variable when found by id', async () => {
+  describe("getVariable", () => {
+    it("UTCID01 - returns single variable when found by id", async () => {
       // Arrange
       const mockVariable = {
-        id: '1',
-        code: 'BASIC_SALARY',
-        name: 'Basic Salary',
+        id: "1",
+        code: "BASIC_SALARY",
+        name: "Basic Salary",
         value: 1000,
         description: null,
         isActive: true,
-        createdById: 'user-1',
+        createdById: "user-1",
         createdAt: new Date(),
         updatedAt: new Date(),
-      };
-      mockRepo.findById.mockResolvedValue(mockVariable);
+      }
+      mockRepo.findById.mockResolvedValue(mockVariable)
 
       // Act
-      const result = await service.getVariable('1');
+      const result = await service.getVariable("1")
 
       // Assert
-      expect(mockRepo.findById).toHaveBeenCalledWith('1');
-      expect(result).toEqual(mockVariable);
-    });
+      expect(mockRepo.findById).toHaveBeenCalledWith("1")
+      expect(result).toEqual(mockVariable)
+    })
 
-    it('UTCID02 - throws AppError 404 when variable is not found', async () => {
+    it("UTCID02 - throws AppError 404 when variable is not found", async () => {
       // Arrange
-      mockRepo.findById.mockResolvedValue(null);
+      mockRepo.findById.mockResolvedValue(null)
 
       // Act & Assert
-      await expect(service.getVariable('invalid-id')).rejects.toThrow(
+      await expect(service.getVariable("invalid-id")).rejects.toThrow(
         expect.objectContaining({
-          message: 'SALARY_VARIABLE_NOT_FOUND',
+          message: "SALARY_VARIABLE_NOT_FOUND",
           statusCode: 404,
-          layer: 'SERVICE',
-        })
-      );
-    });
+          layer: "SERVICE",
+        }),
+      )
+    })
 
-    it('UTCID03 - throws error when repository query fails', async () => {
+    it("UTCID03 - throws error when repository query fails", async () => {
       // Arrange
-      mockRepo.findById.mockRejectedValue(new Error('DB_READ_ERROR'));
+      mockRepo.findById.mockRejectedValue(new Error("DB_READ_ERROR"))
 
       // Act & Assert
-      await expect(service.getVariable('1')).rejects.toThrow('DB_READ_ERROR');
-    });
-  });
+      await expect(service.getVariable("1")).rejects.toThrow("DB_READ_ERROR")
+    })
+  })
 
-  describe('createVariable', () => {
+  describe("createVariable", () => {
     const inputDto = {
-      code: 'ALLOWANCE',
-      name: 'Allowance',
+      code: "ALLOWANCE",
+      name: "Allowance",
       value: 200 as any,
       description: undefined,
       isActive: true,
-    };
-    const createdById = 'admin-1';
+    }
+    const createdById = "admin-1"
 
-    it('UTCID01 - creates a new variable successfully', async () => {
+    it("UTCID01 - creates a new variable successfully", async () => {
       // Arrange
       const createdRecord = {
         ...inputDto,
         description: null,
-        id: 'new-id',
+        id: "new-id",
         createdById,
         createdAt: new Date(),
         updatedAt: new Date(),
-      };
-      mockRepo.findByCode.mockResolvedValue(null);
-      mockRepo.create.mockResolvedValue(createdRecord);
+      }
+      mockRepo.findByCode.mockResolvedValue(null)
+      mockRepo.create.mockResolvedValue(createdRecord)
 
       // Act
-      const result = await service.createVariable(inputDto, createdById);
+      const result = await service.createVariable(inputDto, createdById)
 
       // Assert
-      expect(mockRepo.findByCode).toHaveBeenCalledWith('ALLOWANCE');
-      expect(mockRepo.create).toHaveBeenCalledWith({ ...inputDto, createdById });
-      expect(result).toEqual(createdRecord);
-    });
+      expect(mockRepo.findByCode).toHaveBeenCalledWith("ALLOWANCE")
+      expect(mockRepo.create).toHaveBeenCalledWith({ ...inputDto, createdById })
+      expect(result).toEqual(createdRecord)
+    })
 
-    it('UTCID02 - throws AppError 400 when code already exists', async () => {
+    it("UTCID02 - throws AppError 400 when code already exists", async () => {
       // Arrange
-      mockRepo.findByCode.mockResolvedValue({ id: 'existing-id', code: 'ALLOWANCE' });
+      mockRepo.findByCode.mockResolvedValue({ id: "existing-id", code: "ALLOWANCE" })
 
       // Act & Assert
       await expect(service.createVariable(inputDto, createdById)).rejects.toThrow(
         expect.objectContaining({
-          message: 'SALARY_VARIABLE_EXISTS',
+          message: "SALARY_VARIABLE_EXISTS",
           statusCode: 400,
-          layer: 'SERVICE',
-        })
-      );
-    });
+          layer: "SERVICE",
+        }),
+      )
+    })
 
-    it('UTCID03 - throws error when repository creation fails', async () => {
+    it("UTCID03 - throws error when repository creation fails", async () => {
       // Arrange
-      mockRepo.findByCode.mockResolvedValue(null);
-      mockRepo.create.mockRejectedValue(new Error('INSERT_FAILED'));
+      mockRepo.findByCode.mockResolvedValue(null)
+      mockRepo.create.mockRejectedValue(new Error("INSERT_FAILED"))
 
       // Act & Assert
-      await expect(service.createVariable(inputDto, createdById)).rejects.toThrow('INSERT_FAILED');
-    });
-  });
+      await expect(service.createVariable(inputDto, createdById)).rejects.toThrow("INSERT_FAILED")
+    })
+  })
 
-  describe('updateVariable', () => {
+  describe("updateVariable", () => {
     const updateDto = {
-      code: 'NEW_ALLOWANCE',
-      name: 'Updated Allowance',
-    };
+      code: "NEW_ALLOWANCE",
+      name: "Updated Allowance",
+    }
     const existingRecord = {
-      id: 'existing-id',
-      code: 'ALLOWANCE',
-      name: 'Allowance',
+      id: "existing-id",
+      code: "ALLOWANCE",
+      name: "Allowance",
       value: 200,
       description: null,
       isActive: true,
-      createdById: 'admin-1',
+      createdById: "admin-1",
       createdAt: new Date(),
       updatedAt: new Date(),
-    };
+    }
 
-    it('UTCID01 - updates a variable successfully when code matches existing', async () => {
+    it("UTCID01 - updates a variable successfully when code matches existing", async () => {
       // Arrange
-      const updatedRecord = { ...existingRecord, ...updateDto };
-      mockRepo.findById.mockResolvedValue(existingRecord);
-      mockRepo.findByCode.mockResolvedValue(null);
-      mockRepo.update.mockResolvedValue(updatedRecord);
+      const updatedRecord = { ...existingRecord, ...updateDto }
+      mockRepo.findById.mockResolvedValue(existingRecord)
+      mockRepo.findByCode.mockResolvedValue(null)
+      mockRepo.update.mockResolvedValue(updatedRecord)
 
       // Act
-      const result = await service.updateVariable('existing-id', updateDto);
+      const result = await service.updateVariable("existing-id", updateDto)
 
       // Assert
-      expect(mockRepo.findById).toHaveBeenCalledWith('existing-id');
-      expect(mockRepo.findByCode).toHaveBeenCalledWith('NEW_ALLOWANCE');
-      expect(mockRepo.update).toHaveBeenCalledWith('existing-id', updateDto);
-      expect(result).toEqual(updatedRecord);
-    });
+      expect(mockRepo.findById).toHaveBeenCalledWith("existing-id")
+      expect(mockRepo.findByCode).toHaveBeenCalledWith("NEW_ALLOWANCE")
+      expect(mockRepo.update).toHaveBeenCalledWith("existing-id", updateDto)
+      expect(result).toEqual(updatedRecord)
+    })
 
-    it('UTCID02 - throws AppError 404 when updating non-existent variable', async () => {
+    it("UTCID02 - throws AppError 404 when updating non-existent variable", async () => {
       // Arrange
-      mockRepo.findById.mockResolvedValue(null);
+      mockRepo.findById.mockResolvedValue(null)
 
       // Act & Assert
-      await expect(service.updateVariable('non-existent', updateDto)).rejects.toThrow(
+      await expect(service.updateVariable("non-existent", updateDto)).rejects.toThrow(
         expect.objectContaining({
-          message: 'SALARY_VARIABLE_NOT_FOUND',
+          message: "SALARY_VARIABLE_NOT_FOUND",
           statusCode: 404,
-          layer: 'SERVICE',
-        })
-      );
-    });
+          layer: "SERVICE",
+        }),
+      )
+    })
 
-    it('UTCID03 - throws AppError 400 when updating code to one that is already in use', async () => {
+    it("UTCID03 - throws AppError 400 when updating code to one that is already in use", async () => {
       // Arrange
-      mockRepo.findById.mockResolvedValue(existingRecord);
-      mockRepo.findByCode.mockResolvedValue({ id: 'other-id', code: 'NEW_ALLOWANCE' });
+      mockRepo.findById.mockResolvedValue(existingRecord)
+      mockRepo.findByCode.mockResolvedValue({ id: "other-id", code: "NEW_ALLOWANCE" })
 
       // Act & Assert
-      await expect(service.updateVariable('existing-id', updateDto)).rejects.toThrow(
+      await expect(service.updateVariable("existing-id", updateDto)).rejects.toThrow(
         expect.objectContaining({
-          message: 'SALARY_VARIABLE_EXISTS',
+          message: "SALARY_VARIABLE_EXISTS",
           statusCode: 400,
-          layer: 'SERVICE',
-        })
-      );
-    });
-  });
+          layer: "SERVICE",
+        }),
+      )
+    })
+  })
 
-  describe('deleteVariable', () => {
+  describe("deleteVariable", () => {
     const existingRecord = {
-      id: 'existing-id',
-      code: 'ALLOWANCE',
-      name: 'Allowance',
+      id: "existing-id",
+      code: "ALLOWANCE",
+      name: "Allowance",
       value: 200,
       description: null,
       isActive: true,
-      createdById: 'admin-1',
+      createdById: "admin-1",
       createdAt: new Date(),
       updatedAt: new Date(),
-    };
+    }
 
-    it('UTCID01 - soft deletes a variable successfully', async () => {
+    it("UTCID01 - soft deletes a variable successfully", async () => {
       // Arrange
-      mockRepo.findById.mockResolvedValue(existingRecord);
-      mockRepo.softDelete.mockResolvedValue(undefined);
+      mockRepo.findById.mockResolvedValue(existingRecord)
+      mockRepo.softDelete.mockResolvedValue(undefined)
 
       // Act
-      await service.deleteVariable('existing-id');
+      await service.deleteVariable("existing-id")
 
       // Assert
-      expect(mockRepo.findById).toHaveBeenCalledWith('existing-id');
-      expect(mockRepo.softDelete).toHaveBeenCalledWith('existing-id');
-    });
+      expect(mockRepo.findById).toHaveBeenCalledWith("existing-id")
+      expect(mockRepo.softDelete).toHaveBeenCalledWith("existing-id")
+    })
 
-    it('UTCID02 - throws AppError 404 when deleting non-existent variable', async () => {
+    it("UTCID02 - throws AppError 404 when deleting non-existent variable", async () => {
       // Arrange
-      mockRepo.findById.mockResolvedValue(null);
+      mockRepo.findById.mockResolvedValue(null)
 
       // Act & Assert
-      await expect(service.deleteVariable('non-existent')).rejects.toThrow(
+      await expect(service.deleteVariable("non-existent")).rejects.toThrow(
         expect.objectContaining({
-          message: 'SALARY_VARIABLE_NOT_FOUND',
+          message: "SALARY_VARIABLE_NOT_FOUND",
           statusCode: 404,
-          layer: 'SERVICE',
-        })
-      );
-    });
+          layer: "SERVICE",
+        }),
+      )
+    })
 
-    it('UTCID03 - throws error when repository softDelete operation fails', async () => {
+    it("UTCID03 - throws error when repository softDelete operation fails", async () => {
       // Arrange
-      mockRepo.findById.mockResolvedValue(existingRecord);
-      mockRepo.softDelete.mockRejectedValue(new Error('SOFT_DELETE_FAILED'));
+      mockRepo.findById.mockResolvedValue(existingRecord)
+      mockRepo.softDelete.mockRejectedValue(new Error("SOFT_DELETE_FAILED"))
 
       // Act & Assert
-      await expect(service.deleteVariable('existing-id')).rejects.toThrow('SOFT_DELETE_FAILED');
-    });
-  });
-});
+      await expect(service.deleteVariable("existing-id")).rejects.toThrow("SOFT_DELETE_FAILED")
+    })
+  })
+})

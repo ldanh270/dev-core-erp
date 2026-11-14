@@ -90,17 +90,13 @@
   "indexes": [
     {
       "name": "IX_ApplicationRegimeDetail_regimeCategoryId",
-      "columns": [
-        "regimeCategoryId"
-      ],
+      "columns": ["regimeCategoryId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_ApplicationRegimeDetail",
-      "columns": [
-        "applicationId"
-      ],
+      "columns": ["applicationId"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -110,23 +106,15 @@
       "virtualName": "application",
       "targetModel": "Application",
       "relationName": null,
-      "foreignKeyFields": [
-        "applicationId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["applicationId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "regimeCategory",
       "targetModel": "RegimeCategory",
       "relationName": null,
-      "foreignKeyFields": [
-        "regimeCategoryId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["regimeCategoryId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

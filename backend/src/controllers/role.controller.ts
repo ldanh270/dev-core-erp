@@ -6,8 +6,9 @@ import {
   ListRolesQuerySchemaType,
   UpdateRoleSchemaType,
 } from "@/schemas/role.schema.ts"
-import { ApiResponse, IRoleService, PaginatedRolesDto, AppRole } from "@/types"
+import { ApiResponse, AppRole, IRoleService, PaginatedRolesDto } from "@/types"
 import { AppError } from "@/utils/error.util.ts"
+
 import { Response } from "express"
 
 /**

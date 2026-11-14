@@ -4,6 +4,8 @@ import { BackButton, DatePicker, PageCard, PageContainer } from "@/components/co
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+// Import Rich Text Editor wrapper component for the task description
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import {
   Select,
   SelectContent,
@@ -12,49 +14,47 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 // Import entity configurations for task tracker, status, and priorities
-import { TASK_PRIORITIES, PROJECT_ROLE } from "@/config/entities/project.config"
+import { PROJECT_ROLE, TASK_PRIORITIES } from "@/config/entities/project.config"
 import { usePermission } from "@/hooks/use-permission"
+import { useProfile } from "@/hooks/use-profile"
+import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
 // Import API utilities for projects, tasks, and task categories
 import { projectApi } from "@/lib/api/project.api"
 import { taskApi } from "@/lib/api/task.api"
-import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
+import { useProjectTrackers } from "@/pages/project/hooks/use-project-tracker"
+import { useAuthStore } from "@/store/auth-store"
+import type { ProjectTaskStatus } from "@/types/project-task-status.types"
+// Import type definitions for task tracker, priority, and status
+import type { TaskPriority, TaskTracker } from "@/types/task.types"
+
+// Import standard React hooks for component state and refs
+import { useEffect, useRef, useState } from "react"
+
 // Import React Query hooks for fetching and caching server state
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 // Import Lucide icons for visual decorators
-import {
-  UploadCloud,
-  User,
-} from "lucide-react"
-// Import standard React hooks for component state and refs
-import { useState, useRef, useEffect } from "react"
-// Import Rich Text Editor wrapper component for the task description
-import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import { UploadCloud, User } from "lucide-react"
 // Import routing hooks to handle URL parameters, search params, and navigation
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 // Import Toast notifications helper
 import { toast } from "sonner"
-// Import type definitions for task tracker, priority, and status
-import type { TaskTracker, TaskPriority } from "@/types/task.types"
-import type { ProjectTaskStatus } from "@/types/project-task-status.types"
-import { useAuthStore } from "@/store/auth-store"
-import { useProfile } from "@/hooks/use-profile"
-import { useProjectTrackers } from "@/pages/project/hooks/use-project-tracker"
 
 // Main component to render the "New Task" form
 export default function NewTask() {
   // Extract project ID from the URL path parameters or fallback to sessionStorage
   const { id: projectId } = useParams<{ id: string }>()
   const pId = projectId || sessionStorage.getItem("activeProjectId") || ""
-  
+
   // Initialize navigation, query invalidation client, and search parameter parser
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  
+
   const { hasAnyPermission } = usePermission()
 
   // Extract parent task ID from URL query parameters (if creating a subtask)
-  const parentTaskId = searchParams.get("parentTaskId") || sessionStorage.getItem("parentTaskId") || ""
+  const parentTaskId =
+    searchParams.get("parentTaskId") || sessionStorage.getItem("parentTaskId") || ""
   useEffect(() => {
     if (sessionStorage.getItem("parentTaskId")) {
       sessionStorage.removeItem("parentTaskId")
@@ -153,7 +153,6 @@ export default function NewTask() {
     enabled: !!pId,
   })
 
-
   // Query to fetch existing tasks under this project for parent task matching
   const { data: projectTasksData } = useQuery({
     queryKey: ["project-tasks", pId],
@@ -168,7 +167,7 @@ export default function NewTask() {
     queryFn: () => projectTaskStatusApi.list(pId),
     enabled: !!pId,
   })
-// eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const statuses = statusesData || []
 
   // Auth context
@@ -180,22 +179,25 @@ export default function NewTask() {
 
   // Helper to determine allowed trackers for the current user in this project
   const allowedTrackers = (() => {
-    const activeTrackers = trackers.map(t => t.code)
+    const activeTrackers = trackers.map((t) => t.code)
 
     // Default allowed trackers based on project configuration (or fallback to all if empty)
-    const projectAllowed = project?.allowedTaskTrackers && project.allowedTaskTrackers.length > 0
-      ? project.allowedTaskTrackers
-      : activeTrackers
+    const projectAllowed =
+      project?.allowedTaskTrackers && project.allowedTaskTrackers.length > 0
+        ? project.allowedTaskTrackers
+        : activeTrackers
 
     const isAdminOrGM = hasAnyPermission(["project.update", "project.task.approve"])
 
-    const currentEmpId = profile?.personalEmployeeId || user?.personalEmployeeId || profile?.id || user?.id
+    const currentEmpId =
+      profile?.personalEmployeeId || user?.personalEmployeeId || profile?.id || user?.id
     const currentMember = members?.find((m) => m.employeeId === currentEmpId)
-    const isLeader = project?.teamLeaderId === user?.personalEmployeeId ||
-                     project?.teamLeaderId === profile?.personalEmployeeId ||
-                     project?.teamLeaderId === user?.id ||
-                     project?.teamLeaderId === profile?.id ||
-                     currentMember?.role?.code === PROJECT_ROLE.LEADER
+    const isLeader =
+      project?.teamLeaderId === user?.personalEmployeeId ||
+      project?.teamLeaderId === profile?.personalEmployeeId ||
+      project?.teamLeaderId === user?.id ||
+      project?.teamLeaderId === profile?.id ||
+      currentMember?.role?.code === PROJECT_ROLE.LEADER
 
     if (isAdminOrGM || isLeader) {
       return projectAllowed
@@ -208,7 +210,9 @@ export default function NewTask() {
 
     if (role) {
       if (role.allowedTaskTrackers && role.allowedTaskTrackers.length > 0) {
-        return role.allowedTaskTrackers.filter(tr => activeTrackers.length === 0 || activeTrackers.includes(tr))
+        return role.allowedTaskTrackers.filter(
+          (tr) => activeTrackers.length === 0 || activeTrackers.includes(tr),
+        )
       }
       return projectAllowed
     }
@@ -220,7 +224,7 @@ export default function NewTask() {
   useEffect(() => {
     if (statuses.length > 0 && !taskStatusId) {
       const defaultStatus = statuses.find((s: ProjectTaskStatus) => s.isDefault) || statuses[0]
- 
+
       setTaskStatusId(defaultStatus.id)
     }
   }, [statuses, taskStatusId])
@@ -229,7 +233,6 @@ export default function NewTask() {
   useEffect(() => {
     if (allowedTrackers.length > 0) {
       if (!allowedTrackers.includes(taskTracker)) {
- 
         setTaskTracker(allowedTrackers[0] as TaskTracker)
       }
     }
@@ -263,7 +266,7 @@ export default function NewTask() {
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({ queryKey: ["tasks", "project", pId] })
       toast.success(`Tạo công việc thành công: ${variables.title}`)
-      
+
       // If "Create and add another" was chosen, reset transient input fields
       if (variables.andAnother) {
         setTaskTitle("")
@@ -308,15 +311,23 @@ export default function NewTask() {
     if (parentTask && parentTask !== "none") {
       const selectedParent = projectTasks.find((t) => t.id === parentTask)
       if (selectedParent) {
-        if (selectedParent.startDate && taskStart && new Date(taskStart) < new Date(selectedParent.startDate)) {
+        if (
+          selectedParent.startDate &&
+          taskStart &&
+          new Date(taskStart) < new Date(selectedParent.startDate)
+        ) {
           toast.warning(
-            `Ngày bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha (${new Date(selectedParent.startDate).toLocaleDateString("vi-VN")})`
+            `Ngày bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha (${new Date(selectedParent.startDate).toLocaleDateString("vi-VN")})`,
           )
           return
         }
-        if (selectedParent.dueDate && taskDue && new Date(taskDue) > new Date(selectedParent.dueDate)) {
+        if (
+          selectedParent.dueDate &&
+          taskDue &&
+          new Date(taskDue) > new Date(selectedParent.dueDate)
+        ) {
           toast.warning(
-            `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${new Date(selectedParent.dueDate).toLocaleDateString("vi-VN")})`
+            `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${new Date(selectedParent.dueDate).toLocaleDateString("vi-VN")})`,
           )
           return
         }
@@ -328,10 +339,9 @@ export default function NewTask() {
 
   // Translation helper for trackers format mapping
   const formatTracker = (trackerCode: string) => {
-    const dbTracker = trackers.find(t => t.code === trackerCode)
+    const dbTracker = trackers.find((t) => t.code === trackerCode)
     return dbTracker ? dbTracker.name : trackerCode
   }
-
 
   // Translation helper for priorities format mapping
   const formatPriority = (priority: string) => {
@@ -355,7 +365,7 @@ export default function NewTask() {
   // Individual watcher selection toggle handler
   const handleToggleWatcher = (empId: string) => {
     setSelectedWatchers((prev) =>
-      prev.includes(empId) ? prev.filter((id) => id !== empId) : [...prev, empId]
+      prev.includes(empId) ? prev.filter((id) => id !== empId) : [...prev, empId],
     )
   }
 
@@ -388,7 +398,10 @@ export default function NewTask() {
             Dự án
           </Link>
           <span>&gt;</span>
-          <Link to={`/project/${pId}/overview`} className="hover:text-primary transition-colors font-medium">
+          <Link
+            to={`/project/${pId}/overview`}
+            className="hover:text-primary transition-colors font-medium"
+          >
             {project?.name || "Outfiz Redmine"}
           </Link>
           <span>&gt;</span>
@@ -399,12 +412,18 @@ export default function NewTask() {
           <h1 className="text-2xl font-black tracking-tight text-foreground">Tạo công việc mới</h1>
         </div>
         <p className="text-xs text-muted-foreground">
-          Khởi tạo một công việc, lỗi hoặc tính năng mới trong dự án {project?.name || "Outfiz Redmine"}.
+          Khởi tạo một công việc, lỗi hoặc tính năng mới trong dự án{" "}
+          {project?.name || "Outfiz Redmine"}.
         </p>
       </div>
 
       {/* Main submission form structure */}
-      <form onSubmit={(e) => { handleSubmit(e, false) }} className="space-y-6">
+      <form
+        onSubmit={(e) => {
+          handleSubmit(e, false)
+        }}
+        className="space-y-6"
+      >
         <PageCard className="p-6 border border-border/80 rounded-xl bg-card space-y-6 shadow-sm">
           {/* Error Banner when request fails */}
           {taskError && (
@@ -416,14 +435,28 @@ export default function NewTask() {
           {/* Tracker Type and Status Selection Dropdowns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1.5">
-              <Label htmlFor="tracker" className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+              <Label
+                htmlFor="tracker"
+                className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider"
+              >
                 LOẠI YÊU CẦU <span className="text-destructive">*</span>
               </Label>
-              <Select value={taskTracker} onValueChange={(val) => { setTaskTracker(val as TaskTracker) }}>
-                <SelectTrigger id="tracker" className="w-full border-border rounded-full bg-background">
+              <Select
+                value={taskTracker}
+                onValueChange={(val) => {
+                  setTaskTracker(val as TaskTracker)
+                }}
+              >
+                <SelectTrigger
+                  id="tracker"
+                  className="w-full border-border rounded-full bg-background"
+                >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent position="popper" className="rounded-xl border-border bg-popover text-popover-foreground">
+                <SelectContent
+                  position="popper"
+                  className="rounded-xl border-border bg-popover text-popover-foreground"
+                >
                   {allowedTrackers.map((tr) => (
                     <SelectItem key={tr} value={tr} className="rounded-lg">
                       {formatTracker(tr)}
@@ -434,18 +467,35 @@ export default function NewTask() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="status" className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+              <Label
+                htmlFor="status"
+                className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider"
+              >
                 TRẠNG THÁI
               </Label>
-              <Select value={taskStatusId} onValueChange={(val) => { setTaskStatusId(val) }}>
-                <SelectTrigger id="status" className="w-full border-border rounded-full bg-background">
+              <Select
+                value={taskStatusId}
+                onValueChange={(val) => {
+                  setTaskStatusId(val)
+                }}
+              >
+                <SelectTrigger
+                  id="status"
+                  className="w-full border-border rounded-full bg-background"
+                >
                   <SelectValue placeholder="Chọn trạng thái..." />
                 </SelectTrigger>
-                <SelectContent position="popper" className="rounded-xl border-border bg-popover text-popover-foreground">
+                <SelectContent
+                  position="popper"
+                  className="rounded-xl border-border bg-popover text-popover-foreground"
+                >
                   {statuses.map((st: ProjectTaskStatus) => (
                     <SelectItem key={st.id} value={st.id} className="rounded-lg">
                       <span className="flex items-center gap-2">
-                        <span className="size-2 rounded-full shrink-0" style={{ backgroundColor: st.color }} />
+                        <span
+                          className="size-2 rounded-full shrink-0"
+                          style={{ backgroundColor: st.color }}
+                        />
                         {st.name} {st.isDefault && " (Mặc định)"}
                       </span>
                     </SelectItem>
@@ -457,14 +507,19 @@ export default function NewTask() {
 
           {/* Task Subject/Title Input Field */}
           <div className="space-y-1.5">
-            <Label htmlFor="subject" className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+            <Label
+              htmlFor="subject"
+              className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider"
+            >
               TIÊU ĐỀ <span className="text-destructive">*</span>
             </Label>
             <Input
               id="subject"
               placeholder="Mô tả ngắn gọn công việc"
               value={taskTitle}
-              onChange={(e) => { setTaskTitle(e.target.value) }}
+              onChange={(e) => {
+                setTaskTitle(e.target.value)
+              }}
               className="h-10 text-sm border-border rounded-full px-4"
               required
             />
@@ -472,7 +527,10 @@ export default function NewTask() {
 
           {/* Rich Text Editor for detailed description */}
           <div className="space-y-1.5">
-            <Label htmlFor="description" className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+            <Label
+              htmlFor="description"
+              className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider"
+            >
               MÔ TẢ
             </Label>
             <RichTextEditor
@@ -485,14 +543,28 @@ export default function NewTask() {
           {/* Priority, Start Date, and Due Date Fields */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-1.5">
-              <Label htmlFor="priority" className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+              <Label
+                htmlFor="priority"
+                className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider"
+              >
                 ĐỘ ƯU TIÊN
               </Label>
-              <Select value={taskPriority} onValueChange={(val) => { setTaskPriority(val as TaskPriority) }}>
-                <SelectTrigger id="priority" className="w-full border-border rounded-full bg-background">
+              <Select
+                value={taskPriority}
+                onValueChange={(val) => {
+                  setTaskPriority(val as TaskPriority)
+                }}
+              >
+                <SelectTrigger
+                  id="priority"
+                  className="w-full border-border rounded-full bg-background"
+                >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent position="popper" className="rounded-xl border-border bg-popover text-popover-foreground">
+                <SelectContent
+                  position="popper"
+                  className="rounded-xl border-border bg-popover text-popover-foreground"
+                >
                   {TASK_PRIORITIES.map((pr) => (
                     <SelectItem key={pr} value={pr} className="rounded-lg">
                       {formatPriority(pr)}
@@ -503,25 +575,35 @@ export default function NewTask() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="startDate" className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+              <Label
+                htmlFor="startDate"
+                className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider"
+              >
                 NGÀY BẮT ĐẦU
               </Label>
               <DatePicker
                 id="startDate"
                 value={taskStart || null}
-                onChange={(val) => { setTaskStart(val || ""); }}
+                onChange={(val) => {
+                  setTaskStart(val || "")
+                }}
                 placeholder="Chọn ngày bắt đầu..."
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="dueDate" className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+              <Label
+                htmlFor="dueDate"
+                className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider"
+              >
                 HẠN HOÀN THÀNH
               </Label>
               <DatePicker
                 id="dueDate"
                 value={taskDue || null}
-                onChange={(val) => { setTaskDue(val || ""); }}
+                onChange={(val) => {
+                  setTaskDue(val || "")
+                }}
                 placeholder="Chọn hạn hoàn thành..."
               />
             </div>
@@ -530,16 +612,27 @@ export default function NewTask() {
           {/* Assignee, Estimated Time, and Done Percent controls */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-1.5">
-              <Label htmlFor="assignee" className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+              <Label
+                htmlFor="assignee"
+                className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider"
+              >
                 NGƯỜI THỰC HIỆN
               </Label>
               <Select value={taskAssignee} onValueChange={setTaskAssignee}>
-                <SelectTrigger id="assignee" className="w-full border-border rounded-full bg-background">
+                <SelectTrigger
+                  id="assignee"
+                  className="w-full border-border rounded-full bg-background"
+                >
                   <User className="size-3.5 text-muted-foreground shrink-0" />
                   <SelectValue placeholder="Chọn thành viên" />
                 </SelectTrigger>
-                <SelectContent position="popper" className="rounded-xl border-border bg-popover text-popover-foreground">
-                  <SelectItem value="none" className="rounded-lg">Chọn thành viên</SelectItem>
+                <SelectContent
+                  position="popper"
+                  className="rounded-xl border-border bg-popover text-popover-foreground"
+                >
+                  <SelectItem value="none" className="rounded-lg">
+                    Chọn thành viên
+                  </SelectItem>
                   {members?.map((m) => (
                     <SelectItem key={m.id} value={m.employeeId} className="rounded-lg">
                       {m.employee?.fullName || "Chưa rõ"}
@@ -550,7 +643,10 @@ export default function NewTask() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="estimatedTime" className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+              <Label
+                htmlFor="estimatedTime"
+                className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider"
+              >
                 THỜI GIAN ƯỚC TÍNH
               </Label>
               <div className="relative">
@@ -561,22 +657,40 @@ export default function NewTask() {
                   min="0"
                   placeholder="0.0"
                   value={taskEstimate}
-                  onChange={(e) => { setTaskEstimate(e.target.value) }}
+                  onChange={(e) => {
+                    setTaskEstimate(e.target.value)
+                  }}
                   className="h-10 text-sm border-border rounded-full pl-4 pr-12 bg-background"
                 />
-                <span className="absolute right-4 top-2.5 text-xs text-muted-foreground font-semibold">giờ</span>
+                <span className="absolute right-4 top-2.5 text-xs text-muted-foreground font-semibold">
+                  giờ
+                </span>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="progress" className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+              <Label
+                htmlFor="progress"
+                className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider"
+              >
                 % HOÀN THÀNH
               </Label>
-              <Select value={taskProgress} onValueChange={(val) => { setTaskProgress(val) }}>
-                <SelectTrigger id="progress" className="w-full border-border rounded-full bg-background">
+              <Select
+                value={taskProgress}
+                onValueChange={(val) => {
+                  setTaskProgress(val)
+                }}
+              >
+                <SelectTrigger
+                  id="progress"
+                  className="w-full border-border rounded-full bg-background"
+                >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent position="popper" className="rounded-xl border-border bg-popover text-popover-foreground">
+                <SelectContent
+                  position="popper"
+                  className="rounded-xl border-border bg-popover text-popover-foreground"
+                >
                   {["0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"].map((p) => (
                     <SelectItem key={p} value={p} className="rounded-lg font-mono">
                       {p} %
@@ -590,15 +704,31 @@ export default function NewTask() {
           {/* Parent Task and Project Category dropdowns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1.5">
-              <Label htmlFor="parentTask" className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+              <Label
+                htmlFor="parentTask"
+                className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider"
+              >
                 CÔNG VIỆC CHA
               </Label>
-              <Select value={parentTask} onValueChange={(val) => { setParentTask(val) }}>
-                <SelectTrigger id="parentTask" className="w-full border-border rounded-full bg-background">
+              <Select
+                value={parentTask}
+                onValueChange={(val) => {
+                  setParentTask(val)
+                }}
+              >
+                <SelectTrigger
+                  id="parentTask"
+                  className="w-full border-border rounded-full bg-background"
+                >
                   <SelectValue placeholder="Chọn công việc cha" />
                 </SelectTrigger>
-                <SelectContent position="popper" className="rounded-xl border-border bg-popover text-popover-foreground">
-                  <SelectItem value="none" className="rounded-lg">Không có</SelectItem>
+                <SelectContent
+                  position="popper"
+                  className="rounded-xl border-border bg-popover text-popover-foreground"
+                >
+                  <SelectItem value="none" className="rounded-lg">
+                    Không có
+                  </SelectItem>
                   {projectTasks.map((t) => (
                     <SelectItem key={t.id} value={t.id} className="rounded-lg">
                       #{t?.id ? t.id.slice(-4) : "—"} - {t.title}
@@ -615,7 +745,9 @@ export default function NewTask() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* File upload drag-and-drop zone */}
             <div className="space-y-1.5">
-              <Label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">TÀI LIỆU ĐÍNH KÈM</Label>
+              <Label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+                TÀI LIỆU ĐÍNH KÈM
+              </Label>
               <input
                 type="file"
                 multiple
@@ -628,18 +760,26 @@ export default function NewTask() {
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                onClick={() => { fileInputRef.current?.click(); }}
+                onClick={() => {
+                  fileInputRef.current?.click()
+                }}
                 className={`flex flex-col items-center justify-center border-2 border-dashed transition-all rounded-lg p-6 cursor-pointer min-h-[140px] text-center ${
                   isDragOver
                     ? "border-primary bg-primary/5 shadow-sm"
                     : "border-border hover:border-primary/50 bg-muted/5 hover:bg-muted/10"
                 }`}
               >
-                <UploadCloud className={`size-8 mb-2 transition-colors ${isDragOver ? "text-primary" : "text-muted-foreground"}`} />
+                <UploadCloud
+                  className={`size-8 mb-2 transition-colors ${isDragOver ? "text-primary" : "text-muted-foreground"}`}
+                />
                 <span className="text-xs font-bold text-foreground">
-                  {isDragOver ? "Thả tệp vào đây..." : "Nhấp để tải lên hoặc kéo thả tập tin vào đây"}
+                  {isDragOver
+                    ? "Thả tệp vào đây..."
+                    : "Nhấp để tải lên hoặc kéo thả tập tin vào đây"}
                 </span>
-                <span className="text-[10px] text-muted-foreground mt-1 font-medium">PDF, PNG, JPG hoặc MP4 (tối đa 10MB)</span>
+                <span className="text-[10px] text-muted-foreground mt-1 font-medium">
+                  PDF, PNG, JPG hoặc MP4 (tối đa 10MB)
+                </span>
               </div>
 
               {/* Render lists of currently attached files */}
@@ -650,10 +790,15 @@ export default function NewTask() {
                   </div>
                   <div className="border border-border rounded-lg p-2 bg-background space-y-1.5 max-h-[150px] overflow-y-auto">
                     {selectedFiles.map((file, idx) => (
-                      <div key={idx} className="flex items-center justify-between text-xs p-1.5 bg-muted/30 rounded-lg">
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between text-xs p-1.5 bg-muted/30 rounded-lg"
+                      >
                         <div className="flex items-center gap-2 min-w-0 pr-2">
                           <span className="shrink-0">📄</span>
-                          <span className="font-semibold text-foreground truncate">{file.name}</span>
+                          <span className="font-semibold text-foreground truncate">
+                            {file.name}
+                          </span>
                           <span className="text-[10px] text-muted-foreground shrink-0 font-mono">
                             ({(file.size / 1024 / 1024).toFixed(2)} MB)
                           </span>
@@ -678,21 +823,29 @@ export default function NewTask() {
             {/* Watchers list container with multi-checkbox togglers */}
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
-                <Label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">NGƯỜI THEO DÕI</Label>
+                <Label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+                  NGƯỜI THEO DÕI
+                </Label>
                 <button
                   type="button"
                   onClick={handleSelectAllWatchers}
                   className="text-[10px] font-black text-blue-600 hover:underline cursor-pointer"
                 >
-                  {members && selectedWatchers.length === members.length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+                  {members && selectedWatchers.length === members.length
+                    ? "Bỏ chọn tất cả"
+                    : "Chọn tất cả"}
                 </button>
               </div>
 
               <div className="border border-border rounded-lg p-3 bg-background max-h-[140px] overflow-y-auto space-y-2">
                 {isLoadingMembers ? (
-                  <span className="text-xs text-muted-foreground italic">Đang tải danh sách thành viên...</span>
+                  <span className="text-xs text-muted-foreground italic">
+                    Đang tải danh sách thành viên...
+                  </span>
                 ) : !members || members.length === 0 ? (
-                  <span className="text-xs text-muted-foreground italic">Không có thành viên nào trong dự án này</span>
+                  <span className="text-xs text-muted-foreground italic">
+                    Không có thành viên nào trong dự án này
+                  </span>
                 ) : (
                   members.map((m) => {
                     const isChecked = selectedWatchers.includes(m.employeeId)
@@ -704,14 +857,20 @@ export default function NewTask() {
                         <input
                           type="checkbox"
                           checked={isChecked}
-                          onChange={() => { handleToggleWatcher(m.employeeId) }}
+                          onChange={() => {
+                            handleToggleWatcher(m.employeeId)
+                          }}
                           className="size-3.5 rounded border-border text-blue-600 focus:ring-blue-600"
                         />
                         {/* Circle Avatar initials identifier block */}
-                        <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold border ${getAvatarColor(m.employee?.fullName || "Chưa rõ")}`}>
+                        <div
+                          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold border ${getAvatarColor(m.employee?.fullName || "Chưa rõ")}`}
+                        >
                           {(m.employee?.fullName || "C").charAt(0).toUpperCase()}
                         </div>
-                        <span className="font-semibold text-muted-foreground hover:text-foreground">{m.employee?.fullName || "Chưa rõ"}</span>
+                        <span className="font-semibold text-muted-foreground hover:text-foreground">
+                          {m.employee?.fullName || "Chưa rõ"}
+                        </span>
                       </label>
                     )
                   })
@@ -719,7 +878,6 @@ export default function NewTask() {
               </div>
             </div>
           </div>
-
         </PageCard>
 
         {/* Cancel, Save, and Save & Create Another Action Buttons */}
@@ -727,7 +885,9 @@ export default function NewTask() {
           <Button
             type="button"
             variant="ghost"
-            onClick={() => { navigate(-1) }}
+            onClick={() => {
+              navigate(-1)
+            }}
             className="rounded-full font-semibold shadow-xs"
           >
             Hủy
@@ -736,7 +896,9 @@ export default function NewTask() {
           <Button
             type="button"
             variant="outline"
-            onClick={(e) => { handleSubmit(e, true) }}
+            onClick={(e) => {
+              handleSubmit(e, true)
+            }}
             disabled={createTaskMutation.isPending}
             className="rounded-full font-semibold shadow-xs"
           >
@@ -752,8 +914,6 @@ export default function NewTask() {
           </Button>
         </div>
       </form>
-
     </PageContainer>
   )
 }
-

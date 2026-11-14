@@ -26,7 +26,9 @@ function createPrismaClient() {
         cleanConnectionString = url.toString()
       }
     } catch (e) {
-      hasSSL = CONNECTION_STRING.includes("sslmode=require") || CONNECTION_STRING.includes("sslmode=prefer")
+      hasSSL =
+        CONNECTION_STRING.includes("sslmode=require") ||
+        CONNECTION_STRING.includes("sslmode=prefer")
       if (hasSSL) {
         cleanConnectionString = CONNECTION_STRING.replace(/[?&]sslmode=[^&]*/g, "")
       }
@@ -39,9 +41,7 @@ function createPrismaClient() {
     idleTimeoutMillis: DB_POOL_CONFIG.IDLE_TIMEOUT_MS,
     connectionTimeoutMillis: DB_POOL_CONFIG.CONNECTION_TIMEOUT_MS,
     statement_timeout: DB_POOL_CONFIG.STATEMENT_TIMEOUT_MS,
-    ssl: hasSSL
-      ? { rejectUnauthorized: false }
-      : undefined,
+    ssl: hasSSL ? { rejectUnauthorized: false } : undefined,
   })
   const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })

@@ -1,5 +1,6 @@
+import { useCallback, useEffect, useState } from "react"
+
 import { useSearchParams } from "react-router-dom"
-import { useState, useCallback, useEffect } from "react"
 
 const ALL_FILTER_VALUE = "all"
 
@@ -11,11 +12,21 @@ export function useTaskUrlFilters() {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const [issueSearch, setIssueSearchState] = useState(() => searchParams.get("search") || "")
-  const [trackerFilter, setTrackerFilterState] = useState(() => searchParams.get("tracker") || ALL_FILTER_VALUE)
-  const [statusFilter, setStatusFilterState] = useState(() => searchParams.get("statusId") || ALL_FILTER_VALUE)
-  const [priorityFilter, setPriorityFilterState] = useState(() => searchParams.get("priority") || ALL_FILTER_VALUE)
-  const [assigneeFilter, setAssigneeFilterState] = useState(() => searchParams.get("assigneeId") || ALL_FILTER_VALUE)
-  const [createdByIdFilter, setCreatedByIdFilterState] = useState(() => searchParams.get("createdById") || ALL_FILTER_VALUE)
+  const [trackerFilter, setTrackerFilterState] = useState(
+    () => searchParams.get("tracker") || ALL_FILTER_VALUE,
+  )
+  const [statusFilter, setStatusFilterState] = useState(
+    () => searchParams.get("statusId") || ALL_FILTER_VALUE,
+  )
+  const [priorityFilter, setPriorityFilterState] = useState(
+    () => searchParams.get("priority") || ALL_FILTER_VALUE,
+  )
+  const [assigneeFilter, setAssigneeFilterState] = useState(
+    () => searchParams.get("assigneeId") || ALL_FILTER_VALUE,
+  )
+  const [createdByIdFilter, setCreatedByIdFilterState] = useState(
+    () => searchParams.get("createdById") || ALL_FILTER_VALUE,
+  )
   const [currentPage, setCurrentPageState] = useState(() => Number(searchParams.get("page")) || 1)
   const [pageSize, setPageSizeState] = useState(() => Number(searchParams.get("limit")) || 25)
 
@@ -41,14 +52,14 @@ export function useTaskUrlFilters() {
           })
           return newParams
         },
-        { replace: true }
+        { replace: true },
       )
     },
-    [setSearchParams]
+    [setSearchParams],
   )
 
   // External listener when searchParams change externally (e.g. back/forward navigation or custom query application)
-   
+
   useEffect(() => {
     setIssueSearchState(searchParams.get("search") || "")
     setTrackerFilterState(searchParams.get("tracker") || ALL_FILTER_VALUE)

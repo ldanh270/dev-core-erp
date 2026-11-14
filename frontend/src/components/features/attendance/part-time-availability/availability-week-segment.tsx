@@ -38,7 +38,9 @@ export function AvailabilityWeekSegment({
               )}
             >
               <div className="truncate uppercase tracking-wide opacity-80">{weekDay.label}</div>
-              <div className="mt-0.5 text-[11px] font-medium text-foreground">{weekDay.shortDate}</div>
+              <div className="mt-0.5 text-[11px] font-medium text-foreground">
+                {weekDay.shortDate}
+              </div>
               {weekDay.dateKey === todayKey ? (
                 <span className="mt-1 inline-block rounded-full bg-primary px-2 py-0.5 text-[9px] font-semibold text-primary-foreground">
                   Hôm nay

@@ -1,5 +1,6 @@
-import type { LucideIcon } from "lucide-react"
 import type { ReactNode } from "react"
+
+import type { LucideIcon } from "lucide-react"
 
 export interface DataTableColumn<T> {
   id: string
@@ -98,4 +99,3 @@ export interface DataTablePageProps<T> {
   pagination?: DataTablePaginationConfig
   extraContent?: ReactNode
 }
-

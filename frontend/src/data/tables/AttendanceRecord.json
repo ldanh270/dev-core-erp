@@ -331,43 +331,31 @@
   "indexes": [
     {
       "name": "IX_AttendanceRecord_correctedByApplicationId",
-      "columns": [
-        "correctedByApplicationId"
-      ],
+      "columns": ["correctedByApplicationId"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_AttendanceRecord_employeeId_date",
-      "columns": [
-        "employeeId",
-        "date"
-      ],
+      "columns": ["employeeId", "date"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_AttendanceRecord_employeeShiftId",
-      "columns": [
-        "employeeShiftId"
-      ],
+      "columns": ["employeeShiftId"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_AttendanceRecord_status_date",
-      "columns": [
-        "status",
-        "date"
-      ],
+      "columns": ["status", "date"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_AttendanceRecord",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -377,34 +365,22 @@
       "virtualName": "employee",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "employeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "employeeShift",
       "targetModel": "EmployeeShift",
       "relationName": null,
-      "foreignKeyFields": [
-        "employeeShiftId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeShiftId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "correctedByApplication",
       "targetModel": "Application",
       "relationName": "AttendanceRecordCorrection",
-      "foreignKeyFields": [
-        "correctedByApplicationId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["correctedByApplicationId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

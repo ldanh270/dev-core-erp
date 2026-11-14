@@ -21,13 +21,19 @@ export function RecruitmentWorkspaceSkeleton() {
 
       <div className="flex max-w-full gap-2 overflow-hidden rounded-full border border-border/40 bg-secondary p-1">
         {["w-24", "w-32", "w-24", "w-28", "w-24", "w-20"].map((widthClass, index) => (
-          <Skeleton key={`${widthClass}-${index}`} className={`h-8 ${widthClass} shrink-0 rounded-full`} />
+          <Skeleton
+            key={`${widthClass}-${index}`}
+            className={`h-8 ${widthClass} shrink-0 rounded-full`}
+          />
         ))}
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className="flex items-center gap-3 rounded-xl border border-border bg-card p-5">
+          <div
+            key={index}
+            className="flex items-center gap-3 rounded-xl border border-border bg-card p-5"
+          >
             <Skeleton className="size-11 shrink-0 rounded-full" />
             <div className="flex-1 space-y-2">
               <Skeleton className="h-3 w-24 rounded-full" />

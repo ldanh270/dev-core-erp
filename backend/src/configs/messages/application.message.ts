@@ -7,8 +7,9 @@ export const APPLICATION_ERROR_MESSAGES = {
   VIEW_PROJECT_FORBIDDEN: "Bạn chỉ có thể xem đơn của nhân viên trong dự án của mình",
   INVALID_STATUS_TRANSITION: (status: string) => `Không thể chuyển sang trạng thái: '${status}'`,
   REJECT_REASON_REQUIRED: "Cần cung cấp lý do từ chối",
-  LEAVE_OVERLAP: "Thời gian đăng ký bị trùng lặp với một đơn khác đã được duyệt hoặc đang chờ duyệt",
-  INSUFFICIENT_LEAVE_BALANCE: (quota: number, usedDays: number, requestedDays: number) => 
+  LEAVE_OVERLAP:
+    "Thời gian đăng ký bị trùng lặp với một đơn khác đã được duyệt hoặc đang chờ duyệt",
+  INSUFFICIENT_LEAVE_BALANCE: (quota: number, usedDays: number, requestedDays: number) =>
     `Không đủ số phép còn lại. Tổng: ${quota} ngày. Đã dùng: ${usedDays} ngày. Đang xin: ${requestedDays} ngày.`,
   SHIFT_NOT_OWNED: "Không tìm thấy ca làm việc hoặc ca không thuộc về bạn",
   DATE_MISMATCH_WITH_SHIFT: "Ngày đăng ký phải trùng với ngày của ca làm việc",

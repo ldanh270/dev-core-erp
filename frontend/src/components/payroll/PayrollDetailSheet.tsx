@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { PayslipDetailPage } from "@/components/features/payroll/payslip-detail-page"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import {
@@ -11,10 +12,10 @@ import {
 } from "@/components/ui/table"
 import { PAYROLL_STATUS, PAYROLL_STATUS_LABELS } from "@/config/entities/payroll.config"
 import { usePayrollDetails } from "@/hooks/payroll/use-payrolls"
-import { PayslipDetailPage } from "@/components/features/payroll/payslip-detail-page"
 
 import { useState } from "react"
-import { CheckCircle2, Clock, XCircle, ChevronRight } from "lucide-react"
+
+import { CheckCircle2, ChevronRight, Clock, XCircle } from "lucide-react"
 
 interface PayrollDetailSheetProps {
   payrollId: string | null
@@ -93,7 +94,9 @@ export function PayrollDetailSheet({ payrollId, onClose }: PayrollDetailSheetPro
                             : "bg-red-100 text-red-800 border-red-200"
                       }`}
                     >
-                      {payroll.status === PAYROLL_STATUS.DRAFT && <Clock className="w-3 h-3 mr-1" />}
+                      {payroll.status === PAYROLL_STATUS.DRAFT && (
+                        <Clock className="w-3 h-3 mr-1" />
+                      )}
                       {payroll.status === PAYROLL_STATUS.APPROVED && (
                         <CheckCircle2 className="w-3 h-3 mr-1" />
                       )}
@@ -105,9 +108,10 @@ export function PayrollDetailSheet({ payrollId, onClose }: PayrollDetailSheetPro
                     </div>
                     <span className="text-muted-foreground text-sm font-medium">
                       Total:{" "}
-                      {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
-                        payroll.totalAmount,
-                      )}
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(payroll.totalAmount)}
                     </span>
                   </div>
                 </div>
@@ -148,10 +152,12 @@ export function PayrollDetailSheet({ payrollId, onClose }: PayrollDetailSheetPro
                   </TableHeader>
                   <TableBody>
                     {payroll.payslips?.map((ps: any, index: number) => (
-                      <TableRow 
-                        key={ps.id} 
+                      <TableRow
+                        key={ps.id}
                         className="hover:bg-muted/50 cursor-pointer group transition-colors"
-                        onClick={() => { setSelectedPayslip(ps) }}
+                        onClick={() => {
+                          setSelectedPayslip(ps)
+                        }}
                       >
                         <TableCell className="px-4 py-3 text-center text-muted-foreground">
                           {index + 1}
@@ -208,13 +214,20 @@ export function PayrollDetailSheet({ payrollId, onClose }: PayrollDetailSheetPro
         </SheetContent>
       </Sheet>
 
-      <Sheet open={!!selectedPayslip} onOpenChange={(open) => { if (!open) setSelectedPayslip(null) }}>
+      <Sheet
+        open={!!selectedPayslip}
+        onOpenChange={(open) => {
+          if (!open) setSelectedPayslip(null)
+        }}
+      >
         <SheetContent className="w-[95vw] max-w-[95vw]! sm:max-w-[1000px]! p-0 overflow-hidden">
           {selectedPayslip && (
             <div className="h-full overflow-y-auto">
-              <PayslipDetailPage 
-                payslip={selectedPayslip} 
-                onClose={() => { setSelectedPayslip(null) }} 
+              <PayslipDetailPage
+                payslip={selectedPayslip}
+                onClose={() => {
+                  setSelectedPayslip(null)
+                }}
               />
             </div>
           )}
@@ -223,4 +236,3 @@ export function PayrollDetailSheet({ payrollId, onClose }: PayrollDetailSheetPro
     </>
   )
 }
-

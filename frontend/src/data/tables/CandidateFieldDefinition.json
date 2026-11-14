@@ -153,35 +153,25 @@
   "indexes": [
     {
       "name": "IX_CandidateFieldDefinition_requisitionId",
-      "columns": [
-        "requisitionId"
-      ],
+      "columns": ["requisitionId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_CandidateFieldDefinition_requisitionId_key",
-      "columns": [
-        "requisitionId",
-        "key"
-      ],
+      "columns": ["requisitionId", "key"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_CandidateFieldDefinition_requisitionId_position",
-      "columns": [
-        "requisitionId",
-        "position"
-      ],
+      "columns": ["requisitionId", "position"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "PK_CandidateFieldDefinition",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -191,12 +181,8 @@
       "virtualName": "requisition",
       "targetModel": "JobRequisition",
       "relationName": null,
-      "foreignKeyFields": [
-        "requisitionId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["requisitionId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

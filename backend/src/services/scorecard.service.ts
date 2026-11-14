@@ -1,5 +1,5 @@
-import { scorecardRepository } from "@/repositories/scorecard.repository"
 import { interviewRoundRepository } from "@/repositories/interview-round.repository"
+import { scorecardRepository } from "@/repositories/scorecard.repository"
 import type { CreateScorecardInput, UpdateScorecardInput } from "@/types/recruitment.types"
 
 type ScorecardDraftInput = Omit<CreateScorecardInput, "evaluatorId">
@@ -48,7 +48,8 @@ export class ScorecardService {
 
   async delete(id: string, evaluatorId: string) {
     const existing = await this.findById(id)
-    if (existing.evaluatorId !== evaluatorId) throw new Error("Only the assigned evaluator can delete this scorecard")
+    if (existing.evaluatorId !== evaluatorId)
+      throw new Error("Only the assigned evaluator can delete this scorecard")
     if (existing.submittedAt) throw new Error("Submitted scorecards are locked")
     return scorecardRepository.delete(id)
   }

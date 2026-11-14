@@ -2,6 +2,7 @@ import { useMyActivityLogs } from "@/hooks/security/queries/use-security-query"
 import type { ActivityLogQuery } from "@/types/security.types"
 
 import { useCallback, useEffect, useState } from "react"
+
 import { useSearchParams } from "react-router-dom"
 
 /**

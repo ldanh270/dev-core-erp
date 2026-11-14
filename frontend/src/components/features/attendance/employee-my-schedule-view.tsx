@@ -1,5 +1,5 @@
-import { PersonalAttendanceSchedulePanel } from "@/components/features/attendance/personal-attendance-schedule-panel"
 import { PageContainer, PageHeader } from "@/components/common"
+import { PersonalAttendanceSchedulePanel } from "@/components/features/attendance/personal-attendance-schedule-panel"
 
 export function EmployeeMyScheduleView() {
   return (

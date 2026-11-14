@@ -3,22 +3,15 @@ import { ActivityLogDetailDrawer } from "@/components/features/security/Activity
 import { ActivityLogsTable } from "@/components/features/security/ActivityLogsTable"
 import { Button } from "@/components/ui/button"
 import { useLoginHistoryMaster } from "@/hooks/security/use-login-history-master"
+
 import { History, RefreshCw } from "lucide-react"
 
 /**
  * LoginHistory page — Personal view of login/logout activities
  */
 export default function LoginHistory() {
-  const {
-    query,
-    setQuery,
-    viewingLogId,
-    setViewingLogId,
-    data,
-    isLoading,
-    isFetching,
-    refetch,
-  } = useLoginHistoryMaster()
+  const { query, setQuery, viewingLogId, setViewingLogId, data, isLoading, isFetching, refetch } =
+    useLoginHistoryMaster()
 
   return (
     <PageContainer variant="table">

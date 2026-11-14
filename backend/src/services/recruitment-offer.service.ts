@@ -1,8 +1,9 @@
-import { recruitmentOfferRepository } from "@/repositories/recruitment-offer.repository"
-import { recruitmentApplicationRepository } from "@/repositories/recruitment-application.repository"
-import type { CreateOfferInput, CreateOfferVersionInput } from "@/types/recruitment.types"
-import { recruitmentApplicationService } from "./recruitment-application.service"
 import { getBgcGroupForLevel } from "@/configs/rules/recruitment.config"
+import { recruitmentApplicationRepository } from "@/repositories/recruitment-application.repository"
+import { recruitmentOfferRepository } from "@/repositories/recruitment-offer.repository"
+import type { CreateOfferInput, CreateOfferVersionInput } from "@/types/recruitment.types"
+
+import { recruitmentApplicationService } from "./recruitment-application.service"
 
 export class RecruitmentOfferService {
   async create(input: CreateOfferInput, createdById: string) {
@@ -15,7 +16,7 @@ export class RecruitmentOfferService {
     // Check for existing active offer
     const existingOffers = await recruitmentOfferRepository.findByApplication(input.applicationId)
     const hasActive = existingOffers.some(
-      (o) => !["declined", "rescinded", "expired"].includes(o.status)
+      (o) => !["declined", "rescinded", "expired"].includes(o.status),
     )
     if (hasActive) {
       throw new Error("An active offer already exists for this application")

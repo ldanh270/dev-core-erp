@@ -74,18 +74,13 @@
   "indexes": [
     {
       "name": "IX_employee_roles_roleId",
-      "columns": [
-        "roleId"
-      ],
+      "columns": ["roleId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_employee_roles",
-      "columns": [
-        "employeeId",
-        "roleId"
-      ],
+      "columns": ["employeeId", "roleId"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -95,23 +90,15 @@
       "virtualName": "employee",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "employeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "role",
       "targetModel": "AppRole",
       "relationName": null,
-      "foreignKeyFields": [
-        "roleId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["roleId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

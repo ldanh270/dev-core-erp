@@ -4,7 +4,9 @@ import {
   IWorkScheduleType,
 } from "@/configs/entities/employee.config.ts"
 import { SORT_ORDER } from "@/configs/system/db.config.ts"
+
 import { Prisma } from "@prisma/client"
+
 import { AppRole } from "./role.types.ts"
 
 /**

@@ -251,7 +251,9 @@ export function AdminPartTimeAssignDayColumn({
 
                       <div className="space-y-1.5">
                         <label className="flex items-center gap-1.5">
-                          <span className="w-6 text-[10px] font-medium text-muted-foreground">Từ:</span>
+                          <span className="w-6 text-[10px] font-medium text-muted-foreground">
+                            Từ:
+                          </span>
                           <input
                             type="time"
                             value={slot.startTime ?? ""}
@@ -267,7 +269,9 @@ export function AdminPartTimeAssignDayColumn({
                           />
                         </label>
                         <label className="flex items-center gap-1.5">
-                          <span className="w-6 text-[10px] font-medium text-muted-foreground">Đến:</span>
+                          <span className="w-6 text-[10px] font-medium text-muted-foreground">
+                            Đến:
+                          </span>
                           <input
                             type="time"
                             value={slot.endTime ?? ""}
@@ -285,7 +289,9 @@ export function AdminPartTimeAssignDayColumn({
                       </div>
 
                       {error ? (
-                        <p className="text-[9px] font-medium text-destructive leading-tight">{error}</p>
+                        <p className="text-[9px] font-medium text-destructive leading-tight">
+                          {error}
+                        </p>
                       ) : (
                         <p className="text-[9px] text-muted-foreground/60 leading-tight">
                           Chỉnh giờ trong khung rảnh
@@ -311,8 +317,8 @@ export function AdminPartTimeAssignDayColumn({
                 ) : null}
 
                 <div className="text-center text-[9px] text-muted-foreground/60">
-                  Đã thêm: {assignment.slots.length}/{PART_TIME_AVAILABILITY_RULES.MAX_SLOTS_PER_DAY}{" "}
-                  khung giờ
+                  Đã thêm: {assignment.slots.length}/
+                  {PART_TIME_AVAILABILITY_RULES.MAX_SLOTS_PER_DAY} khung giờ
                 </div>
               </div>
             </div>

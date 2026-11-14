@@ -1,11 +1,13 @@
 import { Badge } from "@/components/ui/badge"
+
+import { memo } from "react"
+
+import { KeyRound, Link2 } from "lucide-react"
+
 import { ERD_NODE_WIDTH } from "../database-erd-layout"
 import type { ErdPoint } from "../database-erd-layout"
 import type { ModuleDef, TableDef } from "../database-reference.types"
 import { useDatabaseErdNode } from "../hooks/use-database-erd-node"
-
-import { KeyRound, Link2 } from "lucide-react"
-import { memo } from "react"
 
 /**
  * Props required to render a single draggable ERD table node card.
@@ -85,11 +87,7 @@ export const DatabaseErdNode = memo(function DatabaseErdNode({
       {/* Fixed 36px (h-9) header bar so row anchor Y coordinates stay pixel-accurate. */}
       <span
         className={`flex h-9 items-center justify-between gap-1.5 border-b border-border/80 px-3 ${
-          isExternal
-            ? "border-dashed bg-muted/50"
-            : isPrimary
-              ? theme.bgLight
-              : "bg-muted/40"
+          isExternal ? "border-dashed bg-muted/50" : isPrimary ? theme.bgLight : "bg-muted/40"
         }`}
       >
         <span
@@ -138,10 +136,7 @@ export const DatabaseErdNode = memo(function DatabaseErdNode({
                 />
               )}
               {col.isFk && (
-                <Link2
-                  className="size-3 shrink-0 text-sky-600 dark:text-sky-400"
-                  aria-label="FK"
-                />
+                <Link2 className="size-3 shrink-0 text-sky-600 dark:text-sky-400" aria-label="FK" />
               )}
               <span className="truncate font-medium text-foreground">{col.name}</span>
             </span>

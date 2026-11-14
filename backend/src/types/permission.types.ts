@@ -18,7 +18,6 @@ export interface Permission {
   deletedAt: Date | null
 }
 
-
 /**
  * DTO for creating a new Permission.
  */
@@ -87,6 +86,9 @@ export interface IPermissionService {
   listPermissions(query: PermissionListQuery): Promise<PaginatedPermissionsDto>
   getPermission(id: string): Promise<Permission | null>
   createPermission(data: CreatePermissionDto & { actorId: string }): Promise<Permission>
-  updatePermission(id: string, data: UpdatePermissionDto & { actorId: string }): Promise<Permission | null>
+  updatePermission(
+    id: string,
+    data: UpdatePermissionDto & { actorId: string },
+  ): Promise<Permission | null>
   deletePermission(id: string, actorId: string): Promise<boolean>
 }

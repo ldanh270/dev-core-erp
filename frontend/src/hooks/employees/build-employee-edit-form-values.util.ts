@@ -1,7 +1,4 @@
-import {
-  EMPLOYEE_TYPE,
-  WORK_SCHEDULE_TYPE,
-} from "@/config/entities/employee.config"
+import { EMPLOYEE_TYPE, WORK_SCHEDULE_TYPE } from "@/config/entities/employee.config"
 import type { Employee } from "@/types/employee.types"
 
 import type { EmployeeEditFormValues } from "./employee-edit-form.schema"

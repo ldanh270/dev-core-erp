@@ -6,8 +6,8 @@ import type {
   IPartTimeWeeklyAvailability,
   ISuggestPartTimeEmployeeSuggestion,
 } from "@/types/part-time-availability.types"
-import { isPartTimeAvailabilityAssignable } from "@/utils/attendance/part-time-availability.util"
 import { getWeekDates } from "@/utils/attendance/get-week-dates"
+import { isPartTimeAvailabilityAssignable } from "@/utils/attendance/part-time-availability.util"
 
 import { useMemo } from "react"
 

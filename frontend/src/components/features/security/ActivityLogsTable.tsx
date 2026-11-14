@@ -75,7 +75,12 @@ export function ActivityLogsTable({
       <Table className="w-full text-sm">
         <TableHeader className="sticky top-0 z-20 bg-background border-b border-border shadow-xs">
           <TableRow className="hover:bg-transparent">
-            <TableHead className={cn("sticky left-0 z-30 bg-background w-[22%] min-w-52 h-10 px-4", TYPOGRAPHY.TABLE_HEADER)}>
+            <TableHead
+              className={cn(
+                "sticky left-0 z-30 bg-background w-[22%] min-w-52 h-10 px-4",
+                TYPOGRAPHY.TABLE_HEADER,
+              )}
+            >
               Hành động
             </TableHead>
             {!hideEmployee && (
@@ -83,7 +88,9 @@ export function ActivityLogsTable({
                 Nhân viên
               </TableHead>
             )}
-            <TableHead className={cn("w-[15%] min-w-32 h-10 px-4 text-center", TYPOGRAPHY.TABLE_HEADER)}>
+            <TableHead
+              className={cn("w-[15%] min-w-32 h-10 px-4 text-center", TYPOGRAPHY.TABLE_HEADER)}
+            >
               Danh mục
             </TableHead>
             <TableHead className={cn("w-[18%] min-w-36 h-10 px-4", TYPOGRAPHY.TABLE_HEADER)}>
@@ -92,7 +99,9 @@ export function ActivityLogsTable({
             <TableHead className={cn("w-[15%] min-w-36 h-10 px-4", TYPOGRAPHY.TABLE_HEADER)}>
               Thời gian
             </TableHead>
-            <TableHead className={cn("w-[10%] min-w-24 h-10 px-4 text-center", TYPOGRAPHY.TABLE_HEADER)}>
+            <TableHead
+              className={cn("w-[10%] min-w-24 h-10 px-4 text-center", TYPOGRAPHY.TABLE_HEADER)}
+            >
               Chi tiết
             </TableHead>
           </TableRow>
@@ -110,7 +119,10 @@ export function ActivityLogsTable({
             </TableRow>
           ) : (
             logs.map((log) => (
-              <TableRow key={log.id} className="group hover:bg-muted/30 transition-colors duration-100">
+              <TableRow
+                key={log.id}
+                className="group hover:bg-muted/30 transition-colors duration-100"
+              >
                 <TableCell className="sticky left-0 z-10 bg-background h-[60px] px-5 py-3">
                   <div className="flex items-center gap-2.5">
                     <div className={getActionIconColor(log.actionType)}>
@@ -141,7 +153,10 @@ export function ActivityLogsTable({
                   />
                 </TableCell>
                 <TableCell className="h-[60px] px-5 py-3 font-mono text-[12px] text-muted-foreground">
-                  <Badge variant="outline" className="gap-1.5 rounded-full font-mono text-xs font-normal">
+                  <Badge
+                    variant="outline"
+                    className="gap-1.5 rounded-full font-mono text-xs font-normal"
+                  >
                     <Globe className="size-3.5 opacity-50" />
                     <span>{log.ipAddress || "—"}</span>
                   </Badge>

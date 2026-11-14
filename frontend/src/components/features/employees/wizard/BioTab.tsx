@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,28 +9,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-import { cn } from "@/lib/utils"
 import { getBioFieldError } from "@/lib/employee-form-validation"
+import { cn } from "@/lib/utils"
 import type {
   IEducationItem,
   IEmployeeWizardFormData,
   IExperienceItem,
 } from "@/types/employee-wizard.types"
-import {
-  ChevronDown,
-  ChevronUp,
-  Image as ImageIcon,
-  PlusCircle,
-  Trash2,
-  User,
-} from "lucide-react"
+
+import { useState } from "react"
+
+import { ChevronDown, ChevronUp, Image as ImageIcon, PlusCircle, Trash2, User } from "lucide-react"
 
 interface BioTabProps {
   formData: IEmployeeWizardFormData
   updateField: <K extends keyof IEmployeeWizardFormData>(
     field: K,
-    value: IEmployeeWizardFormData[K]
+    value: IEmployeeWizardFormData[K],
   ) => void
   addEducation: () => void
   updateEducation: (id: string, field: keyof IEducationItem, value: string) => void
@@ -73,7 +67,9 @@ export function BioTab({
       <div className="bg-background border border-border rounded-xl overflow-hidden shadow-none">
         <button
           type="button"
-          onClick={() => { setOpenPersonal(!openPersonal); }}
+          onClick={() => {
+            setOpenPersonal(!openPersonal)
+          }}
           className="w-full px-6 py-4 flex items-center justify-between bg-muted/50 border-b border-border text-left font-semibold text-sm text-foreground"
         >
           <div className="flex items-center gap-2">
@@ -102,11 +98,17 @@ export function BioTab({
                   <Input
                     placeholder="Nhập họ và tên"
                     value={formData.fullName}
-                    onChange={(e) => { updateField("fullName", e.target.value); }}
-                    onBlur={() => { handleBlur("fullName"); }}
+                    onChange={(e) => {
+                      updateField("fullName", e.target.value)
+                    }}
+                    onBlur={() => {
+                      handleBlur("fullName")
+                    }}
                     className={cn(
                       "rounded-full",
-                      (touchedFields.fullName || hasAttemptedSubmit) && fullNameError && "border-destructive ring-1 ring-destructive"
+                      (touchedFields.fullName || hasAttemptedSubmit) &&
+                        fullNameError &&
+                        "border-destructive ring-1 ring-destructive",
                     )}
                     required
                   />
@@ -119,7 +121,9 @@ export function BioTab({
                   <Label className="text-xs font-medium">Giới tính</Label>
                   <Select
                     value={formData.gender}
-                    onValueChange={(val) => { updateField("gender", val); }}
+                    onValueChange={(val) => {
+                      updateField("gender", val)
+                    }}
                   >
                     <SelectTrigger className="rounded-full">
                       <SelectValue placeholder="Chọn giới tính" />
@@ -136,7 +140,9 @@ export function BioTab({
                   <Label className="text-xs font-medium">Ngày sinh</Label>
                   <DatePicker
                     value={formData.dateOfBirth || null}
-                    onChange={(val) => { updateField("dateOfBirth", val || ""); }}
+                    onChange={(val) => {
+                      updateField("dateOfBirth", val || "")
+                    }}
                     placeholder="Chọn ngày sinh..."
                   />
                 </div>
@@ -146,7 +152,9 @@ export function BioTab({
                   <Input
                     placeholder="Chọn nơi sinh"
                     value={formData.placeOfBirth}
-                    onChange={(e) => { updateField("placeOfBirth", e.target.value); }}
+                    onChange={(e) => {
+                      updateField("placeOfBirth", e.target.value)
+                    }}
                     className="rounded-full"
                   />
                 </div>
@@ -156,7 +164,9 @@ export function BioTab({
                   <Input
                     placeholder="Việt Nam"
                     value={formData.nationality}
-                    onChange={(e) => { updateField("nationality", e.target.value); }}
+                    onChange={(e) => {
+                      updateField("nationality", e.target.value)
+                    }}
                     className="rounded-full"
                   />
                 </div>
@@ -166,7 +176,9 @@ export function BioTab({
                   <Input
                     placeholder="Kinh"
                     value={formData.ethnicity}
-                    onChange={(e) => { updateField("ethnicity", e.target.value); }}
+                    onChange={(e) => {
+                      updateField("ethnicity", e.target.value)
+                    }}
                     className="rounded-full"
                   />
                 </div>
@@ -176,7 +188,9 @@ export function BioTab({
                   <Input
                     placeholder="Nhập tôn giáo"
                     value={formData.religion}
-                    onChange={(e) => { updateField("religion", e.target.value); }}
+                    onChange={(e) => {
+                      updateField("religion", e.target.value)
+                    }}
                     className="rounded-full"
                   />
                 </div>
@@ -186,7 +200,9 @@ export function BioTab({
                   <Input
                     placeholder="Nhập CMND/CCCD/Hộ chiếu"
                     value={formData.nationalId}
-                    onChange={(e) => { updateField("nationalId", e.target.value); }}
+                    onChange={(e) => {
+                      updateField("nationalId", e.target.value)
+                    }}
                     className="rounded-full"
                   />
                 </div>
@@ -195,7 +211,9 @@ export function BioTab({
                   <Label className="text-xs font-medium">Ngày cấp</Label>
                   <DatePicker
                     value={formData.idIssueDate || null}
-                    onChange={(val) => { updateField("idIssueDate", val || ""); }}
+                    onChange={(val) => {
+                      updateField("idIssueDate", val || "")
+                    }}
                     placeholder="Chọn ngày cấp..."
                   />
                 </div>
@@ -205,7 +223,9 @@ export function BioTab({
                   <Input
                     placeholder="Chọn nơi cấp"
                     value={formData.idIssuePlace}
-                    onChange={(e) => { updateField("idIssuePlace", e.target.value); }}
+                    onChange={(e) => {
+                      updateField("idIssuePlace", e.target.value)
+                    }}
                     className="rounded-full"
                   />
                 </div>
@@ -215,7 +235,9 @@ export function BioTab({
                   <Input
                     placeholder="Địa chỉ thường trú"
                     value={formData.permanentAddress}
-                    onChange={(e) => { updateField("permanentAddress", e.target.value); }}
+                    onChange={(e) => {
+                      updateField("permanentAddress", e.target.value)
+                    }}
                     className="rounded-full"
                   />
                 </div>
@@ -225,7 +247,9 @@ export function BioTab({
                   <Input
                     placeholder="Chọn Tỉnh/Thành phố"
                     value={formData.province}
-                    onChange={(e) => { updateField("province", e.target.value); }}
+                    onChange={(e) => {
+                      updateField("province", e.target.value)
+                    }}
                     className="rounded-full"
                   />
                 </div>
@@ -235,7 +259,9 @@ export function BioTab({
                   <Input
                     placeholder="Chọn Xã/Phường"
                     value={formData.district}
-                    onChange={(e) => { updateField("district", e.target.value); }}
+                    onChange={(e) => {
+                      updateField("district", e.target.value)
+                    }}
                     className="rounded-full"
                   />
                 </div>
@@ -244,7 +270,9 @@ export function BioTab({
                   <Label className="text-xs font-medium">Tình trạng hôn nhân</Label>
                   <Select
                     value={formData.maritalStatus}
-                    onValueChange={(val) => { updateField("maritalStatus", val); }}
+                    onValueChange={(val) => {
+                      updateField("maritalStatus", val)
+                    }}
                   >
                     <SelectTrigger className="rounded-full">
                       <SelectValue placeholder="Chọn tình trạng" />
@@ -266,7 +294,9 @@ export function BioTab({
       <div className="bg-background border border-border rounded-xl overflow-hidden shadow-none">
         <button
           type="button"
-          onClick={() => { setOpenIdPhotos(!openIdPhotos); }}
+          onClick={() => {
+            setOpenIdPhotos(!openIdPhotos)
+          }}
           className="w-full px-6 py-4 flex items-center justify-between bg-muted/50 border-b border-border text-left font-semibold text-sm text-foreground"
         >
           <div className="flex items-center gap-2">
@@ -302,7 +332,9 @@ export function BioTab({
       <div className="bg-background border border-border rounded-xl overflow-hidden shadow-none">
         <button
           type="button"
-          onClick={() => { setOpenContact(!openContact); }}
+          onClick={() => {
+            setOpenContact(!openContact)
+          }}
           className="w-full px-6 py-4 flex items-center justify-between bg-muted/50 border-b border-border text-left font-semibold text-sm text-foreground"
         >
           <div className="flex items-center gap-2">
@@ -322,11 +354,17 @@ export function BioTab({
               <Input
                 placeholder="Nhập số điện thoại"
                 value={formData.phone}
-                onChange={(e) => { updateField("phone", e.target.value); }}
-                onBlur={() => { handleBlur("phone"); }}
+                onChange={(e) => {
+                  updateField("phone", e.target.value)
+                }}
+                onBlur={() => {
+                  handleBlur("phone")
+                }}
                 className={cn(
                   "rounded-full",
-                  (touchedFields.phone || hasAttemptedSubmit) && phoneError && "border-destructive ring-1 ring-destructive"
+                  (touchedFields.phone || hasAttemptedSubmit) &&
+                    phoneError &&
+                    "border-destructive ring-1 ring-destructive",
                 )}
                 required
               />
@@ -341,11 +379,15 @@ export function BioTab({
                 type="email"
                 placeholder="Nhập địa chỉ email"
                 value={formData.email}
-                onChange={(e) => { updateField("email", e.target.value); }}
-                onBlur={() => { handleBlur("email"); }}
+                onChange={(e) => {
+                  updateField("email", e.target.value)
+                }}
+                onBlur={() => {
+                  handleBlur("email")
+                }}
                 className={cn(
                   "rounded-full",
-                  touchedFields.email && emailError && "border-destructive ring-1 ring-destructive"
+                  touchedFields.email && emailError && "border-destructive ring-1 ring-destructive",
                 )}
               />
               {touchedFields.email && emailError && (
@@ -358,7 +400,9 @@ export function BioTab({
               <Input
                 placeholder="Nhập địa chỉ chỗ ở hiện nay"
                 value={formData.currentAddress}
-                onChange={(e) => { updateField("currentAddress", e.target.value); }}
+                onChange={(e) => {
+                  updateField("currentAddress", e.target.value)
+                }}
                 className="rounded-full"
               />
             </div>
@@ -374,7 +418,9 @@ export function BioTab({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => { addEducation(); }}
+            onClick={() => {
+              addEducation()
+            }}
             className="text-primary hover:text-primary/90 text-xs font-semibold gap-1 rounded-full"
           >
             <PlusCircle size={15} /> Thêm trình độ
@@ -382,7 +428,9 @@ export function BioTab({
         </div>
         <div className="p-6">
           {formData.educations.length === 0 ? (
-            <p className="text-xs text-muted-foreground italic">Chưa có thông tin trình độ học vấn</p>
+            <p className="text-xs text-muted-foreground italic">
+              Chưa có thông tin trình độ học vấn
+            </p>
           ) : (
             <div className="space-y-4">
               {formData.educations.map((item, idx) => (
@@ -398,7 +446,9 @@ export function BioTab({
                       type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() => { removeEducation(item.id); }}
+                      onClick={() => {
+                        removeEducation(item.id)
+                      }}
                       className="h-7 px-2 text-destructive hover:bg-destructive/10 gap-1 text-xs rounded-full"
                     >
                       <Trash2 size={13} /> Xóa
@@ -406,56 +456,80 @@ export function BioTab({
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="space-y-1">
-                      <Label className="text-[11px] font-medium text-muted-foreground">Từ tháng/năm</Label>
+                      <Label className="text-[11px] font-medium text-muted-foreground">
+                        Từ tháng/năm
+                      </Label>
                       <Input
                         placeholder="Từ mm/yyyy"
                         value={item.fromMonthYear}
-                        onChange={(e) => { updateEducation(item.id, "fromMonthYear", e.target.value); }}
+                        onChange={(e) => {
+                          updateEducation(item.id, "fromMonthYear", e.target.value)
+                        }}
                         className="rounded-full text-xs"
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[11px] font-medium text-muted-foreground">Đến tháng/năm</Label>
+                      <Label className="text-[11px] font-medium text-muted-foreground">
+                        Đến tháng/năm
+                      </Label>
                       <Input
                         placeholder="Đến mm/yyyy"
                         value={item.toMonthYear}
-                        onChange={(e) => { updateEducation(item.id, "toMonthYear", e.target.value); }}
+                        onChange={(e) => {
+                          updateEducation(item.id, "toMonthYear", e.target.value)
+                        }}
                         className="rounded-full text-xs"
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[11px] font-medium text-muted-foreground">Bằng cấp / Trình độ</Label>
+                      <Label className="text-[11px] font-medium text-muted-foreground">
+                        Bằng cấp / Trình độ
+                      </Label>
                       <Input
                         placeholder="Nhập bằng cấp / trình độ"
                         value={item.degree}
-                        onChange={(e) => { updateEducation(item.id, "degree", e.target.value); }}
+                        onChange={(e) => {
+                          updateEducation(item.id, "degree", e.target.value)
+                        }}
                         className="rounded-full text-xs"
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[11px] font-medium text-muted-foreground">Chuyên ngành</Label>
+                      <Label className="text-[11px] font-medium text-muted-foreground">
+                        Chuyên ngành
+                      </Label>
                       <Input
                         placeholder="Nhập chuyên ngành"
                         value={item.major}
-                        onChange={(e) => { updateEducation(item.id, "major", e.target.value); }}
+                        onChange={(e) => {
+                          updateEducation(item.id, "major", e.target.value)
+                        }}
                         className="rounded-full text-xs"
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[11px] font-medium text-muted-foreground">Hình thức đào tạo</Label>
+                      <Label className="text-[11px] font-medium text-muted-foreground">
+                        Hình thức đào tạo
+                      </Label>
                       <Input
                         placeholder="Chính quy, tại chức..."
                         value={item.trainingType}
-                        onChange={(e) => { updateEducation(item.id, "trainingType", e.target.value); }}
+                        onChange={(e) => {
+                          updateEducation(item.id, "trainingType", e.target.value)
+                        }}
                         className="rounded-full text-xs"
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[11px] font-medium text-muted-foreground">Nơi đào tạo / Trường</Label>
+                      <Label className="text-[11px] font-medium text-muted-foreground">
+                        Nơi đào tạo / Trường
+                      </Label>
                       <Input
                         placeholder="Nhập tên trường đào tạo"
                         value={item.school}
-                        onChange={(e) => { updateEducation(item.id, "school", e.target.value); }}
+                        onChange={(e) => {
+                          updateEducation(item.id, "school", e.target.value)
+                        }}
                         className="rounded-full text-xs"
                       />
                     </div>
@@ -475,7 +549,9 @@ export function BioTab({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => { addExperience(); }}
+            onClick={() => {
+              addExperience()
+            }}
             className="text-primary hover:text-primary/90 text-xs font-semibold gap-1 rounded-full"
           >
             <PlusCircle size={15} /> Thêm kinh nghiệm
@@ -483,7 +559,9 @@ export function BioTab({
         </div>
         <div className="p-6">
           {formData.experiences.length === 0 ? (
-            <p className="text-xs text-muted-foreground italic">Chưa có thông tin kinh nghiệm làm việc</p>
+            <p className="text-xs text-muted-foreground italic">
+              Chưa có thông tin kinh nghiệm làm việc
+            </p>
           ) : (
             <div className="space-y-4">
               {formData.experiences.map((item, idx) => (
@@ -499,7 +577,9 @@ export function BioTab({
                       type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() => { removeExperience(item.id); }}
+                      onClick={() => {
+                        removeExperience(item.id)
+                      }}
                       className="h-7 px-2 text-destructive hover:bg-destructive/10 gap-1 text-xs rounded-full"
                     >
                       <Trash2 size={13} /> Xóa
@@ -507,47 +587,67 @@ export function BioTab({
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="space-y-1">
-                      <Label className="text-[11px] font-medium text-muted-foreground">Từ tháng/năm</Label>
+                      <Label className="text-[11px] font-medium text-muted-foreground">
+                        Từ tháng/năm
+                      </Label>
                       <Input
                         placeholder="Từ mm/yyyy"
                         value={item.fromMonthYear}
-                        onChange={(e) => { updateExperience(item.id, "fromMonthYear", e.target.value); }}
+                        onChange={(e) => {
+                          updateExperience(item.id, "fromMonthYear", e.target.value)
+                        }}
                         className="rounded-full text-xs"
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[11px] font-medium text-muted-foreground">Đến tháng/năm</Label>
+                      <Label className="text-[11px] font-medium text-muted-foreground">
+                        Đến tháng/năm
+                      </Label>
                       <Input
                         placeholder="Đến mm/yyyy"
                         value={item.toMonthYear}
-                        onChange={(e) => { updateExperience(item.id, "toMonthYear", e.target.value); }}
+                        onChange={(e) => {
+                          updateExperience(item.id, "toMonthYear", e.target.value)
+                        }}
                         className="rounded-full text-xs"
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[11px] font-medium text-muted-foreground">Nơi làm việc / Công ty</Label>
+                      <Label className="text-[11px] font-medium text-muted-foreground">
+                        Nơi làm việc / Công ty
+                      </Label>
                       <Input
                         placeholder="Nhập tên nơi làm việc"
                         value={item.company}
-                        onChange={(e) => { updateExperience(item.id, "company", e.target.value); }}
+                        onChange={(e) => {
+                          updateExperience(item.id, "company", e.target.value)
+                        }}
                         className="rounded-full text-xs"
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[11px] font-medium text-muted-foreground">Vị trí đảm nhận</Label>
+                      <Label className="text-[11px] font-medium text-muted-foreground">
+                        Vị trí đảm nhận
+                      </Label>
                       <Input
                         placeholder="Nhập chức danh / vị trí"
                         value={item.position}
-                        onChange={(e) => { updateExperience(item.id, "position", e.target.value); }}
+                        onChange={(e) => {
+                          updateExperience(item.id, "position", e.target.value)
+                        }}
                         className="rounded-full text-xs"
                       />
                     </div>
                     <div className="space-y-1 sm:col-span-2">
-                      <Label className="text-[11px] font-medium text-muted-foreground">Mô tả công việc</Label>
+                      <Label className="text-[11px] font-medium text-muted-foreground">
+                        Mô tả công việc
+                      </Label>
                       <Input
                         placeholder="Nhập tóm tắt công việc"
                         value={item.description}
-                        onChange={(e) => { updateExperience(item.id, "description", e.target.value); }}
+                        onChange={(e) => {
+                          updateExperience(item.id, "description", e.target.value)
+                        }}
                         className="rounded-full text-xs"
                       />
                     </div>

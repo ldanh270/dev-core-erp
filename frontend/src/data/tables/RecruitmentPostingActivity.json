@@ -123,42 +123,31 @@
   "indexes": [
     {
       "name": "IX_RecruitmentPostingActivity_actorId",
-      "columns": [
-        "actorId"
-      ],
+      "columns": ["actorId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentPostingActivity_applicationId",
-      "columns": [
-        "applicationId"
-      ],
+      "columns": ["applicationId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentPostingActivity_postingId_createdAt",
-      "columns": [
-        "postingId",
-        "createdAt"
-      ],
+      "columns": ["postingId", "createdAt"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentPostingActivity_type",
-      "columns": [
-        "type"
-      ],
+      "columns": ["type"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_RecruitmentPostingActivity",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -168,34 +157,22 @@
       "virtualName": "posting",
       "targetModel": "JobPosting",
       "relationName": null,
-      "foreignKeyFields": [
-        "postingId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["postingId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "application",
       "targetModel": "RecruitmentApplication",
       "relationName": null,
-      "foreignKeyFields": [
-        "applicationId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["applicationId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "actor",
       "targetModel": "Employee",
       "relationName": "RecruitmentPostingActivityActor",
-      "foreignKeyFields": [
-        "actorId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["actorId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

@@ -19,4 +19,3 @@ export const AUTH_ERROR_CODES = {
   VALIDATION_ERROR: "VALIDATION_ERROR",
   NOT_FOUND: "NOT_FOUND",
 } as const
-

@@ -19,7 +19,15 @@ salaryComponentRoutes.use(requirePermission("payroll.read"))
 salaryComponentRoutes.get("/", controller.listComponents)
 salaryComponentRoutes.post("/", requirePermission("payroll.create"), controller.createComponent)
 salaryComponentRoutes.put("/:id", requirePermission("payroll.update"), controller.updateComponent)
-salaryComponentRoutes.delete("/:id", requirePermission("payroll.delete"), controller.deleteComponent)
-salaryComponentRoutes.post("/validate", requirePermission("payroll.create"), controller.validateFormula)
+salaryComponentRoutes.delete(
+  "/:id",
+  requirePermission("payroll.delete"),
+  controller.deleteComponent,
+)
+salaryComponentRoutes.post(
+  "/validate",
+  requirePermission("payroll.create"),
+  controller.validateFormula,
+)
 
 export default salaryComponentRoutes

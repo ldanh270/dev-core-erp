@@ -1,4 +1,5 @@
 import { cloudinary } from "@/configs/system/cloudinary.config.ts"
+
 import type { UploadApiOptions } from "cloudinary"
 import { Readable } from "stream"
 
@@ -14,7 +15,11 @@ export class CloudinaryUtil {
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(options, (error, result) => {
         if (error || !result) {
-          reject(error instanceof Error ? error : new Error(error?.message || "Cloudinary upload failed"))
+          reject(
+            error instanceof Error
+              ? error
+              : new Error(error?.message || "Cloudinary upload failed"),
+          )
           return
         }
         resolve({ url: result.secure_url, id: result.public_id })

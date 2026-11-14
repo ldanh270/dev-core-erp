@@ -1,6 +1,13 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { ROUTES } from "@/config/routes.config"
 import { useAuthStore } from "@/store/auth-store"
@@ -111,7 +118,8 @@ export default function NotFound() {
                 Trang Không Tồn Tại
               </CardTitle>
               <CardDescription className="text-sm leading-relaxed text-muted-foreground">
-                Đường dẫn liên kết không chính xác, trang đã bị xóa hoặc tài khoản của bạn chưa được cấp quyền truy cập.
+                Đường dẫn liên kết không chính xác, trang đã bị xóa hoặc tài khoản của bạn chưa được
+                cấp quyền truy cập.
               </CardDescription>
             </div>
           </CardHeader>
@@ -154,7 +162,9 @@ export default function NotFound() {
                     <button
                       key={link.path}
                       type="button"
-                      onClick={() => { navigate(link.path); }}
+                      onClick={() => {
+                        navigate(link.path)
+                      }}
                       className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground whitespace-nowrap transition-colors hover:bg-muted hover:text-foreground"
                     >
                       <Icon className="h-3.5 w-3.5 text-primary" />

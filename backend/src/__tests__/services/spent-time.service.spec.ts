@@ -1,5 +1,6 @@
 /// <reference types="jest" />
-import { jest } from "@jest/globals"
+import { PROJECT_MEMBER_WORK_MODE, SPENT_TIME_STATUS } from "@/configs/entities/project.config.ts"
+import { authorizationService } from "@/services/authorization.service.ts"
 import type {
   CreateSpentTimeDto,
   IProjectRepository,
@@ -10,6 +11,10 @@ import type {
   UpdateSpentTimeDto,
 } from "@/types"
 import type { IAttendanceRepository } from "@/types/attendance.types.ts"
+
+import { jest } from "@jest/globals"
+
+import { SpentTimeService } from "../../services/spent-time.service"
 
 jest.mock("@/configs/entities/project.config.ts", () => ({
   PROJECT_MEMBER_WORK_MODE: {
@@ -57,10 +62,6 @@ jest.mock("@/utils/error.util.ts", () => ({
     }
   },
 }))
-
-import { PROJECT_MEMBER_WORK_MODE, SPENT_TIME_STATUS } from "@/configs/entities/project.config.ts"
-import { authorizationService } from "@/services/authorization.service.ts"
-import { SpentTimeService } from "../../services/spent-time.service"
 
 type MockedSpentTimeRepository = jest.Mocked<ISpentTimeRepository>
 type MockedTaskRepository = jest.Mocked<ITaskRepository>
@@ -286,7 +287,8 @@ describe("SpentTimeService.createSpentTime", () => {
 
   it("UTCID01 - creates spent time for a project member", async () => {
     // Arrange
-    const { service, repository, taskRepository, projectRepository, attendanceRepository } = createService()
+    const { service, repository, taskRepository, projectRepository, attendanceRepository } =
+      createService()
     const data = {
       taskId: "task-1",
       hours: 2,
@@ -382,7 +384,8 @@ describe("SpentTimeService.createSpentTime", () => {
 
   it("UTCID04 - throws unprocessable entity when onsite member has no check-in", async () => {
     // Arrange
-    const { service, taskRepository, projectRepository, repository, attendanceRepository } = createService()
+    const { service, taskRepository, projectRepository, repository, attendanceRepository } =
+      createService()
     const data = {
       taskId: "task-1",
       hours: 2,
@@ -428,7 +431,8 @@ describe("SpentTimeService.updateSpentTime", () => {
 
   it("UTCID01 - updates a pending spent time record owned by the user", async () => {
     // Arrange
-    const { service, repository, taskRepository, projectRepository, attendanceRepository } = createService()
+    const { service, repository, taskRepository, projectRepository, attendanceRepository } =
+      createService()
     const record = createSpentTimeRecord()
     const updateData = {
       hours: 3,

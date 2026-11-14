@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils"
 
+import type { ReactNode } from "react"
+
 import type { LucideIcon } from "lucide-react"
 import { Inbox } from "lucide-react"
-import type { ReactNode } from "react"
 
 export interface EmptyStateProps {
   /**
@@ -51,7 +52,9 @@ export function EmptyState({
 }: EmptyStateProps) {
   // Support backward compatibility with `message`
   const displayTitle = title || message || "Không tìm thấy dữ liệu"
-  const displayDesc = title ? description : description || (message ? undefined : "Chưa có bản ghi nào được ghi nhận.")
+  const displayDesc = title
+    ? description
+    : description || (message ? undefined : "Chưa có bản ghi nào được ghi nhận.")
 
   return (
     <div

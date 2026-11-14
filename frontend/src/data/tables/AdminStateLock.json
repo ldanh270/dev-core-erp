@@ -24,9 +24,7 @@
   "indexes": [
     {
       "name": "PK_admin_state_lock",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }

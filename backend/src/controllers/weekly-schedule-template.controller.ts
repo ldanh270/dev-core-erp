@@ -32,7 +32,10 @@ export class WeeklyScheduleTemplateController {
     res.status(HttpStatusCode.OK).json({ data: template, error: null })
   }
 
-  create = async (req: AuthRequest, res: Response<ApiResponse<IWeeklyScheduleTemplateWithWeeks>>) => {
+  create = async (
+    req: AuthRequest,
+    res: Response<ApiResponse<IWeeklyScheduleTemplateWithWeeks>>,
+  ) => {
     try {
       const reqData = createWeeklyScheduleTemplateSchema.parse(req.body)
       const template = await this.service.createTemplate({

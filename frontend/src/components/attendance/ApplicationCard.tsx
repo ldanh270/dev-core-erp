@@ -34,7 +34,9 @@ export function ApplicationCard({
     <div className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-md transition-all duration-200">
       <div
         className="flex items-center gap-4 p-4 cursor-pointer select-none"
-        onClick={() => { setExpanded((v) => !v); }}
+        onClick={() => {
+          setExpanded((v) => !v)
+        }}
       >
         <div
           className={`h-10 w-10 shrink-0 rounded-xl flex items-center justify-center border ${typeMeta.bg} ${typeMeta.border} ${typeMeta.color}`}
@@ -96,7 +98,9 @@ export function ApplicationCard({
             {(app.approvedBy || app.assignedTo) && (
               <div className="flex justify-between items-center text-xs">
                 <span className="text-muted-foreground font-medium">Người duyệt:</span>
-                <span className="text-slate-700">{app.approvedBy?.fullName || app.assignedTo?.fullName}</span>
+                <span className="text-slate-700">
+                  {app.approvedBy?.fullName || app.assignedTo?.fullName}
+                </span>
               </div>
             )}
           </div>

@@ -1,6 +1,3 @@
-import type { TableDef } from "./database-reference.types"
-import type { HorizontalTrack, VerticalTrack } from "./database-erd-tracks"
-import { allocateHorizontalY, allocateVerticalX } from "./database-erd-tracks"
 import type { NodeBox } from "./database-erd-collision"
 import { isHorizontalClear } from "./database-erd-collision"
 import type { ErdPoint } from "./database-erd-geometry"
@@ -11,6 +8,9 @@ import {
   FIRST_FIELD_ANCHOR_Y,
   getLinkedColumns,
 } from "./database-erd-geometry"
+import type { HorizontalTrack, VerticalTrack } from "./database-erd-tracks"
+import { allocateHorizontalY, allocateVerticalX } from "./database-erd-tracks"
+import type { TableDef } from "./database-reference.types"
 
 export type RouteMode = "self" | "same-col" | "left-to-right" | "right-to-left"
 
@@ -174,7 +174,8 @@ export function buildOrthogonalWaypoints(
     return [from, { x: trunkX, y: from.y }, { x: trunkX, y: streetY }, { x: to.x, y: streetY }, to]
   }
 
-  const stubX = mode === "left-to-right" ? from.x + SOURCE_STUB_MARGIN_X : from.x - SOURCE_STUB_MARGIN_X
+  const stubX =
+    mode === "left-to-right" ? from.x + SOURCE_STUB_MARGIN_X : from.x - SOURCE_STUB_MARGIN_X
   const streetY = allocateHorizontalY(
     stubX,
     trunkX,

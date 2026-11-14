@@ -28,14 +28,17 @@ export function DataTableToolbar({
               size="sm"
               placeholder={searchPlaceholder}
               value={searchQuery}
-              onChange={(e) => { onSearchChange(e.target.value); }}
+              onChange={(e) => {
+                onSearchChange(e.target.value)
+              }}
               className="pl-9 bg-background shadow-none"
             />
           </div>
         )}
       </div>
-      {actions && <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">{actions}</div>}
+      {actions && (
+        <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">{actions}</div>
+      )}
     </div>
   )
 }
-

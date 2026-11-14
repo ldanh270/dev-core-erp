@@ -1,9 +1,9 @@
+import { DEFAULT_PROJECT_TASK_STATUSES } from "@/configs/entities/project.config.ts"
+import { SEEDER_CONFIGS } from "@/configs/system/seeder.config.ts"
 import { prisma } from "@/libs/database.ts"
 import { SeedContext } from "@/scripts/seeders/seed-context.ts"
 import { ISeeder } from "@/scripts/seeders/seeder.interface.ts"
 import { registry } from "@/scripts/seeders/seeder.registry.ts"
-import { DEFAULT_PROJECT_TASK_STATUSES } from "@/configs/entities/project.config.ts"
-import { SEEDER_CONFIGS } from "@/configs/system/seeder.config.ts"
 
 export class ProjectTaskStatusesSeeder implements ISeeder {
   readonly name = SEEDER_CONFIGS.PROJECT_TASK_STATUSES.NAME
@@ -43,7 +43,9 @@ export class ProjectTaskStatusesSeeder implements ISeeder {
       }
     }
 
-    console.log(`  Seeded ${seededCount} project task statuses across ${projectIds.length} projects.`)
+    console.log(
+      `  Seeded ${seededCount} project task statuses across ${projectIds.length} projects.`,
+    )
     return {}
   }
 }

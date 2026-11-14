@@ -1,9 +1,10 @@
 import { useActivityLogs } from "@/hooks/security/queries/use-security-query"
+import { useDebounce } from "@/hooks/use-debounce"
 import type { ActivityLogQuery } from "@/types/security.types"
 
 import { useCallback, useEffect, useState } from "react"
+
 import { useSearchParams } from "react-router-dom"
-import { useDebounce } from "@/hooks/use-debounce"
 
 /**
  * Master hook for managing Activity Logs page state and logic.
@@ -53,11 +54,18 @@ export function useActivityLogsMaster() {
     if (newStr !== currentStr) {
       setSearchParams(params, { replace: true })
     }
-  }, [query.actionType, query.category, query.fromDate, query.page, query.toDate, searchParams, setSearchParams])
+  }, [
+    query.actionType,
+    query.category,
+    query.fromDate,
+    query.page,
+    query.toDate,
+    searchParams,
+    setSearchParams,
+  ])
 
   // Synchronize URL search params to local state (e.g. back/forward navigation or dashboard click)
   useEffect(() => {
-     
     setQuery((prev) => {
       if (
         prev.category === categoryParam &&
@@ -85,9 +93,12 @@ export function useActivityLogsMaster() {
     setQuery((prev) => ({ ...prev, page: 1 }))
   }, [])
 
-  const handleFilterChange = useCallback((key: keyof ActivityLogQuery, value: ActivityLogQuery[keyof ActivityLogQuery]) => {
-    setQuery((prev) => ({ ...prev, [key]: value, page: 1 }))
-  }, [])
+  const handleFilterChange = useCallback(
+    (key: keyof ActivityLogQuery, value: ActivityLogQuery[keyof ActivityLogQuery]) => {
+      setQuery((prev) => ({ ...prev, [key]: value, page: 1 }))
+    },
+    [],
+  )
 
   return {
     query,

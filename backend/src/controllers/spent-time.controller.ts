@@ -7,6 +7,7 @@ import {
   updateSpentTimeSchema,
 } from "@/schemas/spent-time.schema.ts"
 import { ApiResponse, ISpentTimeService, SpentTime } from "@/types"
+
 import { Response } from "express"
 import { z } from "zod"
 
@@ -77,7 +78,10 @@ export class SpentTimeController {
       }
 
       const data = createSpentTimeSchema.parse(body)
-      const spentTime = await this.service.createSpentTime({ ...data, date: data.date ?? new Date() }, req.user.empId)
+      const spentTime = await this.service.createSpentTime(
+        { ...data, date: data.date ?? new Date() },
+        req.user.empId,
+      )
       res.status(HttpStatusCode.CREATED).json({ data: spentTime, error: null })
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -146,10 +150,7 @@ export class SpentTimeController {
       })
     }
 
-    const spentTime = await this.service.approveSpentTime(
-      String(req.params.id),
-      req.user.empId,
-    )
+    const spentTime = await this.service.approveSpentTime(String(req.params.id), req.user.empId)
     res.status(HttpStatusCode.OK).json({ data: spentTime, error: null })
   }
 

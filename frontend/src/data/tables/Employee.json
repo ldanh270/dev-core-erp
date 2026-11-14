@@ -442,67 +442,49 @@
   "indexes": [
     {
       "name": "IX_Employee_deletedAt",
-      "columns": [
-        "deletedAt"
-      ],
+      "columns": ["deletedAt"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Employee_email",
-      "columns": [
-        "email"
-      ],
+      "columns": ["email"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Employee_failedLoginCount",
-      "columns": [
-        "failedLoginCount"
-      ],
+      "columns": ["failedLoginCount"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Employee_lockedUntil",
-      "columns": [
-        "lockedUntil"
-      ],
+      "columns": ["lockedUntil"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Employee_status_deletedAt",
-      "columns": [
-        "status",
-        "deletedAt"
-      ],
+      "columns": ["status", "deletedAt"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Employee_status_employeeType",
-      "columns": [
-        "status",
-        "employeeType"
-      ],
+      "columns": ["status", "employeeType"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Employee_username",
-      "columns": [
-        "username"
-      ],
+      "columns": ["username"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_Employee",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -512,23 +494,15 @@
       "virtualName": "positionRel",
       "targetModel": "Position",
       "relationName": null,
-      "foreignKeyFields": [
-        "positionId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["positionId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "personalEmployee",
       "targetModel": "Employee",
       "relationName": "PersonalEmployeeLink",
-      "foreignKeyFields": [
-        "personalEmployeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["personalEmployeeId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "personalEmployeeLinks",

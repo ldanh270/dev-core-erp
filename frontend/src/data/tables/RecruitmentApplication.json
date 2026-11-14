@@ -269,93 +269,67 @@
   "indexes": [
     {
       "name": "IX_RecruitmentApplication_assignedToId",
-      "columns": [
-        "assignedToId"
-      ],
+      "columns": ["assignedToId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentApplication_candidateId",
-      "columns": [
-        "candidateId"
-      ],
+      "columns": ["candidateId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentApplication_id_version",
-      "columns": [
-        "id",
-        "version"
-      ],
+      "columns": ["id", "version"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentApplication_pipelineStageId",
-      "columns": [
-        "pipelineStageId"
-      ],
+      "columns": ["pipelineStageId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentApplication_postingId",
-      "columns": [
-        "postingId"
-      ],
+      "columns": ["postingId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentApplication_postingId_createdAt",
-      "columns": [
-        "postingId",
-        "createdAt"
-      ],
+      "columns": ["postingId", "createdAt"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentApplication_postingId_pipelineStageId",
-      "columns": [
-        "postingId",
-        "pipelineStageId"
-      ],
+      "columns": ["postingId", "pipelineStageId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentApplication_requisitionId",
-      "columns": [
-        "requisitionId"
-      ],
+      "columns": ["requisitionId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentApplication_requisitionId_candidateId",
-      "columns": [
-        "requisitionId",
-        "candidateId"
-      ],
+      "columns": ["requisitionId", "candidateId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentApplication_status",
-      "columns": [
-        "status"
-      ],
+      "columns": ["status"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_RecruitmentApplication",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -365,56 +339,36 @@
       "virtualName": "requisition",
       "targetModel": "JobRequisition",
       "relationName": null,
-      "foreignKeyFields": [
-        "requisitionId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["requisitionId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "candidate",
       "targetModel": "Candidate",
       "relationName": null,
-      "foreignKeyFields": [
-        "candidateId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["candidateId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "posting",
       "targetModel": "JobPosting",
       "relationName": null,
-      "foreignKeyFields": [
-        "postingId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["postingId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "pipelineStage",
       "targetModel": "RecruitmentPipelineStage",
       "relationName": null,
-      "foreignKeyFields": [
-        "pipelineStageId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["pipelineStageId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "assignedTo",
       "targetModel": "Employee",
       "relationName": "RecruitmentAppRecruiter",
-      "foreignKeyFields": [
-        "assignedToId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["assignedToId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

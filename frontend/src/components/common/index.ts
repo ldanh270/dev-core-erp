@@ -42,5 +42,9 @@ export {
   type BoardAddColumnCardProps,
   type BoardViewProps,
 } from "./board"
-export { TABLE_COL_WIDTH, getTableColWidthPx, type TableColWidthKey } from "@/config/table-columns.config"
+export {
+  TABLE_COL_WIDTH,
+  getTableColWidthPx,
+  type TableColWidthKey,
+} from "@/config/table-columns.config"
 export { TYPOGRAPHY, type TypographyToken } from "@/config/typography.config"

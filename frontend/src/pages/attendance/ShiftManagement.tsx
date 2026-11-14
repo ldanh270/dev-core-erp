@@ -1,4 +1,4 @@
-import { DataTablePage, type DataTableColumn, StatusPill } from "@/components/common"
+import { type DataTableColumn, DataTablePage, StatusPill } from "@/components/common"
 import { ShiftDialog } from "@/components/features/attendance/shift-sheet"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,6 +15,7 @@ import { cn, minutesToTime } from "@/lib/utils"
 import type { IWorkingShift } from "@/types/attendance.types"
 
 import { useCallback, useMemo, useState } from "react"
+
 import { Clock, MapPin, MoreHorizontal, Plus } from "lucide-react"
 
 /**
@@ -79,9 +80,7 @@ export default function ShiftManagement() {
         align: "center",
         sticky: true,
         cell: (_, idx) => (
-          <span className={TYPOGRAPHY.CELL_CODE}>
-            {(currentPage - 1) * pageSize + idx + 1}
-          </span>
+          <span className={TYPOGRAPHY.CELL_CODE}>{(currentPage - 1) * pageSize + idx + 1}</span>
         ),
       },
       {

@@ -1,21 +1,22 @@
 import { WEEKLY_SCHEDULE_PLANNING } from "@/configs/entities/attendance.config.ts"
+import { HttpStatusCode } from "@/configs/system/http.config.ts"
+import type {
+  IShiftScheduleWithDays,
+  IShiftScheduleWithTemplate,
+} from "@/types/shift-schedule.types.ts"
 import {
   IAssignShiftScheduleDTO,
   IEmployeeShiftRepository,
   IEmployeeShiftWithShift,
   IGenerateShiftsDTO,
-  IGeneratedShiftPreview,
   IGenerateShiftsResult,
+  IGeneratedShiftPreview,
   IOverrideEmployeeShiftDTO,
   IPlannedWeek,
   IScheduleService,
   IShiftScheduleRepository,
   ShiftGenerateItemStatus,
 } from "@/types/shift.types.ts"
-import type {
-  IShiftScheduleWithDays,
-  IShiftScheduleWithTemplate,
-} from "@/types/shift-schedule.types.ts"
 import { AppError } from "@/utils/error.util.ts"
 import {
   eachScheduleDate,
@@ -24,7 +25,6 @@ import {
   resolveShiftFromSchedule,
 } from "@/utils/schedule.util.ts"
 import { buildPlannedWeek } from "@/utils/schedule/build-planned-week.util.ts"
-import { HttpStatusCode } from "@/configs/system/http.config.ts"
 
 /**
  * Service for managing employee shift schedules and overrides.
@@ -147,7 +147,11 @@ export class ScheduleService implements IScheduleService {
     const start = normalizeScheduleDate(new Date(startDate))
     const end = normalizeScheduleDate(new Date(endDate))
     if (end < start) {
-      throw new AppError("Ngày kết thúc phải sau ngày bắt đầu", HttpStatusCode.BAD_REQUEST, "service")
+      throw new AppError(
+        "Ngày kết thúc phải sau ngày bắt đầu",
+        HttpStatusCode.BAD_REQUEST,
+        "service",
+      )
     }
     return { start, end }
   }

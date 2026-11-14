@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import type { IApplication } from "@/lib/api/application.api"
 
 import { useState } from "react"
+
 import { toast } from "sonner"
 
 export interface RejectDialogProps {

@@ -1,8 +1,9 @@
+import type { WeekDay } from "@/utils/attendance/get-week-dates"
+
 import type {
   IPartTimeAssignmentDayForm,
   IPartTimeAssignmentForm,
 } from "./part-time-assignment-form.types"
-import type { WeekDay } from "@/utils/attendance/get-week-dates"
 
 /**
  * Converts nested day/slot form state into flat API rows, skipping off days and incomplete slots.

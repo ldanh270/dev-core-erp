@@ -1,7 +1,7 @@
+import { useCallback, useEffect, useRef, useState } from "react"
+
 import type { ErdNode, ErdPoint } from "../database-erd-geometry"
 import type { TableDef } from "../database-reference.types"
-
-import { useCallback, useEffect, useRef, useState } from "react"
 
 /**
  * Tracks an active pointer drag gesture on an individual ERD table card.

@@ -1,8 +1,9 @@
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { AuthRequest } from "@/middlewares/auth.middleware.ts"
-import { ApiResponse, IAuditService, PaginatedAuditLogsDto, AuthorizationAuditLog } from "@/types"
-import { Response } from "express"
 import { ListAuditQuerySchemaType } from "@/schemas/audit.schema.ts"
+import { ApiResponse, AuthorizationAuditLog, IAuditService, PaginatedAuditLogsDto } from "@/types"
+
+import { Response } from "express"
 
 /**
  * Controller class for audit logging resources.

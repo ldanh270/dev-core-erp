@@ -119,7 +119,7 @@ export function ApplyWeeklyScheduleTemplateDialog({
                 id="template-valid-from"
                 value={validFrom || null}
                 onChange={(val) => {
-                  setValidFrom(val || "");
+                  setValidFrom(val || "")
                 }}
                 placeholder="Chọn ngày bắt đầu..."
               />
@@ -131,7 +131,7 @@ export function ApplyWeeklyScheduleTemplateDialog({
                 value={validTo || null}
                 minDate={validFrom}
                 onChange={(val) => {
-                  setValidTo(val || "");
+                  setValidTo(val || "")
                 }}
                 placeholder="Chọn ngày kết thúc..."
               />
@@ -186,7 +186,9 @@ export function ApplyWeeklyScheduleTemplateDialog({
                       className="h-4 w-4 rounded border-border accent-primary"
                     />
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium">{employee.fullName}</span>
+                      <span className="block truncate text-sm font-medium">
+                        {employee.fullName}
+                      </span>
                       <span className="block truncate text-xs text-muted-foreground">
                         {employee.position ?? "Chưa có vị trí"} · {employee.email}
                       </span>
@@ -216,7 +218,9 @@ export function ApplyWeeklyScheduleTemplateDialog({
           <Button
             className="rounded-full"
             onClick={handleSubmit}
-            disabled={!template || !validFrom || selectedIds.length === 0 || applyMutation.isPending}
+            disabled={
+              !template || !validFrom || selectedIds.length === 0 || applyMutation.isPending
+            }
           >
             {applyMutation.isPending ? "Đang áp dụng..." : "Áp dụng"}
           </Button>

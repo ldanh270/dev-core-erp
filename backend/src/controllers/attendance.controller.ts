@@ -7,8 +7,8 @@ import {
 } from "@/constants/attendance.constants.ts"
 import { AuthRequest } from "@/middlewares/auth.middleware.ts"
 import {
-  attendanceRecordQuerySchema,
   attendanceMatrixQuerySchema,
+  attendanceRecordQuerySchema,
   checkInSchema,
   checkOutSchema,
 } from "@/schemas/attendance.schema.ts"
@@ -247,12 +247,8 @@ export class AttendanceController {
           scheduledHours = `${startHours}:${startMins} - ${endHours}:${endMins}`
         }
 
-        const checkInStr = record.checkInAt
-          ? formatAttendanceClockTime(record.checkInAt)
-          : ""
-        const checkOutStr = record.checkOutAt
-          ? formatAttendanceClockTime(record.checkOutAt)
-          : ""
+        const checkInStr = record.checkInAt ? formatAttendanceClockTime(record.checkInAt) : ""
+        const checkOutStr = record.checkOutAt ? formatAttendanceClockTime(record.checkOutAt) : ""
 
         const row = [
           dateStr,

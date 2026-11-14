@@ -2,7 +2,9 @@ import type { IPlannedWeek } from "@/types/attendance.types"
 import type { IScheduleDay } from "@/types/attendance.types"
 
 /** Maps planned-week API response into calendar schedule days (first shift per day). */
-export function mapPlannedWeekToScheduleDays(plannedWeek?: IPlannedWeek | null): Map<number, IScheduleDay> {
+export function mapPlannedWeekToScheduleDays(
+  plannedWeek?: IPlannedWeek | null,
+): Map<number, IScheduleDay> {
   const scheduleDaysByDay = new Map<number, IScheduleDay>()
   if (!plannedWeek?.days.length) return scheduleDaysByDay
 

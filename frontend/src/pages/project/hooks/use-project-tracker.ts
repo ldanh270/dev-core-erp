@@ -1,8 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { projectTrackerApi } from "@/lib/api/project-tracker.api"
-import type { CreateProjectTrackerDto, UpdateProjectTrackerDto } from "@/types/project-tracker.types"
-import { toast } from "sonner"
+import type {
+  CreateProjectTrackerDto,
+  UpdateProjectTrackerDto,
+} from "@/types/project-tracker.types"
 import { extractErrorMessage } from "@/utils/error-helper"
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 /**
  * Hook to retrieve all trackers configured in a project.

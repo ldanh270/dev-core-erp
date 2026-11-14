@@ -1,4 +1,10 @@
-import { approveRequisitionSchema, updateBackgroundCheckSchema, updateInterviewRoundSchema, updateJobPostingSchema, updateJobRequisitionSchema } from "@/schemas/recruitment.schema"
+import {
+  approveRequisitionSchema,
+  updateBackgroundCheckSchema,
+  updateInterviewRoundSchema,
+  updateJobPostingSchema,
+  updateJobRequisitionSchema,
+} from "@/schemas/recruitment.schema"
 
 describe("updateJobRequisitionSchema", () => {
   it("rejects workflow status changes from the generic update boundary", () => {
@@ -21,15 +27,24 @@ describe("updateJobRequisitionSchema", () => {
 describe("approveRequisitionSchema", () => {
   it("requires a reason when rejecting a requisition", () => {
     expect(approveRequisitionSchema.safeParse({ approved: false }).success).toBe(false)
-    expect(approveRequisitionSchema.safeParse({ approved: false, comment: "Budget needs review" }).success).toBe(true)
+    expect(
+      approveRequisitionSchema.safeParse({ approved: false, comment: "Budget needs review" })
+        .success,
+    ).toBe(true)
   })
 })
 
 describe("updateJobPostingSchema", () => {
   it("accepts HTTPS URLs and rejects unsafe protocols", () => {
-    expect(updateJobPostingSchema.safeParse({ postingUrl: "https://careers.example.com/apply" }).success).toBe(true)
-    expect(updateJobPostingSchema.safeParse({ postingUrl: "javascript:alert(1)" }).success).toBe(false)
-    expect(updateJobPostingSchema.safeParse({ postingUrl: "data:text/html,test" }).success).toBe(false)
+    expect(
+      updateJobPostingSchema.safeParse({ postingUrl: "https://careers.example.com/apply" }).success,
+    ).toBe(true)
+    expect(updateJobPostingSchema.safeParse({ postingUrl: "javascript:alert(1)" }).success).toBe(
+      false,
+    )
+    expect(updateJobPostingSchema.safeParse({ postingUrl: "data:text/html,test" }).success).toBe(
+      false,
+    )
   })
 })
 

@@ -203,35 +203,25 @@
   "indexes": [
     {
       "name": "IX_Payslip_employeeId_payrollId",
-      "columns": [
-        "employeeId",
-        "payrollId"
-      ],
+      "columns": ["employeeId", "payrollId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Payslip_payrollId_employeeId",
-      "columns": [
-        "payrollId",
-        "employeeId"
-      ],
+      "columns": ["payrollId", "employeeId"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_Payslip_salaryConfigId",
-      "columns": [
-        "salaryConfigId"
-      ],
+      "columns": ["salaryConfigId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_Payslip",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -241,34 +231,22 @@
       "virtualName": "payroll",
       "targetModel": "Payroll",
       "relationName": null,
-      "foreignKeyFields": [
-        "payrollId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["payrollId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "employee",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "employeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "salaryConfig",
       "targetModel": "EmployeeSalaryConfig",
       "relationName": null,
-      "foreignKeyFields": [
-        "salaryConfigId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["salaryConfigId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

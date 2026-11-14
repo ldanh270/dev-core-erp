@@ -1,7 +1,4 @@
-import {
-  DataTablePage,
-  type DataTableColumn,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage } from "@/components/common"
 import { ViewCandidateDialog } from "@/components/features/recruitment/view-candidate-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -11,8 +8,8 @@ import { ROUTES } from "@/config/routes.config"
 import { getTableColWidthPx } from "@/config/table-columns.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
 import { useCandidates } from "@/hooks/recruitment/use-recruitment-queries"
-import { usePermission } from "@/hooks/use-permission"
 import { useDebounce } from "@/hooks/use-debounce"
+import { usePermission } from "@/hooks/use-permission"
 import { routerNavigate } from "@/lib/router-navigator"
 import { cn } from "@/lib/utils"
 import type { Candidate } from "@/types/recruitment.types"
@@ -60,7 +57,9 @@ export default function CandidatesPage() {
         cell: (candidate) => (
           <div
             className="flex items-center gap-3 cursor-pointer group"
-            onClick={() => { handleViewDetails(candidate); }}
+            onClick={() => {
+              handleViewDetails(candidate)
+            }}
           >
             <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
               <span className="text-xs font-semibold text-primary">
@@ -68,7 +67,12 @@ export default function CandidatesPage() {
               </span>
             </div>
             <div className="min-w-0">
-              <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "group-hover:text-primary group-hover:underline transition-colors block truncate")}>
+              <span
+                className={cn(
+                  TYPOGRAPHY.CELL_PRIMARY,
+                  "group-hover:text-primary group-hover:underline transition-colors block truncate",
+                )}
+              >
                 {candidate.fullName}
               </span>
               {candidate.currentPosition && (
@@ -88,7 +92,9 @@ export default function CandidatesPage() {
         cell: (candidate) => (
           <div className="flex items-center gap-1.5 text-sm">
             <Mail className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-            <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-normal truncate")}>{candidate.email}</span>
+            <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-normal truncate")}>
+              {candidate.email}
+            </span>
           </div>
         ),
       },
@@ -165,7 +171,9 @@ export default function CandidatesPage() {
                 variant="ghost"
                 size="icon"
                 className="rounded-full hover:bg-muted h-8 w-8"
-                onClick={() => { handleViewDetails(candidate); }}
+                onClick={() => {
+                  handleViewDetails(candidate)
+                }}
               >
                 <Eye className="h-4 w-4" />
               </Button>
@@ -200,7 +208,9 @@ export default function CandidatesPage() {
           hasPermission("recruitment.intake.manage") ? (
             <Button
               className="rounded-full font-semibold gap-1.5"
-              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.APPLICANT_INTAKE); }}
+              onClick={() => {
+                routerNavigate(ROUTES.RECRUITMENT.APPLICANT_INTAKE)
+              }}
             >
               <Plus className="h-4 w-4" />
               Tiếp nhận ứng viên

@@ -16,10 +16,7 @@ export function buildCSVHeaders(columns: { header: string }[]): string {
  * @param columns - Array of column accessors mapping record to cell value
  * @returns Formatted CSV rows terminated by newlines
  */
-export function buildCSVChunk<T>(
-  data: T[],
-  columns: { accessor: (item: T) => unknown }[],
-): string {
+export function buildCSVChunk<T>(data: T[], columns: { accessor: (item: T) => unknown }[]): string {
   return (
     data
       .map((item) =>

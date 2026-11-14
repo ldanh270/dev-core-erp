@@ -1,5 +1,6 @@
+import { STATUS_KEYWORD_MAP, TASK_STATUS } from "@/configs/entities/project.config.ts"
+
 import { TaskStatus } from "@prisma/client"
-import { TASK_STATUS, STATUS_KEYWORD_MAP } from "@/configs/entities/project.config.ts"
 
 /**
  * Maps a dynamic custom status name and completed flag back to the closest

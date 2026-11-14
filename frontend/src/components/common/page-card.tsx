@@ -1,7 +1,8 @@
 import { cn } from "@/lib/utils"
 
-import { cva, type VariantProps } from "class-variance-authority"
 import type { HTMLAttributes, ReactNode } from "react"
+
+import { type VariantProps, cva } from "class-variance-authority"
 
 export const pageCardVariants = cva("rounded-xl bg-card", {
   variants: {
@@ -23,8 +24,7 @@ export const pageCardVariants = cva("rounded-xl bg-card", {
 })
 
 export interface PageCardProps
-  extends HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof pageCardVariants> {
+  extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof pageCardVariants> {
   children: ReactNode
 }
 
@@ -33,18 +33,9 @@ export interface PageCardProps
  * Enforces rounded-xl (12px), bg-card, and standardized concentric border.
  * Uses CVA to prevent object injection sink vulnerabilities.
  */
-export function PageCard({
-  children,
-  className,
-  padding,
-  noBorder,
-  ...props
-}: PageCardProps) {
+export function PageCard({ children, className, padding, noBorder, ...props }: PageCardProps) {
   return (
-    <div
-      className={cn(pageCardVariants({ padding, noBorder }), className)}
-      {...props}
-    >
+    <div className={cn(pageCardVariants({ padding, noBorder }), className)} {...props}>
       {children}
     </div>
   )

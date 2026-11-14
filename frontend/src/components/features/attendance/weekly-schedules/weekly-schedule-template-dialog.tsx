@@ -12,12 +12,16 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
+import { useShifts } from "@/hooks/attendance/use-shifts"
 import {
   useCreateWeeklyScheduleTemplate,
   useUpdateWeeklyScheduleTemplate,
 } from "@/hooks/attendance/use-weekly-schedule-templates"
-import { useShifts } from "@/hooks/attendance/use-shifts"
-import type { IWorkingShift, IWeeklyScheduleTemplate, IWeeklyScheduleTemplateWeek } from "@/types/attendance.types"
+import type {
+  IWeeklyScheduleTemplate,
+  IWeeklyScheduleTemplateWeek,
+  IWorkingShift,
+} from "@/types/attendance.types"
 import { buildEmptyTemplateWeeks } from "@/utils/attendance/build-empty-template-weeks"
 
 import { type FormEvent, useState } from "react"
@@ -72,9 +76,7 @@ function WeeklyScheduleTemplateForm({
         if (week.weekIndex !== weekIndex) return week
         return {
           ...week,
-          days: week.days.map((day) =>
-            day.dayOfWeek === dayOfWeek ? { ...day, shiftId } : day,
-          ),
+          days: week.days.map((day) => (day.dayOfWeek === dayOfWeek ? { ...day, shiftId } : day)),
         }
       }),
     )
@@ -121,7 +123,9 @@ function WeeklyScheduleTemplateForm({
           <Input
             id="template-name"
             value={name}
-            onChange={(event) => { setName(event.target.value) }}
+            onChange={(event) => {
+              setName(event.target.value)
+            }}
             placeholder="VD: Hành chính xoay 3 ca"
             required
           />
@@ -134,7 +138,9 @@ function WeeklyScheduleTemplateForm({
             min={1}
             max={12}
             value={cycleWeeks}
-            onChange={(event) => { handleCycleWeeksChange(Number(event.target.value)) }}
+            onChange={(event) => {
+              handleCycleWeeksChange(Number(event.target.value))
+            }}
           />
         </div>
       </div>
@@ -144,7 +150,9 @@ function WeeklyScheduleTemplateForm({
         <Textarea
           id="template-description"
           value={description}
-          onChange={(event) => { setDescription(event.target.value) }}
+          onChange={(event) => {
+            setDescription(event.target.value)
+          }}
           placeholder="Ghi chú về cách xoay ca..."
           rows={2}
         />
@@ -171,7 +179,13 @@ function WeeklyScheduleTemplateForm({
       </div>
 
       <DialogFooter>
-        <Button type="button" variant="outline" onClick={() => { onOpenChange(false) }}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            onOpenChange(false)
+          }}
+        >
           Huỷ
         </Button>
         <Button type="submit" disabled={isPending || !name.trim()}>

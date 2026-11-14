@@ -4,19 +4,16 @@ import {
   EMPLOYEE_STATUS,
 } from "@/config/entities/employee.config"
 import { SYSTEM_CONFIG } from "@/config/system.config"
+import { useUnlockAccount } from "@/hooks/security/queries/use-security-query"
 import { usePermission } from "@/hooks/use-permission"
-import type {
-  Employee,
-  EmployeeListQuery,
-  EmployeeType,
-} from "@/types/employee.types"
+import type { Employee, EmployeeListQuery, EmployeeType } from "@/types/employee.types"
 
 import { useState } from "react"
+
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 
 import { useEmployees, useUpdateEmployeeStatus } from "./queries/useEmployeeQuery"
-import { useUnlockAccount } from "@/hooks/security/queries/use-security-query"
 
 /**
  * Custom React hook that encapsulates state and methods for the Employee Master view.
@@ -51,7 +48,7 @@ export const useEmployeeMaster = () => {
   }
 
   const setQuery = (
-    updater: EmployeeListQuery | ((prev: EmployeeListQuery) => EmployeeListQuery)
+    updater: EmployeeListQuery | ((prev: EmployeeListQuery) => EmployeeListQuery),
   ) => {
     const params = new URLSearchParams(searchParams)
     const prevQuery: EmployeeListQuery = {
@@ -60,7 +57,7 @@ export const useEmployeeMaster = () => {
       search,
     }
     const nextQuery = typeof updater === "function" ? updater(prevQuery) : updater
-    
+
     if (nextQuery.page) params.set("page", nextQuery.page.toString())
     if (nextQuery.limit) params.set("limit", nextQuery.limit.toString())
     if (nextQuery.search !== undefined) {
@@ -108,7 +105,12 @@ export const useEmployeeMaster = () => {
   }
 
   const handleTabChange = (
-    tab: "all" | EmployeeType | typeof EMPLOYEE_LIST_TAB_SCHEDULE_PART_TIME | typeof EMPLOYEE_STATUS.TERMINATED | "locked"
+    tab:
+      | "all"
+      | EmployeeType
+      | typeof EMPLOYEE_LIST_TAB_SCHEDULE_PART_TIME
+      | typeof EMPLOYEE_STATUS.TERMINATED
+      | "locked",
   ) => {
     const params = new URLSearchParams(searchParams)
     params.set("tab", tab)

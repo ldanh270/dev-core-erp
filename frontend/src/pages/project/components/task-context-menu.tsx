@@ -1,17 +1,19 @@
+import type { Task } from "@/types/task.types"
+
 import { useEffect, useRef, useState } from "react"
+
 import {
-  ClipboardList,
-  ExternalLink,
-  Folder,
-  User,
-  Plus,
-  Clock,
   ChevronRight,
+  ClipboardList,
+  Clock,
+  ExternalLink,
   Eye,
+  Folder,
+  Plus,
+  User,
 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { toast } from "sonner"
-import type { Task } from "@/types/task.types"
 
 export interface TaskContextMenuProps {
   isOpen: boolean
@@ -147,55 +149,51 @@ export function TaskContextMenu({
           </span>
           <ChevronRight size={11} className="shrink-0 text-muted-foreground" />
         </button>
-        <div
-          className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}
-        >
+        <div className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}>
           <div
             className={`bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 min-w-[140px] max-h-[220px] overflow-y-auto ${submenuAlignClass}`}
           >
-            {statuses.length > 0 ? (
-              statuses.map((st) => {
-                const isActive = task.statusId === st.id || task.status === st.id
-                return (
-                  <button
-                    type="button"
-                    key={st.id}
-                    onClick={() => {
-                      onUpdateTask({ statusId: st.id })
-                      onClose()
-                    }}
-                    className="w-full text-left px-3 py-1.5 hover:bg-primary/10 hover:text-primary rounded-lg text-xs transition-colors font-medium text-foreground cursor-pointer flex items-center justify-between"
-                  >
-                    <span>{st.name}</span>
-                    {isActive && <span className="text-[10px] font-bold text-primary">✓</span>}
-                  </button>
-                )
-              })
-            ) : (
-              [
-                { id: "todo", name: "Đang mở" },
-                { id: "in_progress", name: "Đang làm" },
-                { id: "in_review", name: "Đánh giá" },
-                { id: "done", name: "Hoàn thành" },
-                { id: "cancelled", name: "Đã hủy" },
-              ].map((st) => {
-                const isActive = task.status === st.id
-                return (
-                  <button
-                    type="button"
-                    key={st.id}
-                    onClick={() => {
-                      onUpdateTask({ status: st.id })
-                      onClose()
-                    }}
-                    className="w-full text-left px-3 py-1.5 hover:bg-primary/10 hover:text-primary rounded-lg text-xs transition-colors font-medium text-foreground cursor-pointer flex items-center justify-between"
-                  >
-                    <span>{st.name}</span>
-                    {isActive && <span className="text-[10px] font-bold text-primary">✓</span>}
-                  </button>
-                )
-              })
-            )}
+            {statuses.length > 0
+              ? statuses.map((st) => {
+                  const isActive = task.statusId === st.id || task.status === st.id
+                  return (
+                    <button
+                      type="button"
+                      key={st.id}
+                      onClick={() => {
+                        onUpdateTask({ statusId: st.id })
+                        onClose()
+                      }}
+                      className="w-full text-left px-3 py-1.5 hover:bg-primary/10 hover:text-primary rounded-lg text-xs transition-colors font-medium text-foreground cursor-pointer flex items-center justify-between"
+                    >
+                      <span>{st.name}</span>
+                      {isActive && <span className="text-[10px] font-bold text-primary">✓</span>}
+                    </button>
+                  )
+                })
+              : [
+                  { id: "todo", name: "Đang mở" },
+                  { id: "in_progress", name: "Đang làm" },
+                  { id: "in_review", name: "Đánh giá" },
+                  { id: "done", name: "Hoàn thành" },
+                  { id: "cancelled", name: "Đã hủy" },
+                ].map((st) => {
+                  const isActive = task.status === st.id
+                  return (
+                    <button
+                      type="button"
+                      key={st.id}
+                      onClick={() => {
+                        onUpdateTask({ status: st.id })
+                        onClose()
+                      }}
+                      className="w-full text-left px-3 py-1.5 hover:bg-primary/10 hover:text-primary rounded-lg text-xs transition-colors font-medium text-foreground cursor-pointer flex items-center justify-between"
+                    >
+                      <span>{st.name}</span>
+                      {isActive && <span className="text-[10px] font-bold text-primary">✓</span>}
+                    </button>
+                  )
+                })}
           </div>
         </div>
       </div>
@@ -212,9 +210,7 @@ export function TaskContextMenu({
           </span>
           <ChevronRight size={11} className="shrink-0 text-muted-foreground" />
         </button>
-        <div
-          className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}
-        >
+        <div className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}>
           <div
             className={`bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 min-w-[130px] ${submenuAlignClass}`}
           >
@@ -251,9 +247,7 @@ export function TaskContextMenu({
           </span>
           <ChevronRight size={11} className="shrink-0 text-muted-foreground" />
         </button>
-        <div
-          className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}
-        >
+        <div className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}>
           <div
             className={`bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 min-w-[130px] ${submenuAlignClass}`}
           >
@@ -290,9 +284,7 @@ export function TaskContextMenu({
           </span>
           <ChevronRight size={11} className="shrink-0 text-muted-foreground" />
         </button>
-        <div
-          className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}
-        >
+        <div className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}>
           <div
             className={`bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 min-w-[160px] max-h-[200px] overflow-y-auto ${submenuAlignClass}`}
           >
@@ -340,9 +332,7 @@ export function TaskContextMenu({
           </span>
           <ChevronRight size={11} className="shrink-0 text-muted-foreground" />
         </button>
-        <div
-          className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}
-        >
+        <div className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}>
           <div
             className={`bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 min-w-[110px] max-h-[200px] overflow-y-auto ${submenuAlignClass}`}
           >
@@ -379,9 +369,7 @@ export function TaskContextMenu({
           </span>
           <ChevronRight size={11} className="shrink-0 text-muted-foreground" />
         </button>
-        <div
-          className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}
-        >
+        <div className={`absolute ${submenuPosClass} hidden group-hover/sub:block z-[10000]`}>
           <div
             className={`bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 min-w-[160px] max-h-[200px] overflow-y-auto ${submenuAlignClass}`}
           >

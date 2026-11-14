@@ -1,8 +1,8 @@
 import {
   EMPLOYEE_TYPE,
-  WORK_SCHEDULE_TYPE,
   type IEmployeeType,
   type IWorkScheduleType,
+  WORK_SCHEDULE_TYPE,
 } from "@/config/entities/employee.config"
 
 type EmployeeScheduleFields = {

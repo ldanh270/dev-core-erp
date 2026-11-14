@@ -37,7 +37,10 @@ export interface IProjectRoleRepository {
   create(projectId: string, data: CreateProjectRoleDto & { code: string }): Promise<ProjectRole>
   update(id: string, data: UpdateProjectRoleDto & { code?: string }): Promise<ProjectRole | null>
   delete(id: string): Promise<void>
-  createMany(projectId: string, roles: Array<{ name: string; code: string; allowedTaskTrackers: string[] }>): Promise<void>
+  createMany(
+    projectId: string,
+    roles: Array<{ name: string; code: string; allowedTaskTrackers: string[] }>,
+  ): Promise<void>
 }
 
 /**

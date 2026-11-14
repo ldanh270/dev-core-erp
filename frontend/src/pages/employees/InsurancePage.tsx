@@ -1,8 +1,4 @@
-import {
-  DataTablePage,
-  type DataTableColumn,
-  StatusPill,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage, StatusPill } from "@/components/common"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import { TABLE_COL_WIDTH } from "@/config/table-columns.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
@@ -11,6 +7,7 @@ import { cn, formatCurrency } from "@/lib/utils"
 import type { Employee } from "@/types/employee.types"
 
 import { useMemo } from "react"
+
 import { Plus, User } from "lucide-react"
 import { useSearchParams } from "react-router-dom"
 
@@ -73,10 +70,16 @@ export default function InsurancePage() {
               <User className="size-4 text-muted-foreground" />
             </div>
             <div className="min-w-0 flex-1 flex flex-col justify-center">
-              <p className={cn(TYPOGRAPHY.CELL_PRIMARY, "leading-5 truncate")} title={employee.fullName}>
+              <p
+                className={cn(TYPOGRAPHY.CELL_PRIMARY, "leading-5 truncate")}
+                title={employee.fullName}
+              >
                 {employee.fullName}
               </p>
-              <p className={cn(TYPOGRAPHY.CELL_SECONDARY, "leading-4 truncate")} title={employee.username}>
+              <p
+                className={cn(TYPOGRAPHY.CELL_SECONDARY, "leading-4 truncate")}
+                title={employee.username}
+              >
                 {employee.username}
               </p>
             </div>
@@ -134,9 +137,7 @@ export default function InsurancePage() {
         header: "Trạng thái",
         width: `${TABLE_COL_WIDTH.STATUS}px`,
         minWidth: `${TABLE_COL_WIDTH.STATUS}px`,
-        cell: () => (
-          <StatusPill label="Đang đóng BHXH" variant="success" />
-        ),
+        cell: () => <StatusPill label="Đang đóng BHXH" variant="success" />,
       },
     ],
     [],

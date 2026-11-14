@@ -1,6 +1,6 @@
 import {
-  IEmployeeShiftRepository,
   IEmployeeShiftOverrideRecord,
+  IEmployeeShiftRepository,
   IEmployeeShiftWithShift,
   IOverrideEmployeeShiftDTO,
 } from "@/types/shift.types.ts"
@@ -39,7 +39,9 @@ export class PrismaEmployeeShiftRepository
   }
 
   /** Append-only override row — supports multiple shifts per day for part-time assign. */
-  async createOverrideShift(data: IOverrideEmployeeShiftDTO): Promise<IEmployeeShiftOverrideRecord> {
+  async createOverrideShift(
+    data: IOverrideEmployeeShiftDTO,
+  ): Promise<IEmployeeShiftOverrideRecord> {
     const { employeeId, assignedDate, shiftId, createdById } = data
     const date = toUtcMidnight(assignedDate)
     // Audit trail: admin assign passes createdById; self-service paths fall back to employee.

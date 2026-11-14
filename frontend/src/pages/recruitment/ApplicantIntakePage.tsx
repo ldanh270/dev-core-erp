@@ -1,10 +1,4 @@
-import {
-  EmptyState,
-  PageCard,
-  PageContainer,
-  PageHeader,
-  SectionHeader,
-} from "@/components/common"
+import { EmptyState, PageCard, PageContainer, PageHeader, SectionHeader } from "@/components/common"
 import {
   parseApplicantCsv,
   validateApplicantRows,
@@ -34,15 +28,15 @@ import {
   APPLICANT_IMPORT_MAX_FILE_SIZE_LABEL,
   POSTING_CHANNELS,
 } from "@/config/entities/recruitment.config"
+import { ROUTES } from "@/config/routes.config"
+import { getTableColWidthPx } from "@/config/table-columns.config"
+import { TYPOGRAPHY } from "@/config/typography.config"
 import {
   useImportApplicants,
   useJobPostings,
   useRequisitions,
 } from "@/hooks/recruitment/use-recruitment-queries"
 import { usePermission } from "@/hooks/use-permission"
-import { ROUTES } from "@/config/routes.config"
-import { getTableColWidthPx } from "@/config/table-columns.config"
-import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn } from "@/lib/utils"
 import type { ApplicantImportResult } from "@/types/recruitment.types"
 
@@ -260,9 +254,7 @@ export default function ApplicantIntakePage() {
                 >
                   Điện thoại
                 </TableHead>
-                <TableHead className={cn("h-10 px-4 py-2", TYPOGRAPHY.TABLE_HEADER)}>
-                  CV
-                </TableHead>
+                <TableHead className={cn("h-10 px-4 py-2", TYPOGRAPHY.TABLE_HEADER)}>CV</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -283,23 +275,20 @@ export default function ApplicantIntakePage() {
                     key={`${row.email}-${index}`}
                     className="transition-colors duration-100 hover:bg-muted/25"
                   >
-                    <TableCell
-                      className={cn("h-[60px] px-4 py-3", TYPOGRAPHY.CELL_PRIMARY)}
-                    >
+                    <TableCell className={cn("h-[60px] px-4 py-3", TYPOGRAPHY.CELL_PRIMARY)}>
                       {row.fullName}
                     </TableCell>
-                    <TableCell
-                      className={cn("h-[60px] px-4 py-3", TYPOGRAPHY.CELL_SECONDARY)}
-                    >
+                    <TableCell className={cn("h-[60px] px-4 py-3", TYPOGRAPHY.CELL_SECONDARY)}>
                       {row.email}
                     </TableCell>
-                    <TableCell
-                      className={cn("h-[60px] px-4 py-3", TYPOGRAPHY.CELL_SECONDARY)}
-                    >
+                    <TableCell className={cn("h-[60px] px-4 py-3", TYPOGRAPHY.CELL_SECONDARY)}>
                       {row.phone || "—"}
                     </TableCell>
                     <TableCell
-                      className={cn("h-[60px] px-4 py-3 max-w-52 truncate", TYPOGRAPHY.CELL_SECONDARY)}
+                      className={cn(
+                        "h-[60px] px-4 py-3 max-w-52 truncate",
+                        TYPOGRAPHY.CELL_SECONDARY,
+                      )}
                     >
                       {row.cvUrl || "—"}
                     </TableCell>

@@ -200,33 +200,25 @@
   "indexes": [
     {
       "name": "IX_permissions_code",
-      "columns": [
-        "code"
-      ],
+      "columns": ["code"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_permissions_deletedAt",
-      "columns": [
-        "deletedAt"
-      ],
+      "columns": ["deletedAt"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_permissions_module",
-      "columns": [
-        "module"
-      ],
+      "columns": ["module"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_permissions",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }

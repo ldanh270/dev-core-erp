@@ -1,15 +1,16 @@
+import { SCHEDULE_VALIDATION_MESSAGES } from "@/configs/entities/attendance.config.ts"
+import { ATTENDANCE_ERROR_MESSAGES } from "@/configs/messages/attendance.message.ts"
 import { ErrorCode } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { ATTENDANCE_ERROR_CODES } from "@/constants/attendance.constants.ts"
-import { SCHEDULE_VALIDATION_MESSAGES } from "@/configs/entities/attendance.config.ts"
-import { ATTENDANCE_ERROR_MESSAGES } from "@/configs/messages/attendance.message.ts"
 import { AuthRequest } from "@/middlewares/auth.middleware.ts"
-import { assignShiftScheduleSchema, generateShiftsSchema, overrideEmployeeShiftSchema } from "@/schemas/shift.schema.ts"
-import { ApiResponse } from "@/types"
 import {
-  IPlannedWeek,
-  IScheduleService,
-} from "@/types/shift.types.ts"
+  assignShiftScheduleSchema,
+  generateShiftsSchema,
+  overrideEmployeeShiftSchema,
+} from "@/schemas/shift.schema.ts"
+import { ApiResponse } from "@/types"
+import { IPlannedWeek, IScheduleService } from "@/types/shift.types.ts"
 import { resolvePersonalEmployeeId } from "@/utils/attendance/resolve-personal-employee-id.ts"
 
 import { Request, Response } from "express"
@@ -140,20 +141,24 @@ export class ScheduleController {
       })
     }
     const employeeId = await resolvePersonalEmployeeId(accountId)
-    
+
     const startDateQuery = req.query.startDate as string | undefined
     const endDateQuery = req.query.endDate as string | undefined
-    
+
     if (!startDateQuery || !endDateQuery) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         data: null,
-        error: { message: "startDate and endDate are required", code: ErrorCode.VALIDATION_ERROR }
+        error: { message: "startDate and endDate are required", code: ErrorCode.VALIDATION_ERROR },
       })
     }
-    
+
     // We need to fetch EmployeeShifts directly, but service only has previewGeneratedShifts...
     // Actually, I should add a method to ScheduleService for this!
-    const shifts = await this.service.getEmployeeShifts(employeeId, new Date(startDateQuery), new Date(endDateQuery))
+    const shifts = await this.service.getEmployeeShifts(
+      employeeId,
+      new Date(startDateQuery),
+      new Date(endDateQuery),
+    )
     res.status(HttpStatusCode.OK).json({ data: shifts, error: null })
   }
 
@@ -231,7 +236,10 @@ export class ScheduleController {
       })
     }
 
-    const plannedWeek = await this.service.getPlannedWeekForEmployee(req.params.employeeId, weekStart)
+    const plannedWeek = await this.service.getPlannedWeekForEmployee(
+      req.params.employeeId,
+      weekStart,
+    )
     res.status(HttpStatusCode.OK).json({ data: plannedWeek, error: null })
   }
 
@@ -302,5 +310,4 @@ export class ScheduleController {
       throw error
     }
   }
-
 }

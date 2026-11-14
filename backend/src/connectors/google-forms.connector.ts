@@ -1,20 +1,20 @@
-import { HttpStatusCode } from "@/configs/system/http.config"
 import {
   GOOGLE_FORM_DEFAULT_FIELDS,
-  googleFormQuestionId,
   type GoogleFormFieldDefinition,
+  googleFormQuestionId,
 } from "@/configs/rules/google-form.config"
+import { HttpStatusCode } from "@/configs/system/http.config"
 import { jobPostingRepository } from "@/repositories/job-posting.repository"
 import { googleFormFieldSchema, intakeRowSchema } from "@/schemas/recruitment.schema"
-import { recruitmentOAuthAccountService } from "@/services/recruitment-oauth-account.service"
 import type { RecruitmentConnector } from "@/services/job-posting.service"
+import { recruitmentOAuthAccountService } from "@/services/recruitment-oauth-account.service"
 import type {
   ConnectorIntakeRow,
   ConnectorRowError,
   ConnectorSyncResult,
 } from "@/types/recruitment-connector.types"
-import { AppError } from "@/utils/error.util"
 import { decryptCredential } from "@/utils/credential-encryption.util"
+import { AppError } from "@/utils/error.util"
 
 interface GoogleOAuthCredentials {
   clientId: string
@@ -107,7 +107,9 @@ export class GoogleFormsConnector implements RecruitmentConnector {
     }
 
     const existingTitles = new Set(
-      (existingItems ?? []).map((item) => item.title?.trim()).filter((t): t is string => Boolean(t))
+      (existingItems ?? [])
+        .map((item) => item.title?.trim())
+        .filter((t): t is string => Boolean(t)),
     )
     const fields = this.postingFields(posting)
     const description = this.buildDescription(posting.requisition)
@@ -169,9 +171,7 @@ export class GoogleFormsConnector implements RecruitmentConnector {
 
     const questionIdMap = new Map(
       posting.fieldSnapshots.flatMap((field) =>
-        field.externalQuestionId
-          ? [[field.fieldKey, field.externalQuestionId] as const]
-          : [],
+        field.externalQuestionId ? [[field.fieldKey, field.externalQuestionId] as const] : [],
       ),
     )
     for (const item of form.items ?? []) {
@@ -213,7 +213,7 @@ export class GoogleFormsConnector implements RecruitmentConnector {
         fields.map((field) => {
           const qId = questionIdMap.get(field.key)
           return [field.key, qId ? this.text(response, qId) : ""]
-        })
+        }),
       )
       const cvQId = questionIdMap.get("cv_url")
       const raw = {
@@ -245,7 +245,11 @@ export class GoogleFormsConnector implements RecruitmentConnector {
     return { rows, errors, totalFetched: responses.length }
   }
 
-  private async requireConfig(posting: { id?: string; oauthAccountId: string | null; oauthAccount?: { clientId: string; clientSecret: string; refreshToken: string } | null }): Promise<GoogleOAuthCredentials> {
+  private async requireConfig(posting: {
+    id?: string
+    oauthAccountId: string | null
+    oauthAccount?: { clientId: string; clientSecret: string; refreshToken: string } | null
+  }): Promise<GoogleOAuthCredentials> {
     // Try to use the OAuth account directly linked to the posting first
     const oauthAccount = posting.oauthAccount
     if (oauthAccount?.clientId && oauthAccount.clientSecret && oauthAccount.refreshToken) {
@@ -367,8 +371,7 @@ export class GoogleFormsConnector implements RecruitmentConnector {
     if (text) return text
     // questionId originates from validated posting field snapshots (typed as Google form question id).
     // eslint-disable-next-line security/detect-object-injection
-    const fileId = response.answers?.[questionId]
-      ?.fileUploadAnswers?.answers?.[0]?.fileId
+    const fileId = response.answers?.[questionId]?.fileUploadAnswers?.answers?.[0]?.fileId
     return fileId ? `https://drive.google.com/open?id=${encodeURIComponent(fileId)}` : undefined
   }
 
@@ -384,7 +387,12 @@ export class GoogleFormsConnector implements RecruitmentConnector {
 
   private postingFields(posting: {
     formFields: unknown
-    fieldSnapshots: Array<{ fieldKey: string; label: string; type: "short_text" | "paragraph"; required: boolean }>
+    fieldSnapshots: Array<{
+      fieldKey: string
+      label: string
+      type: "short_text" | "paragraph"
+      required: boolean
+    }>
   }): readonly GoogleFormFieldDefinition[] {
     if (posting.fieldSnapshots.length > 0) {
       return posting.fieldSnapshots.map((field) => ({
@@ -412,14 +420,16 @@ export class GoogleFormsConnector implements RecruitmentConnector {
   }
 
   private matchesField(field: GoogleFormFieldDefinition, title: string): boolean {
-    const normalize = (value: string) => value
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, " ")
-      .trim()
+    const normalize = (value: string) =>
+      value
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim()
     const normalizedTitle = normalize(title)
-    if (normalize(field.label) === normalizedTitle || normalize(field.key) === normalizedTitle) return true
+    if (normalize(field.label) === normalizedTitle || normalize(field.key) === normalizedTitle)
+      return true
     const aliases = new Map<string, readonly string[]>([
       ["full_name", ["ho va ten", "ho ten", "ten day du", "full name", "name"]],
       ["email", ["email", "email address", "dia chi email"]],

@@ -5,6 +5,7 @@ import { authorizationService } from "@/services/authorization.service.ts"
 import {
   CreateTaskDto,
   IEmployeeRepository,
+  IPositionService,
   IProjectRepository,
   IProjectTaskStatusRepository,
   ITaskRepository,
@@ -13,7 +14,6 @@ import {
   Task,
   TaskListQuery,
   UpdateTaskDto,
-  IPositionService,
 } from "@/types"
 import { AppError } from "@/utils/error.util.ts"
 import { mapStatusNameToEnum } from "@/utils/status-mapping.util.ts"
@@ -147,7 +147,11 @@ export class TaskService implements ITaskService {
     }
 
     if (this.positionService) {
-      await this.positionService.validateTaskCreation(data.projectId, userId, data.tracker || "feature")
+      await this.positionService.validateTaskCreation(
+        data.projectId,
+        userId,
+        data.tracker || "feature",
+      )
     }
 
     if (data.assigneeId) {
@@ -303,12 +307,27 @@ export class TaskService implements ITaskService {
       }
     }
 
-    const effectiveParentId = data.parentTaskId !== undefined ? data.parentTaskId : task.parentTaskId
+    const effectiveParentId =
+      data.parentTaskId !== undefined ? data.parentTaskId : task.parentTaskId
     if (effectiveParentId) {
       const parent = await this.repository.findById(effectiveParentId)
       if (parent) {
-        const effStart = data.startDate !== undefined ? (data.startDate ? new Date(data.startDate) : null) : (task.startDate ? new Date(task.startDate) : null)
-        const effDue = data.dueDate !== undefined ? (data.dueDate ? new Date(data.dueDate) : null) : (task.dueDate ? new Date(task.dueDate) : null)
+        const effStart =
+          data.startDate !== undefined
+            ? data.startDate
+              ? new Date(data.startDate)
+              : null
+            : task.startDate
+              ? new Date(task.startDate)
+              : null
+        const effDue =
+          data.dueDate !== undefined
+            ? data.dueDate
+              ? new Date(data.dueDate)
+              : null
+            : task.dueDate
+              ? new Date(task.dueDate)
+              : null
         if (effStart && parent.startDate && effStart < new Date(parent.startDate)) {
           throw new AppError(
             "Child task start date cannot precede parent task start date",
@@ -388,8 +407,6 @@ export class TaskService implements ITaskService {
           )
         }
       }
-
-
     }
 
     return this.repository.updateTask(id, {

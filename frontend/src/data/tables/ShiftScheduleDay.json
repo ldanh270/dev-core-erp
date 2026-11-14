@@ -90,27 +90,19 @@
   "indexes": [
     {
       "name": "IX_ShiftScheduleDay_scheduleId_weekIndex_dayOfWeek",
-      "columns": [
-        "scheduleId",
-        "weekIndex",
-        "dayOfWeek"
-      ],
+      "columns": ["scheduleId", "weekIndex", "dayOfWeek"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_ShiftScheduleDay_shiftId",
-      "columns": [
-        "shiftId"
-      ],
+      "columns": ["shiftId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_ShiftScheduleDay",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -120,23 +112,15 @@
       "virtualName": "schedule",
       "targetModel": "ShiftSchedule",
       "relationName": null,
-      "foreignKeyFields": [
-        "scheduleId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["scheduleId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "shift",
       "targetModel": "WorkingShift",
       "relationName": null,
-      "foreignKeyFields": [
-        "shiftId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["shiftId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

@@ -1,10 +1,13 @@
+import { TASK_STATUS } from "@/config/entities/project.config"
+import { taskApi } from "@/lib/api/task.api"
+import type { Task, UpdateTaskDto } from "@/types/task.types"
+import { extractErrorMessage } from "@/utils/error-helper"
+
 import { useState } from "react"
+
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { taskApi } from "@/lib/api/task.api"
-import { extractErrorMessage } from "@/utils/error-helper"
-import type { Task, UpdateTaskDto } from "@/types/task.types"
-import { TASK_STATUS } from "@/config/entities/project.config"
+
 import { PROJECT_QUERY_KEY } from "../constants/gantt.constants"
 
 interface UseTaskReviewProps {
@@ -18,7 +21,7 @@ export function useTaskReview({ task, projectId, onOpenChange }: UseTaskReviewPr
 
   // Form states for employee submitting work
   const [resultNotes, setResultNotes] = useState(task.resultNotes || "")
-  
+
   // Rejection states for leader reviewing work
   const [isRejecting, setIsRejecting] = useState(false)
   const [rejectionReason, setRejectionReason] = useState("")
@@ -32,7 +35,9 @@ export function useTaskReview({ task, projectId, onOpenChange }: UseTaskReviewPr
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: [PROJECT_QUERY_KEY.GANTT, projectId] })
-      void queryClient.invalidateQueries({ queryKey: [PROJECT_QUERY_KEY.TASKS, PROJECT_QUERY_KEY.OVERVIEW, projectId] })
+      void queryClient.invalidateQueries({
+        queryKey: [PROJECT_QUERY_KEY.TASKS, PROJECT_QUERY_KEY.OVERVIEW, projectId],
+      })
       toast.success("Đã cập nhật trạng thái công việc")
       onOpenChange(false)
     },

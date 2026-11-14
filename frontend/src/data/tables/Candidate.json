@@ -248,25 +248,19 @@
   "indexes": [
     {
       "name": "IX_Candidate_email",
-      "columns": [
-        "email"
-      ],
+      "columns": ["email"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Candidate_source",
-      "columns": [
-        "source"
-      ],
+      "columns": ["source"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_Candidate",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }

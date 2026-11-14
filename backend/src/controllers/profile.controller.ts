@@ -1,7 +1,11 @@
 import { ErrorCode, ErrorMessage } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { AuthRequest } from "@/middlewares/auth.middleware.ts"
-import { changePasswordSchema, updatePersonalEmployeeLinkSchema, updateProfileSchema } from "@/schemas/profile.schema.ts"
+import {
+  changePasswordSchema,
+  updatePersonalEmployeeLinkSchema,
+  updateProfileSchema,
+} from "@/schemas/profile.schema.ts"
 import type { IProfileService } from "@/types/profile.types.ts"
 
 import { Response } from "express"
@@ -166,10 +170,7 @@ export class ProfileController {
       }
 
       const validatedData = updatePersonalEmployeeLinkSchema.parse(req.body)
-      const profile = await this.service.updatePersonalEmployeeLink(
-        req.user.empId,
-        validatedData,
-      )
+      const profile = await this.service.updatePersonalEmployeeLink(req.user.empId, validatedData)
 
       return res.status(HttpStatusCode.OK).json({
         status: "success",

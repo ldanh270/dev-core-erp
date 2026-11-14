@@ -76,10 +76,7 @@ export class PrismaNotificationRepository implements INotificationRepository {
   /**
    * Finds a notification with recipient state, returning null if missing or personally deleted.
    */
-  async findById(
-    id: string,
-    employeeId: string,
-  ): Promise<Notification | null> {
+  async findById(id: string, employeeId: string): Promise<Notification | null> {
     // Load the notification with the requesting employee's state.
     // The service verifies audience access before returning the result.
     const row = await this.db.notification.findUnique({
@@ -106,10 +103,7 @@ export class PrismaNotificationRepository implements INotificationRepository {
     query?: NotificationQuery,
   ): Promise<PaginatedNotifications> {
     // Clamp pagination values to the configured limits.
-    const page = Math.max(
-      1,
-      query?.page ?? NOTIFICATION_PAGINATION.DEFAULT_PAGE,
-    )
+    const page = Math.max(1, query?.page ?? NOTIFICATION_PAGINATION.DEFAULT_PAGE)
 
     const limit = Math.min(
       NOTIFICATION_PAGINATION.MAX_LIMIT,
@@ -169,10 +163,7 @@ export class PrismaNotificationRepository implements INotificationRepository {
               where: { employeeId },
             },
           },
-          orderBy: [
-            { createdAt: "desc" },
-            { id: "desc" },
-          ],
+          orderBy: [{ createdAt: "desc" }, { id: "desc" }],
           skip: (page - 1) * limit,
           take: limit,
         }),
@@ -202,10 +193,7 @@ export class PrismaNotificationRepository implements INotificationRepository {
     // Store broadcast notifications with a null employeeId.
     const row = await this.db.notification.create({
       data: {
-        employeeId:
-          data.employeeId === NOTIFICATION_AUDIENCE.ALL
-            ? null
-            : data.employeeId,
+        employeeId: data.employeeId === NOTIFICATION_AUDIENCE.ALL ? null : data.employeeId,
         title: data.title,
         message: data.message,
         type: data.type ?? NOTIFICATION_TYPE.INFO,
@@ -225,10 +213,7 @@ export class PrismaNotificationRepository implements INotificationRepository {
   /**
    * Marks a visible notification as read by upserting the employee's recipient state.
    */
-  async markAsRead(
-    id: string,
-    employeeId: string,
-  ): Promise<Notification | null> {
+  async markAsRead(id: string, employeeId: string): Promise<Notification | null> {
     // Verify visibility before updating recipient-specific state.
     return this.db.$transaction(async (tx) => {
       const row = await tx.notification.findFirst({

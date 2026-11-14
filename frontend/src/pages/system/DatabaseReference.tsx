@@ -1,8 +1,10 @@
 import { DataTablePage, PageContainer, PageHeader } from "@/components/common"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import schemaSummaryRaw from "@/data/schema-summary.json"
-import { Database } from "lucide-react"
+
 import { useMemo } from "react"
+
+import { Database } from "lucide-react"
 
 import { DatabaseErdTab } from "./database-reference/components/database-erd-tab"
 import { DatabaseReferenceHeaderActions } from "./database-reference/components/database-reference-header-actions"
@@ -62,7 +64,11 @@ export default function DatabaseReference() {
 
   const totalPages = Math.ceil(state.filteredTables.length / state.pageSize)
   const visibleTables = useMemo(
-    () => state.filteredTables.slice((state.currentPage - 1) * state.pageSize, state.currentPage * state.pageSize),
+    () =>
+      state.filteredTables.slice(
+        (state.currentPage - 1) * state.pageSize,
+        state.currentPage * state.pageSize,
+      ),
     [state.filteredTables, state.currentPage, state.pageSize],
   )
 
@@ -81,7 +87,9 @@ export default function DatabaseReference() {
     <DatabaseTableSheet
       table={state.selectedTable}
       schema={dbSchema}
-      onClose={() => { actions.setSelectedTable(null); }}
+      onClose={() => {
+        actions.setSelectedTable(null)
+      }}
       onSelectTable={actions.handleSelectTableByName}
       onViewErd={actions.handleViewErd}
       copied={state.selectedTable !== null && state.copiedTableName === state.selectedTable.name}
@@ -137,7 +145,9 @@ export default function DatabaseReference() {
       data={visibleTables}
       keyExtractor={(table) => table.name}
       onRowClick={actions.handleSelectTable}
-      rowClassName={(table) => (state.selectedTable?.name === table.name ? "bg-primary/10 hover:bg-primary/15" : undefined)}
+      rowClassName={(table) =>
+        state.selectedTable?.name === table.name ? "bg-primary/10 hover:bg-primary/15" : undefined
+      }
       emptyState={{
         icon: Database,
         title: "Không tìm thấy bảng",

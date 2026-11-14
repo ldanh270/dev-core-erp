@@ -1,9 +1,11 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Link } from "react-router-dom"
-import { useDatabaseReferenceHeader } from "../hooks/use-database-reference-header"
+
 import { ArrowLeft, Network, Table2 } from "lucide-react"
+import { Link } from "react-router-dom"
+
+import { useDatabaseReferenceHeader } from "../hooks/use-database-reference-header"
 
 export interface DatabaseReferenceHeaderActionsProps {
   activeTab: "tables" | "diagram"
@@ -41,10 +43,7 @@ export function DatabaseReferenceHeaderActions({
       {/* View switcher tabs: h-9 container with separated pill triggers */}
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="h-9 gap-1 rounded-full p-1">
-          <TabsTrigger
-            value="tables"
-            className="h-7 gap-1.5 rounded-full px-3 text-xs font-medium"
-          >
+          <TabsTrigger value="tables" className="h-7 gap-1.5 rounded-full px-3 text-xs font-medium">
             <Table2 className="size-3.5" />
             Danh sách bảng
           </TabsTrigger>
@@ -74,7 +73,12 @@ export function DatabaseReferenceHeaderActions({
       </div>
 
       {/* ERP navigation button with unified h-9 height */}
-      <Button asChild size="sm" variant="outline" className="h-9 rounded-full px-3.5 text-xs font-medium">
+      <Button
+        asChild
+        size="sm"
+        variant="outline"
+        className="h-9 rounded-full px-3.5 text-xs font-medium"
+      >
         <Link to="/">
           <ArrowLeft className="mr-1.5 size-3.5" />
           Vào ERP

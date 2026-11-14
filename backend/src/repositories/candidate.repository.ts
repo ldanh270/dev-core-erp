@@ -1,6 +1,11 @@
 import { prisma } from "@/libs/database"
+import type {
+  CreateCandidateInput,
+  ListCandidatesQuery,
+  UpdateCandidateInput,
+} from "@/types/recruitment.types"
+
 import { Prisma, type PrismaClient } from "@prisma/client"
-import type { CreateCandidateInput, UpdateCandidateInput, ListCandidatesQuery } from "@/types/recruitment.types"
 
 export class CandidateRepository {
   constructor(private readonly db: PrismaClient = prisma) {}
@@ -98,7 +103,7 @@ export class CandidateRepository {
       total,
       bySource: bySource.reduce(
         (acc, { source, _count }) => ({ ...acc, [source]: _count.id }),
-        {} as Record<string, number>
+        {} as Record<string, number>,
       ),
     }
   }

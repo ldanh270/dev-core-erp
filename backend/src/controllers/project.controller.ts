@@ -8,7 +8,7 @@ import {
   updateProjectMemberSchema,
   updateProjectSchema,
 } from "@/schemas/project.schema.ts"
-import { ApiResponse, IProjectService, PaginatedProjectsDto, Project, GanttDataDto } from "@/types"
+import { ApiResponse, GanttDataDto, IProjectService, PaginatedProjectsDto, Project } from "@/types"
 
 import { Response } from "express"
 import { z } from "zod"
@@ -60,10 +60,7 @@ export class ProjectController {
       })
     }
 
-    const project = await this.service.getProject(
-      String(req.params.id),
-      req.user.empId,
-    )
+    const project = await this.service.getProject(String(req.params.id), req.user.empId)
     if (!project) {
       return res.status(HttpStatusCode.NOT_FOUND).json({
         data: null,
@@ -178,12 +175,11 @@ export class ProjectController {
       }
 
       const { employeeId, hourlyRate, workMode, roleId } = addProjectMemberSchema.parse(req.body)
-      await this.service.addMember(
-        String(req.params.id),
-        employeeId,
-        req.user.empId,
-        { hourlyRate, workMode, roleId },
-      )
+      await this.service.addMember(String(req.params.id), employeeId, req.user.empId, {
+        hourlyRate,
+        workMode,
+        roleId,
+      })
       res.status(HttpStatusCode.OK).json({ data: null, error: null })
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -267,10 +263,7 @@ export class ProjectController {
       })
     }
 
-    const members = await this.service.getMembers(
-      String(req.params.id),
-      req.user.empId,
-    )
+    const members = await this.service.getMembers(String(req.params.id), req.user.empId)
     res.status(HttpStatusCode.OK).json({ data: members, error: null })
   }
 
@@ -286,10 +279,7 @@ export class ProjectController {
       })
     }
 
-    const ganttData = await this.service.getGanttData(
-      String(req.params.id),
-      req.user.empId,
-    )
+    const ganttData = await this.service.getGanttData(String(req.params.id), req.user.empId)
     res.status(HttpStatusCode.OK).json({ data: ganttData, error: null })
   }
 }

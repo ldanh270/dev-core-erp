@@ -1,35 +1,36 @@
+import { SPENT_TIME_STATUS, SPENT_TIME_WORK_TIME_TYPE } from "@/configs/entities/project.config.ts"
+import { SORT_ORDER } from "@/configs/system/db.config.ts"
 import {
+  ApprovedSpentTimePayrollRow,
   CreateSpentTimeDto,
   ISpentTimeRepository,
   SpentTime,
-  SpentTimeQuery,
-  UpdateSpentTimeDto,
   SpentTimeActivity,
-  SpentTimeWorkTimeType,
+  SpentTimeQuery,
   SpentTimeStatus,
-  ApprovedSpentTimePayrollRow,
+  SpentTimeWorkTimeType,
+  UpdateSpentTimeDto,
 } from "@/types"
+
 import {
-  Employee as PrismaEmployee,
   Prisma,
   PrismaClient,
+  Employee as PrismaEmployee,
   SpentTime as PrismaSpentTime,
   Task as PrismaTask,
 } from "@prisma/client"
-import {
-  SPENT_TIME_STATUS,
-  SPENT_TIME_WORK_TIME_TYPE,
-} from "@/configs/entities/project.config.ts"
-import { SORT_ORDER } from "@/configs/system/db.config.ts"
+
 import { BaseRepository } from "./base.repository.ts"
 
 type PrismaSpentTimeWithRelations = PrismaSpentTime & {
-  task?: (PrismaTask & {
-    project?: {
-      id: string
-      name: string
-    } | null
-  }) | null
+  task?:
+    | (PrismaTask & {
+        project?: {
+          id: string
+          name: string
+        } | null
+      })
+    | null
   employee?: Pick<PrismaEmployee, "id" | "fullName" | "email"> | null
   approvedBy?: Pick<PrismaEmployee, "id" | "fullName"> | null
 }

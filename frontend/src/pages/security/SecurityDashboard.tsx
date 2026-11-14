@@ -1,16 +1,23 @@
 import { PageCard, PageContainer, PageHeader, SectionHeader, StatusPill } from "@/components/common"
 import { IconBox } from "@/components/common/icon-box"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useSecuritySummary } from "@/hooks/security/queries/use-security-query"
-import { useState } from "react"
-import type { ActivityLogItem } from "@/types/security.types"
-import type { LucideIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { routerNavigate } from "@/lib/router-navigator"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { ROUTES } from "@/config/routes.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
+import { useSecuritySummary } from "@/hooks/security/queries/use-security-query"
+import { routerNavigate } from "@/lib/router-navigator"
+import { cn } from "@/lib/utils"
+import type { ActivityLogItem } from "@/types/security.types"
 
+import { useState } from "react"
+
+import type { LucideIcon } from "lucide-react"
 import {
   AlertTriangle,
   History,
@@ -111,7 +118,13 @@ export default function SecurityDashboard() {
           <p className="text-sm text-muted-foreground mt-2">
             Không thể tải thông tin bảo mật. Vui lòng thử lại sau.
           </p>
-          <Button variant="outline" className="mt-4" onClick={() => { refetch(); }}>
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={() => {
+              refetch()
+            }}
+          >
             Thử lại
           </Button>
         </div>
@@ -128,21 +141,31 @@ export default function SecurityDashboard() {
           <div className="flex items-center gap-3">
             <Select
               value={timeRange}
-              onValueChange={(val: "today" | "7days" | "30days") => { setTimeRange(val); }}
+              onValueChange={(val: "today" | "7days" | "30days") => {
+                setTimeRange(val)
+              }}
             >
               <SelectTrigger className="w-[160px] h-10 rounded-full text-sm font-medium">
                 <SelectValue placeholder="Chọn khoảng thời gian" />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
-                <SelectItem value="today" className="text-sm">Hôm nay</SelectItem>
-                <SelectItem value="7days" className="text-sm">7 ngày qua</SelectItem>
-                <SelectItem value="30days" className="text-sm">30 ngày qua</SelectItem>
+                <SelectItem value="today" className="text-sm">
+                  Hôm nay
+                </SelectItem>
+                <SelectItem value="7days" className="text-sm">
+                  7 ngày qua
+                </SelectItem>
+                <SelectItem value="30days" className="text-sm">
+                  30 ngày qua
+                </SelectItem>
               </SelectContent>
             </Select>
             <Button
               variant="outline"
               className="h-10 gap-1.5 rounded-full text-sm font-medium"
-              onClick={() => { refetch(); }}
+              onClick={() => {
+                refetch()
+              }}
             >
               <RefreshCw className="h-4 w-4" />
               Làm mới
@@ -155,7 +178,11 @@ export default function SecurityDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <PageCard
           className="cursor-pointer hover:border-destructive/40 hover:shadow-md transition-all duration-200"
-          onClick={() => { routerNavigate(`${ROUTES.HRM.ACTIVITY_LOGS}?category=security&actionType=account_locked`) }}
+          onClick={() => {
+            routerNavigate(
+              `${ROUTES.HRM.ACTIVITY_LOGS}?category=security&actionType=account_locked`,
+            )
+          }}
         >
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center text-destructive shrink-0">
@@ -174,7 +201,9 @@ export default function SecurityDashboard() {
 
         <PageCard
           className="cursor-pointer hover:border-warning/40 hover:shadow-md transition-all duration-200"
-          onClick={() => { routerNavigate(`${ROUTES.HRM.ACTIVITY_LOGS}?category=auth&actionType=failed_login`) }}
+          onClick={() => {
+            routerNavigate(`${ROUTES.HRM.ACTIVITY_LOGS}?category=auth&actionType=failed_login`)
+          }}
         >
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-full bg-warning/10 flex items-center justify-center text-warning shrink-0">
@@ -182,18 +211,24 @@ export default function SecurityDashboard() {
             </div>
             <div>
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Đăng nhập thất bại ({timeRange === "today" ? "Hôm nay" : timeRange === "7days" ? "7 ngày qua" : "30 ngày qua"})
+                Đăng nhập thất bại (
+                {timeRange === "today"
+                  ? "Hôm nay"
+                  : timeRange === "7days"
+                    ? "7 ngày qua"
+                    : "30 ngày qua"}
+                )
               </p>
-              <p className="text-2xl font-bold text-foreground mt-0.5">
-                {data.failedLoginsToday}
-              </p>
+              <p className="text-2xl font-bold text-foreground mt-0.5">{data.failedLoginsToday}</p>
             </div>
           </div>
         </PageCard>
 
         <PageCard
           className="cursor-pointer hover:border-success/40 hover:shadow-md transition-all duration-200"
-          onClick={() => { routerNavigate(`${ROUTES.HRM.ACTIVITY_LOGS}?category=auth&actionType=login`) }}
+          onClick={() => {
+            routerNavigate(`${ROUTES.HRM.ACTIVITY_LOGS}?category=auth&actionType=login`)
+          }}
         >
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-full bg-success/10 flex items-center justify-center text-success shrink-0">
@@ -201,7 +236,13 @@ export default function SecurityDashboard() {
             </div>
             <div>
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Đăng nhập thành công ({timeRange === "today" ? "Hôm nay" : timeRange === "7days" ? "7 ngày qua" : "30 ngày qua"})
+                Đăng nhập thành công (
+                {timeRange === "today"
+                  ? "Hôm nay"
+                  : timeRange === "7days"
+                    ? "7 ngày qua"
+                    : "30 ngày qua"}
+                )
               </p>
               <p className="text-2xl font-bold text-foreground mt-0.5">
                 {data.successfulLoginsToday}
@@ -222,7 +263,9 @@ export default function SecurityDashboard() {
             {data.recentSecurityEvents.length === 0 ? (
               <div className="py-12 text-center">
                 <ShieldCheck className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">Không có sự kiện bảo mật nào gần đây.</p>
+                <p className="text-sm text-muted-foreground">
+                  Không có sự kiện bảo mật nào gần đây.
+                </p>
               </div>
             ) : (
               data.recentSecurityEvents.map((event: ActivityLogItem, idx: number) => (
@@ -259,7 +302,9 @@ export default function SecurityDashboard() {
             {data.recentRoleEvents.length === 0 ? (
               <div className="py-12 text-center">
                 <UserCheck className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">Không có thay đổi quyền hạn nào gần đây.</p>
+                <p className="text-sm text-muted-foreground">
+                  Không có thay đổi quyền hạn nào gần đây.
+                </p>
               </div>
             ) : (
               data.recentRoleEvents.map((event: ActivityLogItem, idx: number) => (
@@ -270,7 +315,10 @@ export default function SecurityDashboard() {
                   subtitle={`${event.employeeName} • ${(() => {
                     if (!event.details) return "N/A"
                     try {
-                      const parsed = typeof event.details === "string" ? JSON.parse(event.details) : event.details
+                      const parsed =
+                        typeof event.details === "string"
+                          ? JSON.parse(event.details)
+                          : event.details
                       return parsed?.role || "N/A"
                     } catch {
                       return "N/A"

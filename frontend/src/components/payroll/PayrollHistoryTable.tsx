@@ -14,10 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  PAYROLL_STATUS,
-  PAYROLL_STATUS_LABELS,
-} from "@/config/entities/payroll.config"
+import { PAYROLL_STATUS, PAYROLL_STATUS_LABELS } from "@/config/entities/payroll.config"
 import { useApprovePayroll, useRejectPayroll } from "@/hooks/payroll/use-payrolls"
 import type { IPayroll } from "@/types/payroll.types"
 
@@ -161,7 +158,9 @@ export function PayrollHistoryTable({ payrolls, isLoading }: PayrollHistoryTable
                     <TableCell className="h-[60px] hidden sm:table-cell px-4 py-3">
                       <button
                         type="button"
-                        onClick={() => { setSelectedPayrollId(payroll.id); }}
+                        onClick={() => {
+                          setSelectedPayrollId(payroll.id)
+                        }}
                         className="font-medium text-primary hover:underline text-left"
                       >
                         PAY-{payroll.id.substring(payroll.id.length - 8).toUpperCase()}
@@ -199,11 +198,19 @@ export function PayrollHistoryTable({ payrolls, isLoading }: PayrollHistoryTable
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-40 rounded-xl">
-                            <DropdownMenuItem onClick={() => { handleApprove(payroll.id); }}>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                handleApprove(payroll.id)
+                              }}
+                            >
                               <CheckCircle2 className="mr-2 h-4 w-4 text-emerald-600" />
                               <span>Approve</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => { handleReject(payroll.id); }}>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                handleReject(payroll.id)
+                              }}
+                            >
                               <XCircle className="mr-2 h-4 w-4 text-destructive" />
                               <span>Reject</span>
                             </DropdownMenuItem>
@@ -239,7 +246,9 @@ export function PayrollHistoryTable({ payrolls, isLoading }: PayrollHistoryTable
 
       <PayrollDetailSheet
         payrollId={selectedPayrollId}
-        onClose={() => { setSelectedPayrollId(null); }}
+        onClose={() => {
+          setSelectedPayrollId(null)
+        }}
       />
     </>
   )

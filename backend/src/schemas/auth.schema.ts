@@ -93,10 +93,22 @@ export const activityLogQuerySchema = z.object({
   employeeId: z.string().optional(),
   category: z.string().optional(),
   actionType: z.string().optional(),
-  fromDate: z.string().optional().transform(val => val ? new Date(val) : undefined),
-  toDate: z.string().optional().transform(val => val ? new Date(val) : undefined),
-  page: z.string().optional().transform(val => val ? parseInt(val) : 1),
-  limit: z.string().optional().transform(val => val ? parseInt(val) : 20),
+  fromDate: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  toDate: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  page: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val) : 1)),
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val) : 20)),
 })
 
 export type ActivityLogQuerySchemaType = z.infer<typeof activityLogQuerySchema>

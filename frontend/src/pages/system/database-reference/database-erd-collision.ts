@@ -114,12 +114,7 @@ export function isHorizontalClear(
  * @param boxes - Table bounding boxes.
  * @returns True if segment has clear line of sight.
  */
-export function isVerticalClear(
-  x: number,
-  y1: number,
-  y2: number,
-  boxes: NodeBox[],
-): boolean {
+export function isVerticalClear(x: number, y1: number, y2: number, boxes: NodeBox[]): boolean {
   const minY = Math.min(y1, y2) + 2
   const maxY = Math.max(y1, y2) - 2
   if (maxY <= minY) return true

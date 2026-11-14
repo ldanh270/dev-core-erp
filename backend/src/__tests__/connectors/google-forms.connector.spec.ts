@@ -16,9 +16,27 @@ describe("GoogleFormsConnector", () => {
           refreshToken: "refresh-token",
         },
         fieldSnapshots: [
-          { fieldKey: "full_name", label: "Họ và tên", type: "short_text", required: true, externalQuestionId: "question-name" },
-          { fieldKey: "email", label: "Email", type: "short_text", required: true, externalQuestionId: "question-email" },
-          { fieldKey: "portfolio", label: "Portfolio", type: "short_text", required: false, externalQuestionId: "question-portfolio" },
+          {
+            fieldKey: "full_name",
+            label: "Họ và tên",
+            type: "short_text",
+            required: true,
+            externalQuestionId: "question-name",
+          },
+          {
+            fieldKey: "email",
+            label: "Email",
+            type: "short_text",
+            required: true,
+            externalQuestionId: "question-email",
+          },
+          {
+            fieldKey: "portfolio",
+            label: "Portfolio",
+            type: "short_text",
+            required: false,
+            externalQuestionId: "question-portfolio",
+          },
         ],
       }),
       storeConnectorExternalId: jest.fn(),
@@ -33,21 +51,34 @@ describe("GoogleFormsConnector", () => {
         return Response.json({
           formId: "form-1",
           items: [
-            { title: "Tên ứng viên đã đổi", questionItem: { question: { questionId: "question-name" } } },
-            { title: "Địa chỉ liên hệ", questionItem: { question: { questionId: "question-email" } } },
-            { title: "Hồ sơ cá nhân", questionItem: { question: { questionId: "question-portfolio" } } },
+            {
+              title: "Tên ứng viên đã đổi",
+              questionItem: { question: { questionId: "question-name" } },
+            },
+            {
+              title: "Địa chỉ liên hệ",
+              questionItem: { question: { questionId: "question-email" } },
+            },
+            {
+              title: "Hồ sơ cá nhân",
+              questionItem: { question: { questionId: "question-portfolio" } },
+            },
           ],
         })
       }
       return Response.json({
-        responses: [{
-          responseId: "response-1",
-          answers: {
-            "question-name": { textAnswers: { answers: [{ value: "Nguyễn An" }] } },
-            "question-email": { textAnswers: { answers: [{ value: "an@example.com" }] } },
-            "question-portfolio": { textAnswers: { answers: [{ value: "https://example.com/an" }] } },
+        responses: [
+          {
+            responseId: "response-1",
+            answers: {
+              "question-name": { textAnswers: { answers: [{ value: "Nguyễn An" }] } },
+              "question-email": { textAnswers: { answers: [{ value: "an@example.com" }] } },
+              "question-portfolio": {
+                textAnswers: { answers: [{ value: "https://example.com/an" }] },
+              },
+            },
           },
-        }],
+        ],
       })
     })
     const connector = new GoogleFormsConnector(

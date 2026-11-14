@@ -89,17 +89,13 @@
   "indexes": [
     {
       "name": "IX_PartTimeAvailabilitySlot_dayId",
-      "columns": [
-        "dayId"
-      ],
+      "columns": ["dayId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_PartTimeAvailabilitySlot",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -109,12 +105,8 @@
       "virtualName": "day",
       "targetModel": "PartTimeAvailabilityDay",
       "relationName": null,
-      "foreignKeyFields": [
-        "dayId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["dayId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

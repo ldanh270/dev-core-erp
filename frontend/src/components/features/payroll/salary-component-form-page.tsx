@@ -279,7 +279,9 @@ export function SalaryComponentFormPage({
                         {SYSTEM_VARS.map((v) => (
                           <div
                             key={v.code}
-                            onClick={() => { appendToFormula(v.code); }}
+                            onClick={() => {
+                              appendToFormula(v.code)
+                            }}
                             className="inline-flex items-center px-2.5 py-1 rounded-full border border-border bg-muted/50 hover:bg-accent hover:border-primary/30 text-xs font-mono cursor-pointer transition-colors"
                             title={v.name}
                           >
@@ -299,7 +301,9 @@ export function SalaryComponentFormPage({
                           {userVariables.map((v) => (
                             <div
                               key={v.id}
-                              onClick={() => { appendToFormula(v.code); }}
+                              onClick={() => {
+                                appendToFormula(v.code)
+                              }}
                               className="inline-flex items-center px-2.5 py-1 rounded-full border border-border bg-primary/5 hover:bg-primary/10 hover:border-primary/30 text-primary text-xs font-mono cursor-pointer transition-colors"
                               title={v.name}
                             >

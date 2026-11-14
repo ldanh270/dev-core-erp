@@ -3,7 +3,6 @@
  */
 import { WORK_SCHEDULE_TYPE } from "@/configs/entities/employee.config.ts"
 import { CAPACITY_COPILOT_RULES } from "@/configs/rules/capacity-copilot.config.ts"
-import { formatUtcDateKey, parseUtcDateOnly } from "@/utils/date.util.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import {
@@ -11,6 +10,7 @@ import {
   ForecastProjectCapacityDto,
   ICapacityCopilotRepository,
 } from "@/types/capacity-copilot.types.ts"
+import { formatUtcDateKey, parseUtcDateOnly } from "@/utils/date.util.ts"
 import { AppError } from "@/utils/error.util.ts"
 import {
   CapacityForecastResult,
@@ -124,7 +124,10 @@ export class CapacityCopilotService {
     })
   }
 
-  private async refreshEmployeeProjectForecasts(employeeId: string, weekStart: Date): Promise<void> {
+  private async refreshEmployeeProjectForecasts(
+    employeeId: string,
+    weekStart: Date,
+  ): Promise<void> {
     const projects = await this.repository.listProjectsByEmployeeWithDealTarget(employeeId)
     // Availability changes affect only projects where the employee is an active member.
     await Promise.allSettled(
@@ -169,7 +172,10 @@ export class CapacityCopilotService {
       generatedAt: new Date().toISOString(),
       errorMessage: null,
     }
-    this.forecastCache.set(this.buildCacheKey(projectId, input.weekStart, input.lookbackWeeks), snapshot)
+    this.forecastCache.set(
+      this.buildCacheKey(projectId, input.weekStart, input.lookbackWeeks),
+      snapshot,
+    )
     return snapshot
   }
 

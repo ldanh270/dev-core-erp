@@ -24,9 +24,10 @@ import { projectApi } from "@/lib/api/project.api"
 import { cn } from "@/lib/utils"
 import { extractErrorMessage } from "@/utils/error-helper"
 
+import React, { useState } from "react"
+
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { CheckSquare, ChevronDown, Square } from "lucide-react"
-import React, { useState } from "react"
 
 export interface ProjectCreateModalProps {
   isOpen: boolean
@@ -128,11 +129,14 @@ export function ProjectCreateModal({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      if (!open) {
-        handleModalClose()
-      }
-    }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          handleModalClose()
+        }
+      }}
+    >
       <DialogContent className="sm:max-w-[600px] rounded-xl bg-background border-border p-6 shadow-lg">
         <DialogHeader>
           <DialogTitle className={TYPOGRAPHY.MODAL_TITLE}>Tạo dự án mới</DialogTitle>
@@ -232,11 +236,10 @@ export function ProjectCreateModal({
           </div>
 
           <div className="space-y-1.5 relative">
-            <Label className={TYPOGRAPHY.FORM_LABEL}>
-              Các loại yêu cầu được phép hoạt động
-            </Label>
+            <Label className={TYPOGRAPHY.FORM_LABEL}>Các loại yêu cầu được phép hoạt động</Label>
             <p className={cn(TYPOGRAPHY.FORM_HELPER, "mt-0.5 mb-2")}>
-              Chỉ chọn các loại yêu cầu được phép tạo trong dự án này (để trống nếu cho phép tất cả).
+              Chỉ chọn các loại yêu cầu được phép tạo trong dự án này (để trống nếu cho phép tất
+              cả).
             </p>
 
             {isCreateDropdownOpen && (
@@ -335,9 +338,12 @@ export function ProjectCreateModal({
               <Label htmlFor="projLeader" className={TYPOGRAPHY.FORM_LABEL}>
                 Trưởng nhóm (Team Leader)
               </Label>
-              <Select value={newProjectLeader} onValueChange={(val) => {
-                setNewProjectLeader(val)
-              }}>
+              <Select
+                value={newProjectLeader}
+                onValueChange={(val) => {
+                  setNewProjectLeader(val)
+                }}
+              >
                 <SelectTrigger
                   id="projLeader"
                   className="w-full border-border rounded-full bg-background"
@@ -361,9 +367,12 @@ export function ProjectCreateModal({
               <Label htmlFor="projPolicy" className={TYPOGRAPHY.FORM_LABEL}>
                 Quyền tạo công việc
               </Label>
-              <Select value={newProjectPolicy} onValueChange={(val) => {
-                setNewProjectPolicy(val)
-              }}>
+              <Select
+                value={newProjectPolicy}
+                onValueChange={(val) => {
+                  setNewProjectPolicy(val)
+                }}
+              >
                 <SelectTrigger
                   id="projPolicy"
                   className="w-full border-border rounded-full bg-background"

@@ -170,49 +170,37 @@
   "indexes": [
     {
       "name": "IX_authorization_audit_logs_action",
-      "columns": [
-        "action"
-      ],
+      "columns": ["action"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_authorization_audit_logs_actorId",
-      "columns": [
-        "actorId"
-      ],
+      "columns": ["actorId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_authorization_audit_logs_createdAt",
-      "columns": [
-        "createdAt"
-      ],
+      "columns": ["createdAt"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_authorization_audit_logs_targetEmployeeId",
-      "columns": [
-        "targetEmployeeId"
-      ],
+      "columns": ["targetEmployeeId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_authorization_audit_logs_targetRoleId",
-      "columns": [
-        "targetRoleId"
-      ],
+      "columns": ["targetRoleId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_authorization_audit_logs",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -222,23 +210,15 @@
       "virtualName": "actor",
       "targetModel": "Employee",
       "relationName": "AuditLogActor",
-      "foreignKeyFields": [
-        "actorId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["actorId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "targetEmployee",
       "targetModel": "Employee",
       "relationName": "AuditLogTarget",
-      "foreignKeyFields": [
-        "targetEmployeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["targetEmployeeId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

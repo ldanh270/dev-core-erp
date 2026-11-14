@@ -11,13 +11,8 @@ const debugRoutes = express.Router()
  * @desc Returns the pre-configured route manifest for authorization reconciliation with the Frontend
  * @access Private (requires role.read permission or equivalent admin privileges)
  */
-debugRoutes.get(
-  "/route-manifest",
-  authenticate,
-  requirePermission("role.read"),
-  (req, res) => {
-    res.json({ data: ROUTE_MANIFEST })
-  }
-)
+debugRoutes.get("/route-manifest", authenticate, requirePermission("role.read"), (req, res) => {
+  res.json({ data: ROUTE_MANIFEST })
+})
 
 export default debugRoutes

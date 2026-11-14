@@ -1,12 +1,5 @@
-import { useState, useEffect } from "react"
-import { 
-  Sparkles, 
-  Brain, 
-  Loader2, 
-  AlertTriangle,
-  Plus
-} from "lucide-react"
-
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -14,15 +7,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { taskEstimateAiApi } from "@/lib/api/task-estimate-ai.api"
 import type { GeneratedTaskSuggestion } from "@/lib/api/task-estimate-ai.api"
 import { taskApi } from "@/lib/api/task.api"
-import type { TaskTracker, TaskPriority } from "@/types/task.types"
+import type { TaskPriority, TaskTracker } from "@/types/task.types"
+
+import { useEffect, useState } from "react"
+
 import { useQueryClient } from "@tanstack/react-query"
+import { AlertTriangle, Brain, Loader2, Plus, Sparkles } from "lucide-react"
 import { toast } from "sonner"
 
 interface ProjectTaskGeneratorModalProps {
@@ -48,10 +43,10 @@ export function ProjectTaskGeneratorModal({
 
   useEffect(() => {
     if (isOpen && projectId) {
-// eslint-disable-next-line react-hooks/immutability
+      // eslint-disable-next-line react-hooks/immutability
       void fetchSuggestions()
     }
-// eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, projectId])
 
   const fetchSuggestions = async () => {
@@ -75,19 +70,21 @@ export function ProjectTaskGeneratorModal({
   }
 
   const handleToggleCheck = (index: number) => {
-    setSuggestions(prev => 
-      prev.map(t => t.index === index ? { ...t, checked: !t.checked } : t)
+    setSuggestions((prev) =>
+      prev.map((t) => (t.index === index ? { ...t, checked: !t.checked } : t)),
     )
   }
 
-  const handleFieldChange = (index: number, field: keyof GeneratedTaskSuggestion, value: string | number) => {
-    setSuggestions(prev =>
-      prev.map(t => t.index === index ? { ...t, [field]: value } : t)
-    )
+  const handleFieldChange = (
+    index: number,
+    field: keyof GeneratedTaskSuggestion,
+    value: string | number,
+  ) => {
+    setSuggestions((prev) => prev.map((t) => (t.index === index ? { ...t, [field]: value } : t)))
   }
 
   const handleCreateTasks = async () => {
-    const selected = suggestions.filter(t => t.checked)
+    const selected = suggestions.filter((t) => t.checked)
     if (selected.length === 0) {
       toast.error("Vui lòng chọn ít nhất 1 công việc để tạo.")
       return
@@ -106,7 +103,7 @@ export function ProjectTaskGeneratorModal({
           estimatedTime: t.estimatedTime,
         })
       }
-      
+
       toast.success(`Đã tạo thành công ${selected.length} công việc mới bằng AI!`)
       void queryClient.invalidateQueries({ queryKey: ["tasks"] })
       onOpenChange(false)
@@ -121,15 +118,20 @@ export function ProjectTaskGeneratorModal({
 
   // Helper colors for badges
   const getTrackerVariant = (tracker: string) => {
-    if (tracker === "feature") return "bg-purple-50 text-purple-700 dark:bg-purple-950/20 dark:text-purple-400 border-purple-200 dark:border-purple-900"
-    if (tracker === "test") return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900"
-    if (tracker === "bug") return "bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 border-rose-200 dark:border-rose-900"
+    if (tracker === "feature")
+      return "bg-purple-50 text-purple-700 dark:bg-purple-950/20 dark:text-purple-400 border-purple-200 dark:border-purple-900"
+    if (tracker === "test")
+      return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900"
+    if (tracker === "bug")
+      return "bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 border-rose-200 dark:border-rose-900"
     return "bg-slate-50 text-slate-700 dark:bg-slate-950/20 dark:text-slate-400 border-slate-200 dark:border-slate-900"
   }
 
   const getPriorityVariant = (priority: string) => {
-    if (priority === "urgent") return "bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border-red-200 dark:border-red-900"
-    if (priority === "high") return "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200 dark:border-amber-900"
+    if (priority === "urgent")
+      return "bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border-red-200 dark:border-red-900"
+    if (priority === "high")
+      return "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200 dark:border-amber-900"
     return "bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400 border-blue-200 dark:border-blue-900"
   }
 
@@ -147,7 +149,8 @@ export function ProjectTaskGeneratorModal({
             </DialogTitle>
           </div>
           <DialogDescription>
-            AI tự động phân tích Tên, Mô tả dự án và Công nghệ sử dụng để phân rã thành danh sách task con kèm mô tả kỹ thuật chi tiết.
+            AI tự động phân tích Tên, Mô tả dự án và Công nghệ sử dụng để phân rã thành danh sách
+            task con kèm mô tả kỹ thuật chi tiết.
           </DialogDescription>
         </DialogHeader>
 
@@ -164,16 +167,19 @@ export function ProjectTaskGeneratorModal({
               <AlertTriangle className="h-10 w-10 text-amber-500 mb-2" />
               <p className="font-semibold text-foreground">Không thể sinh gợi ý</p>
               <p className="text-sm text-muted-foreground max-w-sm mt-1">
-                Vui lòng đảm bảo dự án của bạn đã được điền thông tin mô tả chi tiết và danh sách công nghệ.
+                Vui lòng đảm bảo dự án của bạn đã được điền thông tin mô tả chi tiết và danh sách
+                công nghệ.
               </p>
             </div>
           ) : (
             <div className="space-y-4 py-2">
               {suggestions.map((suggestion) => (
-                <div 
+                <div
                   key={suggestion.index}
                   className={`p-4 border rounded-2xl transition-all duration-200 bg-card/40 flex items-start gap-4 ${
-                    suggestion.checked ? "border-purple-500 bg-purple-500/5" : "border-border/60 opacity-60"
+                    suggestion.checked
+                      ? "border-purple-500 bg-purple-500/5"
+                      : "border-border/60 opacity-60"
                   }`}
                 >
                   <input
@@ -197,13 +203,22 @@ export function ProjectTaskGeneratorModal({
                         disabled={!suggestion.checked}
                       />
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <Badge variant="outline" className={`text-[10px] uppercase py-0 px-2 font-semibold border ${getTrackerVariant(suggestion.tracker)}`}>
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] uppercase py-0 px-2 font-semibold border ${getTrackerVariant(suggestion.tracker)}`}
+                        >
                           {suggestion.tracker}
                         </Badge>
-                        <Badge variant="outline" className={`text-[10px] uppercase py-0 px-2 font-semibold border ${getPriorityVariant(suggestion.priority)}`}>
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] uppercase py-0 px-2 font-semibold border ${getPriorityVariant(suggestion.priority)}`}
+                        >
                           {suggestion.priority}
                         </Badge>
-                        <Badge variant="secondary" className="text-[10px] py-0 px-2 font-bold rounded-full">
+                        <Badge
+                          variant="secondary"
+                          className="text-[10px] py-0 px-2 font-bold rounded-full"
+                        >
                           {suggestion.estimatedTime}h Baseline
                         </Badge>
                       </div>
@@ -229,7 +244,11 @@ export function ProjectTaskGeneratorModal({
         {!loading && suggestions.length > 0 && (
           <div className="border-t border-border/40 pt-4 flex items-center justify-between gap-4 mt-2">
             <span className="text-xs text-muted-foreground font-medium">
-              Đã chọn <strong className="text-purple-600 dark:text-purple-400">{suggestions.filter(t => t.checked).length}</strong> trên {suggestions.length} công việc được đề xuất.
+              Đã chọn{" "}
+              <strong className="text-purple-600 dark:text-purple-400">
+                {suggestions.filter((t) => t.checked).length}
+              </strong>{" "}
+              trên {suggestions.length} công việc được đề xuất.
             </span>
             <div className="flex items-center gap-2">
               <Button

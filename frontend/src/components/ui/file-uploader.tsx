@@ -1,7 +1,9 @@
-import { UploadCloud, X, FileIcon, Loader2 } from "lucide-react"
-import { useState, useRef } from "react"
-import { applicationApi } from "@/lib/api/application.api"
 import { SYSTEM_CONFIG } from "@/config/system.config"
+import { applicationApi } from "@/lib/api/application.api"
+
+import { useRef, useState } from "react"
+
+import { FileIcon, Loader2, UploadCloud, X } from "lucide-react"
 
 interface FileUploaderProps {
   onUploadSuccess: (url: string) => void
@@ -55,7 +57,9 @@ export function FileUploader({ onUploadSuccess, disabled }: FileUploaderProps) {
           type="file"
           ref={fileInputRef}
           className="hidden"
-          onChange={(e) => { void handleFileChange(e) }}
+          onChange={(e) => {
+            void handleFileChange(e)
+          }}
           accept={SYSTEM_CONFIG.UPLOAD.ALLOWED_MIME_TYPES}
           disabled={disabled || isUploading}
         />
@@ -73,9 +77,7 @@ export function FileUploader({ onUploadSuccess, disabled }: FileUploaderProps) {
           Chọn tệp
         </button>
         {!file && (
-          <span className="text-[13px] text-muted-foreground">
-            Không có tệp nào được chọn
-          </span>
+          <span className="text-[13px] text-muted-foreground">Không có tệp nào được chọn</span>
         )}
       </div>
 
@@ -89,7 +91,12 @@ export function FileUploader({ onUploadSuccess, disabled }: FileUploaderProps) {
             </div>
             <div className="truncate">
               <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
-              <a href={file.url} target="_blank" rel="noreferrer" className="text-xs text-primary hover:underline">
+              <a
+                href={file.url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs text-primary hover:underline"
+              >
                 Xem tệp đính kèm
               </a>
             </div>

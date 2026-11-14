@@ -1,9 +1,9 @@
 import {
+  BGC_GROUP,
+  BGC_GROUPS,
+  BGC_STATUS,
   RECRUITMENT_APPLICATION_STATUS,
   TERMINAL_APPLICATION_STATUSES,
-  BGC_GROUP,
-  BGC_STATUS,
-  BGC_GROUPS,
 } from "@/configs/entities/recruitment.config"
 
 // ── Type Aliases ──────────────────────────────────────────────────────────────
@@ -16,7 +16,8 @@ type BgcStatus = (typeof BGC_STATUS)[keyof typeof BGC_STATUS]
 // Defines valid status transitions for the recruitment application lifecycle
 // ═══════════════════════════════════════════════════════════════════════════════
 
-type ApplicationStatus = (typeof RECRUITMENT_APPLICATION_STATUS)[keyof typeof RECRUITMENT_APPLICATION_STATUS]
+type ApplicationStatus =
+  (typeof RECRUITMENT_APPLICATION_STATUS)[keyof typeof RECRUITMENT_APPLICATION_STATUS]
 
 export const APPLICATION_STATUS_TRANSITIONS: Record<ApplicationStatus, ApplicationStatus[]> = {
   [RECRUITMENT_APPLICATION_STATUS.NEW]: [
@@ -68,7 +69,7 @@ export const APPLICATION_STATUS_TRANSITIONS: Record<ApplicationStatus, Applicati
 // Check if transition is valid
 export function canTransitionApplicationStatus(
   from: ApplicationStatus,
-  to: ApplicationStatus
+  to: ApplicationStatus,
 ): boolean {
   // from is typed as ApplicationStatus (key of the map), so the lookup is safe.
   // eslint-disable-next-line security/detect-object-injection
@@ -110,20 +111,60 @@ export interface BgcCheckDefinition {
 
 export const BGC_CHECKS: Record<BgcGroup, BgcCheckDefinition[]> = {
   [BGC_GROUP.A]: [
-    { name: "ID Verification", description: "Verify national ID/CMND/CCCD", field: "idVerified", required: true },
-    { name: "Address Verification", description: "Verify current address", field: "addressVerified", required: true },
+    {
+      name: "ID Verification",
+      description: "Verify national ID/CMND/CCCD",
+      field: "idVerified",
+      required: true,
+    },
+    {
+      name: "Address Verification",
+      description: "Verify current address",
+      field: "addressVerified",
+      required: true,
+    },
   ],
   [BGC_GROUP.B]: [
-    { name: "Criminal Record Check", description: "Check for criminal records", field: "criminalRecordCheck", required: true },
-    { name: "Legal Status Check", description: "Verify legal eligibility to work", field: "legalStatusCheck", required: true },
+    {
+      name: "Criminal Record Check",
+      description: "Check for criminal records",
+      field: "criminalRecordCheck",
+      required: true,
+    },
+    {
+      name: "Legal Status Check",
+      description: "Verify legal eligibility to work",
+      field: "legalStatusCheck",
+      required: true,
+    },
   ],
   [BGC_GROUP.C]: [
-    { name: "Certification Verification", description: "Verify professional certifications", field: "certificationVerified", required: true },
-    { name: "Employment History", description: "Verify previous employment", field: "employmentHistoryVerified", required: true },
+    {
+      name: "Certification Verification",
+      description: "Verify professional certifications",
+      field: "certificationVerified",
+      required: true,
+    },
+    {
+      name: "Employment History",
+      description: "Verify previous employment",
+      field: "employmentHistoryVerified",
+      required: true,
+    },
   ],
   [BGC_GROUP.D]: [
-    { name: "Financial Check", description: "Financial background check", field: "financialCheckCompleted", required: true },
-    { name: "Credit Score Check", description: "Credit history verification", field: "creditScoreCheck", required: true },
+    {
+      name: "Financial Check",
+      description: "Financial background check",
+      field: "financialCheckCompleted",
+      required: true,
+    },
+    {
+      name: "Credit Score Check",
+      description: "Credit history verification",
+      field: "creditScoreCheck",
+      required: true,
+    },
   ],
 }
 

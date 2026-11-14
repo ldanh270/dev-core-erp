@@ -1,7 +1,14 @@
-import { CONTRACT_STATUS_VALUES, CONTRACT_TYPES, type IContractStatus, type IContractType } from "@/configs/entities/employee-contract.config.ts"
+import {
+  CONTRACT_STATUS_VALUES,
+  CONTRACT_TYPES,
+  type IContractStatus,
+  type IContractType,
+} from "@/configs/entities/employee-contract.config.ts"
 import { ErrorCode } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { AuthRequest } from "@/middlewares/auth.middleware.ts"
+import { IEmployeeContractService } from "@/services/employee-contract.service.ts"
+import { ApiResponse } from "@/types"
 import {
   CreateContractDto,
   EmployeeContract,
@@ -10,10 +17,8 @@ import {
   TerminateContractDto,
   UpdateContractDto,
 } from "@/types/employee-contract.types.ts"
-import { ApiResponse } from "@/types"
-import { Response } from "express"
 
-import { IEmployeeContractService } from "@/services/employee-contract.service.ts"
+import { Response } from "express"
 
 export class EmployeeContractController {
   constructor(private readonly service: IEmployeeContractService) {}
@@ -22,8 +27,14 @@ export class EmployeeContractController {
     const { employeeId, status, type, page, limit } = req.query as Record<string, unknown>
     const result = await this.service.listContracts({
       employeeId: employeeId as string,
-      status: status && (CONTRACT_STATUS_VALUES as readonly string[]).includes(status as string) ? status as IContractStatus : undefined,
-      type: type && (CONTRACT_TYPES as readonly string[]).includes(type as string) ? type as IContractType : undefined,
+      status:
+        status && (CONTRACT_STATUS_VALUES as readonly string[]).includes(status as string)
+          ? (status as IContractStatus)
+          : undefined,
+      type:
+        type && (CONTRACT_TYPES as readonly string[]).includes(type as string)
+          ? (type as IContractType)
+          : undefined,
       page: page ? Number(page) : 1,
       limit: limit ? Number(limit) : 50,
     })
@@ -37,7 +48,10 @@ export class EmployeeContractController {
 
   getByEmployeeId = async (req: AuthRequest, res: Response<ApiResponse<EmployeeContract[]>>) => {
     const includeInactive = req.query.includeInactive === "true"
-    const contracts = await this.service.getByEmployeeId(String(req.params.employeeId), includeInactive)
+    const contracts = await this.service.getByEmployeeId(
+      String(req.params.employeeId),
+      includeInactive,
+    )
     res.status(HttpStatusCode.OK).json({ data: contracts, error: null })
   }
 

@@ -1,11 +1,9 @@
 import { ErrorCode } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { AuthRequest } from "@/middlewares/auth.middleware.ts"
-import {
-  createProjectRoleSchema,
-  updateProjectRoleSchema,
-} from "@/schemas/project-role.schema.ts"
+import { createProjectRoleSchema, updateProjectRoleSchema } from "@/schemas/project-role.schema.ts"
 import { ApiResponse, IProjectRoleService, ProjectRole } from "@/types"
+
 import { Response } from "express"
 import { z } from "zod"
 

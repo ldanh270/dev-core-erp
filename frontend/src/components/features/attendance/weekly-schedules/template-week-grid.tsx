@@ -1,15 +1,15 @@
 import {
-  DAY_OF_WEEK_LABELS,
-  WEEKLY_SCHEDULE_OFF_SHIFT_VALUE,
-  WORK_WEEK_DISPLAY_DAY_ORDER,
-} from "@/config/entities/attendance.config"
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  DAY_OF_WEEK_LABELS,
+  WEEKLY_SCHEDULE_OFF_SHIFT_VALUE,
+  WORK_WEEK_DISPLAY_DAY_ORDER,
+} from "@/config/entities/attendance.config"
 import type { IWeeklyScheduleTemplateWeek, IWorkingShift } from "@/types/attendance.types"
 
 interface TemplateWeekGridProps {

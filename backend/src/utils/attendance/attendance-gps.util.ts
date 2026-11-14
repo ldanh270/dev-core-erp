@@ -1,8 +1,8 @@
+import { ATTENDANCE_ERROR_MESSAGES } from "@/configs/messages/attendance.message.ts"
 import {
   ATTENDANCE_GPS_RULES,
   DEFAULT_ATTENDANCE_LOCATION,
 } from "@/configs/rules/attendance.config.ts"
-import { ATTENDANCE_ERROR_MESSAGES } from "@/configs/messages/attendance.message.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { ATTENDANCE_LAYERS } from "@/constants/attendance.constants.ts"
 import type { IAttendanceShiftDTO } from "@/types/attendance.types.ts"

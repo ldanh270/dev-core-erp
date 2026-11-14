@@ -1,16 +1,21 @@
-import { ProjectController } from "@/controllers/project.controller.ts"
+import { ProjectRoleController } from "@/controllers/project-role.controller.ts"
 import { ProjectTaskStatusController } from "@/controllers/project-task-status.controller.ts"
 import { ProjectTrackerController } from "@/controllers/project-tracker.controller.ts"
+import { ProjectController } from "@/controllers/project.controller.ts"
 import { prisma } from "@/libs/database.ts"
 import { authenticate } from "@/middlewares/auth.middleware.ts"
 import { PrismaEmployeeRepository } from "@/repositories/employee.repository.ts"
-import { PrismaProjectRepository } from "@/repositories/project.repository.ts"
-import { PrismaTaskRepository } from "@/repositories/task.repository.ts"
+// Project Roles CRUD
+import { ProjectRoleRepository } from "@/repositories/project-role.repository.ts"
 import { ProjectTaskStatusRepository } from "@/repositories/project-task-status.repository.ts"
 import { ProjectTrackerRepository } from "@/repositories/project-tracker.repository.ts"
-import { ProjectService } from "@/services/project.service.ts"
+import { PrismaProjectRepository } from "@/repositories/project.repository.ts"
+import { PrismaTaskRepository } from "@/repositories/task.repository.ts"
+import { ProjectRoleService } from "@/services/project-role.service.ts"
 import { ProjectTaskStatusService } from "@/services/project-task-status.service.ts"
 import { ProjectTrackerService } from "@/services/project-tracker.service.ts"
+import { ProjectService } from "@/services/project.service.ts"
+
 import express from "express"
 
 /**
@@ -63,11 +68,6 @@ projectRoutes.get("/:projectId/trackers", trackerController.list)
 projectRoutes.post("/:projectId/trackers", trackerController.create)
 projectRoutes.patch("/:projectId/trackers/:id", trackerController.update)
 projectRoutes.delete("/:projectId/trackers/:id", trackerController.delete)
-
-// Project Roles CRUD
-import { ProjectRoleRepository } from "@/repositories/project-role.repository.ts"
-import { ProjectRoleService } from "@/services/project-role.service.ts"
-import { ProjectRoleController } from "@/controllers/project-role.controller.ts"
 
 const roleRepository = new ProjectRoleRepository(prisma)
 const roleService = new ProjectRoleService(roleRepository, repository)

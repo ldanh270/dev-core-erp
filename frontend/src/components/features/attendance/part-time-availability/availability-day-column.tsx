@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { PART_TIME_AVAILABILITY_RULES } from "@/config/entities/part-time-availability.config"
 import { cn } from "@/lib/utils"
 import type { IPartTimeAvailabilityDayForm } from "@/types/part-time-availability.types"
+
 import { CalendarOff, Minus, Plus } from "lucide-react"
 
 export interface AvailabilityDayColumnProps {
@@ -84,9 +85,7 @@ export function AvailabilityDayColumn({
           }}
           className={cn(
             "rounded-full py-1 text-[10px] font-semibold transition-colors",
-            !day.isBusyAllDay
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground",
+            !day.isBusyAllDay ? "bg-background text-foreground shadow-sm" : "text-muted-foreground",
           )}
         >
           Rảnh
@@ -99,9 +98,7 @@ export function AvailabilityDayColumn({
           }}
           className={cn(
             "rounded-full py-1 text-[10px] font-semibold transition-colors",
-            day.isBusyAllDay
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground",
+            day.isBusyAllDay ? "bg-background text-foreground shadow-sm" : "text-muted-foreground",
           )}
         >
           Bận

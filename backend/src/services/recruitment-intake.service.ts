@@ -1,11 +1,11 @@
 import { POSTING_STATUS, REQUISITION_STATUS } from "@/configs/entities/recruitment.config"
 import { HttpStatusCode } from "@/configs/system/http.config"
-import { jobRequisitionRepository } from "@/repositories/job-requisition.repository"
 import { jobPostingRepository } from "@/repositories/job-posting.repository"
+import { jobRequisitionRepository } from "@/repositories/job-requisition.repository"
 import { recruitmentIntakeRepository } from "@/repositories/recruitment-intake.repository"
 import type { ImportRecruitmentIntakeInput } from "@/schemas/recruitment.schema"
-import { AppError } from "@/utils/error.util"
 import type { ConnectorImportInput } from "@/types/recruitment-connector.types"
+import { AppError } from "@/utils/error.util"
 
 const LAYER = "RecruitmentIntakeService"
 
@@ -20,7 +20,8 @@ export class RecruitmentIntakeService {
 
   private async importInternal(input: ImportRecruitmentIntakeInput | ConnectorImportInput) {
     const req = await jobRequisitionRepository.findById(input.requisitionId)
-    if (!req) throw new AppError("Không tìm thấy yêu cầu tuyển dụng", HttpStatusCode.NOT_FOUND, LAYER)
+    if (!req)
+      throw new AppError("Không tìm thấy yêu cầu tuyển dụng", HttpStatusCode.NOT_FOUND, LAYER)
     if (req.status !== REQUISITION_STATUS.APPROVED) {
       throw new AppError(
         "Chỉ được tiếp nhận ứng viên cho yêu cầu đã duyệt",
@@ -42,18 +43,10 @@ export class RecruitmentIntakeService {
       )
     }
     if (posting.source !== input.source) {
-      throw new AppError(
-        "Nguồn ứng viên không khớp bài đăng",
-        HttpStatusCode.BAD_REQUEST,
-        LAYER,
-      )
+      throw new AppError("Nguồn ứng viên không khớp bài đăng", HttpStatusCode.BAD_REQUEST, LAYER)
     }
     if (posting.status !== POSTING_STATUS.OPEN) {
-      throw new AppError(
-        "Bài đăng tuyển chưa được mở",
-        HttpStatusCode.CONFLICT,
-        LAYER,
-      )
+      throw new AppError("Bài đăng tuyển chưa được mở", HttpStatusCode.CONFLICT, LAYER)
     }
 
     return recruitmentIntakeRepository.importCandidateBatch(input, posting.sourceCode)

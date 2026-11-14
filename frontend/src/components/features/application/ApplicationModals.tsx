@@ -1,6 +1,7 @@
+import type { IApplication } from "@/lib/api/application.api"
+
 import { RejectDialog } from "./RejectDialog"
 import { SubmitApplicationModal } from "./SubmitApplicationModal"
-import type { IApplication } from "@/lib/api/application.api"
 
 export interface ApplicationModalsProps {
   showSubmitModal: boolean
@@ -33,10 +34,7 @@ export function ApplicationModals({
   return (
     <>
       {showSubmitModal && (
-        <SubmitApplicationModal
-          onClose={onCloseSubmit}
-          onSuccess={onSuccessSubmit}
-        />
+        <SubmitApplicationModal onClose={onCloseSubmit} onSuccess={onSuccessSubmit} />
       )}
       {rejectTarget && (
         <RejectDialog

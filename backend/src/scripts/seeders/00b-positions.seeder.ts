@@ -32,7 +32,7 @@ export class PositionsSeeder implements ISeeder {
       })
       if (!existing) {
         await prisma.position.create({
-          data: pos
+          data: pos,
         })
       }
     }

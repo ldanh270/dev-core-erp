@@ -5,8 +5,8 @@ import {
   updatePersonalEmployeeLink,
   uploadAvatar,
 } from "@/lib/api/profile.api.ts"
-import type { ProfileDto, UpdateProfileDto } from "@/types/profile.types.ts"
 import { useAuthStore } from "@/store/auth-store"
+import type { ProfileDto, UpdateProfileDto } from "@/types/profile.types.ts"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 

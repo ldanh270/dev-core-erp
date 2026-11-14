@@ -9,10 +9,22 @@ export default {
     "custom-property-empty-line-before": null,
     "value-keyword-case": null,
     "color-hex-length": null,
+    "at-rule-prelude-no-invalid": null,
+    "media-feature-range-notation": null,
+    "declaration-block-no-duplicate-custom-properties": null,
     "at-rule-no-unknown": [
       true,
       {
-        ignoreAtRules: ["apply", "custom-variant", "plugin", "source", "tailwind", "theme", "utility", "variant"],
+        ignoreAtRules: [
+          "apply",
+          "custom-variant",
+          "plugin",
+          "source",
+          "tailwind",
+          "theme",
+          "utility",
+          "variant",
+        ],
       },
     ],
   },

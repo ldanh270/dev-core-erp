@@ -1,14 +1,14 @@
-import { recruitmentApplicationRepository } from "@/repositories/recruitment-application.repository"
+import { TERMINAL_APPLICATION_STATUSES } from "@/configs/entities/recruitment.config"
+import { canTransitionApplicationStatus } from "@/configs/rules/recruitment.config"
+import { HttpStatusCode } from "@/configs/system/http.config"
+import { jobPostingRepository } from "@/repositories/job-posting.repository"
 import { jobRequisitionRepository } from "@/repositories/job-requisition.repository"
+import { recruitmentApplicationRepository } from "@/repositories/recruitment-application.repository"
 import type {
   CreateApplicationInput,
-  UpdateApplicationStatusInput,
   ListApplicationsQuery,
+  UpdateApplicationStatusInput,
 } from "@/types/recruitment.types"
-import { canTransitionApplicationStatus } from "@/configs/rules/recruitment.config"
-import { TERMINAL_APPLICATION_STATUSES } from "@/configs/entities/recruitment.config"
-import { jobPostingRepository } from "@/repositories/job-posting.repository"
-import { HttpStatusCode } from "@/configs/system/http.config"
 import { AppError } from "@/utils/error.util"
 
 const LAYER = "RecruitmentApplicationService"
@@ -80,19 +80,31 @@ export class RecruitmentApplicationService {
 
     // Validate status transition
     if (!canTransitionApplicationStatus(application.status, input.status)) {
-      throw new Error(
-        `Invalid status transition from '${application.status}' to '${input.status}'`
-      )
+      throw new Error(`Invalid status transition from '${application.status}' to '${input.status}'`)
     }
 
     try {
-      return await recruitmentApplicationRepository.updateStatus(id, input, input.version ?? application.version)
+      return await recruitmentApplicationRepository.updateStatus(
+        id,
+        input,
+        input.version ?? application.version,
+      )
     } catch (error) {
       if (error instanceof Error && error.message === "APPLICATION_VERSION_CONFLICT") {
-        throw new AppError("Hồ sơ đã được cập nhật bởi người khác", HttpStatusCode.CONFLICT, LAYER, "APPLICATION_VERSION_CONFLICT")
+        throw new AppError(
+          "Hồ sơ đã được cập nhật bởi người khác",
+          HttpStatusCode.CONFLICT,
+          LAYER,
+          "APPLICATION_VERSION_CONFLICT",
+        )
       }
       if (error instanceof Error && error.message === "HEADCOUNT_FILLED") {
-        throw new AppError("Đã đủ chỉ tiêu tuyển dụng", HttpStatusCode.CONFLICT, LAYER, "HEADCOUNT_FILLED")
+        throw new AppError(
+          "Đã đủ chỉ tiêu tuyển dụng",
+          HttpStatusCode.CONFLICT,
+          LAYER,
+          "HEADCOUNT_FILLED",
+        )
       }
       throw error
     }
@@ -108,10 +120,20 @@ export class RecruitmentApplicationService {
       )
     } catch (error) {
       if (error instanceof Error && error.message === "APPLICATION_VERSION_CONFLICT") {
-        throw new AppError("Hồ sơ đã được cập nhật bởi người khác", HttpStatusCode.CONFLICT, LAYER, "APPLICATION_VERSION_CONFLICT")
+        throw new AppError(
+          "Hồ sơ đã được cập nhật bởi người khác",
+          HttpStatusCode.CONFLICT,
+          LAYER,
+          "APPLICATION_VERSION_CONFLICT",
+        )
       }
       if (error instanceof Error && error.message === "PIPELINE_STAGE_REQUISITION_MISMATCH") {
-        throw new AppError("Giai đoạn không thuộc yêu cầu tuyển dụng của hồ sơ", HttpStatusCode.BAD_REQUEST, LAYER, "PIPELINE_STAGE_REQUISITION_MISMATCH")
+        throw new AppError(
+          "Giai đoạn không thuộc yêu cầu tuyển dụng của hồ sơ",
+          HttpStatusCode.BAD_REQUEST,
+          LAYER,
+          "PIPELINE_STAGE_REQUISITION_MISMATCH",
+        )
       }
       throw error
     }

@@ -1,2 +1,4 @@
 // Deprecated
-export function CreateJobDescriptionDialog() { return null }
+export function CreateJobDescriptionDialog() {
+  return null
+}

@@ -7,10 +7,7 @@ const VIETNAM_FIXED_HOLIDAYS = [
   { monthDay: "09-02", name: "Ngày Quốc khánh" },
 ] as const
 
-const VIETNAM_LUNAR_HOLIDAYS_BY_YEAR = new Map<
-  number,
-  readonly { date: string; name: string }[]
->([
+const VIETNAM_LUNAR_HOLIDAYS_BY_YEAR = new Map<number, readonly { date: string; name: string }[]>([
   [
     2026,
     [

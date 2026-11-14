@@ -138,26 +138,19 @@
   "indexes": [
     {
       "name": "IX_RecruitmentConnectorResponse_applicationId",
-      "columns": [
-        "applicationId"
-      ],
+      "columns": ["applicationId"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentConnectorResponse_postingId_externalResponseId",
-      "columns": [
-        "postingId",
-        "externalResponseId"
-      ],
+      "columns": ["postingId", "externalResponseId"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "PK_RecruitmentConnectorResponse",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -167,23 +160,15 @@
       "virtualName": "posting",
       "targetModel": "JobPosting",
       "relationName": null,
-      "foreignKeyFields": [
-        "postingId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["postingId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "application",
       "targetModel": "RecruitmentApplication",
       "relationName": null,
-      "foreignKeyFields": [
-        "applicationId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["applicationId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

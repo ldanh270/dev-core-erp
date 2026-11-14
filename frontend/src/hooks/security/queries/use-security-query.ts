@@ -15,7 +15,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
  */
 export const securityKeys = {
   all: [SECURITY_QUERY_KEY.ROOT] as const,
-  summary: (timeRange?: string) => [...securityKeys.all, SECURITY_QUERY_KEY.SUMMARY, timeRange] as const,
+  summary: (timeRange?: string) =>
+    [...securityKeys.all, SECURITY_QUERY_KEY.SUMMARY, timeRange] as const,
   lockedAccounts: () => [...securityKeys.all, SECURITY_QUERY_KEY.LOCKED_ACCOUNTS] as const,
   logs: () => [...securityKeys.all, SECURITY_QUERY_KEY.LOGS] as const,
   logList: (query: ActivityLogQuery) => [...securityKeys.logs(), query] as const,

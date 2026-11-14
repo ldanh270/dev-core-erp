@@ -4,7 +4,7 @@ import {
   CONTRACT_TYPES,
 } from "@/configs/entities/employee-contract.config.ts"
 import { prisma } from "@/libs/database.ts"
-import { createEmptyContext, SeedContext } from "@/scripts/seeders/seed-context.ts"
+import { SeedContext, createEmptyContext } from "@/scripts/seeders/seed-context.ts"
 import { ISeeder } from "@/scripts/seeders/seeder.interface.ts"
 import { registry } from "@/scripts/seeders/seeder.registry.ts"
 
@@ -123,7 +123,9 @@ registry.register(new EmployeeContractsSeeder())
 
 if (import.meta.main) {
   const admin = await prisma.employee.findFirst({ where: { username: "admin" } })
-  const employees = await prisma.employee.findMany({ select: { id: true, position: true, username: true } })
+  const employees = await prisma.employee.findMany({
+    select: { id: true, position: true, username: true },
+  })
   const context = createEmptyContext()
   context.adminId = admin?.id ?? ""
   context.employees = employees

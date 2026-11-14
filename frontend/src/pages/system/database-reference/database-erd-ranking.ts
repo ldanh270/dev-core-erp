@@ -116,8 +116,7 @@ export function groupByRank(
 
   for (const table of tables) {
     const hasEdges =
-      (parents?.get(table.name)?.length ?? 0) > 0 ||
-      (children?.get(table.name)?.length ?? 0) > 0
+      (parents?.get(table.name)?.length ?? 0) > 0 || (children?.get(table.name)?.length ?? 0) > 0
     if (!hasEdges && tables.length > 4 && parents && children) {
       isolated.push(table.name)
     } else {
@@ -146,10 +145,7 @@ export function groupByRank(
  * @param maxNodesPerColumn - Threshold per column.
  * @returns Multi-column matrix with split layers.
  */
-export function splitLargeLayers(
-  layers: string[][],
-  maxNodesPerColumn: number,
-): string[][] {
+export function splitLargeLayers(layers: string[][], maxNodesPerColumn: number): string[][] {
   return layers.flatMap((layer) => {
     if (layer.length <= maxNodesPerColumn) return [layer]
     const chunks: string[][] = []

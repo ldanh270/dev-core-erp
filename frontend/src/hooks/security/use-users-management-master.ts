@@ -1,8 +1,8 @@
+import { type IUsersManagementTab, USERS_MANAGEMENT_TABS } from "@/config/entities/security.config"
 import { SYSTEM_CONFIG } from "@/config/system.config"
-import { useDebounce } from "@/hooks/use-debounce"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
-import { USERS_MANAGEMENT_TABS, type IUsersManagementTab } from "@/config/entities/security.config"
 import { useLockedAccounts, useUnlockAccount } from "@/hooks/security/queries/use-security-query"
+import { useDebounce } from "@/hooks/use-debounce"
 import type { EmployeeListQuery } from "@/types/employee.types"
 
 import { useCallback, useMemo, useState } from "react"
@@ -11,7 +11,7 @@ import { toast } from "sonner"
 
 /**
  * Master hook for the Users Management dashboard page.
- * Combines logic for viewing all employees, filtering locked accounts, 
+ * Combines logic for viewing all employees, filtering locked accounts,
  * unlocking accounts, handling tabs, and client/server-side pagination.
  */
 export function useUsersManagementMaster() {
@@ -96,14 +96,20 @@ export function useUsersManagementMaster() {
   const refetch = activeTab === USERS_MANAGEMENT_TABS.ALL ? refetchAll : refetchLocked
 
   // Paginated display data selection
-  const displayData = activeTab === USERS_MANAGEMENT_TABS.ALL ? allUsers?.data : paginatedLockedUsers
+  const displayData =
+    activeTab === USERS_MANAGEMENT_TABS.ALL ? allUsers?.data : paginatedLockedUsers
 
   // Pagination metrics
-  const total = activeTab === USERS_MANAGEMENT_TABS.ALL ? (allUsers?.meta.total ?? 0) : filteredLockedUsers.length
+  const total =
+    activeTab === USERS_MANAGEMENT_TABS.ALL
+      ? (allUsers?.meta.total ?? 0)
+      : filteredLockedUsers.length
   const totalPages =
     activeTab === USERS_MANAGEMENT_TABS.ALL
       ? (allUsers?.meta.totalPages ?? 0)
-      : Math.ceil(filteredLockedUsers.length / (query.limit || SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT))
+      : Math.ceil(
+          filteredLockedUsers.length / (query.limit || SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT),
+        )
 
   const limit = query.limit || SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT
   const pageStart = ((query.page || 1) - 1) * limit + (displayData?.length ? 1 : 0)

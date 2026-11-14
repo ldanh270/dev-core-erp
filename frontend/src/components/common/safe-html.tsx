@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+
 import DOMPurify from "dompurify"
 
 interface SafeHtmlProps {
@@ -71,9 +72,9 @@ const domToReact = (node: Node, keyIndex: number): React.ReactNode => {
 export const SafeHtml: React.FC<SafeHtmlProps> = ({ content, className }) => {
   const [reactNodes, setReactNodes] = useState<React.ReactNode[]>([])
 
-  useEffect(() => { // lgtm[js/xss] // NOSONAR
+  useEffect(() => {
+    // lgtm[js/xss] // NOSONAR
     if (!content) {
- 
       setReactNodes([])
       return
     }

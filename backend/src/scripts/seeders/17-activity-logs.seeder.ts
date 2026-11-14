@@ -66,7 +66,9 @@ registry.register(new ActivityLogsSeeder())
 
 if (import.meta.main) {
   const seeder = new ActivityLogsSeeder()
-  const emps = await prisma.employee.findMany({ select: { id: true, position: true, username: true } })
+  const emps = await prisma.employee.findMany({
+    select: { id: true, position: true, username: true },
+  })
   const ctx = createEmptyContext()
   ctx.employees = emps
   await seeder.run(ctx)

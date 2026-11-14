@@ -1,22 +1,18 @@
-import type { TableDef } from "./database-reference.types"
-import type { HorizontalTrack, VerticalTrack } from "./database-erd-tracks"
 import {
   buildNodeBoxes,
   buildStreetCenters,
   waypointsToOrthogonalPath,
 } from "./database-erd-collision"
 import type { ErdEdge, ErdPoint } from "./database-erd-geometry"
-import {
-  ERD_NODE_WIDTH,
-  FIRST_FIELD_ANCHOR_Y,
-  MIN_NODE_HEIGHT,
-} from "./database-erd-geometry"
+import { ERD_NODE_WIDTH, FIRST_FIELD_ANCHOR_Y, MIN_NODE_HEIGHT } from "./database-erd-geometry"
+import type { HorizontalTrack, VerticalTrack } from "./database-erd-tracks"
 import type { EdgeDraft } from "./database-erd-waypoints"
 import {
   buildOrthogonalWaypoints,
   getFieldOffsetY,
   resolveEndpoints,
 } from "./database-erd-waypoints"
+import type { TableDef } from "./database-reference.types"
 
 export { getErdEdgeClassName } from "./database-erd-edge-style"
 

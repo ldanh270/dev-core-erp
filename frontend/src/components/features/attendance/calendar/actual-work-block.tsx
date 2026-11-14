@@ -20,8 +20,7 @@ export function ActualWorkBlock({
 
   if (actualStart === undefined || actualEnd === undefined) return null
 
-  const isMatched =
-    record.realShift?.isMatched ?? isActualShiftMatched(record, scheduleDay)
+  const isMatched = record.realShift?.isMatched ?? isActualShiftMatched(record, scheduleDay)
   const actualStyle = getCalendarRangeStyle(actualStart, actualEnd)
   const overlaysPlanned = labelPlacement === "bottom"
 

@@ -1,8 +1,4 @@
-import {
-  DataTablePage,
-  StatusPill,
-  type DataTableColumn,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage, StatusPill } from "@/components/common"
 import { CreateJobPostingDialog } from "@/components/features/recruitment/create-job-posting-dialog"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -67,7 +63,12 @@ function PostingActions({
     posting.status === "open"
 
   return (
-    <div className="flex items-center justify-end gap-1.5" onClick={(e) => { e.stopPropagation(); }}>
+    <div
+      className="flex items-center justify-end gap-1.5"
+      onClick={(e) => {
+        e.stopPropagation()
+      }}
+    >
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
@@ -102,7 +103,9 @@ function PostingActions({
         <Button
           size="sm"
           variant="outline"
-          onClick={() => { publish.mutate({ id: posting.id, mode: "connector" }); }}
+          onClick={() => {
+            publish.mutate({ id: posting.id, mode: "connector" })
+          }}
           disabled={publish.isPending}
           className="rounded-full h-8 text-xs gap-1.5"
         >
@@ -116,7 +119,9 @@ function PostingActions({
             <Button
               size="sm"
               variant="ghost"
-              onClick={() => { sync.mutate(posting.id); }}
+              onClick={() => {
+                sync.mutate(posting.id)
+              }}
               disabled={sync.isPending}
               className="rounded-full h-8 w-8 p-0"
             >
@@ -192,7 +197,9 @@ export default function JobPostingsPage() {
         cell: (posting) => (
           <div
             className="cursor-pointer group"
-            onClick={() => { handleOpenWorkspace(posting); }}
+            onClick={() => {
+              handleOpenWorkspace(posting)
+            }}
           >
             <p className="font-medium text-foreground group-hover:text-primary group-hover:underline transition-colors truncate">
               {posting.requisition?.title ?? "N/A"}
@@ -216,9 +223,7 @@ export default function JobPostingsPage() {
             <span className="text-sm font-medium text-foreground">
               {channelLabel(posting.channel)}
             </span>
-            <p className="text-xs text-muted-foreground font-mono mt-0.5">
-              {posting.sourceCode}
-            </p>
+            <p className="text-xs text-muted-foreground font-mono mt-0.5">{posting.sourceCode}</p>
           </div>
         ),
       },
@@ -232,15 +237,15 @@ export default function JobPostingsPage() {
               posting.status === "open"
                 ? "Đang mở"
                 : posting.status === "closed"
-                ? "Đã đóng"
-                : "Nháp"
+                  ? "Đã đóng"
+                  : "Nháp"
             }
             variant={
               posting.status === "open"
                 ? "success"
                 : posting.status === "closed"
-                ? "danger"
-                : "neutral"
+                  ? "danger"
+                  : "neutral"
             }
           />
         ),
@@ -259,7 +264,9 @@ export default function JobPostingsPage() {
         cell: (posting) => (
           <PostingActions
             posting={posting}
-            onOpenWorkspace={() => { handleOpenWorkspace(posting); }}
+            onOpenWorkspace={() => {
+              handleOpenWorkspace(posting)
+            }}
           />
         ),
       },
@@ -306,7 +313,9 @@ export default function JobPostingsPage() {
           hasPermission("recruitment.posting.manage") ? (
             <Button
               className="rounded-full font-semibold gap-1.5"
-              onClick={() => { handleOpenCreate(); }}
+              onClick={() => {
+                handleOpenCreate()
+              }}
             >
               <Plus className="h-4 w-4" />
               Tạo bài đăng

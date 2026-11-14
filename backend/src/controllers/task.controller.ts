@@ -30,15 +30,17 @@ export class TaskController {
       res.status(HttpStatusCode.OK).json({ data: result, error: null })
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const issues = error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join(", ")
+        const issues = error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join(", ")
         throw new AppError(
           `Validation failed: ${issues}`,
           HttpStatusCode.BAD_REQUEST,
           "Validation",
-          ErrorCode.VALIDATION_ERROR
+          ErrorCode.VALIDATION_ERROR,
         )
       }
-      throw error 
+      throw error
     }
   }
 
@@ -83,12 +85,14 @@ export class TaskController {
       res.status(HttpStatusCode.CREATED).json({ data: task, error: null })
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const issues = error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join(", ")
+        const issues = error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join(", ")
         throw new AppError(
           `Validation failed: ${issues}`,
           HttpStatusCode.BAD_REQUEST,
           "Validation",
-          ErrorCode.VALIDATION_ERROR
+          ErrorCode.VALIDATION_ERROR,
         )
       }
       throw error
@@ -110,11 +114,7 @@ export class TaskController {
       }
 
       const data = updateTaskSchema.parse(req.body)
-      const task = await this.service.updateTask(
-        String(req.params.id),
-        data,
-        req.user.empId,
-      )
+      const task = await this.service.updateTask(String(req.params.id), data, req.user.empId)
       if (!task) {
         return res.status(HttpStatusCode.NOT_FOUND).json({
           data: null,
@@ -124,12 +124,14 @@ export class TaskController {
       res.status(HttpStatusCode.OK).json({ data: task, error: null })
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const issues = error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join(", ")
+        const issues = error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join(", ")
         throw new AppError(
           `Validation failed: ${issues}`,
           HttpStatusCode.BAD_REQUEST,
           "Validation",
-          ErrorCode.VALIDATION_ERROR
+          ErrorCode.VALIDATION_ERROR,
         )
       }
       throw error

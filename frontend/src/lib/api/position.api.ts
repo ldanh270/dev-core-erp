@@ -112,15 +112,23 @@ export const positionApi = {
    * Retrieves all position rules configured for a project.
    */
   listProjectRules: async (projectId: string): Promise<ProjectPositionRule[]> => {
-    const response = await apiClient.get<ApiResponse<ProjectPositionRule[]>>(`/positions/projects/${projectId}/position-rules`)
+    const response = await apiClient.get<ApiResponse<ProjectPositionRule[]>>(
+      `/positions/projects/${projectId}/position-rules`,
+    )
     return response.data.data
   },
 
   /**
    * Submits batch update to configure position rules inside a project.
    */
-  saveProjectRules: async (projectId: string, rules: ProjectPositionRuleDto[]): Promise<ProjectPositionRule[]> => {
-    const response = await apiClient.post<ApiResponse<ProjectPositionRule[]>>(`/positions/projects/${projectId}/position-rules`, { rules })
+  saveProjectRules: async (
+    projectId: string,
+    rules: ProjectPositionRuleDto[],
+  ): Promise<ProjectPositionRule[]> => {
+    const response = await apiClient.post<ApiResponse<ProjectPositionRule[]>>(
+      `/positions/projects/${projectId}/position-rules`,
+      { rules },
+    )
     return response.data.data
   },
 }

@@ -15,7 +15,9 @@ export const getContracts = async (params?: {
   page?: number
   limit?: number
 }) => {
-  const response = await apiClient.get<{ data: IPaginatedContracts }>("/employee-contracts", { params })
+  const response = await apiClient.get<{ data: IPaginatedContracts }>("/employee-contracts", {
+    params,
+  })
   return response.data.data
 }
 
@@ -58,7 +60,10 @@ export const terminateContract = async (id: string, data: ITerminateContractPayl
 }
 
 export const renewContract = async (id: string, data: IRenewContractPayload) => {
-  const response = await apiClient.post<{ data: IContract }>(`/employee-contracts/${id}/renew`, data)
+  const response = await apiClient.post<{ data: IContract }>(
+    `/employee-contracts/${id}/renew`,
+    data,
+  )
   return response.data.data
 }
 

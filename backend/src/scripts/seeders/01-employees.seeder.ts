@@ -1,7 +1,7 @@
 import {
   EMPLOYEE_STATUS,
-  EMPLOYEE_TYPES,
   EMPLOYEE_TYPE,
+  EMPLOYEE_TYPES,
   WORK_SCHEDULE_TYPE,
 } from "@/configs/entities/employee.config.ts"
 import { prisma } from "@/libs/database.ts"
@@ -21,16 +21,14 @@ export class EmployeesSeeder implements ISeeder {
     console.log("  Seeding employees...")
 
     // Ensure all 5 core role accounts exist (especially since seed-all clears the DB)
-    const rolesToSeed = [
-      "admin",
-      "hr_manager",
-      "general_manager",
-      "team_leader",
-      "employee",
-    ]
+    const rolesToSeed = ["admin", "hr_manager", "general_manager", "team_leader", "employee"]
     let adminId = ""
-    const devPos = await prisma.position.findFirst({ where: { code: "developer", deletedAt: null } })
-    const testerPos = await prisma.position.findFirst({ where: { code: "tester", deletedAt: null } })
+    const devPos = await prisma.position.findFirst({
+      where: { code: "developer", deletedAt: null },
+    })
+    const testerPos = await prisma.position.findFirst({
+      where: { code: "tester", deletedAt: null },
+    })
     const pmPos = await prisma.position.findFirst({ where: { code: "pm", deletedAt: null } })
     const hrPos = await prisma.position.findFirst({ where: { code: "hr", deletedAt: null } })
     const gmPos = await prisma.position.findFirst({ where: { code: "gm", deletedAt: null } })

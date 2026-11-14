@@ -5,7 +5,13 @@ import type {
   SpentTimeQuery,
   UpdateSpentTimeDto,
 } from "@/types/spent-time.types"
-import type { CreateTaskDto, PaginatedTasksDto, Task, TaskListQuery, UpdateTaskDto } from "@/types/task.types"
+import type {
+  CreateTaskDto,
+  PaginatedTasksDto,
+  Task,
+  TaskListQuery,
+  UpdateTaskDto,
+} from "@/types/task.types"
 
 interface ApiResponse<T> {
   data: T

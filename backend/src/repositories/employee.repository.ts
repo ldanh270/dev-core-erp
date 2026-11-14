@@ -13,7 +13,7 @@ import {
 } from "@/types"
 import { AppError } from "@/utils/error.util.ts"
 
-import { Prisma, PrismaClient, AppRole as PrismaAppRole } from "@prisma/client"
+import { Prisma, AppRole as PrismaAppRole, PrismaClient } from "@prisma/client"
 
 import { BaseRepository } from "./base.repository.ts"
 
@@ -208,9 +208,7 @@ export class PrismaEmployeeRepository extends BaseRepository implements IEmploye
     // Apply status filter, default to excluding terminated employees for the list query where
     if (status === "locked") {
       const now = new Date()
-      where.AND = [
-        { OR: [{ lockedUntil: { gt: now } }, { failedLoginCount: { gte: 5 } }] },
-      ]
+      where.AND = [{ OR: [{ lockedUntil: { gt: now } }, { failedLoginCount: { gte: 5 } }] }]
     } else if (status) {
       where.status = status as EmployeeStatus
     } else {

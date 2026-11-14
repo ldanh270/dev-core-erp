@@ -170,59 +170,43 @@
   "indexes": [
     {
       "name": "IX_HolidayCalendar_batchId",
-      "columns": [
-        "batchId"
-      ],
+      "columns": ["batchId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_HolidayCalendar_createdById",
-      "columns": [
-        "createdById"
-      ],
+      "columns": ["createdById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_HolidayCalendar_date",
-      "columns": [
-        "date"
-      ],
+      "columns": ["date"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_HolidayCalendar_positionId",
-      "columns": [
-        "positionId"
-      ],
+      "columns": ["positionId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_HolidayCalendar_scope_date",
-      "columns": [
-        "scope",
-        "date"
-      ],
+      "columns": ["scope", "date"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_HolidayCalendar_type_date",
-      "columns": [
-        "type",
-        "date"
-      ],
+      "columns": ["type", "date"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_HolidayCalendar",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -232,23 +216,15 @@
       "virtualName": "position",
       "targetModel": "Position",
       "relationName": null,
-      "foreignKeyFields": [
-        "positionId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["positionId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "createdBy",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "createdById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["createdById"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

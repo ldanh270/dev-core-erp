@@ -106,25 +106,19 @@
   "indexes": [
     {
       "name": "IX_PayslipDetail_componentId",
-      "columns": [
-        "componentId"
-      ],
+      "columns": ["componentId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_PayslipDetail_payslipId",
-      "columns": [
-        "payslipId"
-      ],
+      "columns": ["payslipId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_PayslipDetail",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -134,23 +128,15 @@
       "virtualName": "payslip",
       "targetModel": "Payslip",
       "relationName": null,
-      "foreignKeyFields": [
-        "payslipId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["payslipId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "component",
       "targetModel": "SalaryComponent",
       "relationName": null,
-      "foreignKeyFields": [
-        "componentId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["componentId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

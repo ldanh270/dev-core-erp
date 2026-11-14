@@ -1,12 +1,12 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { useMyPartTimeAvailability } from "@/hooks/attendance/use-part-time-availability"
+import { formatDateParam } from "@/utils/attendance/format-date-param"
+import { getWeekDates } from "@/utils/attendance/get-week-dates"
+import { getWeekRangeLabel } from "@/utils/attendance/get-week-range-label"
 import {
   clampToEarliestRequestableWeek,
   getEarliestRequestableWeekStart,
 } from "@/utils/attendance/part-time-availability.util"
-import { formatDateParam } from "@/utils/attendance/format-date-param"
-import { getWeekDates } from "@/utils/attendance/get-week-dates"
-import { getWeekRangeLabel } from "@/utils/attendance/get-week-range-label"
 
 import { useMemo, useState } from "react"
 

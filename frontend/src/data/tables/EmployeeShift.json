@@ -188,53 +188,37 @@
   "indexes": [
     {
       "name": "IX_EmployeeShift_createdById",
-      "columns": [
-        "createdById"
-      ],
+      "columns": ["createdById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_EmployeeShift_employeeId_assignedDate_shiftId",
-      "columns": [
-        "employeeId",
-        "assignedDate",
-        "shiftId"
-      ],
+      "columns": ["employeeId", "assignedDate", "shiftId"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_EmployeeShift_scheduleId",
-      "columns": [
-        "scheduleId"
-      ],
+      "columns": ["scheduleId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_EmployeeShift_shiftId_assignedDate",
-      "columns": [
-        "shiftId",
-        "assignedDate"
-      ],
+      "columns": ["shiftId", "assignedDate"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_EmployeeShift_status_assignedDate",
-      "columns": [
-        "status",
-        "assignedDate"
-      ],
+      "columns": ["status", "assignedDate"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_EmployeeShift",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -244,45 +228,29 @@
       "virtualName": "employee",
       "targetModel": "Employee",
       "relationName": "EmployeeShiftEmployee",
-      "foreignKeyFields": [
-        "employeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "shift",
       "targetModel": "WorkingShift",
       "relationName": null,
-      "foreignKeyFields": [
-        "shiftId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["shiftId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "schedule",
       "targetModel": "ShiftSchedule",
       "relationName": null,
-      "foreignKeyFields": [
-        "scheduleId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["scheduleId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "createdBy",
       "targetModel": "Employee",
       "relationName": "EmployeeShiftCreator",
-      "foreignKeyFields": [
-        "createdById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["createdById"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "overtimeDetails",

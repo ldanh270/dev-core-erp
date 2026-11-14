@@ -24,16 +24,13 @@ interface EmployeeWeeklyScheduleSectionProps {
  * Weekly shift template picker in employee edit drawer.
  * PART_TIME employees skip this block — hours are tracked via project Spent Time instead.
  */
-export function EmployeeWeeklyScheduleSection({ section, hidden }: EmployeeWeeklyScheduleSectionProps) {
+export function EmployeeWeeklyScheduleSection({
+  section,
+  hidden,
+}: EmployeeWeeklyScheduleSectionProps) {
   if (hidden) return null
 
-  const {
-    form,
-    activeTemplates,
-    selectedTemplate,
-    activeSchedule,
-    isScheduleLoading,
-  } = section
+  const { form, activeTemplates, selectedTemplate, activeSchedule, isScheduleLoading } = section
 
   const {
     control,
@@ -49,8 +46,8 @@ export function EmployeeWeeklyScheduleSection({ section, hidden }: EmployeeWeekl
         <div className="flex items-start gap-3 rounded-lg bg-muted/30 p-3">
           <CalendarRange className="h-4 w-4 text-primary mt-0.5 shrink-0" />
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Chọn template ca xoay tuần cho nhân viên. Ca làm việc sẽ được sinh tự động theo cấu
-            hình lịch tuần hệ thống.
+            Chọn template ca xoay tuần cho nhân viên. Ca làm việc sẽ được sinh tự động theo cấu hình
+            lịch tuần hệ thống.
           </p>
         </div>
 

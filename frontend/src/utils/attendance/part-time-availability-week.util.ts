@@ -1,9 +1,9 @@
-import { getWeekStart } from "@/utils/attendance/get-week-start"
 import {
+  type IPartTimeAvailabilityStatus,
   PART_TIME_AVAILABILITY_ASSIGNABLE_STATUSES,
   PART_TIME_AVAILABILITY_EDITABLE_STATUSES,
-  type IPartTimeAvailabilityStatus,
 } from "@/config/entities/part-time-availability.config"
+import { getWeekStart } from "@/utils/attendance/get-week-start"
 
 /**
  * Returns the Monday of the earliest week employees may declare availability (always next week onward).
@@ -18,10 +18,7 @@ export function getEarliestRequestableWeekStart(referenceDate = new Date()): Dat
 /**
  * Clamps week navigation so employees cannot select the current or past week for new declarations.
  */
-export function clampToEarliestRequestableWeek(
-  weekStart: Date,
-  referenceDate = new Date(),
-): Date {
+export function clampToEarliestRequestableWeek(weekStart: Date, referenceDate = new Date()): Date {
   const normalized = getWeekStart(weekStart)
   const earliest = getEarliestRequestableWeekStart(referenceDate)
   return normalized.getTime() < earliest.getTime() ? earliest : normalized
