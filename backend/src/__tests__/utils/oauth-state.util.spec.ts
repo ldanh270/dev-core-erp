@@ -4,7 +4,12 @@ const mockCreate = jest.fn()
 const mockUpdateMany = jest.fn()
 
 jest.mock("@/libs/database", () => ({
-  prisma: { recruitmentOAuthStateNonce: { create: mockCreate, updateMany: mockUpdateMany } },
+  prisma: {
+    recruitmentOAuthStateNonce: {
+      create: (...args: unknown[]) => mockCreate(...args),
+      updateMany: (...args: unknown[]) => mockUpdateMany(...args),
+    },
+  },
 }))
 
 describe("OAuth state", () => {

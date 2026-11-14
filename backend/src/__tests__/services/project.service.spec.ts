@@ -326,7 +326,9 @@ describe("ProjectService", () => {
           createdById: userId,
           startDate: new Date(createData.startDate),
           expectedEndDate: new Date(createData.expectedEndDate),
+          dealTargetPercent: null,
           taskCreationPolicy: createData.taskCreationPolicy,
+          allowedTaskTrackers: [],
         },
       })
       expect(txTaskStatusCreateMock).toHaveBeenCalledTimes(2) // From mock config statuses

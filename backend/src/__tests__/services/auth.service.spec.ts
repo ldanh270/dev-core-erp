@@ -34,9 +34,10 @@ jest.mock("@/configs/auth/auth.config.ts", () => ({
 
 jest.mock("@/configs/entities/employee.config.ts", () => ({
   EMPLOYEE_STATUS: {
-    ACTIVE: EMPLOYEE_STATUS.ACTIVE,
-    TERMINATED: "TERMINATED",
-    INACTIVE: EMPLOYEE_STATUS.INACTIVE,
+    ACTIVE: "active",
+    TERMINATED: "terminated",
+    INACTIVE: "inactive",
+    ON_LEAVE: "on_leave",
   },
 }))
 
@@ -214,7 +215,7 @@ describe("AuthService", () => {
       const mockEmployee = {
         id: "emp-123",
         username: "testuser",
-        status: "TERMINATED",
+        status: "terminated",
         lockedUntil: null,
       }
       mockRepo.findAuthByIdentifier.mockResolvedValue(mockEmployee)

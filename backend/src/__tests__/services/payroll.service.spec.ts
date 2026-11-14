@@ -4,6 +4,9 @@ import * as math from "mathjs"
 import { PayrollService } from "../../services/payroll.service"
 
 jest.mock("@/configs/entities/attendance.config.ts", () => ({
+  APPLICATION_STATUS: {
+    APPROVED: "approved",
+  },
   ATTENDANCE_STATUS: {
     ON_TIME: "ON_TIME",
     LATE: "LATE",
@@ -39,8 +42,11 @@ jest.mock("@/configs/entities/project.config.ts", () => ({
 
 jest.mock("@/configs/entities/payroll.config.ts", () => ({
   PAYROLL_STATUS: {
-    APPROVED: "APPROVED",
-    REJECTED: "REJECTED",
+    DRAFT: "draft",
+    PENDING_APPROVAL: "pending_approval",
+    APPROVED: "approved",
+    REJECTED: "rejected",
+    PAID: "paid",
   },
   SALARY_COMPONENT_TYPES: ["ADDITION", "DEDUCTION"],
   generateDefaultPayrollName: (m: number, y: number): string => `Payroll-${m}-${y}`,
@@ -121,6 +127,17 @@ jest.mock("mathjs", () => ({
   evaluate: jest.fn(),
 }))
 
+type MockTransaction = {
+  payroll: {
+    findUnique: jest.Mock
+    create: jest.Mock
+    update: jest.Mock
+  }
+  payslip: {
+    create: jest.Mock
+  }
+}
+
 describe("PayrollService", () => {
   let service: PayrollService
   let mockPayrollRepo: any
@@ -131,6 +148,7 @@ describe("PayrollService", () => {
   let mockSpentTimeRepo: any
   let mockSettingsRepo: any
   let mockPrismaClient: any
+  let txMock: MockTransaction
 
   beforeEach(() => {
     mockPayrollRepo = {
@@ -163,9 +181,31 @@ describe("PayrollService", () => {
       findGlobal: jest.fn(),
     }
     mockSettingsRepo.findGlobal.mockResolvedValue({ triggerDay: 25 })
+
+    txMock = {
+      payroll: {
+        findUnique: jest.fn().mockResolvedValue(null),
+        create: jest.fn().mockResolvedValue({
+          id: "pay-1",
+          periodMonth: 10,
+          periodYear: 2023,
+          name: "Payroll-10-2023",
+          status: "draft",
+          totalAmount: 0,
+        }),
+        update: jest.fn().mockResolvedValue({}),
+      },
+      payslip: {
+        create: jest.fn().mockResolvedValue({}),
+      },
+    }
+
     mockPrismaClient = {
       salaryVariable: { findMany: jest.fn() },
       application: { findMany: jest.fn() },
+      $transaction: jest
+        .fn()
+        .mockImplementation((cb: (tx: MockTransaction) => unknown) => cb(txMock)),
     }
 
     service = new PayrollService(
@@ -220,8 +260,8 @@ describe("PayrollService", () => {
 
       // Assert
       expect(result).toBeDefined()
-      expect(mockPayrollRepo.create).toHaveBeenCalled()
-      expect(mockPayslipRepo.createWithDetails).toHaveBeenCalled()
+      expect(txMock.payroll.create).toHaveBeenCalled()
+      expect(txMock.payslip.create).toHaveBeenCalled()
     })
 
     it("UTCID02 - should throw conflict error if payroll already exists", async () => {
@@ -361,7 +401,9 @@ describe("PayrollService", () => {
   describe("approvePayroll", () => {
     it("UTCID01 - should approve payroll successfully", async () => {
       // Arrange
-      const mockPayroll = { id: "pay-1", status: "APPROVED" }
+      const existingPayroll = { id: "pay-1", status: "draft" }
+      const mockPayroll = { id: "pay-1", status: "approved" }
+      mockPayrollRepo.findById.mockResolvedValue(existingPayroll)
       mockPayrollRepo.updateStatus.mockResolvedValue(mockPayroll)
 
       // Act
@@ -370,7 +412,7 @@ describe("PayrollService", () => {
       // Assert
       expect(result).toEqual(mockPayroll)
       expect(mockPayrollRepo.updateStatus).toHaveBeenCalledWith("pay-1", {
-        status: "APPROVED",
+        status: "approved",
         approvedById: "app-1",
         approvedAt: expect.any(Date),
       })
@@ -378,6 +420,7 @@ describe("PayrollService", () => {
 
     it("UTCID02 - should throw repository error when update fails", async () => {
       // Arrange
+      mockPayrollRepo.findById.mockResolvedValue({ id: "pay-1", status: "draft" })
       mockPayrollRepo.updateStatus.mockRejectedValue(new Error("Update failed"))
 
       // Act & Assert
@@ -386,7 +429,9 @@ describe("PayrollService", () => {
 
     it("UTCID03 - should proceed even if approverId is null", async () => {
       // Arrange
-      const mockPayroll = { id: "pay-1", status: "APPROVED" }
+      const existingPayroll = { id: "pay-1", status: "draft" }
+      const mockPayroll = { id: "pay-1", status: "approved" }
+      mockPayrollRepo.findById.mockResolvedValue(existingPayroll)
       mockPayrollRepo.updateStatus.mockResolvedValue(mockPayroll)
 
       // Act
@@ -400,7 +445,9 @@ describe("PayrollService", () => {
   describe("rejectPayroll", () => {
     it("UTCID01 - should reject payroll successfully with reason", async () => {
       // Arrange
-      const mockPayroll = { id: "pay-1", status: "REJECTED", rejectReason: "Wrong computation" }
+      const existingPayroll = { id: "pay-1", status: "draft" }
+      const mockPayroll = { id: "pay-1", status: "rejected", rejectReason: "Wrong computation" }
+      mockPayrollRepo.findById.mockResolvedValue(existingPayroll)
       mockPayrollRepo.updateStatus.mockResolvedValue(mockPayroll)
 
       // Act
@@ -409,7 +456,7 @@ describe("PayrollService", () => {
       // Assert
       expect(result).toEqual(mockPayroll)
       expect(mockPayrollRepo.updateStatus).toHaveBeenCalledWith("pay-1", {
-        status: "REJECTED",
+        status: "rejected",
         approvedById: "app-1",
         approvedAt: expect.any(Date),
         rejectReason: "Wrong computation",
@@ -418,6 +465,7 @@ describe("PayrollService", () => {
 
     it("UTCID02 - should throw repository error when update fails", async () => {
       // Arrange
+      mockPayrollRepo.findById.mockResolvedValue({ id: "pay-1", status: "draft" })
       mockPayrollRepo.updateStatus.mockRejectedValue(new Error("Update failed"))
 
       // Act & Assert
@@ -428,7 +476,9 @@ describe("PayrollService", () => {
 
     it("UTCID03 - should accept empty reason string", async () => {
       // Arrange
-      const mockPayroll = { id: "pay-1", status: "REJECTED", rejectReason: "" }
+      const existingPayroll = { id: "pay-1", status: "draft" }
+      const mockPayroll = { id: "pay-1", status: "rejected", rejectReason: "" }
+      mockPayrollRepo.findById.mockResolvedValue(existingPayroll)
       mockPayrollRepo.updateStatus.mockResolvedValue(mockPayroll)
 
       // Act
