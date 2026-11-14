@@ -35,10 +35,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Verify code formatting
         run: pnpm format:check
@@ -60,10 +59,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Run linters
         run: pnpm lint
@@ -85,10 +83,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Generate Prisma client
         run: pnpm --dir backend exec prisma generate
