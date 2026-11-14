@@ -127,6 +127,17 @@ jest.mock("mathjs", () => ({
   evaluate: jest.fn(),
 }))
 
+type MockTransaction = {
+  payroll: {
+    findUnique: jest.Mock
+    create: jest.Mock
+    update: jest.Mock
+  }
+  payslip: {
+    create: jest.Mock
+  }
+}
+
 describe("PayrollService", () => {
   let service: PayrollService
   let mockPayrollRepo: any
@@ -137,7 +148,7 @@ describe("PayrollService", () => {
   let mockSpentTimeRepo: any
   let mockSettingsRepo: any
   let mockPrismaClient: any
-  let txMock: any
+  let txMock: MockTransaction
 
   beforeEach(() => {
     mockPayrollRepo = {
@@ -192,7 +203,9 @@ describe("PayrollService", () => {
     mockPrismaClient = {
       salaryVariable: { findMany: jest.fn() },
       application: { findMany: jest.fn() },
-      $transaction: jest.fn().mockImplementation((cb: (tx: any) => any) => cb(txMock)),
+      $transaction: jest
+        .fn()
+        .mockImplementation((cb: (tx: MockTransaction) => unknown) => cb(txMock)),
     }
 
     service = new PayrollService(

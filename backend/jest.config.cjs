@@ -6,5 +6,5 @@ module.exports = {
     '^@/(.*)\\.ts$': '<rootDir>/src/$1.ts',
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/src/__tests__/helpers/'],
+  testPathIgnorePatterns: ['/node_modules/', '/__tests__/helpers/'],
 };
