@@ -25,10 +25,8 @@ export const ATTENDANCE_MESSAGES = {
     CHECK_OUT_WINDOW: "Check-out",
     CHECK_OUT_FROM: "Từ",
     NO_GPS_CONFIGURED: "Chưa cấu hình GPS",
-    GPS_RADIUS_LABEL: (radius: number, locationName: string) =>
-      `${radius}m quanh ${locationName}`,
-    GPS_COORDINATE_LABEL: (lat: number, lng: number) =>
-      `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+    GPS_RADIUS_LABEL: (radius: number, locationName: string) => `${radius}m quanh ${locationName}`,
+    GPS_COORDINATE_LABEL: (lat: number, lng: number) => `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
     NO_SHIFT_TODAY: "Chưa có ca làm việc được phân cho hôm nay.",
     GEO_NOT_SUPPORTED: "Trình duyệt không hỗ trợ lấy vị trí GPS",
     GEO_PERMISSION_DENIED: "Vui lòng cho phép truy cập vị trí để chấm công",

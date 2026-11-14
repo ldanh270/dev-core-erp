@@ -1,8 +1,7 @@
-import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util.ts"
 import { WEEKLY_SCHEDULE_MESSAGES } from "@/configs/messages/weekly-schedule.message.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
-import { IEmployeeShiftRepository, IShiftScheduleRepository } from "@/types/shift.types.ts"
 import { IEmployeeRepository } from "@/types/employee.types.ts"
+import { IEmployeeShiftRepository, IShiftScheduleRepository } from "@/types/shift.types.ts"
 import {
   IApplyWeeklyScheduleTemplateDTO,
   ICreateWeeklyScheduleTemplateDTO,
@@ -11,6 +10,7 @@ import {
   IWeeklyScheduleTemplateService,
   IWeeklyScheduleTemplateWithWeeks,
 } from "@/types/weekly-schedule-template.types.ts"
+import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util.ts"
 import { AppError } from "@/utils/error.util.ts"
 import { getCycleWeekIndex, normalizeScheduleDate } from "@/utils/schedule.util.ts"
 
@@ -27,7 +27,9 @@ export class WeeklyScheduleTemplateService implements IWeeklyScheduleTemplateSer
   ) {}
 
   /** Creates a reusable weekly shift template (full-time employees only at apply time). */
-  createTemplate(data: ICreateWeeklyScheduleTemplateDTO): Promise<IWeeklyScheduleTemplateWithWeeks> {
+  createTemplate(
+    data: ICreateWeeklyScheduleTemplateDTO,
+  ): Promise<IWeeklyScheduleTemplateWithWeeks> {
     return this.templateRepo.create(data)
   }
 
@@ -41,7 +43,11 @@ export class WeeklyScheduleTemplateService implements IWeeklyScheduleTemplateSer
   async deleteTemplate(id: string): Promise<void> {
     const existing = await this.templateRepo.findById(id)
     if (!existing) {
-      throw new AppError("Không tìm thấy template lịch hàng tuần", HttpStatusCode.NOT_FOUND, "service")
+      throw new AppError(
+        "Không tìm thấy template lịch hàng tuần",
+        HttpStatusCode.NOT_FOUND,
+        "service",
+      )
     }
     await this.templateRepo.delete(id)
   }
@@ -49,7 +55,11 @@ export class WeeklyScheduleTemplateService implements IWeeklyScheduleTemplateSer
   async getTemplate(id: string): Promise<IWeeklyScheduleTemplateWithWeeks> {
     const template = await this.templateRepo.findById(id)
     if (!template) {
-      throw new AppError("Không tìm thấy template lịch hàng tuần", HttpStatusCode.NOT_FOUND, "service")
+      throw new AppError(
+        "Không tìm thấy template lịch hàng tuần",
+        HttpStatusCode.NOT_FOUND,
+        "service",
+      )
     }
     return template
   }
@@ -61,10 +71,18 @@ export class WeeklyScheduleTemplateService implements IWeeklyScheduleTemplateSer
   async applyTemplate(data: IApplyWeeklyScheduleTemplateDTO) {
     const template = await this.templateRepo.findById(data.templateId)
     if (!template) {
-      throw new AppError("Không tìm thấy template lịch hàng tuần", HttpStatusCode.NOT_FOUND, "service")
+      throw new AppError(
+        "Không tìm thấy template lịch hàng tuần",
+        HttpStatusCode.NOT_FOUND,
+        "service",
+      )
     }
     if (!template.isActive) {
-      throw new AppError("Template đang tắt, không thể áp dụng", HttpStatusCode.BAD_REQUEST, "service")
+      throw new AppError(
+        "Template đang tắt, không thể áp dụng",
+        HttpStatusCode.BAD_REQUEST,
+        "service",
+      )
     }
 
     const validFrom = normalizeScheduleDate(new Date(data.validFrom))
@@ -84,7 +102,11 @@ export class WeeklyScheduleTemplateService implements IWeeklyScheduleTemplateSer
     )
 
     if (scheduleDays.length === 0) {
-      throw new AppError("Template không có ca làm việc nào để áp dụng", HttpStatusCode.BAD_REQUEST, "service")
+      throw new AppError(
+        "Template không có ca làm việc nào để áp dụng",
+        HttpStatusCode.BAD_REQUEST,
+        "service",
+      )
     }
 
     for (const employeeId of data.employeeIds) {

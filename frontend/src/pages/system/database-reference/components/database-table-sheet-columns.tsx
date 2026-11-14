@@ -7,16 +7,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
+import { KeyRound, Link2 } from "lucide-react"
+
 import type {
   ColumnDef,
   EnumDef,
   IncomingRelation,
   OutgoingRelation,
 } from "../database-reference.types"
+import { useTableSheetColumns } from "../hooks/use-table-sheet-columns"
 import { ColumnConstraintsCell } from "./database-column-constraints-cell"
 import { ColumnIncomingCell } from "./database-column-incoming-cell"
-import { useTableSheetColumns } from "../hooks/use-table-sheet-columns"
-import { KeyRound, Link2 } from "lucide-react"
 
 interface TableSheetColumnsProps {
   columns: ColumnDef[]

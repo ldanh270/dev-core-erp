@@ -1,7 +1,7 @@
 import apiClient from "@/lib/api-client"
 import type {
-  ProjectRole,
   CreateProjectRoleDto,
+  ProjectRole,
   UpdateProjectRoleDto,
 } from "@/types/project-role.types"
 
@@ -27,15 +27,25 @@ export const projectRoleApi = {
    * Creates a new custom project role.
    */
   create: async (projectId: string, data: CreateProjectRoleDto): Promise<ProjectRole> => {
-    const response = await apiClient.post<ApiResponse<ProjectRole>>(`/projects/${projectId}/roles`, data)
+    const response = await apiClient.post<ApiResponse<ProjectRole>>(
+      `/projects/${projectId}/roles`,
+      data,
+    )
     return response.data.data
   },
 
   /**
    * Updates an existing project role.
    */
-  update: async (projectId: string, id: string, data: UpdateProjectRoleDto): Promise<ProjectRole> => {
-    const response = await apiClient.patch<ApiResponse<ProjectRole>>(`/projects/${projectId}/roles/${id}`, data)
+  update: async (
+    projectId: string,
+    id: string,
+    data: UpdateProjectRoleDto,
+  ): Promise<ProjectRole> => {
+    const response = await apiClient.patch<ApiResponse<ProjectRole>>(
+      `/projects/${projectId}/roles/${id}`,
+      data,
+    )
     return response.data.data
   },
 

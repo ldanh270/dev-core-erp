@@ -94,12 +94,16 @@ export function SalaryComponentSelectModal({
     const selected = salaryComponents.filter((c) => selectedIds.has(c.id))
     onSelect(selected)
     onOpenChange(false)
-    setTimeout(() => { setSelectedIds(new Set()); }, 200)
+    setTimeout(() => {
+      setSelectedIds(new Set())
+    }, 200)
   }
 
   const handleCancel = () => {
     onOpenChange(false)
-    setTimeout(() => { setSelectedIds(new Set()); }, 200)
+    setTimeout(() => {
+      setSelectedIds(new Set())
+    }, 200)
   }
 
   const handleReset = () => {
@@ -131,7 +135,9 @@ export function SalaryComponentSelectModal({
                 <Input
                   placeholder="Tìm kiếm mã thành phần, tên thành phần"
                   value={searchTerm}
-                  onChange={(e) => { setSearchTerm(e.target.value); }}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value)
+                  }}
                   className="pl-9 rounded-full border-border shadow-none"
                 />
               </div>
@@ -220,7 +226,9 @@ export function SalaryComponentSelectModal({
                             type="checkbox"
                             className="w-4 h-4 rounded border-border cursor-pointer"
                             checked={selectedIds.has(comp.id)}
-                            onChange={() => { handleToggleSelect(comp.id); }}
+                            onChange={() => {
+                              handleToggleSelect(comp.id)
+                            }}
                           />
                         </TableCell>
                         <TableCell className="text-foreground font-medium">{comp.name}</TableCell>

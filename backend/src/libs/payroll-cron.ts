@@ -52,9 +52,8 @@ export const initCronJobs = () => {
       const today = new Date()
       const month = today.getMonth() + 1
       const year = today.getFullYear()
-      const { generateDefaultPayrollName, PAYROLL_STATUS } = await import(
-        "@/configs/entities/payroll.config.ts"
-      )
+      const { generateDefaultPayrollName, PAYROLL_STATUS } =
+        await import("@/configs/entities/payroll.config.ts")
       const name = generateDefaultPayrollName(month, year)
 
       if (
@@ -80,7 +79,11 @@ export const initCronJobs = () => {
       }
 
       const payroll = await payrollRepo.findByPeriod(month, year, name)
-      if (!payroll || payroll.status === PAYROLL_STATUS.APPROVED || payroll.status === PAYROLL_STATUS.PAID) {
+      if (
+        !payroll ||
+        payroll.status === PAYROLL_STATUS.APPROVED ||
+        payroll.status === PAYROLL_STATUS.PAID
+      ) {
         return
       }
       // Rejected payrolls require human correction; cron must not silently approve them later.

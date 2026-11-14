@@ -159,7 +159,11 @@ export interface ITaskRepository {
   createTask(data: CreateTaskDto & { createdById: string }): Promise<Task>
   updateTask(id: string, data: UpdateTaskDto): Promise<Task | null>
   deleteTask(id: string): Promise<boolean>
-  updateTasksStatusId(projectId: string, fromStatusId: string, toStatusId: string | null): Promise<void>
+  updateTasksStatusId(
+    projectId: string,
+    fromStatusId: string,
+    toStatusId: string | null,
+  ): Promise<void>
   syncLegacyStatus(statusId: string, legacyStatus: TaskStatus): Promise<void>
 }
 
@@ -170,10 +174,6 @@ export interface ITaskService {
   getTask(id: string, userId: string): Promise<Task | null>
   listTasks(query: TaskListQuery, userId: string): Promise<PaginatedTasksDto>
   createTask(data: CreateTaskDto, userId: string): Promise<Task>
-  updateTask(
-    id: string,
-    data: UpdateTaskDto,
-    userId: string,
-  ): Promise<Task | null>
+  updateTask(id: string, data: UpdateTaskDto, userId: string): Promise<Task | null>
   deleteTask(id: string, userId: string): Promise<boolean>
 }

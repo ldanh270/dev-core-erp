@@ -17,19 +17,20 @@ import type {
   IPartTimeWeeklyAvailability,
   ISuggestPartTimeAssignment,
 } from "@/types/part-time-availability.types"
-import { buildPartTimeAssignmentsFromPlannedWeek } from "@/utils/attendance/part-time-availability/build-part-time-assignments-from-planned-week.util"
-import { mapSuggestionAssignmentsToForm } from "@/utils/attendance/part-time-availability/map-suggestion-assignments-to-form.util"
+import { getWeekDates } from "@/utils/attendance/get-week-dates"
 import {
+  type IPartTimeAssignmentDayForm,
   collectPartTimeAssignmentIssues,
   flattenPartTimeAssignments,
-  type IPartTimeAssignmentDayForm,
 } from "@/utils/attendance/part-time-availability.util"
-import { getWeekDates } from "@/utils/attendance/get-week-dates"
+import { buildPartTimeAssignmentsFromPlannedWeek } from "@/utils/attendance/part-time-availability/build-part-time-assignments-from-planned-week.util"
+import { mapSuggestionAssignmentsToForm } from "@/utils/attendance/part-time-availability/map-suggestion-assignments-to-form.util"
 
 import { useMemo, useState } from "react"
-import { toast } from "sonner"
-import { Loader2, Sparkles } from "lucide-react"
+
 import { useQuery } from "@tanstack/react-query"
+import { Loader2, Sparkles } from "lucide-react"
+import { toast } from "sonner"
 
 import { AdminPartTimeAssignDayColumn } from "./admin-part-time-assign-day-column"
 
@@ -93,8 +94,7 @@ export function AdminPartTimeAvailabilityAssignPanelForm({
   )
 
   const isAllBusyWeek = useMemo(
-    () =>
-      WORK_WEEK_DISPLAY_DAY_ORDER.every((dayOfWeek) => dayMap.get(dayOfWeek)?.isBusyAllDay),
+    () => WORK_WEEK_DISPLAY_DAY_ORDER.every((dayOfWeek) => dayMap.get(dayOfWeek)?.isBusyAllDay),
     [dayMap],
   )
 
@@ -168,9 +168,7 @@ export function AdminPartTimeAvailabilityAssignPanelForm({
                     disabled={!canAssign}
                     onChange={(next) => {
                       setAssignments((current) =>
-                        current.map((entry) =>
-                          entry.dayOfWeek === dayOfWeek ? next : entry,
-                        ),
+                        current.map((entry) => (entry.dayOfWeek === dayOfWeek ? next : entry)),
                       )
                     }}
                   />

@@ -1,10 +1,10 @@
+import { SORT_ORDER } from "@/configs/system/db.config.ts"
 import {
   EmployeeSalaryConfigWithTemplate,
   ICreateSalaryConfigDTO,
   IEmployeeSalaryConfigRepository,
 } from "@/types/payroll.types.ts"
 
-import { SORT_ORDER } from "@/configs/system/db.config.ts"
 import { EmployeeSalaryConfig, PrismaClient } from "@prisma/client"
 
 import { BaseRepository } from "./base.repository.ts"

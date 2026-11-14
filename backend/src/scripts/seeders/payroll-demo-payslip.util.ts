@@ -47,7 +47,8 @@ export function summarizePayrollDemoAttendance(
         else summary.absentDays += 1
       }
       if (record.status === ATTENDANCE_STATUS.OVERTIME) summary.workingDays += 1
-      if (record.status === (EMPLOYEE_SHIFT_STATUS.HOLIDAY_PENDING as string)) summary.holidayDays += 1
+      if (record.status === (EMPLOYEE_SHIFT_STATUS.HOLIDAY_PENDING as string))
+        summary.holidayDays += 1
       summary.overtimeMinutes += record.overtimeMinutes
       summary.lateMinutes += record.lateMinutes
       summary.earlyLeaveMinutes += record.earlyLeaveMinutes

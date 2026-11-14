@@ -17,11 +17,7 @@
       "icon": "Users",
       "description": "Quản lý nhân viên, hợp đồng lao động, bảo hiểm, phòng ban, chức vụ và chi nhánh",
       "tableCount": 3,
-      "tables": [
-        "EmployeeContract",
-        "Employee",
-        "Position"
-      ]
+      "tables": ["EmployeeContract", "Employee", "Position"]
     },
     {
       "id": "ATTENDANCE",
@@ -151,20 +147,13 @@
       "icon": "Sliders",
       "description": "Nhật ký hệ thống (Audit log), quy trình phê duyệt đa cấp, thông báo và cấu hình",
       "tableCount": 1,
-      "tables": [
-        "ActivityLog"
-      ]
+      "tables": ["ActivityLog"]
     }
   ],
   "enums": {
     "EmployeeStatus": {
       "name": "EmployeeStatus",
-      "values": [
-        "active",
-        "inactive",
-        "on_leave",
-        "terminated"
-      ],
+      "values": ["active", "inactive", "on_leave", "terminated"],
       "description": "Kiểu danh mục liệt kê EmployeeStatus (4 giá trị)"
     },
     "EmployeeType": {
@@ -179,65 +168,37 @@
     },
     "WorkScheduleType": {
       "name": "WorkScheduleType",
-      "values": [
-        "full_time",
-        "part_time"
-      ],
+      "values": ["full_time", "part_time"],
       "description": "Kiểu danh mục liệt kê WorkScheduleType (2 giá trị)"
     },
     "SpentTimeStatus": {
       "name": "SpentTimeStatus",
-      "values": [
-        "pending",
-        "approved",
-        "rejected"
-      ],
+      "values": ["pending", "approved", "rejected"],
       "description": "Kiểu danh mục liệt kê SpentTimeStatus (3 giá trị)"
     },
     "ProjectMemberWorkMode": {
       "name": "ProjectMemberWorkMode",
-      "values": [
-        "remote",
-        "onsite"
-      ],
+      "values": ["remote", "onsite"],
       "description": "Kiểu danh mục liệt kê ProjectMemberWorkMode (2 giá trị)"
     },
     "AttendanceStatus": {
       "name": "AttendanceStatus",
-      "values": [
-        "on_time",
-        "late",
-        "early_leave",
-        "absent",
-        "overtime"
-      ],
+      "values": ["on_time", "late", "early_leave", "absent", "overtime"],
       "description": "Kiểu danh mục liệt kê AttendanceStatus (5 giá trị)"
     },
     "ShiftStatus": {
       "name": "ShiftStatus",
-      "values": [
-        "scheduled",
-        "holiday_pending",
-        "confirmed",
-        "cancelled"
-      ],
+      "values": ["scheduled", "holiday_pending", "confirmed", "cancelled"],
       "description": "Kiểu danh mục liệt kê ShiftStatus (4 giá trị)"
     },
     "HolidayType": {
       "name": "HolidayType",
-      "values": [
-        "national",
-        "company"
-      ],
+      "values": ["national", "company"],
       "description": "Kiểu danh mục liệt kê HolidayType (2 giá trị)"
     },
     "HolidayScope": {
       "name": "HolidayScope",
-      "values": [
-        "all",
-        "position",
-        "employees"
-      ],
+      "values": ["all", "position", "employees"],
       "description": "Kiểu danh mục liệt kê HolidayScope (3 giá trị)"
     },
     "LeaveType": {
@@ -271,120 +232,62 @@
     },
     "ApplicationStatus": {
       "name": "ApplicationStatus",
-      "values": [
-        "pending",
-        "partner_pending",
-        "approved",
-        "rejected",
-        "cancelled"
-      ],
+      "values": ["pending", "partner_pending", "approved", "rejected", "cancelled"],
       "description": "Kiểu danh mục liệt kê ApplicationStatus (5 giá trị)"
     },
     "RegimeType": {
       "name": "RegimeType",
-      "values": [
-        "paid",
-        "unpaid"
-      ],
+      "values": ["paid", "unpaid"],
       "description": "Kiểu danh mục liệt kê RegimeType (2 giá trị)"
     },
     "PayrollStatus": {
       "name": "PayrollStatus",
-      "values": [
-        "draft",
-        "pending_approval",
-        "approved",
-        "rejected",
-        "paid"
-      ],
+      "values": ["draft", "pending_approval", "approved", "rejected", "paid"],
       "description": "Kiểu danh mục liệt kê PayrollStatus (5 giá trị)"
     },
     "PartTimeAvailabilityStatus": {
       "name": "PartTimeAvailabilityStatus",
-      "values": [
-        "draft",
-        "submitted",
-        "approved",
-        "rejected"
-      ],
+      "values": ["draft", "submitted", "approved", "rejected"],
       "description": "Kiểu danh mục liệt kê PartTimeAvailabilityStatus (4 giá trị)"
     },
     "ComponentType": {
       "name": "ComponentType",
-      "values": [
-        "addition",
-        "deduction"
-      ],
+      "values": ["addition", "deduction"],
       "description": "Kiểu danh mục liệt kê ComponentType (2 giá trị)"
     },
     "ComponentValueType": {
       "name": "ComponentValueType",
-      "values": [
-        "currency",
-        "number",
-        "percentage"
-      ],
+      "values": ["currency", "number", "percentage"],
       "description": "Kiểu danh mục liệt kê ComponentValueType (3 giá trị)"
     },
     "ProjectStatus": {
       "name": "ProjectStatus",
-      "values": [
-        "planning",
-        "active",
-        "on_hold",
-        "completed",
-        "cancelled"
-      ],
+      "values": ["planning", "active", "on_hold", "completed", "cancelled"],
       "description": "Kiểu danh mục liệt kê ProjectStatus (5 giá trị)"
     },
     "TaskCreationPolicy": {
       "name": "TaskCreationPolicy",
-      "values": [
-        "leader_only",
-        "all_members"
-      ],
+      "values": ["leader_only", "all_members"],
       "description": "Kiểu danh mục liệt kê TaskCreationPolicy (2 giá trị)"
     },
     "TaskStatus": {
       "name": "TaskStatus",
-      "values": [
-        "todo",
-        "in_progress",
-        "in_review",
-        "done",
-        "cancelled",
-        "reopened"
-      ],
+      "values": ["todo", "in_progress", "in_review", "done", "cancelled", "reopened"],
       "description": "Kiểu danh mục liệt kê TaskStatus (6 giá trị)"
     },
     "TaskPriority": {
       "name": "TaskPriority",
-      "values": [
-        "low",
-        "medium",
-        "high",
-        "urgent"
-      ],
+      "values": ["low", "medium", "high", "urgent"],
       "description": "Kiểu danh mục liệt kê TaskPriority (4 giá trị)"
     },
     "PasswordResetStatus": {
       "name": "PasswordResetStatus",
-      "values": [
-        "pending",
-        "approved",
-        "rejected",
-        "used",
-        "expired"
-      ],
+      "values": ["pending", "approved", "rejected", "used", "expired"],
       "description": "Kiểu danh mục liệt kê PasswordResetStatus (5 giá trị)"
     },
     "ActivityCategory": {
       "name": "ActivityCategory",
-      "values": [
-        "auth",
-        "role",
-        "security"
-      ],
+      "values": ["auth", "role", "security"],
       "description": "Kiểu danh mục liệt kê ActivityCategory (3 giá trị)"
     },
     "ActivityAction": {
@@ -402,57 +305,27 @@
     },
     "ContractType": {
       "name": "ContractType",
-      "values": [
-        "trial",
-        "definite",
-        "indefinite",
-        "service"
-      ],
+      "values": ["trial", "definite", "indefinite", "service"],
       "description": "Kiểu danh mục liệt kê ContractType (4 giá trị)"
     },
     "ContractStatus": {
       "name": "ContractStatus",
-      "values": [
-        "draft",
-        "pending_signature",
-        "active",
-        "expired",
-        "terminated",
-        "renewed"
-      ],
+      "values": ["draft", "pending_signature", "active", "expired", "terminated", "renewed"],
       "description": "Kiểu danh mục liệt kê ContractStatus (6 giá trị)"
     },
     "RequisitionStatus": {
       "name": "RequisitionStatus",
-      "values": [
-        "draft",
-        "pending_approval",
-        "approved",
-        "rejected",
-        "closed",
-        "filled"
-      ],
+      "values": ["draft", "pending_approval", "approved", "rejected", "closed", "filled"],
       "description": "Kiểu danh mục liệt kê RequisitionStatus (6 giá trị)"
     },
     "RequisitionPriority": {
       "name": "RequisitionPriority",
-      "values": [
-        "low",
-        "medium",
-        "high",
-        "urgent"
-      ],
+      "values": ["low", "medium", "high", "urgent"],
       "description": "Kiểu danh mục liệt kê RequisitionPriority (4 giá trị)"
     },
     "PostingStatus": {
       "name": "PostingStatus",
-      "values": [
-        "draft",
-        "open",
-        "paused",
-        "closed",
-        "archived"
-      ],
+      "values": ["draft", "open", "paused", "closed", "archived"],
       "description": "Kiểu danh mục liệt kê PostingStatus (5 giá trị)"
     },
     "RecruitmentChannel": {
@@ -470,11 +343,7 @@
     },
     "ConnectorStatus": {
       "name": "ConnectorStatus",
-      "values": [
-        "not_configured",
-        "ready",
-        "error"
-      ],
+      "values": ["not_configured", "ready", "error"],
       "description": "Kiểu danh mục liệt kê ConnectorStatus (3 giá trị)"
     },
     "RecruitmentApplicationStatus": {
@@ -514,81 +383,42 @@
     },
     "InterviewFormat": {
       "name": "InterviewFormat",
-      "values": [
-        "in_person",
-        "video_call",
-        "phone"
-      ],
+      "values": ["in_person", "video_call", "phone"],
       "description": "Kiểu danh mục liệt kê InterviewFormat (3 giá trị)"
     },
     "InterviewRoundStatus": {
       "name": "InterviewRoundStatus",
-      "values": [
-        "scheduled",
-        "completed",
-        "cancelled",
-        "no_show"
-      ],
+      "values": ["scheduled", "completed", "cancelled", "no_show"],
       "description": "Kiểu danh mục liệt kê InterviewRoundStatus (4 giá trị)"
     },
     "InterviewResult": {
       "name": "InterviewResult",
-      "values": [
-        "pass",
-        "fail",
-        "pending",
-        "no_show"
-      ],
+      "values": ["pass", "fail", "pending", "no_show"],
       "description": "Kiểu danh mục liệt kê InterviewResult (4 giá trị)"
     },
     "BgcGroup": {
       "name": "BgcGroup",
-      "values": [
-        "a",
-        "b",
-        "c",
-        "d"
-      ],
+      "values": ["a", "b", "c", "d"],
       "description": "Kiểu danh mục liệt kê BgcGroup (4 giá trị)"
     },
     "BgcStatus": {
       "name": "BgcStatus",
-      "values": [
-        "pending",
-        "in_progress",
-        "completed",
-        "passed",
-        "failed"
-      ],
+      "values": ["pending", "in_progress", "completed", "passed", "failed"],
       "description": "Kiểu danh mục liệt kê BgcStatus (5 giá trị)"
     },
     "RecruitmentOfferStatus": {
       "name": "RecruitmentOfferStatus",
-      "values": [
-        "draft",
-        "sent",
-        "accepted",
-        "declined",
-        "rescinded",
-        "expired"
-      ],
+      "values": ["draft", "sent", "accepted", "declined", "rescinded", "expired"],
       "description": "Kiểu danh mục liệt kê RecruitmentOfferStatus (6 giá trị)"
     },
     "IntakeStatus": {
       "name": "IntakeStatus",
-      "values": [
-        "received",
-        "processed",
-        "failed"
-      ],
+      "values": ["received", "processed", "failed"],
       "description": "Kiểu danh mục liệt kê IntakeStatus (3 giá trị)"
     },
     "RecruitmentFieldType": {
       "name": "RecruitmentFieldType",
-      "values": [
-        "short_text",
-        "paragraph"
-      ],
+      "values": ["short_text", "paragraph"],
       "description": "Kiểu danh mục liệt kê RecruitmentFieldType (2 giá trị)"
     }
   },

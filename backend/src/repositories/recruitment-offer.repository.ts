@@ -1,6 +1,7 @@
 import { prisma } from "@/libs/database"
-import { Prisma, type PrismaClient, type EmployeeType, type BgcGroup } from "@prisma/client"
 import type { CreateOfferInput, CreateOfferVersionInput } from "@/types/recruitment.types"
+
+import { type BgcGroup, type EmployeeType, Prisma, type PrismaClient } from "@prisma/client"
 
 export class RecruitmentOfferRepository {
   constructor(private readonly db: PrismaClient = prisma) {}
@@ -15,20 +16,20 @@ export class RecruitmentOfferRepository {
         data: {
           applicationId: data.applicationId,
           candidateId: application.candidateId,
-        offeredSalary: new Prisma.Decimal(data.offeredSalary),
-        currency: data.currency ?? "VND",
-        startDate: new Date(data.startDate),
-        endDate: data.endDate ? new Date(data.endDate) : undefined,
-        trialEndDate: data.trialEndDate ? new Date(data.trialEndDate) : undefined,
-        jobTitle: data.jobTitle,
-        department: data.department,
-        employmentType: data.employmentType as EmployeeType,
-        benefits: (data.benefits ?? {}) as Prisma.InputJsonValue,
-        notes: data.notes,
-        createdById,
-        status: "draft",
-        currentVersion: 1,
-      },
+          offeredSalary: new Prisma.Decimal(data.offeredSalary),
+          currency: data.currency ?? "VND",
+          startDate: new Date(data.startDate),
+          endDate: data.endDate ? new Date(data.endDate) : undefined,
+          trialEndDate: data.trialEndDate ? new Date(data.trialEndDate) : undefined,
+          jobTitle: data.jobTitle,
+          department: data.department,
+          employmentType: data.employmentType as EmployeeType,
+          benefits: (data.benefits ?? {}) as Prisma.InputJsonValue,
+          notes: data.notes,
+          createdById,
+          status: "draft",
+          currentVersion: 1,
+        },
         select: { id: true },
       })
     })
@@ -94,14 +95,18 @@ export class RecruitmentOfferRepository {
   async update(id: string, data: Partial<CreateOfferInput>) {
     const updateData: Prisma.RecruitmentOfferUpdateInput = {}
 
-    if (data.offeredSalary !== undefined) updateData.offeredSalary = new Prisma.Decimal(data.offeredSalary)
+    if (data.offeredSalary !== undefined)
+      updateData.offeredSalary = new Prisma.Decimal(data.offeredSalary)
     if (data.currency !== undefined) updateData.currency = data.currency
     if (data.startDate !== undefined) updateData.startDate = new Date(data.startDate)
-    if (data.endDate !== undefined) updateData.endDate = data.endDate ? new Date(data.endDate) : undefined
-    if (data.trialEndDate !== undefined) updateData.trialEndDate = data.trialEndDate ? new Date(data.trialEndDate) : undefined
+    if (data.endDate !== undefined)
+      updateData.endDate = data.endDate ? new Date(data.endDate) : undefined
+    if (data.trialEndDate !== undefined)
+      updateData.trialEndDate = data.trialEndDate ? new Date(data.trialEndDate) : undefined
     if (data.jobTitle !== undefined) updateData.jobTitle = data.jobTitle
     if (data.department !== undefined) updateData.department = data.department
-    if (data.employmentType !== undefined) updateData.employmentType = data.employmentType as EmployeeType
+    if (data.employmentType !== undefined)
+      updateData.employmentType = data.employmentType as EmployeeType
     if (data.benefits !== undefined) updateData.benefits = data.benefits as Prisma.InputJsonValue
     if (data.notes !== undefined) updateData.notes = data.notes
 
@@ -170,7 +175,11 @@ export class RecruitmentOfferRepository {
     })
   }
 
-  async acceptAndCreateBackgroundCheck(id: string, responseNote: string | undefined, group: BgcGroup) {
+  async acceptAndCreateBackgroundCheck(
+    id: string,
+    responseNote: string | undefined,
+    group: BgcGroup,
+  ) {
     return this.db.$transaction(async (tx) => {
       const existing = await tx.recruitmentOffer.findUnique({
         where: { id },
@@ -303,7 +312,7 @@ export class RecruitmentOfferRepository {
       total,
       byStatus: byStatus.reduce(
         (acc, { status, _count }) => ({ ...acc, [status]: _count.id }),
-        {} as Record<string, number>
+        {} as Record<string, number>,
       ),
     }
   }

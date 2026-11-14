@@ -272,7 +272,7 @@ export class AuthService implements IAuthService {
         if (!employee || employee.status !== EMPLOYEE_STATUS.ACTIVE) {
           throw new AppError("Account inactive", HttpStatusCode.FORBIDDEN, "Authentication")
         }
-        
+
         const tokens = await this.generateTokens(employee, oldToken.expiresAt)
         return {
           employee: await toAuthEmployee(employee),
@@ -383,13 +383,20 @@ export class AuthService implements IAuthService {
       // If still valid: do nothing, return generic response
       if ((existingRequest as any).expiresAt > now) {
         if (ENV_ENVIRONMENT !== ENVIRONMENT.PRODUCTION) {
-          return { ...genericResponse, debugToken: (existingRequest as any).token, note: 'Existing unexpired request found.' } as any
+          return {
+            ...genericResponse,
+            debugToken: (existingRequest as any).token,
+            note: "Existing unexpired request found.",
+          } as any
         }
         return genericResponse
       }
 
       // If expired: Mark as EXPIRED to allow creating a new one
-      await this.repo.updateResetRequestStatus((existingRequest as any).id, PASSWORD_RESET_STATUS.EXPIRED)
+      await this.repo.updateResetRequestStatus(
+        (existingRequest as any).id,
+        PASSWORD_RESET_STATUS.EXPIRED,
+      )
     }
 
     // Generate a secure plain-text token

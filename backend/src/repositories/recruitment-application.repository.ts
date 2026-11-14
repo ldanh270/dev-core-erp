@@ -1,18 +1,23 @@
-import { prisma } from "@/libs/database"
-import { Prisma, type PrismaClient, type RecruitmentApplicationStatus } from "@prisma/client"
 import { RECRUITMENT_APPLICATION_STATUS } from "@/configs/entities/recruitment.config"
+import { prisma } from "@/libs/database"
 import type {
   CreateApplicationInput,
-  UpdateApplicationStatusInput,
   ListApplicationsQuery,
+  UpdateApplicationStatusInput,
 } from "@/types/recruitment.types"
+
+import { Prisma, type PrismaClient, type RecruitmentApplicationStatus } from "@prisma/client"
 
 export class RecruitmentApplicationRepository {
   constructor(private readonly db: PrismaClient = prisma) {}
 
   async create(data: CreateApplicationInput): Promise<{ id: string }> {
     return this.db.$transaction(async (tx) => {
-      const defaultStage = await tx.recruitmentPipelineStage.findFirst({ where: { requisitionId: data.requisitionId, isDefault: true }, orderBy: { position: "asc" }, select: { id: true } })
+      const defaultStage = await tx.recruitmentPipelineStage.findFirst({
+        where: { requisitionId: data.requisitionId, isDefault: true },
+        orderBy: { position: "asc" },
+        select: { id: true },
+      })
       if (!defaultStage) throw new Error("Bài đăng chưa có giai đoạn mặc định")
       return tx.recruitmentApplication.create({
         data: {
@@ -28,7 +33,11 @@ export class RecruitmentApplicationRepository {
     })
   }
 
-  findActive(requisitionId: string, candidateId: string, terminalStatuses: RecruitmentApplicationStatus[]) {
+  findActive(
+    requisitionId: string,
+    candidateId: string,
+    terminalStatuses: RecruitmentApplicationStatus[],
+  ) {
     return this.db.recruitmentApplication.findFirst({
       where: { requisitionId, candidateId, status: { notIn: terminalStatuses } },
       select: { id: true },
@@ -89,7 +98,9 @@ export class RecruitmentApplicationRepository {
         const empMap = new Map(employees.map((e) => [e.id, e]))
         const interviewRoundsWithInterviewers = application.interviewRounds.map((r) => ({
           ...r,
-          interviewers: (r.interviewerIds || []).map((empId) => empMap.get(empId)).filter(Boolean) as Array<{ id: string; fullName: string; email: string }>,
+          interviewers: (r.interviewerIds || [])
+            .map((empId) => empMap.get(empId))
+            .filter(Boolean) as Array<{ id: string; fullName: string; email: string }>,
         }))
         return { ...application, interviewRounds: interviewRoundsWithInterviewers }
       }
@@ -204,7 +215,9 @@ export class RecruitmentApplicationRepository {
             },
           },
           assignedTo: { select: { id: true, fullName: true } },
-          pipelineStage: { select: { id: true, name: true, color: true, position: true, isCompleted: true } },
+          pipelineStage: {
+            select: { id: true, name: true, color: true, position: true, isCompleted: true },
+          },
           interviewRounds: {
             select: {
               id: true,
@@ -249,7 +262,10 @@ export class RecruitmentApplicationRepository {
 
       if (data.status === RECRUITMENT_APPLICATION_STATUS.HIRED) {
         const reservation = await tx.jobRequisition.updateMany({
-          where: { id: application.requisitionId, filledCount: { lt: tx.jobRequisition.fields.headcount } },
+          where: {
+            id: application.requisitionId,
+            filledCount: { lt: tx.jobRequisition.fields.headcount },
+          },
           data: { filledCount: { increment: 1 } },
         })
         if (reservation.count !== 1) throw new Error("HEADCOUNT_FILLED")
@@ -349,11 +365,11 @@ export class RecruitmentApplicationRepository {
       total,
       byStatus: byStatus.reduce(
         (acc, { status, _count }) => ({ ...acc, [status]: _count.id }),
-        {} as Record<string, number>
+        {} as Record<string, number>,
       ),
       bySource: bySource.reduce(
         (acc, { source, _count }) => ({ ...acc, [source]: _count.id }),
-        {} as Record<string, number>
+        {} as Record<string, number>,
       ),
     }
   }

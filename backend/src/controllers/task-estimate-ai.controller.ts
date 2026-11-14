@@ -1,9 +1,14 @@
-import { Response } from "express"
 import { ErrorCode } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { AuthRequest } from "@/middlewares/auth.middleware.ts"
+import {
+  GeneratedTaskSuggestion,
+  TaskEstimateAiService,
+  TaskEstimateAiSuggestion,
+} from "@/services/task-estimate-ai.service.ts"
 import { ApiResponse } from "@/types"
-import { TaskEstimateAiService, TaskEstimateAiSuggestion, GeneratedTaskSuggestion } from "@/services/task-estimate-ai.service.ts"
+
+import { Response } from "express"
 
 export class TaskEstimateAiController {
   constructor(private service: TaskEstimateAiService) {}
@@ -14,7 +19,7 @@ export class TaskEstimateAiController {
    */
   getSuggestions = async (
     req: AuthRequest,
-    res: Response<ApiResponse<TaskEstimateAiSuggestion[]>>
+    res: Response<ApiResponse<TaskEstimateAiSuggestion[]>>,
   ) => {
     if (!req.user) {
       return res.status(HttpStatusCode.UNAUTHORIZED).json({
@@ -35,7 +40,10 @@ export class TaskEstimateAiController {
       console.error("Suggestions generation failed:", error)
       return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
         data: null,
-        error: { message: error.message || "Lỗi xử lý AI gợi ý", code: ErrorCode.INTERNAL_SERVER_ERROR },
+        error: {
+          message: error.message || "Lỗi xử lý AI gợi ý",
+          code: ErrorCode.INTERNAL_SERVER_ERROR,
+        },
       })
     }
   }
@@ -46,7 +54,7 @@ export class TaskEstimateAiController {
    */
   generateTasks = async (
     req: AuthRequest,
-    res: Response<ApiResponse<GeneratedTaskSuggestion[]>>
+    res: Response<ApiResponse<GeneratedTaskSuggestion[]>>,
   ) => {
     if (!req.user) {
       return res.status(HttpStatusCode.UNAUTHORIZED).json({
@@ -67,7 +75,10 @@ export class TaskEstimateAiController {
       console.error("Tasks generation failed:", error)
       return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
         data: null,
-        error: { message: error.message || "Lỗi xử lý AI phân rã task", code: ErrorCode.INTERNAL_SERVER_ERROR },
+        error: {
+          message: error.message || "Lỗi xử lý AI phân rã task",
+          code: ErrorCode.INTERNAL_SERVER_ERROR,
+        },
       })
     }
   }

@@ -1,17 +1,22 @@
 import {
-  ProjectTaskStatus,
   CreateProjectTaskStatusDto,
-  UpdateProjectTaskStatusDto,
   IProjectTaskStatusRepository,
+  ProjectTaskStatus,
+  UpdateProjectTaskStatusDto,
 } from "@/types"
+
 import { PrismaClient, ProjectTaskStatus as PrismaProjectTaskStatus } from "@prisma/client"
+
 import { BaseRepository } from "./base.repository.ts"
 
 /**
  * Repository layer handling database query execution for project task custom statuses.
  * Implements IProjectTaskStatusRepository and interacts directly with PrismaClient.
  */
-export class ProjectTaskStatusRepository extends BaseRepository implements IProjectTaskStatusRepository {
+export class ProjectTaskStatusRepository
+  extends BaseRepository
+  implements IProjectTaskStatusRepository
+{
   constructor(prisma: PrismaClient) {
     super(prisma)
   }

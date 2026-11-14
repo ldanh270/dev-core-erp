@@ -9,18 +9,17 @@ import {
 } from "@/components/ui/select"
 import { PERSONAL_EMPLOYEE_LINK_SELF } from "@/config/entities/attendance.config"
 import { EMPLOYEE_STATUS } from "@/config/entities/employee.config"
-import { usePermission } from "@/hooks/use-permission"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
+import { usePermission } from "@/hooks/use-permission"
 import { useUpdatePersonalEmployeeLink } from "@/hooks/use-profile"
-import type { ProfileDto } from "@/types/profile.types"
 import type { Employee } from "@/types/employee.types"
+import type { ProfileDto } from "@/types/profile.types"
 
 import { useState } from "react"
 
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
-
 
 interface PersonalEmployeeLinkSectionProps {
   profile: ProfileDto

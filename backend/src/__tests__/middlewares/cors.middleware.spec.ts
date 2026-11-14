@@ -24,7 +24,10 @@ describe("cors middleware", () => {
       next,
     )
 
-    expect(response.setHeader).toHaveBeenCalledWith("Access-Control-Allow-Origin", "https://hr.example.com")
+    expect(response.setHeader).toHaveBeenCalledWith(
+      "Access-Control-Allow-Origin",
+      "https://hr.example.com",
+    )
     expect(response.sendStatus).toHaveBeenCalledWith(204)
     expect(next).not.toHaveBeenCalled()
   })
@@ -45,7 +48,10 @@ describe("cors middleware", () => {
       next,
     )
 
-    expect(response.setHeader).toHaveBeenCalledWith("Access-Control-Allow-Origin", "http://localhost:5173")
+    expect(response.setHeader).toHaveBeenCalledWith(
+      "Access-Control-Allow-Origin",
+      "http://localhost:5173",
+    )
     expect(next).toHaveBeenCalled()
   })
 
@@ -66,9 +72,54 @@ describe("cors middleware", () => {
     )
 
     expect(response.status).toHaveBeenCalledWith(403)
-    expect(response.json).toHaveBeenCalledWith(expect.objectContaining({
-      error: expect.objectContaining({ code: "ORIGIN_NOT_ALLOWED" }),
-    }))
+    expect(response.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: expect.objectContaining({ code: "ORIGIN_NOT_ALLOWED" }),
+      }),
+    )
+    expect(next).not.toHaveBeenCalled()
+  })
+
+  it("allows origins matching wildcard patterns like *.vercel.app", () => {
+    process.env.CORS_ALLOWED_ORIGINS = "https://*.vercel.app,http://localhost:*"
+    const response = {
+      setHeader: jest.fn(),
+      sendStatus: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    }
+    const next = jest.fn()
+
+    cors(
+      { method: "POST", headers: { origin: "https://dev-core-erp-git-feat.vercel.app" } } as never,
+      response as never,
+      next,
+    )
+
+    expect(response.setHeader).toHaveBeenCalledWith(
+      "Access-Control-Allow-Origin",
+      "https://dev-core-erp-git-feat.vercel.app",
+    )
+    expect(next).toHaveBeenCalled()
+  })
+
+  it("rejects malicious origin that mimics wildcard domain", () => {
+    process.env.CORS_ALLOWED_ORIGINS = "https://*.vercel.app"
+    const response = {
+      setHeader: jest.fn(),
+      sendStatus: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    }
+    const next = jest.fn()
+
+    cors(
+      { method: "POST", headers: { origin: "https://evil-vercel.app" } } as never,
+      response as never,
+      next,
+    )
+
+    expect(response.status).toHaveBeenCalledWith(403)
     expect(next).not.toHaveBeenCalled()
   })
 })

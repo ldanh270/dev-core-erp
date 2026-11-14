@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge"
 import { DatePicker } from "@/components/common"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -108,7 +108,7 @@ export function BulkAssignPayslipTemplateDialog({
                 id="bulk-template-effective-from"
                 value={effectiveFrom || null}
                 onChange={(val) => {
-                  setEffectiveFrom(val || "");
+                  setEffectiveFrom(val || "")
                 }}
                 placeholder="Chọn ngày áp dụng..."
               />

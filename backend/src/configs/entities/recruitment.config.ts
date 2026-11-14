@@ -236,12 +236,7 @@ export const BGC_GROUP = {
   D: "d", // Executive: Full verification + financial
 } as const
 
-export const BGC_GROUPS = [
-  BGC_GROUP.A,
-  BGC_GROUP.B,
-  BGC_GROUP.C,
-  BGC_GROUP.D,
-] as const
+export const BGC_GROUPS = [BGC_GROUP.A, BGC_GROUP.B, BGC_GROUP.C, BGC_GROUP.D] as const
 
 export const BGC_STATUS = {
   PENDING: "pending",

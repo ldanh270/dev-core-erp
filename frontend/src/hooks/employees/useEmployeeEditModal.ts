@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
 import { buildEmployeeEditFormValues } from "./build-employee-edit-form-values.util"
-import { employeeEditFormSchema, type EmployeeEditFormValues } from "./employee-edit-form.schema"
+import { type EmployeeEditFormValues, employeeEditFormSchema } from "./employee-edit-form.schema"
 import { useUpdateEmployee } from "./queries/useEmployeeQuery"
 
 /** Form state + mutation for EmployeeEditDrawer. */

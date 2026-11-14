@@ -23,7 +23,11 @@ export function ExportLogsModal({ isOpen, onClose, query }: ExportLogsModalProps
   const { progress, startExport, cancelExport } = useActivityExport(query)
 
   const handleClose = () => {
-    if (progress.status === EXPORT_STATUS.FETCHING || progress.status === EXPORT_STATUS.COUNTING || progress.status === EXPORT_STATUS.BUILDING) {
+    if (
+      progress.status === EXPORT_STATUS.FETCHING ||
+      progress.status === EXPORT_STATUS.COUNTING ||
+      progress.status === EXPORT_STATUS.BUILDING
+    ) {
       cancelExport()
     }
     onClose()
@@ -35,14 +39,18 @@ export function ExportLogsModal({ isOpen, onClose, query }: ExportLogsModalProps
     progress.status === EXPORT_STATUS.BUILDING
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      if (!open) handleClose()
-    }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) handleClose()
+      }}
+    >
       <DialogContent className="sm:max-w-[425px]" showCloseButton={!isExporting}>
         <DialogHeader>
           <DialogTitle>Xuất báo cáo nhật ký</DialogTitle>
           <DialogDescription>
-            Tải xuống nhật ký hoạt động dưới dạng file CSV theo bộ lọc hiện tại của bạn. Lưu ý: Cần chọn từ ngày/đến ngày để xuất dữ liệu.
+            Tải xuống nhật ký hoạt động dưới dạng file CSV theo bộ lọc hiện tại của bạn. Lưu ý: Cần
+            chọn từ ngày/đến ngày để xuất dữ liệu.
           </DialogDescription>
         </DialogHeader>
 
@@ -52,15 +60,23 @@ export function ExportLogsModal({ isOpen, onClose, query }: ExportLogsModalProps
             <div className="flex flex-col gap-4 text-sm text-muted-foreground bg-muted/30 p-4 rounded-xl border border-border">
               <div className="flex justify-between border-b border-border/50 pb-2">
                 <span>Từ ngày:</span>
-                <span className="font-medium text-foreground">{query.fromDate ? new Date(query.fromDate).toLocaleDateString("vi-VN") : "Chưa chọn"}</span>
+                <span className="font-medium text-foreground">
+                  {query.fromDate
+                    ? new Date(query.fromDate).toLocaleDateString("vi-VN")
+                    : "Chưa chọn"}
+                </span>
               </div>
               <div className="flex justify-between border-b border-border/50 pb-2">
                 <span>Đến ngày:</span>
-                <span className="font-medium text-foreground">{query.toDate ? new Date(query.toDate).toLocaleDateString("vi-VN") : "Chưa chọn"}</span>
+                <span className="font-medium text-foreground">
+                  {query.toDate ? new Date(query.toDate).toLocaleDateString("vi-VN") : "Chưa chọn"}
+                </span>
               </div>
               <div className="flex justify-between border-b border-border/50 pb-2">
                 <span>Danh mục:</span>
-                <span className="font-medium text-foreground uppercase text-[11px]">{query.category || "Tất cả"}</span>
+                <span className="font-medium text-foreground uppercase text-[11px]">
+                  {query.category || "Tất cả"}
+                </span>
               </div>
             </div>
           )}
@@ -77,15 +93,18 @@ export function ExportLogsModal({ isOpen, onClose, query }: ExportLogsModalProps
           {progress.status === EXPORT_STATUS.FETCHING && (
             <div className="flex flex-col items-center justify-center py-4 gap-4">
               <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-                <div 
+                <div
                   className="bg-primary h-full transition-all duration-300"
-                  style={{ width: `${Math.max(5, (progress.fetchedRows / progress.totalRows) * 100)}%` }}
+                  style={{
+                    width: `${Math.max(5, (progress.fetchedRows / progress.totalRows) * 100)}%`,
+                  }}
                 />
               </div>
               <div className="text-center">
                 <p className="text-sm font-bold text-foreground">Đang tải dữ liệu...</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {progress.fetchedRows.toLocaleString()} / {progress.totalRows.toLocaleString()} dòng
+                  {progress.fetchedRows.toLocaleString()} / {progress.totalRows.toLocaleString()}{" "}
+                  dòng
                 </p>
               </div>
             </div>
@@ -109,7 +128,7 @@ export function ExportLogsModal({ isOpen, onClose, query }: ExportLogsModalProps
               <p className="text-sm font-medium text-destructive">{progress.errorMsg}</p>
             </div>
           )}
-          
+
           {/* Success state */}
           {progress.status === EXPORT_STATUS.SUCCESS && (
             <div className="flex flex-col items-center justify-center py-6 gap-3 text-center">
@@ -132,8 +151,8 @@ export function ExportLogsModal({ isOpen, onClose, query }: ExportLogsModalProps
                 Đóng
               </Button>
               {progress.status !== EXPORT_STATUS.SUCCESS && (
-                <Button 
-                  onClick={startExport} 
+                <Button
+                  onClick={startExport}
                   disabled={!query.fromDate || !query.toDate}
                   className="gap-2"
                 >

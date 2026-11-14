@@ -1,12 +1,12 @@
-import { NOTIFICATION_PRIORITY, NOTIFICATION_TYPE } from "@/configs/entities/notification.config.ts"
-import { eventBus } from "@/libs/event-bus.ts"
-import { APPLICATION_STATUS } from "@/configs/entities/attendance.config.ts"
 import { PASSWORD_RESET_STATUS } from "@/configs/auth/auth.config.ts"
+import { APPLICATION_STATUS } from "@/configs/entities/attendance.config.ts"
+import { NOTIFICATION_PRIORITY, NOTIFICATION_TYPE } from "@/configs/entities/notification.config.ts"
 import { PROJECT_STATUS } from "@/configs/entities/project.config.ts"
 import { APPROVAL_CATEGORY } from "@/configs/rules/approval.config.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { prisma } from "@/libs/database.ts"
+import { eventBus } from "@/libs/event-bus.ts"
 import { PrismaApplicationRepository } from "@/repositories/application.repository.ts"
 import { ApprovalStrategyFactory } from "@/services/approval/approval.strategy.ts"
 import { authorizationService } from "@/services/authorization.service.ts"
@@ -32,8 +32,7 @@ export class ApprovalService implements IApprovalService {
     const authContext = await authorizationService.getAuthorizationContext(processorId)
 
     const isGlobalApprover =
-      authContext.isDynamicAdmin ||
-      authContext.permissions.has("employee.update")
+      authContext.isDynamicAdmin || authContext.permissions.has("employee.update")
     const isTeamLeader = !isGlobalApprover && authContext.permissions.has("application.approve")
     const canHandleApplications = authContext.permissions.has("application.approve")
     const canHandlePasswordReset =
@@ -108,7 +107,9 @@ export class ApprovalService implements IApprovalService {
               reason: app.reason,
               note: app.note,
               assignedToId: app.assignedToId,
-              assignedTo: (app as unknown as { assignedTo: { id: string, fullName: string } | null }).assignedTo,
+              assignedTo: (
+                app as unknown as { assignedTo: { id: string; fullName: string } | null }
+              ).assignedTo,
               shiftSwapDetail: app.shiftSwapDetail,
               overtimeDetail: app.overtimeDetail,
               lateEarlyDetail: app.lateEarlyDetail,

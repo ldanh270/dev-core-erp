@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
 import type { TableIndexDef } from "../database-reference.types"
 
 interface TableSheetIndexesProps {
@@ -21,9 +22,7 @@ export function TableSheetIndexes({ indexes }: TableSheetIndexesProps) {
   return (
     <section className="space-y-3">
       <div>
-        <h2 className="text-sm font-semibold">
-          {`Chỉ Mục & Khóa (Indexes - ${indexes.length})`}
-        </h2>
+        <h2 className="text-sm font-semibold">{`Chỉ Mục & Khóa (Indexes - ${indexes.length})`}</h2>
       </div>
 
       {/* Index table container with horizontal scroll support */}

@@ -1,7 +1,5 @@
 import { DAY_OF_WEEK_VALUES } from "@/config/entities/attendance.config"
-import {
-  useUpdateWeeklyScheduleSettings,
-} from "@/hooks/attendance/use-weekly-schedule-settings"
+import { useUpdateWeeklyScheduleSettings } from "@/hooks/attendance/use-weekly-schedule-settings"
 import type { IWeeklyScheduleSettings } from "@/types/attendance.types"
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -36,7 +34,9 @@ export function useWeeklyScheduleConfigForm({
   })
 
   const onSubmit = async (values: WeeklyScheduleSettingsFormValues) => {
-    if (!DAY_OF_WEEK_VALUES.includes(values.triggerDayOfWeek as (typeof DAY_OF_WEEK_VALUES)[number])) {
+    if (
+      !DAY_OF_WEEK_VALUES.includes(values.triggerDayOfWeek as (typeof DAY_OF_WEEK_VALUES)[number])
+    ) {
       toast.error("Ngày kích hoạt không hợp lệ")
       return
     }

@@ -185,35 +185,25 @@
   "indexes": [
     {
       "name": "IX_Payroll_approvedById",
-      "columns": [
-        "approvedById"
-      ],
+      "columns": ["approvedById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Payroll_periodYear_periodMonth_name",
-      "columns": [
-        "periodYear",
-        "periodMonth",
-        "name"
-      ],
+      "columns": ["periodYear", "periodMonth", "name"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_Payroll_status",
-      "columns": [
-        "status"
-      ],
+      "columns": ["status"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_Payroll",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -223,12 +213,8 @@
       "virtualName": "approvedBy",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "approvedById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["approvedById"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

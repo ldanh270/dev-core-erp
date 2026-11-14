@@ -37,7 +37,9 @@ async function callGeminiFallback(prompt: string, isJson: boolean): Promise<stri
 
   // 30 seconds timeout for fallback Gemini request
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => { controller.abort() }, 30000)
+  const timeoutId = setTimeout(() => {
+    controller.abort()
+  }, 30000)
 
   try {
     const response = await fetch(url, {
@@ -78,7 +80,21 @@ function getAiConfig() {
   return { apiKey, baseURL, model }
 }
 
+/**
+ * AI client facade providing LLM text and structured JSON completions.
+ * Routes through configured primary gateway (e.g. OpenRouter / local LM Studio) with automated Gemini API fallback.
+ */
 export const aiClient = {
+  /**
+   * Generates structured JSON output parsed into type T from the LLM.
+   * Strips markdown codeblocks and unwraps nested array keys if needed.
+   *
+   * @template T - Expected returned data structure
+   * @param prompt - Main user prompt explaining instructions and input data
+   * @param systemPrompt - Optional system role instructions
+   * @returns Parsed JSON object of type T
+   * @throws {Error} If both primary gateway and Gemini fallback fail or output cannot be parsed
+   */
   generateJson: async <T>(prompt: string, systemPrompt?: string): Promise<T> => {
     const { apiKey, baseURL, model } = getAiConfig()
 
@@ -97,7 +113,9 @@ export const aiClient = {
 
     // Set 35 seconds timeout for local AI server request
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => { controller.abort() }, 35000)
+    const timeoutId = setTimeout(() => {
+      controller.abort()
+    }, 35000)
 
     try {
       console.log(`Calling AI server at ${baseURL} using model ${model}...`)
@@ -171,6 +189,14 @@ export const aiClient = {
     return parsed as T
   },
 
+  /**
+   * Generates unstructured free-text output from the LLM.
+   *
+   * @param prompt - Main user prompt
+   * @param systemPrompt - Optional system role instructions
+   * @returns Raw text completion from model
+   * @throws {Error} If both primary gateway and Gemini fallback fail
+   */
   generateText: async (prompt: string, systemPrompt?: string): Promise<string> => {
     const { apiKey, baseURL, model } = getAiConfig()
 
@@ -184,7 +210,9 @@ export const aiClient = {
 
     // Set 35 seconds timeout for local AI server request
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => { controller.abort() }, 35000)
+    const timeoutId = setTimeout(() => {
+      controller.abort()
+    }, 35000)
 
     try {
       console.log(`Calling AI server at ${baseURL} using model ${model}...`)

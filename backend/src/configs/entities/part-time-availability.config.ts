@@ -61,4 +61,3 @@ export const PART_TIME_SHIFT_SUGGEST = {
 export const PART_TIME_AVAILABILITY_QUERY_PARAMS = {
   WEEK_START: "weekStart",
 } as const
-

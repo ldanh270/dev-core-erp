@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { DatePicker, EntityFormPage } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
@@ -26,8 +25,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import {
-  CONTRACT_TYPE_LABELS,
   CONTRACT_TYPES,
+  CONTRACT_TYPE_LABELS,
   type ContractType,
 } from "@/config/entities/employee-contract.config"
 import { ROUTES } from "@/config/routes.config"
@@ -36,13 +35,10 @@ import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import { routerNavigate } from "@/lib/router-navigator"
 import { cn } from "@/lib/utils"
 import type { Employee } from "@/types/employee.types"
-import {
-  ChevronDown,
-  ChevronUp,
-  PlusCircle,
-  Trash2,
-  Upload,
-} from "lucide-react"
+
+import { useState } from "react"
+
+import { ChevronDown, ChevronUp, PlusCircle, Trash2, Upload } from "lucide-react"
 import { toast } from "sonner"
 
 interface IAllowanceRow {
@@ -113,16 +109,11 @@ export default function EmployeeContractCreate() {
   const [newAllowanceName, setNewAllowanceName] = useState("")
 
   const handleAddAllowanceRow = () => {
-    setAllowanceRows((prev) => [
-      ...prev,
-      { id: String(Date.now()), type: "", value: 0 },
-    ])
+    setAllowanceRows((prev) => [...prev, { id: String(Date.now()), type: "", value: 0 }])
   }
 
   const handleUpdateAllowanceRow = (id: string, field: "type" | "value", val: string | number) => {
-    setAllowanceRows((prev) =>
-      prev.map((row) => (row.id === id ? { ...row, [field]: val } : row))
-    )
+    setAllowanceRows((prev) => prev.map((row) => (row.id === id ? { ...row, [field]: val } : row)))
   }
 
   const handleRemoveAllowanceRow = (id: string) => {
@@ -194,12 +185,21 @@ export default function EmployeeContractCreate() {
       submitLabel="Lưu"
       cancelLabel="Huỷ bỏ"
     >
-      <form id="contract-create-form" onSubmit={(e) => { void handleSubmit(e); }} className="space-y-6" noValidate>
+      <form
+        id="contract-create-form"
+        onSubmit={(e) => {
+          void handleSubmit(e)
+        }}
+        className="space-y-6"
+        noValidate
+      >
         {/* ── 1. Thông tin nhân sự ────────────────────────────────────────── */}
         <div className="bg-background border border-border rounded-xl overflow-hidden shadow-none">
           <button
             type="button"
-            onClick={() => { setOpenEmployeeInfo(!openEmployeeInfo); }}
+            onClick={() => {
+              setOpenEmployeeInfo(!openEmployeeInfo)
+            }}
             className="w-full px-6 py-4 flex items-center justify-between bg-muted/50 border-b border-border text-left font-semibold text-sm text-foreground"
           >
             <div className="flex items-center gap-2">
@@ -226,7 +226,9 @@ export default function EmployeeContractCreate() {
                   <SelectTrigger
                     className={cn(
                       "rounded-full",
-                      (touchedFields.selectedEmployeeId || hasAttemptedSubmit) && !selectedEmployeeId && "border-destructive ring-1 ring-destructive"
+                      (touchedFields.selectedEmployeeId || hasAttemptedSubmit) &&
+                        !selectedEmployeeId &&
+                        "border-destructive ring-1 ring-destructive",
                     )}
                   >
                     <SelectValue placeholder="Chọn nhân sự" />
@@ -239,9 +241,12 @@ export default function EmployeeContractCreate() {
                     ))}
                   </SelectContent>
                 </Select>
-                {(touchedFields.selectedEmployeeId || hasAttemptedSubmit) && !selectedEmployeeId && (
-                  <p className="text-xs text-destructive font-medium mt-1">Vui lòng chọn người lao động</p>
-                )}
+                {(touchedFields.selectedEmployeeId || hasAttemptedSubmit) &&
+                  !selectedEmployeeId && (
+                    <p className="text-xs text-destructive font-medium mt-1">
+                      Vui lòng chọn người lao động
+                    </p>
+                  )}
               </div>
 
               <div className="space-y-1.5">
@@ -307,7 +312,9 @@ export default function EmployeeContractCreate() {
         <div className="bg-background border border-border rounded-xl overflow-hidden shadow-none">
           <button
             type="button"
-            onClick={() => { setOpenContractInfo(!openContractInfo); }}
+            onClick={() => {
+              setOpenContractInfo(!openContractInfo)
+            }}
             className="w-full px-6 py-4 flex items-center justify-between bg-muted/50 border-b border-border text-left font-semibold text-sm text-foreground"
           >
             <div className="flex items-center gap-2">
@@ -326,17 +333,25 @@ export default function EmployeeContractCreate() {
                 </Label>
                 <Input
                   value={contractNumber}
-                  onChange={(e) => { setContractNumber(e.target.value); }}
-                  onBlur={() => { handleBlur("contractNumber"); }}
+                  onChange={(e) => {
+                    setContractNumber(e.target.value)
+                  }}
+                  onBlur={() => {
+                    handleBlur("contractNumber")
+                  }}
                   placeholder="HDLD.000018"
                   className={cn(
                     "rounded-full font-mono",
-                    (touchedFields.contractNumber || hasAttemptedSubmit) && !contractNumber.trim() && "border-destructive ring-1 ring-destructive"
+                    (touchedFields.contractNumber || hasAttemptedSubmit) &&
+                      !contractNumber.trim() &&
+                      "border-destructive ring-1 ring-destructive",
                   )}
                   required
                 />
                 {(touchedFields.contractNumber || hasAttemptedSubmit) && !contractNumber.trim() && (
-                  <p className="text-xs text-destructive font-medium mt-1">Vui lòng nhập mã hợp đồng</p>
+                  <p className="text-xs text-destructive font-medium mt-1">
+                    Vui lòng nhập mã hợp đồng
+                  </p>
                 )}
               </div>
 
@@ -344,7 +359,9 @@ export default function EmployeeContractCreate() {
                 <Label className="text-xs font-medium">Hợp đồng tham chiếu</Label>
                 <Input
                   value={referenceContract}
-                  onChange={(e) => { setReferenceContract(e.target.value); }}
+                  onChange={(e) => {
+                    setReferenceContract(e.target.value)
+                  }}
                   placeholder="Hợp đồng tham chiếu"
                   className="rounded-full bg-muted/20"
                 />
@@ -356,7 +373,9 @@ export default function EmployeeContractCreate() {
                 </Label>
                 <Select
                   value={contractType}
-                  onValueChange={(val) => { setContractType(val as ContractType); }}
+                  onValueChange={(val) => {
+                    setContractType(val as ContractType)
+                  }}
                 >
                   <SelectTrigger className="rounded-full">
                     <SelectValue placeholder="Loại hợp đồng" />
@@ -377,7 +396,9 @@ export default function EmployeeContractCreate() {
                 </Label>
                 <DatePicker
                   value={startDate || null}
-                  onChange={(val) => { setStartDate(val || ""); }}
+                  onChange={(val) => {
+                    setStartDate(val || "")
+                  }}
                   placeholder="Chọn ngày bắt đầu..."
                 />
               </div>
@@ -387,7 +408,9 @@ export default function EmployeeContractCreate() {
                 <DatePicker
                   value={endDate || null}
                   minDate={startDate}
-                  onChange={(val) => { setEndDate(val || ""); }}
+                  onChange={(val) => {
+                    setEndDate(val || "")
+                  }}
                   placeholder="Chọn ngày kết thúc..."
                 />
               </div>
@@ -416,7 +439,9 @@ export default function EmployeeContractCreate() {
                 </Label>
                 <DatePicker
                   value={signedDate || null}
-                  onChange={(val) => { setSignedDate(val || ""); }}
+                  onChange={(val) => {
+                    setSignedDate(val || "")
+                  }}
                   placeholder="Chọn ngày ký..."
                 />
               </div>
@@ -426,7 +451,9 @@ export default function EmployeeContractCreate() {
                 <div className="relative">
                   <Input
                     value={attachmentName}
-                    onChange={(e) => { setAttachmentName(e.target.value); }}
+                    onChange={(e) => {
+                      setAttachmentName(e.target.value)
+                    }}
                     placeholder="Tải lên tệp hợp đồng..."
                     className="rounded-full pr-10"
                   />
@@ -444,7 +471,9 @@ export default function EmployeeContractCreate() {
         <div className="bg-background border border-border rounded-xl overflow-hidden shadow-none">
           <button
             type="button"
-            onClick={() => { setOpenSalaryInfo(!openSalaryInfo); }}
+            onClick={() => {
+              setOpenSalaryInfo(!openSalaryInfo)
+            }}
             className="w-full px-6 py-4 flex items-center justify-between bg-muted/50 border-b border-border text-left font-semibold text-sm text-foreground"
           >
             <div className="flex items-center gap-2">
@@ -466,7 +495,7 @@ export default function EmployeeContractCreate() {
                     type="number"
                     value={salary}
                     onChange={(e) => {
-                      setSalary(e.target.value === "" ? "" : Number(e.target.value));
+                      setSalary(e.target.value === "" ? "" : Number(e.target.value))
                     }}
                     placeholder="0"
                     className="rounded-full pr-8 text-right font-mono"
@@ -483,9 +512,7 @@ export default function EmployeeContractCreate() {
                   type="number"
                   value={probationSalaryRate}
                   onChange={(e) => {
-                    setProbationSalaryRate(
-                      e.target.value === "" ? "" : Number(e.target.value)
-                    );
+                    setProbationSalaryRate(e.target.value === "" ? "" : Number(e.target.value))
                   }}
                   placeholder="100"
                   className="rounded-full text-right font-mono"
@@ -501,7 +528,7 @@ export default function EmployeeContractCreate() {
                   type="number"
                   value={insuranceSalary}
                   onChange={(e) => {
-                    setInsuranceSalary(e.target.value === "" ? "" : Number(e.target.value));
+                    setInsuranceSalary(e.target.value === "" ? "" : Number(e.target.value))
                   }}
                   placeholder="0"
                   className="rounded-full text-right font-mono"
@@ -517,7 +544,9 @@ export default function EmployeeContractCreate() {
           <div className="px-6 py-4 flex items-center justify-between bg-muted/50 border-b border-border">
             <button
               type="button"
-              onClick={() => { setOpenAllowanceInfo(!openAllowanceInfo); }}
+              onClick={() => {
+                setOpenAllowanceInfo(!openAllowanceInfo)
+              }}
               className="flex items-center gap-2 font-semibold text-sm text-foreground"
             >
               <span className="text-muted-foreground">
@@ -576,7 +605,9 @@ export default function EmployeeContractCreate() {
                             <div className="p-1 border-t border-border mt-1">
                               <button
                                 type="button"
-                                onClick={() => { setIsCustomAllowanceModalOpen(true); }}
+                                onClick={() => {
+                                  setIsCustomAllowanceModalOpen(true)
+                                }}
                                 className="w-full py-2 px-3 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-full flex items-center justify-center gap-1 transition-colors"
                               >
                                 + Tạo mới khoản phụ cấp
@@ -590,7 +621,7 @@ export default function EmployeeContractCreate() {
                           type="number"
                           value={row.value}
                           onChange={(e) => {
-                            handleUpdateAllowanceRow(row.id, "value", Number(e.target.value) || 0);
+                            handleUpdateAllowanceRow(row.id, "value", Number(e.target.value) || 0)
                           }}
                           className="rounded-full text-right font-mono"
                           placeholder="0"
@@ -601,7 +632,9 @@ export default function EmployeeContractCreate() {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          onClick={() => { handleRemoveAllowanceRow(row.id); }}
+                          onClick={() => {
+                            handleRemoveAllowanceRow(row.id)
+                          }}
                           className="text-destructive rounded-full hover:bg-destructive/10"
                         >
                           <Trash2 size={14} />
@@ -614,7 +647,6 @@ export default function EmployeeContractCreate() {
             </div>
           )}
         </div>
-
       </form>
 
       {/* Modal Tạo mới khoản phụ cấp */}
@@ -628,7 +660,9 @@ export default function EmployeeContractCreate() {
             <Input
               placeholder="VD: Phụ cấp độc hại, Phụ cấp chuyên cần..."
               value={newAllowanceName}
-              onChange={(e) => { setNewAllowanceName(e.target.value); }}
+              onChange={(e) => {
+                setNewAllowanceName(e.target.value)
+              }}
               className="rounded-full"
             />
           </div>
@@ -636,7 +670,9 @@ export default function EmployeeContractCreate() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => { setIsCustomAllowanceModalOpen(false); }}
+              onClick={() => {
+                setIsCustomAllowanceModalOpen(false)
+              }}
               className="rounded-full"
             >
               Hủy

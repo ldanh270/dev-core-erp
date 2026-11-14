@@ -1,16 +1,16 @@
-import { jobRequisitionRepository } from "@/repositories/job-requisition.repository"
-import type {
-  CreateJobRequisitionInput,
-  UpdateJobRequisitionInput,
-  ApproveRequisitionInput,
-  ListRequisitionsQuery,
-} from "@/types/recruitment.types"
 import { REQUISITION_STATUS } from "@/configs/entities/recruitment.config"
 import { HttpStatusCode } from "@/configs/system/http.config"
-import { AppError } from "@/utils/error.util"
+import { jobPostingRepository } from "@/repositories/job-posting.repository"
+import { jobRequisitionRepository } from "@/repositories/job-requisition.repository"
 import { recruitmentApplicationRepository } from "@/repositories/recruitment-application.repository"
 import { recruitmentPostingActivityService } from "@/services/recruitment-posting-activity.service"
-import { jobPostingRepository } from "@/repositories/job-posting.repository"
+import type {
+  ApproveRequisitionInput,
+  CreateJobRequisitionInput,
+  ListRequisitionsQuery,
+  UpdateJobRequisitionInput,
+} from "@/types/recruitment.types"
+import { AppError } from "@/utils/error.util"
 
 export class JobRequisitionService {
   async create(input: CreateJobRequisitionInput, requestedById: string) {
@@ -44,15 +44,30 @@ export class JobRequisitionService {
     const requisition = await this.findById(id)
     const ownStages = await jobRequisitionRepository.listPipelineStages(id)
     const legacyPosting = requisition.postings[0]
-    const stages = ownStages.length > 0 ? ownStages : legacyPosting ? await jobPostingRepository.listPipelineStages(legacyPosting.id) : []
-    const applications = await recruitmentApplicationRepository.listKanban({ requisitionId: id, page: 1, pageSize: 100 })
+    const stages =
+      ownStages.length > 0
+        ? ownStages
+        : legacyPosting
+          ? await jobPostingRepository.listPipelineStages(legacyPosting.id)
+          : []
+    const applications = await recruitmentApplicationRepository.listKanban({
+      requisitionId: id,
+      page: 1,
+      pageSize: 100,
+    })
     return { requisition, stages, applications }
   }
 
   async listActivities(id: string, page = 1, pageSize = 50) {
     const requisition = await this.findById(id)
-    const batches = await Promise.all(requisition.postings.map((posting) => recruitmentPostingActivityService.list(posting.id, 1, 1000)))
-    const items = batches.flatMap((batch) => batch.items).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    const batches = await Promise.all(
+      requisition.postings.map((posting) =>
+        recruitmentPostingActivityService.list(posting.id, 1, 1000),
+      ),
+    )
+    const items = batches
+      .flatMap((batch) => batch.items)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
     const start = (page - 1) * pageSize
     return { items: items.slice(start, start + pageSize), total: items.length, page, pageSize }
   }
@@ -65,20 +80,45 @@ export class JobRequisitionService {
     return legacyPosting ? jobPostingRepository.listPipelineStages(legacyPosting.id) : []
   }
 
-  async createPipelineStage(id: string, data: { name: string; color?: string; isDefault?: boolean; isCompleted?: boolean }, actorId: string) {
+  async createPipelineStage(
+    id: string,
+    data: { name: string; color?: string; isDefault?: boolean; isCompleted?: boolean },
+    actorId: string,
+  ) {
     await this.findById(id)
     const stage = await jobRequisitionRepository.createPipelineStage(id, data)
-    await this.recordWorkspaceActivity(id, "stage_created", actorId, { stageId: stage.id, name: stage.name })
+    await this.recordWorkspaceActivity(id, "stage_created", actorId, {
+      stageId: stage.id,
+      name: stage.name,
+    })
     return stage
   }
 
-  async updatePipelineStage(id: string, stageId: string, data: { name?: string; color?: string; isDefault?: boolean; isCompleted?: boolean }, actorId: string) {
+  async updatePipelineStage(
+    id: string,
+    stageId: string,
+    data: { name?: string; color?: string; isDefault?: boolean; isCompleted?: boolean },
+    actorId: string,
+  ) {
     const stages = await this.listPipelineStages(id)
     const stage = stages.find((item) => item.id === stageId)
-    if (!stage) throw new AppError("Không tìm thấy giai đoạn trong yêu cầu tuyển dụng", HttpStatusCode.NOT_FOUND, "JobRequisitionService")
-    if (stage.isDefault && data.isDefault === false) throw new AppError("Cần chọn một giai đoạn mặc định khác trước", HttpStatusCode.CONFLICT, "JobRequisitionService")
+    if (!stage)
+      throw new AppError(
+        "Không tìm thấy giai đoạn trong yêu cầu tuyển dụng",
+        HttpStatusCode.NOT_FOUND,
+        "JobRequisitionService",
+      )
+    if (stage.isDefault && data.isDefault === false)
+      throw new AppError(
+        "Cần chọn một giai đoạn mặc định khác trước",
+        HttpStatusCode.CONFLICT,
+        "JobRequisitionService",
+      )
     const updated = await jobRequisitionRepository.updatePipelineStage(id, stageId, data)
-    await this.recordWorkspaceActivity(id, "stage_updated", actorId, { stageId, fields: Object.keys(data) })
+    await this.recordWorkspaceActivity(id, "stage_updated", actorId, {
+      stageId,
+      fields: Object.keys(data),
+    })
     return updated
   }
 
@@ -86,11 +126,30 @@ export class JobRequisitionService {
     const stages = await this.listPipelineStages(id)
     const stage = stages.find((item) => item.id === stageId)
     const fallback = stages.find((item) => item.id === fallbackStageId)
-    if (!stage || !fallback || stage.id === fallback.id) throw new AppError("Giai đoạn thay thế không hợp lệ", HttpStatusCode.BAD_REQUEST, "JobRequisitionService")
-    if (stage.isDefault) throw new AppError("Không thể xóa giai đoạn mặc định", HttpStatusCode.CONFLICT, "JobRequisitionService")
-    if (stages.length < 2) throw new AppError("Yêu cầu phải có ít nhất một giai đoạn", HttpStatusCode.CONFLICT, "JobRequisitionService")
+    if (!stage || !fallback || stage.id === fallback.id)
+      throw new AppError(
+        "Giai đoạn thay thế không hợp lệ",
+        HttpStatusCode.BAD_REQUEST,
+        "JobRequisitionService",
+      )
+    if (stage.isDefault)
+      throw new AppError(
+        "Không thể xóa giai đoạn mặc định",
+        HttpStatusCode.CONFLICT,
+        "JobRequisitionService",
+      )
+    if (stages.length < 2)
+      throw new AppError(
+        "Yêu cầu phải có ít nhất một giai đoạn",
+        HttpStatusCode.CONFLICT,
+        "JobRequisitionService",
+      )
     await jobRequisitionRepository.deletePipelineStage(id, stageId, fallbackStageId)
-    await this.recordWorkspaceActivity(id, "stage_deleted", actorId, { stageId, fallbackStageId, name: stage.name })
+    await this.recordWorkspaceActivity(id, "stage_deleted", actorId, {
+      stageId,
+      fallbackStageId,
+      name: stage.name,
+    })
   }
 
   async reorderPipelineStages(id: string, stageIds: string[], actorId: string) {
@@ -100,16 +159,44 @@ export class JobRequisitionService {
     return stages
   }
 
-  async moveApplicationToPipelineStage(id: string, applicationId: string, pipelineStageId: string, actorId: string) {
+  async moveApplicationToPipelineStage(
+    id: string,
+    applicationId: string,
+    pipelineStageId: string,
+    actorId: string,
+  ) {
     await this.listPipelineStages(id)
-    const updated = await jobRequisitionRepository.moveApplicationToPipelineStage(id, applicationId, pipelineStageId)
-    await this.recordWorkspaceActivity(id, "application_stage_changed", actorId, { pipelineStageId }, applicationId)
+    const updated = await jobRequisitionRepository.moveApplicationToPipelineStage(
+      id,
+      applicationId,
+      pipelineStageId,
+    )
+    await this.recordWorkspaceActivity(
+      id,
+      "application_stage_changed",
+      actorId,
+      { pipelineStageId },
+      applicationId,
+    )
     return updated
   }
 
-  private async recordWorkspaceActivity(requisitionId: string, type: string, actorId: string, metadata: Record<string, unknown>, applicationId?: string) {
+  private async recordWorkspaceActivity(
+    requisitionId: string,
+    type: string,
+    actorId: string,
+    metadata: Record<string, unknown>,
+    applicationId?: string,
+  ) {
     const posting = (await this.findById(requisitionId)).postings[0]
-    if (posting) await recruitmentPostingActivityService.record(posting.id, type as never, actorId, { requisitionId, ...metadata }, applicationId)
+    if (posting)
+      await recruitmentPostingActivityService.record(
+        posting.id,
+        type as never,
+        actorId,
+        { requisitionId, ...metadata },
+        applicationId,
+      )
   }
 
   async findByCode(code: string) {
@@ -132,7 +219,10 @@ export class JobRequisitionService {
     const existing = await this.findById(id)
 
     // Prevent updates to closed requisitions
-    if (existing.status === REQUISITION_STATUS.CLOSED || existing.status === REQUISITION_STATUS.FILLED) {
+    if (
+      existing.status === REQUISITION_STATUS.CLOSED ||
+      existing.status === REQUISITION_STATUS.FILLED
+    ) {
       throw new AppError(
         "Không thể chỉnh sửa yêu cầu tuyển dụng đã đóng hoặc đã tuyển đủ",
         HttpStatusCode.BAD_REQUEST,
@@ -152,7 +242,9 @@ export class JobRequisitionService {
     if (input.approverId) await this.assertEligibleApprover(input.approverId)
 
     // Only draft and pending approval requisitions can update most fields
-    const updatesCandidateSchemaOnly = Object.keys(input).every((field) => field === "candidateSchema")
+    const updatesCandidateSchemaOnly = Object.keys(input).every(
+      (field) => field === "candidateSchema",
+    )
     if (
       existing.status !== REQUISITION_STATUS.DRAFT &&
       existing.status !== REQUISITION_STATUS.PENDING_APPROVAL &&
@@ -204,7 +296,11 @@ export class JobRequisitionService {
     }
 
     if (existing.approverId !== approverId) {
-      throw new AppError("Bạn không phải người được chỉ định duyệt yêu cầu này", HttpStatusCode.FORBIDDEN, "SERVICE")
+      throw new AppError(
+        "Bạn không phải người được chỉ định duyệt yêu cầu này",
+        HttpStatusCode.FORBIDDEN,
+        "SERVICE",
+      )
     }
 
     if (!input.approved) {
@@ -219,7 +315,10 @@ export class JobRequisitionService {
   async close(id: string) {
     const existing = await this.findById(id)
 
-    if (existing.status === REQUISITION_STATUS.CLOSED || existing.status === REQUISITION_STATUS.FILLED) {
+    if (
+      existing.status === REQUISITION_STATUS.CLOSED ||
+      existing.status === REQUISITION_STATUS.FILLED
+    ) {
       throw new AppError(
         "Yêu cầu tuyển dụng đã đóng",
         HttpStatusCode.BAD_REQUEST,

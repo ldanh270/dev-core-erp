@@ -1,6 +1,4 @@
-import { useState } from "react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -8,7 +6,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -18,17 +15,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { PROJECT_MESSAGES } from "@/config/messages/project.message"
 import {
   PROJECT_MEMBER_WORK_MODE,
   PROJECT_MEMBER_WORK_MODES,
   getProjectMemberWorkModeLabel,
 } from "@/config/entities/project.config"
-import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util"
+import { PROJECT_MESSAGES } from "@/config/messages/project.message"
 import { projectApi } from "@/lib/api/project.api"
-import { extractErrorMessage } from "@/utils/error-helper"
 import type { Employee } from "@/types/employee.types"
 import type { ProjectMember } from "@/types/project.types"
+import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util"
+import { extractErrorMessage } from "@/utils/error-helper"
+
+import { useState } from "react"
+
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
+
 import { useProjectRoles } from "../hooks/use-project-role"
 
 interface EditMemberModalProps {
@@ -51,12 +54,10 @@ function EditMemberForm({ projectId, member, isPartTime, onClose }: EditMemberFo
   const queryClient = useQueryClient()
   const { data: roles = [] } = useProjectRoles(projectId)
 
-  const [hourlyRate, setHourlyRate] = useState(
-    () => (member.hourlyRate != null ? String(member.hourlyRate) : ""),
+  const [hourlyRate, setHourlyRate] = useState(() =>
+    member.hourlyRate != null ? String(member.hourlyRate) : "",
   )
-  const [workMode, setWorkMode] = useState(
-    () => member.workMode || PROJECT_MEMBER_WORK_MODE.REMOTE,
-  )
+  const [workMode, setWorkMode] = useState(() => member.workMode || PROJECT_MEMBER_WORK_MODE.REMOTE)
   const [roleId, setRoleId] = useState(() => member.roleId || "")
   const [memberError, setMemberError] = useState<string | null>(null)
 

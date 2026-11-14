@@ -1,9 +1,10 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { getControlSizeClass, type ControlSize } from "@/config/ui-density.config"
+import { type ControlSize, getControlSizeClass } from "@/config/ui-density.config"
 import { cn } from "@/lib/utils"
 
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
+
 import { Clock, X } from "lucide-react"
 
 export interface TimePickerProps {
@@ -91,7 +92,7 @@ export function TimePicker({
           className={cn(
             "w-full border border-input bg-background font-normal text-foreground transition-all duration-200 outline-none flex items-center justify-between gap-2 shadow-2xs hover:border-primary/50 focus:border-ring focus:ring-2 focus:ring-ring/20 disabled:cursor-not-allowed disabled:opacity-50",
             getControlSizeClass(size),
-            className
+            className,
           )}
         >
           <span className={cn("truncate", !value && "text-muted-foreground font-mono")}>
@@ -158,7 +159,7 @@ export function TimePicker({
                       "w-full h-7 rounded-lg text-xs font-mono font-medium flex items-center justify-center transition-colors cursor-pointer",
                       isSelected
                         ? "bg-primary text-primary-foreground font-bold shadow-xs"
-                        : "hover:bg-muted text-foreground"
+                        : "hover:bg-muted text-foreground",
                     )}
                   >
                     {h}
@@ -191,7 +192,7 @@ export function TimePicker({
                       "w-full h-7 rounded-lg text-xs font-mono font-medium flex items-center justify-center transition-colors cursor-pointer",
                       isSelected
                         ? "bg-primary text-primary-foreground font-bold shadow-xs"
-                        : "hover:bg-muted text-foreground"
+                        : "hover:bg-muted text-foreground",
                     )}
                   >
                     {m}

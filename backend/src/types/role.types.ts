@@ -1,5 +1,7 @@
 import { SORT_ORDER } from "@/configs/system/db.config.ts"
+
 import { Prisma } from "@prisma/client"
+
 import { Permission } from "./permission.types.ts"
 
 /**
@@ -87,7 +89,11 @@ export interface IRoleRepository {
   /** Find permissions assigned to a role */
   findPermissionsByRoleId(roleId: string): Promise<Permission[]>
   /** Assign a permission to a role (Idempotent) */
-  assignPermission(roleId: string, permissionId: string, actorId?: string): Promise<{ success: boolean; created: boolean }>
+  assignPermission(
+    roleId: string,
+    permissionId: string,
+    actorId?: string,
+  ): Promise<{ success: boolean; created: boolean }>
   /** Revoke a permission from a role (Idempotent) */
   revokePermission(roleId: string, permissionId: string): Promise<boolean>
   /** Bulk replace role permissions inside a transaction */
@@ -106,7 +112,11 @@ export interface IRoleService {
   /** Find permissions assigned to a role */
   getRolePermissions(roleId: string): Promise<Permission[]>
   /** Assign a permission to a role */
-  assignPermission(roleId: string, permissionId: string, actorId?: string): Promise<{ success: boolean; created: boolean }>
+  assignPermission(
+    roleId: string,
+    permissionId: string,
+    actorId?: string,
+  ): Promise<{ success: boolean; created: boolean }>
   /** Revoke a permission from a role */
   revokePermission(roleId: string, permissionId: string, actorId?: string): Promise<boolean>
   /** Bulk replace role permissions */

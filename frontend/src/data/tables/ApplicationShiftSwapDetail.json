@@ -93,41 +93,31 @@
   "indexes": [
     {
       "name": "IX_ApplicationShiftSwapDetail_employeeShiftId",
-      "columns": [
-        "employeeShiftId"
-      ],
+      "columns": ["employeeShiftId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_ApplicationShiftSwapDetail_swapWithEmployeeId",
-      "columns": [
-        "swapWithEmployeeId"
-      ],
+      "columns": ["swapWithEmployeeId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_ApplicationShiftSwapDetail_swapWithShiftId",
-      "columns": [
-        "swapWithShiftId"
-      ],
+      "columns": ["swapWithShiftId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_ApplicationShiftSwapDetail_workingShiftId",
-      "columns": [
-        "workingShiftId"
-      ],
+      "columns": ["workingShiftId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_ApplicationShiftSwapDetail",
-      "columns": [
-        "applicationId"
-      ],
+      "columns": ["applicationId"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -137,56 +127,36 @@
       "virtualName": "application",
       "targetModel": "Application",
       "relationName": null,
-      "foreignKeyFields": [
-        "applicationId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["applicationId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "employeeShift",
       "targetModel": "EmployeeShift",
       "relationName": "ApplicationEmployeeShift",
-      "foreignKeyFields": [
-        "employeeShiftId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeShiftId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "workingShift",
       "targetModel": "WorkingShift",
       "relationName": "ShiftSwapWorkingShift",
-      "foreignKeyFields": [
-        "workingShiftId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["workingShiftId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "swapWithEmployee",
       "targetModel": "Employee",
       "relationName": "ApplicationSwapWith",
-      "foreignKeyFields": [
-        "swapWithEmployeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["swapWithEmployeeId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "swapWithShift",
       "targetModel": "EmployeeShift",
       "relationName": "ApplicationSwapWithShift",
-      "foreignKeyFields": [
-        "swapWithShiftId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["swapWithShiftId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

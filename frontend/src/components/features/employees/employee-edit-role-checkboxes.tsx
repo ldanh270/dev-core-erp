@@ -2,6 +2,7 @@ import { getRoleLabel } from "@/config/entities/employee.config"
 import type { Role } from "@/types/security.types"
 
 import { useEffect, useState } from "react"
+
 import { RefreshCw } from "lucide-react"
 
 export interface EmployeeEditRoleCheckboxesProps {
@@ -21,7 +22,6 @@ export function EmployeeEditRoleCheckboxes({
   const [selectedRoleIds, setSelectedRoleIds] = useState(initialRoleIds)
 
   useEffect(() => {
- 
     setSelectedRoleIds(initialRoleIds)
     onSelectionChange(initialRoleIds)
   }, [initialRoleIds, onSelectionChange])

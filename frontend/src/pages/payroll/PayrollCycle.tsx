@@ -63,8 +63,8 @@ function CycleContextPanel() {
                   <Info className="size-3.5 text-muted-foreground cursor-help" />
                 </TooltipTrigger>
                 <TooltipContent side="right" className="max-w-xs text-xs">
-                  Quy trình này chạy background job để tạo payroll trước, sau đó tự duyệt theo
-                  lịch phát lương đã cấu hình.
+                  Quy trình này chạy background job để tạo payroll trước, sau đó tự duyệt theo lịch
+                  phát lương đã cấu hình.
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -100,8 +100,7 @@ function SchedulePreviewBadge({ control }: { control: Control<SettingsFormValues
         variant="secondary"
         className="font-normal text-xs px-3 py-1 bg-success/10 text-success border-success/20 rounded-full"
       >
-        Duyệt: ngày {approvalDay || "..."} lúc{" "}
-        {approvalHour?.toString().padStart(2, "0") || "00"}:
+        Duyệt: ngày {approvalDay || "..."} lúc {approvalHour?.toString().padStart(2, "0") || "00"}:
         {approvalMinute?.toString().padStart(2, "0") || "00"}
       </Badge>
     </div>
@@ -121,9 +120,7 @@ function ScheduleTimeField({
 }) {
   return (
     <div className="space-y-3">
-      <FormLabel className="text-sm font-medium text-foreground block">
-        {label}
-      </FormLabel>
+      <FormLabel className="text-sm font-medium text-foreground block">{label}</FormLabel>
       <div className="flex items-center gap-3 w-full max-w-sm">
         <FormField
           control={control}
@@ -143,7 +140,11 @@ function ScheduleTimeField({
                 </FormControl>
                 <SelectContent position="popper" className="max-h-64 rounded-xl min-w-[130px]">
                   {Array.from({ length: 24 }).map((_, i) => (
-                    <SelectItem key={i} value={i.toString()} className="rounded-lg whitespace-nowrap">
+                    <SelectItem
+                      key={i}
+                      value={i.toString()}
+                      className="rounded-lg whitespace-nowrap"
+                    >
                       {i.toString().padStart(2, "0")} Giờ
                     </SelectItem>
                   ))}
@@ -172,7 +173,11 @@ function ScheduleTimeField({
                 </FormControl>
                 <SelectContent position="popper" className="max-h-64 rounded-xl min-w-[130px]">
                   {Array.from({ length: 60 }).map((_, i) => (
-                    <SelectItem key={i} value={i.toString()} className="rounded-lg whitespace-nowrap">
+                    <SelectItem
+                      key={i}
+                      value={i.toString()}
+                      className="rounded-lg whitespace-nowrap"
+                    >
                       {i.toString().padStart(2, "0")} Phút
                     </SelectItem>
                   ))}
@@ -226,7 +231,11 @@ function ScheduleDayField({
             </FormControl>
             <SelectContent position="popper" className="max-h-64 rounded-xl min-w-[200px]">
               {Array.from({ length: 28 }).map((_, i) => (
-                <SelectItem key={i + 1} value={(i + 1).toString()} className="rounded-lg whitespace-nowrap">
+                <SelectItem
+                  key={i + 1}
+                  value={(i + 1).toString()}
+                  className="rounded-lg whitespace-nowrap"
+                >
                   Ngày {i + 1} hàng tháng
                 </SelectItem>
               ))}
@@ -320,8 +329,12 @@ function PayrollCycleForm({ settings }: { settings: IPayrollSettings }) {
                           <CalendarClock className="size-4 text-primary" />
                         </div>
                         <div>
-                          <h4 className="font-semibold text-sm text-foreground">Tự động tạo payroll</h4>
-                          <p className="text-xs text-muted-foreground">Tạo bảng lương nháp định kỳ</p>
+                          <h4 className="font-semibold text-sm text-foreground">
+                            Tự động tạo payroll
+                          </h4>
+                          <p className="text-xs text-muted-foreground">
+                            Tạo bảng lương nháp định kỳ
+                          </p>
                         </div>
                       </div>
                       <div className="space-y-6">
@@ -346,8 +359,12 @@ function PayrollCycleForm({ settings }: { settings: IPayrollSettings }) {
                           <CalendarCheck className="size-4 text-success" />
                         </div>
                         <div>
-                          <h4 className="font-semibold text-sm text-foreground">Tự động duyệt payroll</h4>
-                          <p className="text-xs text-muted-foreground">Tự động duyệt vào ngày phát lương</p>
+                          <h4 className="font-semibold text-sm text-foreground">
+                            Tự động duyệt payroll
+                          </h4>
+                          <p className="text-xs text-muted-foreground">
+                            Tự động duyệt vào ngày phát lương
+                          </p>
                         </div>
                       </div>
                       <div className="space-y-6">

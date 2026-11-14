@@ -61,4 +61,3 @@ export function getTableColWidthPx(key: TableColWidthKey): string {
       return `${TABLE_COL_WIDTH.EMPLOYEE}px`
   }
 }
-

@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils"
 import type { ActivityLogItem } from "@/types/security.types"
 
 import { useMemo } from "react"
+
 import {
   Activity,
   Eye,
@@ -128,17 +129,12 @@ export default function ActivityLogs() {
         minWidth: `${TABLE_COL_WIDTH.EMPLOYEE}px`,
         cell: (log) => (
           <div className="min-w-0 flex flex-col justify-center">
-            <p
-              className={TYPOGRAPHY.CELL_PRIMARY}
-              title={log.employeeName || COMMON_TEXTS.SYSTEM}
-            >
+            <p className={TYPOGRAPHY.CELL_PRIMARY} title={log.employeeName || COMMON_TEXTS.SYSTEM}>
               {log.employeeName || (
                 <span className="text-muted-foreground italic">{COMMON_TEXTS.SYSTEM}</span>
               )}
             </p>
-            <p className={TYPOGRAPHY.CELL_CODE}>
-              {log.employeeId || COMMON_TEXTS.NOT_AVAILABLE}
-            </p>
+            <p className={TYPOGRAPHY.CELL_CODE}>{log.employeeId || COMMON_TEXTS.NOT_AVAILABLE}</p>
           </div>
         ),
       },
@@ -249,10 +245,7 @@ export default function ActivityLogs() {
             }}
           >
             <SelectTrigger
-              className={cn(
-                "w-[155px] rounded-full bg-background",
-                TYPOGRAPHY.TOOLBAR_CONTROL,
-              )}
+              className={cn("w-[155px] rounded-full bg-background", TYPOGRAPHY.TOOLBAR_CONTROL)}
             >
               <SelectValue placeholder="Danh mục" />
             </SelectTrigger>
@@ -269,9 +262,7 @@ export default function ActivityLogs() {
       }
       toolbarActions={
         <div className="flex items-center gap-2 shrink-0">
-          <span className={TYPOGRAPHY.TOOLBAR_LABEL}>
-            Lọc theo ngày:
-          </span>
+          <span className={TYPOGRAPHY.TOOLBAR_LABEL}>Lọc theo ngày:</span>
           <DateRangePicker
             startDate={query.fromDate || null}
             endDate={query.toDate || null}

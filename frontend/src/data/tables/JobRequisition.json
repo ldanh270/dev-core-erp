@@ -460,57 +460,43 @@
   "indexes": [
     {
       "name": "IX_JobRequisition_approverId",
-      "columns": [
-        "approverId"
-      ],
+      "columns": ["approverId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_JobRequisition_code",
-      "columns": [
-        "code"
-      ],
+      "columns": ["code"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_JobRequisition_department",
-      "columns": [
-        "department"
-      ],
+      "columns": ["department"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_JobRequisition_positionId",
-      "columns": [
-        "positionId"
-      ],
+      "columns": ["positionId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_JobRequisition_requestedById",
-      "columns": [
-        "requestedById"
-      ],
+      "columns": ["requestedById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_JobRequisition_status",
-      "columns": [
-        "status"
-      ],
+      "columns": ["status"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_JobRequisition",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -520,45 +506,29 @@
       "virtualName": "requestedBy",
       "targetModel": "Employee",
       "relationName": "RequisitionRequester",
-      "foreignKeyFields": [
-        "requestedById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["requestedById"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "approver",
       "targetModel": "Employee",
       "relationName": "RequisitionDesignatedApprover",
-      "foreignKeyFields": [
-        "approverId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["approverId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "approvedBy",
       "targetModel": "Employee",
       "relationName": "RequisitionApprover",
-      "foreignKeyFields": [
-        "approvedById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["approvedById"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "position",
       "targetModel": "Position",
       "relationName": null,
-      "foreignKeyFields": [
-        "positionId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["positionId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

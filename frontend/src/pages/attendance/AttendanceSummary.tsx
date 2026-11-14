@@ -33,12 +33,7 @@ export default function AttendanceSummary() {
         title="Tổng hợp chấm công"
         description="Tóm tắt tình hình đi làm, giờ công và kỷ luật chấm công trong tháng."
         actions={
-          <AttendanceMonthPicker
-            year={year}
-            month={month}
-            onPrev={goToPrev}
-            onNext={goToNext}
-          />
+          <AttendanceMonthPicker year={year} month={month} onPrev={goToPrev} onNext={goToNext} />
         }
       />
 

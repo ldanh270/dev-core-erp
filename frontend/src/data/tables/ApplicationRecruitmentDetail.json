@@ -89,9 +89,7 @@
   "indexes": [
     {
       "name": "PK_ApplicationRecruitmentDetail",
-      "columns": [
-        "applicationId"
-      ],
+      "columns": ["applicationId"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -101,12 +99,8 @@
       "virtualName": "application",
       "targetModel": "Application",
       "relationName": null,
-      "foreignKeyFields": [
-        "applicationId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["applicationId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

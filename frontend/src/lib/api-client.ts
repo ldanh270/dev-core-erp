@@ -1,5 +1,5 @@
-import { AUTH_MESSAGES } from "@/config/messages/auth.message"
 import { API_BASE_URL } from "@/config/api.config"
+import { AUTH_MESSAGES } from "@/config/messages/auth.message"
 import { ROUTES } from "@/config/routes.config"
 import { routerNavigate } from "@/lib/router-navigator"
 import { useAuthStore } from "@/store/auth-store"

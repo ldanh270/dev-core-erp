@@ -138,18 +138,13 @@
   "indexes": [
     {
       "name": "IX_CustomQuery_employeeId_type",
-      "columns": [
-        "employeeId",
-        "type"
-      ],
+      "columns": ["employeeId", "type"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_CustomQuery",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -159,23 +154,15 @@
       "virtualName": "project",
       "targetModel": "Project",
       "relationName": null,
-      "foreignKeyFields": [
-        "projectId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["projectId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "employee",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "employeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

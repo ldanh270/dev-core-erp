@@ -1,5 +1,5 @@
-import type { TableDef } from "./database-reference.types"
 import { splitLargeLayers } from "./database-erd-ranking"
+import type { TableDef } from "./database-reference.types"
 
 /**
  * Orders tables so each parent/sub-hub is immediately followed by its dependent children.
@@ -77,10 +77,7 @@ export function clusterDisconnectedModules(
         : leaves.slice(0, maxNodesPerColumn)
       const leftSet = new Set(leftLeaves)
       const mainHubs = hubs.slice(0, maxNodesPerColumn)
-      const rightCol = [
-        ...hubs.slice(maxNodesPerColumn),
-        ...leaves.filter((n) => !leftSet.has(n)),
-      ]
+      const rightCol = [...hubs.slice(maxNodesPerColumn), ...leaves.filter((n) => !leftSet.has(n))]
       columns.push(
         ...splitLargeLayers([leftLeaves], maxNodesPerColumn),
         ...splitLargeLayers([mainHubs], maxNodesPerColumn),

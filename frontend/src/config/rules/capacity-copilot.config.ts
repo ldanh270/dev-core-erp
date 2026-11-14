@@ -31,8 +31,7 @@ export const CAPACITY_RISK_LEVEL = {
   HIGH: "high",
 } as const
 
-export type CapacityRiskLevel =
-  (typeof CAPACITY_RISK_LEVEL)[keyof typeof CAPACITY_RISK_LEVEL]
+export type CapacityRiskLevel = (typeof CAPACITY_RISK_LEVEL)[keyof typeof CAPACITY_RISK_LEVEL]
 
 /** UI modes distinguish historical backtesting from current/future forecasting. */
 export const CAPACITY_WEEK_MODE = {

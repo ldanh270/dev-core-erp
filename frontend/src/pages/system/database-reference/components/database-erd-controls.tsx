@@ -8,8 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import type { ModuleDef } from "../database-reference.types"
-import { useDatabaseErdControls } from "../hooks/use-database-erd-controls"
+
 import {
   Expand,
   KeyRound,
@@ -21,6 +20,9 @@ import {
   ZoomIn,
   ZoomOut,
 } from "lucide-react"
+
+import type { ModuleDef } from "../database-reference.types"
+import { useDatabaseErdControls } from "../hooks/use-database-erd-controls"
 
 // Props for the ERD toolbar controls and legend bar.
 interface DatabaseErdControlsProps {
@@ -68,7 +70,10 @@ export function DatabaseErdControls({
       {/* Top toolbar with module selector, visible table count, cross-module FK switch, and viewport actions */}
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-background px-3 py-3 sm:px-4">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <label htmlFor="database-erd-module" className="text-xs font-semibold text-muted-foreground">
+          <label
+            htmlFor="database-erd-module"
+            className="text-xs font-semibold text-muted-foreground"
+          >
             Phân hệ
           </label>
           <Select value={selectedModule} onValueChange={onModuleChange}>
@@ -102,21 +107,45 @@ export function DatabaseErdControls({
 
           {/* Match 36px (`h-9`) height of adjacent action buttons */}
           <div className="flex h-9 items-center gap-0.5 rounded-full border border-border bg-card px-1">
-            <Button type="button" size="icon-xs" variant="ghost" aria-label="Thu nhỏ sơ đồ" onClick={onZoomOut}>
+            <Button
+              type="button"
+              size="icon-xs"
+              variant="ghost"
+              aria-label="Thu nhỏ sơ đồ"
+              onClick={onZoomOut}
+            >
               <ZoomOut className="size-3.5" />
             </Button>
             <span className="min-w-11 text-center font-mono text-[11px] font-semibold text-muted-foreground">
               {scalePercent}%
             </span>
-            <Button type="button" size="icon-xs" variant="ghost" aria-label="Phóng to sơ đồ" onClick={onZoomIn}>
+            <Button
+              type="button"
+              size="icon-xs"
+              variant="ghost"
+              aria-label="Phóng to sơ đồ"
+              onClick={onZoomIn}
+            >
               <ZoomIn className="size-3.5" />
             </Button>
           </div>
-          <Button type="button" size="sm" variant="outline" className="rounded-full" onClick={onFit}>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="rounded-full"
+            onClick={onFit}
+          >
             <Scan className="mr-1.5 size-3.5" />
             Fit màn hình
           </Button>
-          <Button type="button" size="sm" variant="outline" className="rounded-full" onClick={onResetLayout}>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="rounded-full"
+            onClick={onResetLayout}
+          >
             <RotateCcw className="mr-1.5 size-3.5" />
             Sắp xếp lại
           </Button>
@@ -128,7 +157,11 @@ export function DatabaseErdControls({
             onClick={onToggleFullscreen}
             aria-label={fullscreenAriaLabel}
           >
-            {isFullscreen ? <Minimize className="mr-1.5 size-3.5" /> : <Expand className="mr-1.5 size-3.5" />}
+            {isFullscreen ? (
+              <Minimize className="mr-1.5 size-3.5" />
+            ) : (
+              <Expand className="mr-1.5 size-3.5" />
+            )}
             {fullscreenLabel}
           </Button>
         </div>
@@ -156,7 +189,8 @@ export function DatabaseErdControls({
         </div>
         <span className="inline-flex items-center gap-1.5">
           <Mouse className="size-3.5" />
-          Kéo bảng để sắp xếp · Kéo nền để pan · Shift + cuộn ngang · Ctrl + cuộn trong sơ đồ để zoom · F toàn màn hình
+          Kéo bảng để sắp xếp · Kéo nền để pan · Shift + cuộn ngang · Ctrl + cuộn trong sơ đồ để
+          zoom · F toàn màn hình
         </span>
       </div>
     </>

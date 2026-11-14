@@ -3,13 +3,17 @@
  * It aggregates Project, Attendance, and Spent Time data without mutating Project Task records.
  */
 import { PART_TIME_AVAILABILITY_STATUS } from "@/configs/entities/part-time-availability.config.ts"
-import { PROJECT_STATUS, SPENT_TIME_STATUS, TASK_STATUS } from "@/configs/entities/project.config.ts"
+import {
+  PROJECT_STATUS,
+  SPENT_TIME_STATUS,
+  TASK_STATUS,
+} from "@/configs/entities/project.config.ts"
 import { CAPACITY_COPILOT_RULES } from "@/configs/rules/capacity-copilot.config.ts"
 import {
   CapacityAvailabilityRow,
   CapacityDeliveryHistoryRow,
-  CapacityProjectRow,
   CapacityProjectMemberRow,
+  CapacityProjectRow,
   CapacityVelocityRow,
   ICapacityCopilotRepository,
 } from "@/types/capacity-copilot.types.ts"

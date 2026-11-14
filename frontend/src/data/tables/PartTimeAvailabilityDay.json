@@ -73,18 +73,13 @@
   "indexes": [
     {
       "name": "IX_PartTimeAvailabilityDay_availabilityId_dayOfWeek",
-      "columns": [
-        "availabilityId",
-        "dayOfWeek"
-      ],
+      "columns": ["availabilityId", "dayOfWeek"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "PK_PartTimeAvailabilityDay",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -94,12 +89,8 @@
       "virtualName": "availability",
       "targetModel": "PartTimeWeeklyAvailability",
       "relationName": null,
-      "foreignKeyFields": [
-        "availabilityId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["availabilityId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

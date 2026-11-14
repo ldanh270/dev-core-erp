@@ -1,15 +1,19 @@
 import { prisma } from "@/libs/database"
 import { decryptCredential, encryptCredential } from "@/utils/credential-encryption.util"
+
 import { RecruitmentChannel } from "@prisma/client"
 
 export class RecruitmentOAuthAccountRepository {
-  create(userId: string, data: {
-    channel: string
-    name: string
-    clientId: string
-    clientSecret: string
-    refreshToken: string
-  }) {
+  create(
+    userId: string,
+    data: {
+      channel: string
+      name: string
+      clientId: string
+      clientSecret: string
+      refreshToken: string
+    },
+  ) {
     return prisma.recruitmentOAuthAccount.create({
       data: {
         userId,
@@ -22,13 +26,17 @@ export class RecruitmentOAuthAccountRepository {
     })
   }
 
-  async upsert(userId: string, data: {
-    channel: string
-    name: string
-    clientId: string
-    clientSecret: string
-    refreshToken: string
-  }, accountId?: string) {
+  async upsert(
+    userId: string,
+    data: {
+      channel: string
+      name: string
+      clientId: string
+      clientSecret: string
+      refreshToken: string
+    },
+    accountId?: string,
+  ) {
     if (accountId) {
       const existing = await this.findById(accountId)
       if (existing && existing.userId === userId) {

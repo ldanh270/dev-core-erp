@@ -1,25 +1,14 @@
-import { useState, useEffect } from "react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { Link, useSearchParams } from "react-router-dom"
-import {
-  AlertCircle,
-  MoreVertical,
-  Search,
-  Plus,
-  Trash2,
-  ArrowRight,
-  ArrowLeft,
-  ChevronUp,
-  ChevronDown,
-  ChevronsUp,
-  ChevronsDown,
-  Save,
-} from "lucide-react"
-import { toast } from "sonner"
-
 import { PageCard, StatusPill } from "@/components/common"
+import LogTimeModal from "@/components/features/project/LogTimeModal"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -29,9 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { customQueryApi } from "@/lib/api/custom-query.api"
-import type { CustomQuery } from "@/lib/api/custom-query.api"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
@@ -41,20 +27,37 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-
-import { taskApi } from "@/lib/api/task.api"
+import { TASK_PRIORITIES, TASK_TRACKERS } from "@/config/entities/project.config"
+import { customQueryApi } from "@/lib/api/custom-query.api"
+import type { CustomQuery } from "@/lib/api/custom-query.api"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
-import { extractErrorMessage } from "@/utils/error-helper"
-import {
-  TASK_TRACKERS,
-  TASK_PRIORITIES,
-} from "@/config/entities/project.config"
-import type { Task, TaskTracker, TaskPriority } from "@/types/task.types"
+import { taskApi } from "@/lib/api/task.api"
 import type { ProjectMember } from "@/types/project.types"
-import LogTimeModal from "@/components/features/project/LogTimeModal"
-import { TaskContextMenu } from "./task-context-menu"
+import type { Task, TaskPriority, TaskTracker } from "@/types/task.types"
+import { extractErrorMessage } from "@/utils/error-helper"
+
+import { useEffect, useState } from "react"
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  ChevronDown,
+  ChevronUp,
+  ChevronsDown,
+  ChevronsUp,
+  MoreVertical,
+  Plus,
+  Save,
+  Search,
+  Trash2,
+} from "lucide-react"
+import { Link, useSearchParams } from "react-router-dom"
+import { toast } from "sonner"
+
 import { useTaskUrlFilters } from "../hooks/use-task-url-filters"
+import { TaskContextMenu } from "./task-context-menu"
 
 /**
  * Properties for ProjectIssuesTab component.
@@ -112,7 +115,7 @@ const AVAILABLE_COLUMNS = [
   { key: "startDate", label: "Bắt đầu" },
   { key: "dueDate", label: "Hết hạn" },
   { key: "estimatedTime", label: "Thời gian ước lượng" },
-  { key: "updatedAt", label: "Cập nhật" }
+  { key: "updatedAt", label: "Cập nhật" },
 ]
 
 const COLUMN_METADATA = {
@@ -123,7 +126,7 @@ const COLUMN_METADATA = {
       <TableCell className="font-mono text-[10px] font-semibold text-muted-foreground">
         #{task.id.substring(0, 5)}
       </TableCell>
-    )
+    ),
   },
   tracker: {
     label: "Kiểu công việc",
@@ -133,7 +136,8 @@ const COLUMN_METADATA = {
       if (task.tracker === "bug") {
         trackerColor = "bg-destructive/10 text-destructive border-destructive/20"
       } else if (task.tracker === "feature") {
-        trackerColor = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400"
+        trackerColor =
+          "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400"
       } else if (task.tracker === "support") {
         trackerColor = "bg-sky-500/10 text-sky-600 border-sky-500/20 dark:text-sky-400"
       }
@@ -147,7 +151,7 @@ const COLUMN_METADATA = {
           </Badge>
         </TableCell>
       )
-    }
+    },
   },
   title: {
     label: "Chủ đề",
@@ -161,7 +165,7 @@ const COLUMN_METADATA = {
           {task.title}
         </Link>
       </TableCell>
-    )
+    ),
   },
   assignee: {
     label: "Người thực hiện",
@@ -169,14 +173,12 @@ const COLUMN_METADATA = {
     render: (task: Task) => (
       <TableCell className="text-xs">
         {task.assignee ? (
-          <span className="font-semibold text-foreground">
-            {task.assignee.fullName}
-          </span>
+          <span className="font-semibold text-foreground">{task.assignee.fullName}</span>
         ) : (
           <span className="text-muted-foreground italic">Không chỉ định</span>
         )}
       </TableCell>
-    )
+    ),
   },
   status: {
     label: "Trạng thái",
@@ -184,17 +186,20 @@ const COLUMN_METADATA = {
     render: (task: Task, statuses: { id: string; name: string; isCompleted: boolean }[]) => {
       const customStatus = statuses.find((s) => s.id === task.statusId)
       const label = customStatus ? customStatus.name : formatStatus(task.status)
-      const isCompleted = customStatus ? customStatus.isCompleted : (task.status === "done" || task.status === "cancelled")
-      const variant = isCompleted ? "success" : (customStatus?.name.toLowerCase().includes("progress") ? "warning" : "info")
+      const isCompleted = customStatus
+        ? customStatus.isCompleted
+        : task.status === "done" || task.status === "cancelled"
+      const variant = isCompleted
+        ? "success"
+        : customStatus?.name.toLowerCase().includes("progress")
+          ? "warning"
+          : "info"
       return (
         <TableCell>
-          <StatusPill
-            label={label}
-            variant={variant}
-          />
+          <StatusPill label={label} variant={variant} />
         </TableCell>
       )
-    }
+    },
   },
   priority: {
     label: "Mức ưu tiên",
@@ -204,11 +209,9 @@ const COLUMN_METADATA = {
       if (task.priority === "urgent") {
         priorityColor = "bg-destructive/10 text-destructive border-destructive/20"
       } else if (task.priority === "high") {
-        priorityColor =
-          "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:text-amber-500"
+        priorityColor = "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:text-amber-500"
       } else if (task.priority === "medium") {
-        priorityColor =
-          "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400"
+        priorityColor = "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400"
       }
       return (
         <TableCell>
@@ -217,16 +220,14 @@ const COLUMN_METADATA = {
           </Badge>
         </TableCell>
       )
-    }
+    },
   },
   progress: {
     label: "Tiến độ",
     className: "w-16 text-right font-semibold text-xs",
     render: (task: Task) => (
-      <TableCell className="text-right font-bold text-xs">
-        {task.progress}%
-      </TableCell>
-    )
+      <TableCell className="text-right font-bold text-xs">{task.progress}%</TableCell>
+    ),
   },
   author: {
     label: "Tác giả",
@@ -235,7 +236,7 @@ const COLUMN_METADATA = {
       <TableCell className="text-xs text-foreground font-semibold">
         {task.createdBy ? task.createdBy.fullName : "Chưa rõ"}
       </TableCell>
-    )
+    ),
   },
   startDate: {
     label: "Bắt đầu",
@@ -244,7 +245,7 @@ const COLUMN_METADATA = {
       <TableCell className="text-xs text-muted-foreground font-mono">
         {task.startDate ? new Date(task.startDate).toLocaleDateString("vi-VN") : "-"}
       </TableCell>
-    )
+    ),
   },
   dueDate: {
     label: "Hết hạn",
@@ -253,7 +254,7 @@ const COLUMN_METADATA = {
       <TableCell className="text-xs text-muted-foreground font-mono">
         {task.dueDate ? new Date(task.dueDate).toLocaleDateString("vi-VN") : "-"}
       </TableCell>
-    )
+    ),
   },
   estimatedTime: {
     label: "Thời gian ước lượng",
@@ -262,7 +263,7 @@ const COLUMN_METADATA = {
       <TableCell className="text-xs text-right font-mono font-semibold">
         {task.estimatedTime ? `${task.estimatedTime}h` : "-"}
       </TableCell>
-    )
+    ),
   },
   updatedAt: {
     label: "Cập nhật",
@@ -271,16 +272,11 @@ const COLUMN_METADATA = {
       <TableCell className="text-xs text-muted-foreground font-mono">
         {task.updatedAt ? new Date(task.updatedAt).toLocaleDateString("vi-VN") : "-"}
       </TableCell>
-    )
-  }
+    ),
+  },
 }
 
-export function ProjectIssuesTab({
-  projectId,
-  members,
-  teamLeader,
-  user,
-}: ProjectIssuesTabProps) {
+export function ProjectIssuesTab({ projectId, members, teamLeader, user }: ProjectIssuesTabProps) {
   const queryClient = useQueryClient()
   const [searchParams, setSearchParams] = useSearchParams()
   const [appliedUrlQueryId, setAppliedUrlQueryId] = useState<string | null>(null)
@@ -364,7 +360,6 @@ export function ProjectIssuesTab({
   const [newQueryShowRelated, setNewQueryShowRelated] = useState(true)
   const [newQueryShowProgress, setNewQueryShowProgress] = useState(false)
 
-  
   const [newQuerySelectedCols, setNewQuerySelectedCols] = useState<string[]>([
     "id",
     "tracker",
@@ -382,7 +377,7 @@ export function ProjectIssuesTab({
     tracker: { enabled: false, value: "all" },
     priority: { enabled: false, value: "all" },
     assignee: { enabled: false, value: "all" },
-    createdBy: { enabled: false, value: "all" }
+    createdBy: { enabled: false, value: "all" },
   })
 
   // Fetch custom queries for this project and type 'issues'
@@ -400,14 +395,21 @@ export function ProjectIssuesTab({
       if (matched) {
         try {
           const data = JSON.parse(matched.queryData)
-          
+
           if (data.defaultColumns) {
- 
-            setDisplayColumns(["id", "tracker", "title", "assignee", "status", "priority", "progress"])
+            setDisplayColumns([
+              "id",
+              "tracker",
+              "title",
+              "assignee",
+              "status",
+              "priority",
+              "progress",
+            ])
           } else if (Array.isArray(data.selectedColumns)) {
             setDisplayColumns(data.selectedColumns)
           }
-          
+
           if (data.filters) {
             if (data.filters.status?.enabled) {
               setStatusFilter(data.filters.status.value)
@@ -425,12 +427,20 @@ export function ProjectIssuesTab({
               setPriorityFilter(ALL_FILTER_VALUE)
             }
             if (data.filters.assignee?.enabled) {
-              setAssigneeFilter(data.filters.assignee.value === "me" ? (user?.id || ALL_FILTER_VALUE) : data.filters.assignee.value)
+              setAssigneeFilter(
+                data.filters.assignee.value === "me"
+                  ? user?.id || ALL_FILTER_VALUE
+                  : data.filters.assignee.value,
+              )
             } else {
               setAssigneeFilter(ALL_FILTER_VALUE)
             }
             if (data.filters.createdBy?.enabled) {
-              setCreatedByIdFilter(data.filters.createdBy.value === "me" ? (user?.id || ALL_FILTER_VALUE) : data.filters.createdBy.value)
+              setCreatedByIdFilter(
+                data.filters.createdBy.value === "me"
+                  ? user?.id || ALL_FILTER_VALUE
+                  : data.filters.createdBy.value,
+              )
             } else {
               setCreatedByIdFilter(ALL_FILTER_VALUE)
             }
@@ -451,11 +461,25 @@ export function ProjectIssuesTab({
       if (matched) {
         try {
           const data = JSON.parse(matched.queryData)
-          const matchStatus = data.filters?.status?.enabled ? data.filters.status.value : ALL_FILTER_VALUE
-          const matchTracker = data.filters?.tracker?.enabled ? data.filters.tracker.value : ALL_FILTER_VALUE
-          const matchPriority = data.filters?.priority?.enabled ? data.filters.priority.value : ALL_FILTER_VALUE
-          const matchAssignee = data.filters?.assignee?.enabled ? (data.filters.assignee.value === "me" ? (user?.id || ALL_FILTER_VALUE) : data.filters.assignee.value) : ALL_FILTER_VALUE
-          const matchCreatedBy = data.filters?.createdBy?.enabled ? (data.filters.createdBy.value === "me" ? (user?.id || ALL_FILTER_VALUE) : data.filters.createdBy.value) : ALL_FILTER_VALUE
+          const matchStatus = data.filters?.status?.enabled
+            ? data.filters.status.value
+            : ALL_FILTER_VALUE
+          const matchTracker = data.filters?.tracker?.enabled
+            ? data.filters.tracker.value
+            : ALL_FILTER_VALUE
+          const matchPriority = data.filters?.priority?.enabled
+            ? data.filters.priority.value
+            : ALL_FILTER_VALUE
+          const matchAssignee = data.filters?.assignee?.enabled
+            ? data.filters.assignee.value === "me"
+              ? user?.id || ALL_FILTER_VALUE
+              : data.filters.assignee.value
+            : ALL_FILTER_VALUE
+          const matchCreatedBy = data.filters?.createdBy?.enabled
+            ? data.filters.createdBy.value === "me"
+              ? user?.id || ALL_FILTER_VALUE
+              : data.filters.createdBy.value
+            : ALL_FILTER_VALUE
 
           if (
             statusFilter !== matchStatus ||
@@ -467,16 +491,16 @@ export function ProjectIssuesTab({
             const newParams = new URLSearchParams(searchParams)
             newParams.delete("queryId")
             setSearchParams(newParams)
- 
+
             setAppliedUrlQueryId(null)
           }
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e) {
           // ignore
         }
       }
     }
-// eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     statusFilter,
     trackerFilter,
@@ -486,7 +510,7 @@ export function ProjectIssuesTab({
     urlQueryId,
     appliedUrlQueryId,
     savedQueries,
-    user
+    user,
   ])
 
   // Save query mutation
@@ -511,13 +535,21 @@ export function ProjectIssuesTab({
       setNewQueryShowRelated(true)
       setNewQueryShowProgress(false)
 
-      setNewQuerySelectedCols(["id", "tracker", "title", "assignee", "status", "priority", "progress"])
+      setNewQuerySelectedCols([
+        "id",
+        "tracker",
+        "title",
+        "assignee",
+        "status",
+        "priority",
+        "progress",
+      ])
       setNewQueryFilters({
         status: { enabled: true, value: "open" },
         tracker: { enabled: false, value: "all" },
         priority: { enabled: false, value: "all" },
         assignee: { enabled: false, value: "all" },
-        createdBy: { enabled: false, value: "all" }
+        createdBy: { enabled: false, value: "all" },
       })
     },
     onError: (err: unknown) => {
@@ -549,14 +581,14 @@ export function ProjectIssuesTab({
   const applySavedQuery = (q: CustomQuery) => {
     try {
       const data = JSON.parse(q.queryData)
-      
+
       // Set columns
       if (data.defaultColumns) {
         setDisplayColumns(["id", "tracker", "title", "assignee", "status", "priority", "progress"])
       } else if (Array.isArray(data.selectedColumns)) {
         setDisplayColumns(data.selectedColumns)
       }
-      
+
       // Set filters
       if (data.filters) {
         if (data.filters.status?.enabled) {
@@ -575,12 +607,20 @@ export function ProjectIssuesTab({
           setPriorityFilter(ALL_FILTER_VALUE)
         }
         if (data.filters.assignee?.enabled) {
-          setAssigneeFilter(data.filters.assignee.value === "me" ? (user?.id || ALL_FILTER_VALUE) : data.filters.assignee.value)
+          setAssigneeFilter(
+            data.filters.assignee.value === "me"
+              ? user?.id || ALL_FILTER_VALUE
+              : data.filters.assignee.value,
+          )
         } else {
           setAssigneeFilter(ALL_FILTER_VALUE)
         }
         if (data.filters.createdBy?.enabled) {
-          setCreatedByIdFilter(data.filters.createdBy.value === "me" ? (user?.id || ALL_FILTER_VALUE) : data.filters.createdBy.value)
+          setCreatedByIdFilter(
+            data.filters.createdBy.value === "me"
+              ? user?.id || ALL_FILTER_VALUE
+              : data.filters.createdBy.value,
+          )
         } else {
           setCreatedByIdFilter(ALL_FILTER_VALUE)
         }
@@ -592,7 +632,7 @@ export function ProjectIssuesTab({
       setSearchParams(newParams)
 
       toast.success(`Đã áp dụng truy vấn: ${q.name}`)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       toast.error("Không thể đọc dữ liệu truy vấn đã lưu")
     }
@@ -625,16 +665,8 @@ export function ProjectIssuesTab({
 
   // Reset page number back to 1 when filters are updated
   useEffect(() => {
- 
     setCurrentPage(1)
-  }, [
-    issueSearch,
-    trackerFilter,
-    statusFilter,
-    priorityFilter,
-    assigneeFilter,
-    createdByIdFilter,
-  ])
+  }, [issueSearch, trackerFilter, statusFilter, priorityFilter, assigneeFilter, createdByIdFilter])
 
   // Fetch paginated, filtered tasks list
   const { data: tasksData, isLoading: isLoadingTasks } = useQuery({
@@ -661,7 +693,8 @@ export function ProjectIssuesTab({
         search: issueSearch || undefined,
         tracker: trackerFilter === ALL_FILTER_VALUE ? undefined : (trackerFilter as TaskTracker),
         statusId: statusFilter === ALL_FILTER_VALUE ? undefined : statusFilter,
-        priority: priorityFilter === ALL_FILTER_VALUE ? undefined : (priorityFilter as TaskPriority),
+        priority:
+          priorityFilter === ALL_FILTER_VALUE ? undefined : (priorityFilter as TaskPriority),
         assigneeId: assigneeFilter === ALL_FILTER_VALUE ? undefined : assigneeFilter,
         createdById: createdByIdFilter === ALL_FILTER_VALUE ? undefined : createdByIdFilter,
         sortBy,
@@ -669,8 +702,6 @@ export function ProjectIssuesTab({
       }),
     enabled: !!projectId,
   })
-
-
 
   const tasks = tasksData?.data || []
   const totalItems = tasksData?.meta.total || 0
@@ -694,7 +725,6 @@ export function ProjectIssuesTab({
     return pages
   }
 
-
   return (
     <div className="grid grid-cols-12 gap-6">
       {/* Main Issues list table container */}
@@ -706,7 +736,9 @@ export function ProjectIssuesTab({
             <Input
               placeholder="Tìm công việc..."
               value={issueSearch}
-              onChange={(e) => { setIssueSearch(e.target.value); }}
+              onChange={(e) => {
+                setIssueSearch(e.target.value)
+              }}
               className="pl-11 h-9 text-xs border-border rounded-full"
             />
           </div>
@@ -724,7 +756,9 @@ export function ProjectIssuesTab({
                 <SelectContent className="rounded-xl">
                   <SelectItem value={ALL_FILTER_VALUE}>Tất cả</SelectItem>
                   {TASK_TRACKERS.map((tr) => (
-                    <SelectItem key={tr} value={tr}>{tr}</SelectItem>
+                    <SelectItem key={tr} value={tr}>
+                      {tr}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -742,7 +776,9 @@ export function ProjectIssuesTab({
                 <SelectContent className="rounded-xl">
                   <SelectItem value={ALL_FILTER_VALUE}>Tất cả</SelectItem>
                   {statuses.map((st) => (
-                    <SelectItem key={st.id} value={st.id}>{st.name}</SelectItem>
+                    <SelectItem key={st.id} value={st.id}>
+                      {st.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -760,7 +796,9 @@ export function ProjectIssuesTab({
                 <SelectContent className="rounded-xl">
                   <SelectItem value={ALL_FILTER_VALUE}>Tất cả</SelectItem>
                   {TASK_PRIORITIES.map((pr) => (
-                    <SelectItem key={pr} value={pr}>{pr}</SelectItem>
+                    <SelectItem key={pr} value={pr}>
+                      {pr}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -778,9 +816,7 @@ export function ProjectIssuesTab({
                 <SelectContent className="rounded-xl bg-popover">
                   <SelectItem value={ALL_FILTER_VALUE}>Tất cả</SelectItem>
                   {teamLeader && (
-                    <SelectItem value={teamLeader.id}>
-                      {teamLeader.fullName} (TL)
-                    </SelectItem>
+                    <SelectItem value={teamLeader.id}>{teamLeader.fullName} (TL)</SelectItem>
                   )}
                   {members.map((m) => (
                     <SelectItem key={m.employeeId} value={m.employeeId}>
@@ -844,13 +880,20 @@ export function ProjectIssuesTab({
                       >
                         {displayColumns.map((colKey) => {
                           const col = COLUMN_METADATA[colKey as keyof typeof COLUMN_METADATA]
-                          const renderFn = col.render as (t: Task, s?: typeof statuses) => React.ReactNode
+                          const renderFn = col.render as (
+                            t: Task,
+                            s?: typeof statuses,
+                          ) => React.ReactNode
                           if (colKey === "status") {
                             return renderFn(task, statuses)
                           }
                           return renderFn(task)
                         })}
-                        <TableCell onClick={(e) => { e.stopPropagation(); }}>
+                        <TableCell
+                          onClick={(e) => {
+                            e.stopPropagation()
+                          }}
+                        >
                           <Button
                             variant="ghost"
                             size="icon-xs"
@@ -953,7 +996,11 @@ export function ProjectIssuesTab({
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-border bg-popover">
                       {["10", "25", "50", "100"].map((size) => (
-                        <SelectItem key={size} value={size} className="rounded-lg text-xs font-semibold">
+                        <SelectItem
+                          key={size}
+                          value={size}
+                          className="rounded-lg text-xs font-semibold"
+                        >
                           {size}
                         </SelectItem>
                       ))}
@@ -1048,20 +1095,24 @@ export function ProjectIssuesTab({
             <Button
               variant="ghost"
               size="icon-xs"
-              onClick={() => { setIsNewQueryOpen(true); }}
+              onClick={() => {
+                setIsNewQueryOpen(true)
+              }}
               className="rounded-full cursor-pointer hover:bg-muted text-primary"
               title="Tạo truy vấn mới"
             >
               <Plus className="size-3.5" />
             </Button>
           </div>
-          
+
           <div className="flex flex-col gap-2">
             {savedQueries && savedQueries.length > 0 ? (
               savedQueries.map((q) => (
                 <div key={q.id} className="flex items-center justify-between group">
                   <button
-                    onClick={() => { applySavedQuery(q); }}
+                    onClick={() => {
+                      applySavedQuery(q)
+                    }}
                     className="text-left text-xs font-semibold px-2 py-1.5 rounded-lg text-sky-600 dark:text-sky-400 hover:underline truncate max-w-[170px]"
                     title={q.name}
                   >
@@ -1082,7 +1133,9 @@ export function ProjectIssuesTab({
                 </div>
               ))
             ) : (
-              <span className="text-xs text-muted-foreground italic px-2">Chưa có truy vấn nào được lưu</span>
+              <span className="text-xs text-muted-foreground italic px-2">
+                Chưa có truy vấn nào được lưu
+              </span>
             )}
           </div>
         </PageCard>
@@ -1102,13 +1155,18 @@ export function ProjectIssuesTab({
             {/* Top inputs block */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="query-name" className="text-xs font-semibold text-foreground flex items-center gap-0.5">
+                <Label
+                  htmlFor="query-name"
+                  className="text-xs font-semibold text-foreground flex items-center gap-0.5"
+                >
                   Tên truy vấn <span className="text-rose-500">*</span>
                 </Label>
                 <Input
                   id="query-name"
                   value={newQueryName}
-                  onChange={(e) => { setNewQueryName(e.target.value); }}
+                  onChange={(e) => {
+                    setNewQueryName(e.target.value)
+                  }}
                   placeholder="Ví dụ: Công việc mở tuần này..."
                   className="h-9 text-xs rounded-full border-border"
                   autoFocus
@@ -1123,7 +1181,9 @@ export function ProjectIssuesTab({
                 <Input
                   id="query-desc"
                   value={newQueryDesc}
-                  onChange={(e) => { setNewQueryDesc(e.target.value); }}
+                  onChange={(e) => {
+                    setNewQueryDesc(e.target.value)
+                  }}
                   placeholder="Mô tả mục đích của truy vấn..."
                   className="h-9 text-xs rounded-full border-border"
                 />
@@ -1136,7 +1196,9 @@ export function ProjectIssuesTab({
                 id="query-for-all"
                 type="checkbox"
                 checked={newQueryForAll}
-                onChange={(e) => { setNewQueryForAll(e.target.checked); }}
+                onChange={(e) => {
+                  setNewQueryForAll(e.target.checked)
+                }}
                 className="rounded border-border size-4"
               />
               <Label htmlFor="query-for-all" className="text-xs font-semibold cursor-pointer">
@@ -1146,8 +1208,10 @@ export function ProjectIssuesTab({
 
             {/* Options section */}
             <div className="border-t border-border pt-3 space-y-2.5">
-              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Tùy chọn</span>
-              
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                Tùy chọn
+              </span>
+
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   <input
@@ -1157,12 +1221,23 @@ export function ProjectIssuesTab({
                     onChange={(e) => {
                       setNewQueryDefaultCols(e.target.checked)
                       if (e.target.checked) {
-                        setNewQuerySelectedCols(["id", "tracker", "title", "assignee", "status", "priority", "progress"])
+                        setNewQuerySelectedCols([
+                          "id",
+                          "tracker",
+                          "title",
+                          "assignee",
+                          "status",
+                          "priority",
+                          "progress",
+                        ])
                       }
                     }}
                     className="rounded border-border size-4"
                   />
-                  <Label htmlFor="query-default-cols" className="text-xs font-semibold cursor-pointer">
+                  <Label
+                    htmlFor="query-default-cols"
+                    className="text-xs font-semibold cursor-pointer"
+                  >
                     Cột mặc định
                   </Label>
                 </div>
@@ -1173,7 +1248,9 @@ export function ProjectIssuesTab({
                     <input
                       type="checkbox"
                       checked={newQueryShowRelated}
-                      onChange={(e) => { setNewQueryShowRelated(e.target.checked); }}
+                      onChange={(e) => {
+                        setNewQueryShowRelated(e.target.checked)
+                      }}
                       className="rounded border-border size-3.5"
                     />
                     Liên quan
@@ -1182,7 +1259,9 @@ export function ProjectIssuesTab({
                     <input
                       type="checkbox"
                       checked={newQueryShowProgress}
-                      onChange={(e) => { setNewQueryShowProgress(e.target.checked); }}
+                      onChange={(e) => {
+                        setNewQueryShowProgress(e.target.checked)
+                      }}
                       className="rounded border-border size-3.5"
                     />
                     Tiến độ
@@ -1194,7 +1273,15 @@ export function ProjectIssuesTab({
                       onChange={(e) => {
                         setNewQueryDefaultCols(!e.target.checked)
                         if (!e.target.checked) {
-                          setNewQuerySelectedCols(["id", "tracker", "title", "assignee", "status", "priority", "progress"])
+                          setNewQuerySelectedCols([
+                            "id",
+                            "tracker",
+                            "title",
+                            "assignee",
+                            "status",
+                            "priority",
+                            "progress",
+                          ])
                         }
                       }}
                       className="rounded border-border size-3.5"
@@ -1208,15 +1295,19 @@ export function ProjectIssuesTab({
             {/* Filters section */}
             <div className="space-y-3 border-t border-border pt-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Bộ lọc</span>
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Bộ lọc
+                </span>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Thêm lọc:</span>
+                  <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+                    Thêm lọc:
+                  </span>
                   <Select
                     value=""
                     onValueChange={(filterKey) => {
-                      setNewQueryFilters(prev => ({
+                      setNewQueryFilters((prev) => ({
                         ...prev,
-                        [filterKey]: { ...prev[filterKey as keyof typeof prev], enabled: true }
+                        [filterKey]: { ...prev[filterKey as keyof typeof prev], enabled: true },
                       }))
                     }}
                   >
@@ -1224,11 +1315,31 @@ export function ProjectIssuesTab({
                       <SelectValue placeholder="Chọn bộ lọc..." />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl bg-popover">
-                      {!newQueryFilters.status.enabled && <SelectItem value="status" className="text-xs">Trạng thái</SelectItem>}
-                      {!newQueryFilters.tracker.enabled && <SelectItem value="tracker" className="text-xs">Kiểu công việc</SelectItem>}
-                      {!newQueryFilters.priority.enabled && <SelectItem value="priority" className="text-xs">Mức ưu tiên</SelectItem>}
-                      {!newQueryFilters.assignee.enabled && <SelectItem value="assignee" className="text-xs">Người thực hiện</SelectItem>}
-                      {!newQueryFilters.createdBy.enabled && <SelectItem value="createdBy" className="text-xs">Tác giả</SelectItem>}
+                      {!newQueryFilters.status.enabled && (
+                        <SelectItem value="status" className="text-xs">
+                          Trạng thái
+                        </SelectItem>
+                      )}
+                      {!newQueryFilters.tracker.enabled && (
+                        <SelectItem value="tracker" className="text-xs">
+                          Kiểu công việc
+                        </SelectItem>
+                      )}
+                      {!newQueryFilters.priority.enabled && (
+                        <SelectItem value="priority" className="text-xs">
+                          Mức ưu tiên
+                        </SelectItem>
+                      )}
+                      {!newQueryFilters.assignee.enabled && (
+                        <SelectItem value="assignee" className="text-xs">
+                          Người thực hiện
+                        </SelectItem>
+                      )}
+                      {!newQueryFilters.createdBy.enabled && (
+                        <SelectItem value="createdBy" className="text-xs">
+                          Tác giả
+                        </SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -1242,9 +1353,9 @@ export function ProjectIssuesTab({
                         type="checkbox"
                         checked={newQueryFilters.status.enabled}
                         onChange={(e) => {
-                          setNewQueryFilters(prev => ({
+                          setNewQueryFilters((prev) => ({
                             ...prev,
-                            status: { ...prev.status, enabled: e.target.checked }
+                            status: { ...prev.status, enabled: e.target.checked },
                           }))
                         }}
                         className="rounded border-border size-3.5"
@@ -1254,9 +1365,9 @@ export function ProjectIssuesTab({
                     <Select
                       value={newQueryFilters.status.value}
                       onValueChange={(val) => {
-                        setNewQueryFilters(prev => ({
+                        setNewQueryFilters((prev) => ({
                           ...prev,
-                          status: { ...prev.status, value: val }
+                          status: { ...prev.status, value: val },
                         }))
                       }}
                     >
@@ -1266,8 +1377,10 @@ export function ProjectIssuesTab({
                       <SelectContent className="rounded-xl bg-popover">
                         <SelectItem value="open">mở (open)</SelectItem>
                         <SelectItem value="all">tất cả (all)</SelectItem>
-                        {statuses.map(st => (
-                          <SelectItem key={st.id} value={st.id}>{st.name}</SelectItem>
+                        {statuses.map((st) => (
+                          <SelectItem key={st.id} value={st.id}>
+                            {st.name}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -1281,9 +1394,9 @@ export function ProjectIssuesTab({
                         type="checkbox"
                         checked={newQueryFilters.tracker.enabled}
                         onChange={(e) => {
-                          setNewQueryFilters(prev => ({
+                          setNewQueryFilters((prev) => ({
                             ...prev,
-                            tracker: { ...prev.tracker, enabled: e.target.checked }
+                            tracker: { ...prev.tracker, enabled: e.target.checked },
                           }))
                         }}
                         className="rounded border-border size-3.5"
@@ -1293,9 +1406,9 @@ export function ProjectIssuesTab({
                     <Select
                       value={newQueryFilters.tracker.value}
                       onValueChange={(val) => {
-                        setNewQueryFilters(prev => ({
+                        setNewQueryFilters((prev) => ({
                           ...prev,
-                          tracker: { ...prev.tracker, value: val }
+                          tracker: { ...prev.tracker, value: val },
                         }))
                       }}
                     >
@@ -1304,8 +1417,10 @@ export function ProjectIssuesTab({
                       </SelectTrigger>
                       <SelectContent className="rounded-xl bg-popover">
                         <SelectItem value="all">tất cả</SelectItem>
-                        {TASK_TRACKERS.map(tr => (
-                          <SelectItem key={tr} value={tr}>{tr}</SelectItem>
+                        {TASK_TRACKERS.map((tr) => (
+                          <SelectItem key={tr} value={tr}>
+                            {tr}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -1319,9 +1434,9 @@ export function ProjectIssuesTab({
                         type="checkbox"
                         checked={newQueryFilters.priority.enabled}
                         onChange={(e) => {
-                          setNewQueryFilters(prev => ({
+                          setNewQueryFilters((prev) => ({
                             ...prev,
-                            priority: { ...prev.priority, enabled: e.target.checked }
+                            priority: { ...prev.priority, enabled: e.target.checked },
                           }))
                         }}
                         className="rounded border-border size-3.5"
@@ -1331,9 +1446,9 @@ export function ProjectIssuesTab({
                     <Select
                       value={newQueryFilters.priority.value}
                       onValueChange={(val) => {
-                        setNewQueryFilters(prev => ({
+                        setNewQueryFilters((prev) => ({
                           ...prev,
-                          priority: { ...prev.priority, value: val }
+                          priority: { ...prev.priority, value: val },
                         }))
                       }}
                     >
@@ -1342,8 +1457,10 @@ export function ProjectIssuesTab({
                       </SelectTrigger>
                       <SelectContent className="rounded-xl bg-popover">
                         <SelectItem value="all">tất cả</SelectItem>
-                        {TASK_PRIORITIES.map(pr => (
-                          <SelectItem key={pr} value={pr}>{pr}</SelectItem>
+                        {TASK_PRIORITIES.map((pr) => (
+                          <SelectItem key={pr} value={pr}>
+                            {pr}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -1357,9 +1474,9 @@ export function ProjectIssuesTab({
                         type="checkbox"
                         checked={newQueryFilters.assignee.enabled}
                         onChange={(e) => {
-                          setNewQueryFilters(prev => ({
+                          setNewQueryFilters((prev) => ({
                             ...prev,
-                            assignee: { ...prev.assignee, enabled: e.target.checked }
+                            assignee: { ...prev.assignee, enabled: e.target.checked },
                           }))
                         }}
                         className="rounded border-border size-3.5"
@@ -1369,9 +1486,9 @@ export function ProjectIssuesTab({
                     <Select
                       value={newQueryFilters.assignee.value}
                       onValueChange={(val) => {
-                        setNewQueryFilters(prev => ({
+                        setNewQueryFilters((prev) => ({
                           ...prev,
-                          assignee: { ...prev.assignee, value: val }
+                          assignee: { ...prev.assignee, value: val },
                         }))
                       }}
                     >
@@ -1382,11 +1499,9 @@ export function ProjectIssuesTab({
                         <SelectItem value="all">tất cả</SelectItem>
                         <SelectItem value="me">Tôi (Người đăng nhập)</SelectItem>
                         {teamLeader && (
-                          <SelectItem value={teamLeader.id}>
-                            {teamLeader.fullName} (TL)
-                          </SelectItem>
+                          <SelectItem value={teamLeader.id}>{teamLeader.fullName} (TL)</SelectItem>
                         )}
-                        {members.map(m => (
+                        {members.map((m) => (
                           <SelectItem key={m.employeeId} value={m.employeeId}>
                             {m.employee?.fullName || "Chưa rõ"}
                           </SelectItem>
@@ -1403,9 +1518,9 @@ export function ProjectIssuesTab({
                         type="checkbox"
                         checked={newQueryFilters.createdBy.enabled}
                         onChange={(e) => {
-                          setNewQueryFilters(prev => ({
+                          setNewQueryFilters((prev) => ({
                             ...prev,
-                            createdBy: { ...prev.createdBy, enabled: e.target.checked }
+                            createdBy: { ...prev.createdBy, enabled: e.target.checked },
                           }))
                         }}
                         className="rounded border-border size-3.5"
@@ -1415,9 +1530,9 @@ export function ProjectIssuesTab({
                     <Select
                       value={newQueryFilters.createdBy.value}
                       onValueChange={(val) => {
-                        setNewQueryFilters(prev => ({
+                        setNewQueryFilters((prev) => ({
                           ...prev,
-                          createdBy: { ...prev.createdBy, value: val }
+                          createdBy: { ...prev.createdBy, value: val },
                         }))
                       }}
                     >
@@ -1428,11 +1543,9 @@ export function ProjectIssuesTab({
                         <SelectItem value="all">tất cả</SelectItem>
                         <SelectItem value="me">Tôi (Người tạo)</SelectItem>
                         {teamLeader && (
-                          <SelectItem value={teamLeader.id}>
-                            {teamLeader.fullName} (TL)
-                          </SelectItem>
+                          <SelectItem value={teamLeader.id}>{teamLeader.fullName} (TL)</SelectItem>
                         )}
-                        {members.map(m => (
+                        {members.map((m) => (
                           <SelectItem key={m.employeeId} value={m.employeeId}>
                             {m.employee?.fullName || "Chưa rõ"}
                           </SelectItem>
@@ -1447,20 +1560,32 @@ export function ProjectIssuesTab({
             {/* Columns selection section */}
             {!newQueryDefaultCols && (
               <div className="space-y-2 border-t border-border pt-3">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Cột</span>
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Cột
+                </span>
                 <div className="grid grid-cols-12 gap-3 items-center">
                   {/* Available */}
                   <div className="col-span-5 flex flex-col gap-1">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Các cột có sẵn</label>
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                      Các cột có sẵn
+                    </label>
                     <select
                       multiple
                       size={6}
                       value={availSelectedKey ? [availSelectedKey] : []}
-                      onChange={(e) => { setAvailSelectedKey(e.target.value); }}
+                      onChange={(e) => {
+                        setAvailSelectedKey(e.target.value)
+                      }}
                       className="w-full text-xs p-2 border border-border rounded-xl h-32 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
                     >
-                      {AVAILABLE_COLUMNS.filter(col => !newQuerySelectedCols.includes(col.key)).map(col => (
-                        <option key={col.key} value={col.key} className="p-1 rounded-lg hover:bg-muted cursor-pointer">
+                      {AVAILABLE_COLUMNS.filter(
+                        (col) => !newQuerySelectedCols.includes(col.key),
+                      ).map((col) => (
+                        <option
+                          key={col.key}
+                          value={col.key}
+                          className="p-1 rounded-lg hover:bg-muted cursor-pointer"
+                        >
                           {col.label}
                         </option>
                       ))}
@@ -1476,7 +1601,7 @@ export function ProjectIssuesTab({
                       disabled={!availSelectedKey}
                       onClick={() => {
                         if (availSelectedKey) {
-                          setNewQuerySelectedCols(prev => [...prev, availSelectedKey])
+                          setNewQuerySelectedCols((prev) => [...prev, availSelectedKey])
                           setAvailSelectedKey(null)
                         }
                       }}
@@ -1491,7 +1616,9 @@ export function ProjectIssuesTab({
                       disabled={!selSelectedKey}
                       onClick={() => {
                         if (selSelectedKey) {
-                          setNewQuerySelectedCols(prev => prev.filter(k => k !== selSelectedKey))
+                          setNewQuerySelectedCols((prev) =>
+                            prev.filter((k) => k !== selSelectedKey),
+                          )
                           setSelSelectedKey(null)
                         }
                       }}
@@ -1503,18 +1630,26 @@ export function ProjectIssuesTab({
 
                   {/* Selected */}
                   <div className="col-span-4 flex flex-col gap-1">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Các cột được lựa chọn</label>
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                      Các cột được lựa chọn
+                    </label>
                     <select
                       multiple
                       size={6}
                       value={selSelectedKey ? [selSelectedKey] : []}
-                      onChange={(e) => { setSelSelectedKey(e.target.value); }}
+                      onChange={(e) => {
+                        setSelSelectedKey(e.target.value)
+                      }}
                       className="w-full text-xs p-2 border border-border rounded-xl h-32 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
                     >
-                      {newQuerySelectedCols.map(colKey => {
-                        const col = AVAILABLE_COLUMNS.find(c => c.key === colKey)
+                      {newQuerySelectedCols.map((colKey) => {
+                        const col = AVAILABLE_COLUMNS.find((c) => c.key === colKey)
                         return (
-                          <option key={colKey} value={colKey} className="p-1 rounded-lg hover:bg-muted cursor-pointer">
+                          <option
+                            key={colKey}
+                            value={colKey}
+                            className="p-1 rounded-lg hover:bg-muted cursor-pointer"
+                          >
                             {col ? col.label : colKey}
                           </option>
                         )
@@ -1528,11 +1663,13 @@ export function ProjectIssuesTab({
                       type="button"
                       variant="outline"
                       size="icon-xs"
-                      disabled={!selSelectedKey || newQuerySelectedCols.indexOf(selSelectedKey) === 0}
+                      disabled={
+                        !selSelectedKey || newQuerySelectedCols.indexOf(selSelectedKey) === 0
+                      }
                       onClick={() => {
                         if (selSelectedKey) {
-                          setNewQuerySelectedCols(prev => {
-                            const filtered = prev.filter(k => k !== selSelectedKey)
+                          setNewQuerySelectedCols((prev) => {
+                            const filtered = prev.filter((k) => k !== selSelectedKey)
                             return [selSelectedKey, ...filtered]
                           })
                         }
@@ -1546,10 +1683,12 @@ export function ProjectIssuesTab({
                       type="button"
                       variant="outline"
                       size="icon-xs"
-                      disabled={!selSelectedKey || newQuerySelectedCols.indexOf(selSelectedKey) === 0}
+                      disabled={
+                        !selSelectedKey || newQuerySelectedCols.indexOf(selSelectedKey) === 0
+                      }
                       onClick={() => {
                         if (selSelectedKey) {
-                          setNewQuerySelectedCols(prev => {
+                          setNewQuerySelectedCols((prev) => {
                             const idx = prev.indexOf(selSelectedKey)
                             if (idx > 0) {
                               const copy = [...prev]
@@ -1570,10 +1709,14 @@ export function ProjectIssuesTab({
                       type="button"
                       variant="outline"
                       size="icon-xs"
-                      disabled={!selSelectedKey || newQuerySelectedCols.indexOf(selSelectedKey) === newQuerySelectedCols.length - 1}
+                      disabled={
+                        !selSelectedKey ||
+                        newQuerySelectedCols.indexOf(selSelectedKey) ===
+                          newQuerySelectedCols.length - 1
+                      }
                       onClick={() => {
                         if (selSelectedKey) {
-                          setNewQuerySelectedCols(prev => {
+                          setNewQuerySelectedCols((prev) => {
                             const idx = prev.indexOf(selSelectedKey)
                             if (idx < prev.length - 1) {
                               const copy = [...prev]
@@ -1594,11 +1737,15 @@ export function ProjectIssuesTab({
                       type="button"
                       variant="outline"
                       size="icon-xs"
-                      disabled={!selSelectedKey || newQuerySelectedCols.indexOf(selSelectedKey) === newQuerySelectedCols.length - 1}
+                      disabled={
+                        !selSelectedKey ||
+                        newQuerySelectedCols.indexOf(selSelectedKey) ===
+                          newQuerySelectedCols.length - 1
+                      }
                       onClick={() => {
                         if (selSelectedKey) {
-                          setNewQuerySelectedCols(prev => {
-                            const filtered = prev.filter(k => k !== selSelectedKey)
+                          setNewQuerySelectedCols((prev) => {
+                            const filtered = prev.filter((k) => k !== selSelectedKey)
                             return [...filtered, selSelectedKey]
                           })
                         }
@@ -1617,7 +1764,9 @@ export function ProjectIssuesTab({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => { setIsNewQueryOpen(false); }}
+                onClick={() => {
+                  setIsNewQueryOpen(false)
+                }}
                 className="h-9 text-xs rounded-full cursor-pointer"
               >
                 Hủy

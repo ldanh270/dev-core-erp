@@ -1,5 +1,6 @@
-import { Button } from "@/components/ui/button"
 import { DatePicker } from "@/components/common"
+import { RecruitmentFormFieldEditor } from "@/components/features/recruitment/recruitment-form-field-editor"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -10,7 +11,6 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
   Select,
   SelectContent,
@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import { EMPLOYEE_TYPES, EMPLOYEE_TYPE_LABELS } from "@/config/entities/employee.config"
 import {
@@ -34,7 +35,6 @@ import type { CreateRequisitionDto } from "@/lib/api/recruitment.api"
 import { cn } from "@/lib/utils"
 import type { JobRequisition } from "@/types/recruitment.types"
 import type { RecruitmentFormField } from "@/types/recruitment.types"
-import { RecruitmentFormFieldEditor } from "@/components/features/recruitment/recruitment-form-field-editor"
 
 import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
@@ -116,7 +116,8 @@ export function CreateRequisitionDialog({
   const createRequisition = useCreateRequisition()
   const updateRequisition = useUpdateRequisition()
   const { data: approvers = [], isLoading: isLoadingApprovers } = useRequisitionApprovers()
-  const [candidateSchema, setCandidateSchema] = useState<RecruitmentFormField[]>(defaultCandidateSchema)
+  const [candidateSchema, setCandidateSchema] =
+    useState<RecruitmentFormField[]>(defaultCandidateSchema)
   const form = useForm<RequisitionFormValues>({
     resolver: zodResolver(requisitionFormSchema),
     defaultValues,
@@ -133,7 +134,12 @@ export function CreateRequisitionDialog({
       if (requisition) {
         setCandidateSchema(
           requisition.candidateFields?.length
-            ? requisition.candidateFields.map(({ key, label, type, required }) => ({ key, label, type, required }))
+            ? requisition.candidateFields.map(({ key, label, type, required }) => ({
+                key,
+                label,
+                type,
+                required,
+              }))
             : defaultCandidateSchema,
         )
         form.reset({
@@ -165,7 +171,9 @@ export function CreateRequisitionDialog({
     }
   }, [form, open, requisition])
 
-  const close = () => { onOpenChange(false); }
+  const close = () => {
+    onOpenChange(false)
+  }
 
   const onSubmit = (values: RequisitionFormValues) => {
     const parsed = requisitionFormSchema.parse(values)
@@ -207,18 +215,24 @@ export function CreateRequisitionDialog({
           </DialogHeader>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Vị trí cần tuyển" required error={errors.title?.message} className="sm:col-span-2">
+            <Field
+              label="Vị trí cần tuyển"
+              required
+              error={errors.title?.message}
+              className="sm:col-span-2"
+            >
               <Input placeholder="Ví dụ: Frontend Developer" {...form.register("title")} />
             </Field>
             <Field label="Loại hình làm việc" required error={errors.employmentType?.message}>
               <Select
                 value={employmentType}
-                onValueChange={(value) => { form.setValue(
+                onValueChange={(value) => {
+                  form.setValue(
                     "employmentType",
                     value as RequisitionFormValues["employmentType"],
                     { shouldValidate: true },
-                  ); }
-                }
+                  )
+                }}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -276,10 +290,11 @@ export function CreateRequisitionDialog({
             <Field label="Ưu tiên" required error={errors.priority?.message}>
               <Select
                 value={priority}
-                onValueChange={(value) => { form.setValue("priority", value as RequisitionFormValues["priority"], {
+                onValueChange={(value) => {
+                  form.setValue("priority", value as RequisitionFormValues["priority"], {
                     shouldValidate: true,
-                  }); }
-                }
+                  })
+                }}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -287,7 +302,9 @@ export function CreateRequisitionDialog({
                 <SelectContent>
                   {REQUISITION_PRIORITIES.map((priority) => (
                     <SelectItem key={priority} value={priority}>
-                      {REQUISITION_PRIORITY_LABELS[priority as keyof typeof REQUISITION_PRIORITY_LABELS] ?? priority}
+                      {REQUISITION_PRIORITY_LABELS[
+                        priority as keyof typeof REQUISITION_PRIORITY_LABELS
+                      ] ?? priority}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -299,8 +316,9 @@ export function CreateRequisitionDialog({
               ) : (
                 <Select
                   value={approverId}
-                  onValueChange={(value) => { form.setValue("approverId", value, { shouldValidate: true }); }
-                  }
+                  onValueChange={(value) => {
+                    form.setValue("approverId", value, { shouldValidate: true })
+                  }}
                   disabled={approvers.length === 0}
                 >
                   <SelectTrigger className="w-full">
@@ -327,7 +345,10 @@ export function CreateRequisitionDialog({
                 value={form.watch("targetHireDate") || null}
                 size="sm"
                 onChange={(val) => {
-                  form.setValue("targetHireDate", val || "", { shouldValidate: true, shouldDirty: true });
+                  form.setValue("targetHireDate", val || "", {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
                 }}
               />
             </Field>
@@ -336,7 +357,10 @@ export function CreateRequisitionDialog({
                 value={form.watch("targetCloseDate") || null}
                 size="sm"
                 onChange={(val) => {
-                  form.setValue("targetCloseDate", val || "", { shouldValidate: true, shouldDirty: true });
+                  form.setValue("targetCloseDate", val || "", {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
                 }}
               />
             </Field>
@@ -390,7 +414,14 @@ function Field({
 }) {
   return (
     <div className={`grid gap-2 ${className ?? ""}`}>
-      <Label>{label}{required && <span className="ml-1 text-destructive" aria-hidden="true">*</span>}</Label>
+      <Label>
+        {label}
+        {required && (
+          <span className="ml-1 text-destructive" aria-hidden="true">
+            *
+          </span>
+        )}
+      </Label>
       {children}
       {error && <p className="text-sm text-destructive">{error}</p>}
     </div>

@@ -3,10 +3,10 @@ import {
   EMPLOYEE_TYPE,
   WORK_SCHEDULE_TYPE,
 } from "@/configs/entities/employee.config.ts"
-import type { EmployeeType, WorkScheduleType } from "@/types/employee.types.ts"
 import { DB_ERROR_CODES } from "@/configs/system/db.config.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
+import { ENVIRONMENT, ENV_ENVIRONMENT } from "@/configs/system/server.config.ts"
 import { prisma } from "@/libs/database.ts"
 import {
   AppRole,
@@ -20,10 +20,10 @@ import {
   UpdateEmployeeDto,
 } from "@/types"
 import { IAuthRepository } from "@/types/auth.types.ts"
+import type { EmployeeType, WorkScheduleType } from "@/types/employee.types.ts"
+import { EmailUtil } from "@/utils/email.util.ts"
 import { AppError } from "@/utils/error.util.ts"
 import { HashUtil } from "@/utils/hash.util.ts"
-import { EmailUtil } from "@/utils/email.util.ts"
-import { ENVIRONMENT, ENV_ENVIRONMENT } from "@/configs/system/server.config.ts"
 
 import { auditService } from "./audit.service.ts"
 import { authorizationService } from "./authorization.service.ts"
@@ -145,7 +145,7 @@ export class EmployeeService implements IEmployeeService {
     let positionName = data.position
     if (repoData.positionId) {
       const posRecord = await prisma.position.findUnique({
-        where: { id: repoData.positionId }
+        where: { id: repoData.positionId },
       })
       if (posRecord) {
         positionName = posRecord.name

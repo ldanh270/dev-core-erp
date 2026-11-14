@@ -1,7 +1,10 @@
-import { useState } from "react"
 import { useCreateEmployee } from "@/hooks/employees/queries/useEmployeeQuery"
+import {
+  getBioFieldError,
+  getJobFieldError,
+  hasRequiredEmployeeFields,
+} from "@/lib/employee-form-validation"
 import { routerNavigate } from "@/lib/router-navigator"
-import { getBioFieldError, getJobFieldError, hasRequiredEmployeeFields } from "@/lib/employee-form-validation"
 import type {
   IEducationItem,
   IEmployeeWizardFormData,
@@ -9,6 +12,9 @@ import type {
   IFamilyMemberItem,
   WizardTab,
 } from "@/types/employee-wizard.types"
+
+import { useState } from "react"
+
 import { toast } from "sonner"
 
 export function useEmployeeCreateWizard() {
@@ -16,7 +22,7 @@ export function useEmployeeCreateWizard() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
 
   const [defaultEmployeeCode] = useState(
-    () => `Outfiz${10000 + (window.crypto.getRandomValues(new Uint32Array(1))[0] % 90000)}`
+    () => `Outfiz${10000 + (window.crypto.getRandomValues(new Uint32Array(1))[0] % 90000)}`,
   )
 
   const [formData, setFormData] = useState<IEmployeeWizardFormData>({
@@ -77,7 +83,7 @@ export function useEmployeeCreateWizard() {
 
   const updateField = <K extends keyof IEmployeeWizardFormData>(
     field: K,
-    value: IEmployeeWizardFormData[K]
+    value: IEmployeeWizardFormData[K],
   ) => {
     setFormData((prev) => {
       const next = { ...prev, [field]: value }
@@ -109,7 +115,7 @@ export function useEmployeeCreateWizard() {
     setFormData((prev) => ({
       ...prev,
       educations: prev.educations.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item
+        item.id === id ? { ...item, [field]: value } : item,
       ),
     }))
   }
@@ -138,7 +144,7 @@ export function useEmployeeCreateWizard() {
     setFormData((prev) => ({
       ...prev,
       experiences: prev.experiences.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item
+        item.id === id ? { ...item, [field]: value } : item,
       ),
     }))
   }
@@ -172,12 +178,12 @@ export function useEmployeeCreateWizard() {
   const updateFamilyMember = (
     id: string,
     field: keyof IFamilyMemberItem,
-    value: string | boolean
+    value: string | boolean,
   ) => {
     setFormData((prev) => ({
       ...prev,
       familyMembers: prev.familyMembers.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item
+        item.id === id ? { ...item, [field]: value } : item,
       ),
     }))
   }
@@ -193,20 +199,22 @@ export function useEmployeeCreateWizard() {
 
   const validateTab = (tab: WizardTab): boolean => {
     if (tab === "bio") {
-      const hasError = getBioFieldError("fullName", formData.fullName)
-        || getBioFieldError("phone", formData.phone)
-        || getBioFieldError("email", formData.email)
+      const hasError =
+        getBioFieldError("fullName", formData.fullName) ||
+        getBioFieldError("phone", formData.phone) ||
+        getBioFieldError("email", formData.email)
 
       if (hasError) toast.error("Vui lòng kiểm tra thông tin trong Sơ yếu lý lịch")
       return !hasError
     }
 
     if (tab === "job") {
-      const hasError = getJobFieldError("employeeCode", formData.employeeCode)
-        || getJobFieldError("positionId", formData.positionId)
-        || getJobFieldError("department", formData.department)
-        || getJobFieldError("workLocation", formData.workLocation)
-        || getJobFieldError("startDate", formData.startDate)
+      const hasError =
+        getJobFieldError("employeeCode", formData.employeeCode) ||
+        getJobFieldError("positionId", formData.positionId) ||
+        getJobFieldError("department", formData.department) ||
+        getJobFieldError("workLocation", formData.workLocation) ||
+        getJobFieldError("startDate", formData.startDate)
 
       if (hasError) toast.error("Vui lòng kiểm tra thông tin trong Công việc")
       return !hasError
@@ -218,9 +226,12 @@ export function useEmployeeCreateWizard() {
   const moveToTab = (nextTab: WizardTab) => {
     const getTabOrder = (tab: WizardTab): number => {
       switch (tab) {
-        case "bio": return 0
-        case "job": return 1
-        case "family": return 2
+        case "bio":
+          return 0
+        case "job":
+          return 1
+        case "family":
+          return 2
       }
     }
     const nextOrder = getTabOrder(nextTab)

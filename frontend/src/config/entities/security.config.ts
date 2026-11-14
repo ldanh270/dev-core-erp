@@ -18,7 +18,10 @@ export type IExportStatus = (typeof EXPORT_STATUS)[keyof typeof EXPORT_STATUS]
 /**
  * Maps activity actions to UI badge variants for security screens.
  */
-export const ACTIVITY_ACTION_VARIANTS: Record<string, "success" | "danger" | "warning" | "neutral" | "info"> = {
+export const ACTIVITY_ACTION_VARIANTS: Record<
+  string,
+  "success" | "danger" | "warning" | "neutral" | "info"
+> = {
   login: "success",
   logout: "neutral",
   failed_login: "danger",
@@ -124,7 +127,10 @@ export const SECURITY_QUERY_KEY = {
 /**
  * Maps security categories to UI badge variants.
  */
-export const SECURITY_CATEGORY_VARIANTS: Record<string, "success" | "danger" | "warning" | "neutral" | "info"> = {
+export const SECURITY_CATEGORY_VARIANTS: Record<
+  string,
+  "success" | "danger" | "warning" | "neutral" | "info"
+> = {
   security: "danger",
   role: "warning",
   permission: "warning",

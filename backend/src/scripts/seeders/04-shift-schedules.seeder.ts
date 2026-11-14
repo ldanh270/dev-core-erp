@@ -42,9 +42,7 @@ export class ShiftSchedulesSeeder implements ISeeder {
                 shiftId: primaryShiftId,
               })),
               // Saturday: night shift when available (index 2)
-              ...(workingShiftIds[2]
-                ? [{ dayOfWeek: 6, shiftId: workingShiftIds[2] }]
-                : []),
+              ...(workingShiftIds[2] ? [{ dayOfWeek: 6, shiftId: workingShiftIds[2] }] : []),
             ],
           },
         },

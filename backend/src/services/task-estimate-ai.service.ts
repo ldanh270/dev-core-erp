@@ -79,7 +79,8 @@ export class TaskEstimateAiService {
 
     const startDate = task.startDate || new Date()
     // Default to 3 days if dueDate is not specified
-    const dueDate = task.dueDate || new Date(startDate.getTime() + DEFAULT_TASK_DUE_DAYS * MS_PER_DAY)
+    const dueDate =
+      task.dueDate || new Date(startDate.getTime() + DEFAULT_TASK_DUE_DAYS * MS_PER_DAY)
 
     const memberIds = members.map((member) => member.employeeId as string)
 
@@ -94,13 +95,14 @@ export class TaskEstimateAiService {
           }
         }
         const emp = await this.employeeRepository.findById(member.employeeId)
-        return emp
-          ? { id: emp.id, fullName: emp.fullName, position: emp.position ?? null }
-          : null
+        return emp ? { id: emp.id, fullName: emp.fullName, position: emp.position ?? null } : null
       }),
     )
 
-    const employeeById = new Map<string, { id: string; fullName: string; position: string | null }>()
+    const employeeById = new Map<
+      string,
+      { id: string; fullName: string; position: string | null }
+    >()
     for (const emp of resolvedEmployees) {
       if (emp) employeeById.set(emp.id, emp)
     }
@@ -338,7 +340,10 @@ export class TaskEstimateAiService {
     employeeIds: string[],
   ): Promise<Map<string, CompletedTaskSuggestionRow[]>> {
     if (this.taskRepository.listRecentCompletedByAssignees) {
-      return this.taskRepository.listRecentCompletedByAssignees(employeeIds, RECENT_COMPLETED_TASKS_LIMIT)
+      return this.taskRepository.listRecentCompletedByAssignees(
+        employeeIds,
+        RECENT_COMPLETED_TASKS_LIMIT,
+      )
     }
 
     const entries = await Promise.all(
@@ -352,7 +357,11 @@ export class TaskEstimateAiService {
         })
         return [
           assigneeId,
-          res.data.map((t) => ({ id: t.id, title: t.title, estimatedTime: t.estimatedTime ?? null })),
+          res.data.map((t) => ({
+            id: t.id,
+            title: t.title,
+            estimatedTime: t.estimatedTime ?? null,
+          })),
         ] as const
       }),
     )

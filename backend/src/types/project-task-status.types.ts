@@ -43,7 +43,11 @@ export interface IProjectTaskStatusService {
   getStatus(id: string, userId: string): Promise<ProjectTaskStatus | null>
   listStatuses(projectId: string, userId: string): Promise<ProjectTaskStatus[]>
   createStatus(data: CreateProjectTaskStatusDto, userId: string): Promise<ProjectTaskStatus>
-  updateStatus(id: string, data: UpdateProjectTaskStatusDto, userId: string): Promise<ProjectTaskStatus | null>
+  updateStatus(
+    id: string,
+    data: UpdateProjectTaskStatusDto,
+    userId: string,
+  ): Promise<ProjectTaskStatus | null>
   deleteStatus(id: string, fallbackStatusId: string | undefined, userId: string): Promise<boolean>
   createDefaultStatuses(projectId: string): Promise<ProjectTaskStatus[]>
 }

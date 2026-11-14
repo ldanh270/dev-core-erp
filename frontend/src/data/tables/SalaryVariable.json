@@ -153,33 +153,25 @@
   "indexes": [
     {
       "name": "IX_SalaryVariable_code",
-      "columns": [
-        "code"
-      ],
+      "columns": ["code"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_SalaryVariable_createdById",
-      "columns": [
-        "createdById"
-      ],
+      "columns": ["createdById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_SalaryVariable_isActive",
-      "columns": [
-        "isActive"
-      ],
+      "columns": ["isActive"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_SalaryVariable",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -189,12 +181,8 @@
       "virtualName": "createdBy",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "createdById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["createdById"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

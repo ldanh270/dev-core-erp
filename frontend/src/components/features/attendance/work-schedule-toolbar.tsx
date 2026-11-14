@@ -1,7 +1,7 @@
 /** Controls employee filtering and week selection for the company work-schedule table. */
+import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { DatePicker } from "@/components/common"
 import { formatDateParam } from "@/utils/attendance/format-date-param"
 
 import { CalendarDays, ChevronLeft, ChevronRight, Search } from "lucide-react"

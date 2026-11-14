@@ -1,12 +1,12 @@
-import type { TableDef } from "../database-reference.types"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+
 import type { ErdPoint } from "../database-erd-geometry"
 import { buildErdLayoutFromBase, createBaseErdLayout } from "../database-erd-layout"
+import type { TableDef } from "../database-reference.types"
 import { useDatabaseErdDrag } from "./use-database-erd-drag"
 import { useDatabaseErdFullscreen } from "./use-database-erd-fullscreen"
 import { useDatabaseErdKeyboard } from "./use-database-erd-keyboard"
 import { useDatabaseErdWheel } from "./use-database-erd-wheel"
-
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 export interface ViewportSize {
   width: number
@@ -43,7 +43,11 @@ export function useDatabaseErdViewport(
   const fitOnFullscreenRef = useRef(false)
 
   const currentTableNames = useMemo(
-    () => tables.map((t) => `${t.name}:${t.outgoingRelations.length}`).sort().join(","),
+    () =>
+      tables
+        .map((t) => `${t.name}:${t.outgoingRelations.length}`)
+        .sort()
+        .join(","),
     [tables],
   )
   const prevTableNamesRef = useRef<string>("")
@@ -82,8 +86,7 @@ export function useDatabaseErdViewport(
     () =>
       baseLayout.visibleTables.map((table) => ({
         table,
-        position:
-          nodePositions.get(table.name) ??
+        position: nodePositions.get(table.name) ??
           baseLayout.basePositions.get(table.name) ?? { x: 64, y: 64 },
       })),
     [baseLayout, nodePositions],
@@ -132,7 +135,9 @@ export function useDatabaseErdViewport(
       setViewport({ width: entry.contentRect.width, height: entry.contentRect.height })
     })
     observer.observe(element)
-    return () => { observer.disconnect() }
+    return () => {
+      observer.disconnect()
+    }
   }, [isFullscreen])
 
   useDatabaseErdWheel({ viewportRef, scale, setScale, pan, setPan })

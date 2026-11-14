@@ -1,8 +1,11 @@
+import { BGC_STATUS } from "@/configs/entities/recruitment.config"
+import { BGC_CHECKS } from "@/configs/rules/recruitment.config"
 import { backgroundCheckRepository } from "@/repositories/background-check.repository"
 import { recruitmentOfferRepository } from "@/repositories/recruitment-offer.repository"
-import type { CreateBackgroundCheckInput, UpdateBackgroundCheckInput } from "@/types/recruitment.types"
-import { BGC_CHECKS } from "@/configs/rules/recruitment.config"
-import { BGC_STATUS } from "@/configs/entities/recruitment.config"
+import type {
+  CreateBackgroundCheckInput,
+  UpdateBackgroundCheckInput,
+} from "@/types/recruitment.types"
 
 export class BackgroundCheckService {
   async create(input: CreateBackgroundCheckInput) {
@@ -47,7 +50,8 @@ export class BackgroundCheckService {
     if (existing.status !== BGC_STATUS.IN_PROGRESS) {
       throw new Error("Cannot update completed background checks")
     }
-    if (input.status !== undefined) throw new Error("Background check status is changed only by commands")
+    if (input.status !== undefined)
+      throw new Error("Background check status is changed only by commands")
     return backgroundCheckRepository.update(id, input, checkedById)
   }
 
@@ -74,7 +78,7 @@ export class BackgroundCheckService {
     // Verify all required checks were done
     // field names are controlled by BGC_CHECKS definition (literal keys), not user input.
     // eslint-disable-next-line security/detect-object-injection
-    const existingMap = new Map(Object.entries(existing));
+    const existingMap = new Map(Object.entries(existing))
     const allChecksDone = requiredChecks.every(({ field }) => existingMap.get(field) === true)
 
     if (!allChecksDone && passed) {

@@ -1,6 +1,7 @@
 import { prisma } from "@/libs/database"
-import { Prisma, type PrismaClient } from "@prisma/client"
 import type { CreateScorecardInput, UpdateScorecardInput } from "@/types/recruitment.types"
+
+import { Prisma, type PrismaClient } from "@prisma/client"
 
 export class ScorecardRepository {
   constructor(private readonly db: PrismaClient = prisma) {}

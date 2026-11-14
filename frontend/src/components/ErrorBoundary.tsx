@@ -38,7 +38,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="flex items-center gap-3 text-destructive border-b border-destructive/10 pb-3">
               <span className="text-xl font-bold">⚠️ React Runtime Error</span>
             </div>
-            
+
             <div className="space-y-1">
               <p className="font-semibold text-foreground text-sm">Error Message:</p>
               <pre className="p-3 bg-muted/50 rounded-lg text-xs font-mono overflow-auto max-h-[100px] border border-border text-destructive">

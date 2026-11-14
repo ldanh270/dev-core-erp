@@ -1,27 +1,27 @@
+import { PageCard, SectionHeader } from "@/components/common"
 import { CalendarGrid } from "@/components/features/attendance/calendar/calendar-grid"
 import { CalendarLegend } from "@/components/features/attendance/calendar/calendar-legend"
 import { WeekPickerActions } from "@/components/features/attendance/calendar/week-picker-actions"
-import { PageCard, SectionHeader } from "@/components/common"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CALENDAR_WEEK_DAY_COUNT, type CalendarTab } from "@/config/rules/calendar.config"
 import { ATTENDANCE_QUERY_KEYS } from "@/config/entities/attendance.config"
+import { CALENDAR_WEEK_DAY_COUNT, type CalendarTab } from "@/config/rules/calendar.config"
 import { useAttendanceRecords } from "@/hooks/attendance/use-attendance"
 import { useProfile } from "@/hooks/use-profile"
 import { holidaysApi, schedulesApi, shiftsApi } from "@/lib/api/attendance.api"
 import { cn } from "@/lib/utils"
+import { useAuthStore } from "@/store/auth-store"
 import { formatDateParam } from "@/utils/attendance/format-date-param"
 import { getDayLabel } from "@/utils/attendance/get-day-label"
 import { getRecordDateKey } from "@/utils/attendance/get-record-date-key"
 import { getWeekDates } from "@/utils/attendance/get-week-dates"
 import { getWeekRangeLabel } from "@/utils/attendance/get-week-range-label"
 import { getWeekStart } from "@/utils/attendance/get-week-start"
-import { resolveScheduleDay } from "@/utils/attendance/resolve-schedule-day"
 import { mapPlannedWeekToScheduleDays } from "@/utils/attendance/map-planned-week-to-schedule-days.util"
 import {
   doesHolidayApplyToEmployee,
   groupHolidaysByDate,
 } from "@/utils/attendance/pick-holiday-for-employee.util"
-import { useAuthStore } from "@/store/auth-store"
+import { resolveScheduleDay } from "@/utils/attendance/resolve-schedule-day"
 
 import { useState } from "react"
 
@@ -113,8 +113,7 @@ export function WeeklyScheduleCalendar({
     isRecordsLoading ||
     isHolidaysLoading ||
     (showAllShifts && isShiftsLoading)
-  const hasPlannedSchedule =
-    showAllShifts ? activeShifts.length > 0 : scheduleDaysByDay.size > 0
+  const hasPlannedSchedule = showAllShifts ? activeShifts.length > 0 : scheduleDaysByDay.size > 0
   const hasActualRecords = Boolean(records?.length)
   const hasHoliday = holidaysByDate.size > 0
   const isCalendarEmpty =

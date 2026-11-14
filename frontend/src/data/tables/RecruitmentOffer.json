@@ -363,33 +363,25 @@
   "indexes": [
     {
       "name": "IX_RecruitmentOffer_applicationId",
-      "columns": [
-        "applicationId"
-      ],
+      "columns": ["applicationId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentOffer_candidateId",
-      "columns": [
-        "candidateId"
-      ],
+      "columns": ["candidateId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentOffer_status",
-      "columns": [
-        "status"
-      ],
+      "columns": ["status"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_RecruitmentOffer",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -399,34 +391,22 @@
       "virtualName": "application",
       "targetModel": "RecruitmentApplication",
       "relationName": null,
-      "foreignKeyFields": [
-        "applicationId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["applicationId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "candidate",
       "targetModel": "Candidate",
       "relationName": null,
-      "foreignKeyFields": [
-        "candidateId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["candidateId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "createdBy",
       "targetModel": "Employee",
       "relationName": "OfferCreator",
-      "foreignKeyFields": [
-        "createdById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["createdById"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

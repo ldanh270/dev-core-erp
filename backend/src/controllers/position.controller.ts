@@ -1,8 +1,13 @@
 import { ErrorCode } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { AuthRequest } from "@/middlewares/auth.middleware.ts"
-import { createPositionSchema, updatePositionSchema, saveProjectPositionRulesSchema } from "@/schemas/position.schema.ts"
+import {
+  createPositionSchema,
+  saveProjectPositionRulesSchema,
+  updatePositionSchema,
+} from "@/schemas/position.schema.ts"
 import { ApiResponse, IPositionService, Position, ProjectPositionRule } from "@/types"
+
 import { Response } from "express"
 import { z } from "zod"
 
@@ -112,7 +117,10 @@ export class PositionController {
    * @param req - Express auth request with projectId parameter.
    * @param res - Express response containing project position rules.
    */
-  listProjectRules = async (req: AuthRequest, res: Response<ApiResponse<ProjectPositionRule[]>>) => {
+  listProjectRules = async (
+    req: AuthRequest,
+    res: Response<ApiResponse<ProjectPositionRule[]>>,
+  ) => {
     try {
       const { projectId } = req.params as { projectId: string }
       const result = await this.service.getProjectRules(projectId)
@@ -127,7 +135,10 @@ export class PositionController {
    * @param req - Express auth request with projectId parameter and rules array in body.
    * @param res - Express response containing the updated project rules.
    */
-  saveProjectRules = async (req: AuthRequest, res: Response<ApiResponse<ProjectPositionRule[]>>) => {
+  saveProjectRules = async (
+    req: AuthRequest,
+    res: Response<ApiResponse<ProjectPositionRule[]>>,
+  ) => {
     try {
       const { projectId } = req.params as { projectId: string }
       const body = saveProjectPositionRulesSchema.parse(req.body) as any

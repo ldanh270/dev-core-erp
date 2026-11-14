@@ -1,5 +1,3 @@
-import { useState } from "react"
-import { toast } from "sonner"
 import { AppDrawer, StatusPill, useConfirm } from "@/components/common"
 import { ContractList } from "@/components/employee-contract/ContractList"
 import { ContractModal, type ContractModalMode } from "@/components/employee-contract/ContractModal"
@@ -12,13 +10,26 @@ import {
   getRoleLabel,
   getWorkScheduleTypeLabel,
 } from "@/config/entities/employee.config"
-import { useEmployee } from "@/hooks/employees/queries/useEmployeeQuery"
 import { useUpdateContract } from "@/hooks/employee-contract/use-contracts"
+import { useEmployee } from "@/hooks/employees/queries/useEmployeeQuery"
 import type { IContract } from "@/types/employee-contract.types"
-
-import { Briefcase, Building, Calendar, FileText, Hash, Mail, MapPin, Phone, Plus, User } from "lucide-react"
-
 import type { Employee } from "@/types/employee.types"
+
+import { useState } from "react"
+
+import {
+  Briefcase,
+  Building,
+  Calendar,
+  FileText,
+  Hash,
+  Mail,
+  MapPin,
+  Phone,
+  Plus,
+  User,
+} from "lucide-react"
+import { toast } from "sonner"
 
 /**
  * Prop definitions for EmployeeDetailsDrawer component.
@@ -339,7 +350,9 @@ export function EmployeeDetailsDrawer({ employeeId, onClose }: EmployeeDetailsDr
       {employee && (
         <ContractModal
           isOpen={isContractModalOpen}
-          onClose={() => { setIsContractModalOpen(false); }}
+          onClose={() => {
+            setIsContractModalOpen(false)
+          }}
           employeeId={employee.id}
           mode={contractModalMode}
           contract={selectedContract}

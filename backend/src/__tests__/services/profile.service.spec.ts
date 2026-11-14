@@ -279,7 +279,10 @@ describe("ProfileService", () => {
         }),
         expect.any(Function),
       )
-      expect(mockRepo.updateAvatar).toHaveBeenCalledWith("emp-123", { url: "https://cloudinary.com/new.webp", id: "old_avatar_id", })
+      expect(mockRepo.updateAvatar).toHaveBeenCalledWith("emp-123", {
+        url: "https://cloudinary.com/new.webp",
+        id: "old_avatar_id",
+      })
       expect(result.avatar).toEqual({
         url: "https://cloudinary.com/new.webp",
         id: "old_avatar_id",
@@ -571,4 +574,3 @@ describe("ProfileService", () => {
     })
   })
 })
-

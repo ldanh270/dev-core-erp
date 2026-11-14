@@ -1,5 +1,5 @@
 /** Displays company schedules for a selected week and employee search scope using DataTablePage. */
-import { DatePicker, DataTablePage, type DataTableColumn } from "@/components/common"
+import { type DataTableColumn, DataTablePage, DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { CALENDAR_WEEK_DAY_COUNT } from "@/config/rules/calendar.config"
 import { getTableColWidthPx } from "@/config/table-columns.config"
@@ -40,10 +40,7 @@ export function CompanyWorkSchedulesView() {
     setCurrentPage(1)
   }, [])
 
-  const {
-    data: employeeData,
-    isLoading: isEmployeesLoading,
-  } = useEmployees({
+  const { data: employeeData, isLoading: isEmployeesLoading } = useEmployees({
     page: currentPage,
     limit: pageSize,
     search: employeeSearch.trim() || undefined,
@@ -58,10 +55,7 @@ export function CompanyWorkSchedulesView() {
     })),
   })
 
-  const {
-    data: holidays,
-    isLoading: isHolidaysLoading,
-  } = useQuery({
+  const { data: holidays, isLoading: isHolidaysLoading } = useQuery({
     queryKey: ["holidays", weekStartIso, weekEndIso],
     queryFn: () => holidaysApi.getAll({ startDate: weekStartIso, endDate: weekEndIso }),
   })
@@ -193,9 +187,7 @@ export function CompanyWorkSchedulesView() {
             size="icon"
             className="rounded-full size-10 shrink-0"
             onClick={() => {
-              setSelectedDate((currentDate) =>
-                addDays(currentDate, -1 * CALENDAR_WEEK_DAY_COUNT),
-              )
+              setSelectedDate((currentDate) => addDays(currentDate, -1 * CALENDAR_WEEK_DAY_COUNT))
             }}
           >
             <ChevronLeft className="size-4" />
@@ -206,9 +198,7 @@ export function CompanyWorkSchedulesView() {
             size="icon"
             className="rounded-full size-10 shrink-0"
             onClick={() => {
-              setSelectedDate((currentDate) =>
-                addDays(currentDate, 1 * CALENDAR_WEEK_DAY_COUNT),
-              )
+              setSelectedDate((currentDate) => addDays(currentDate, 1 * CALENDAR_WEEK_DAY_COUNT))
             }}
           >
             <ChevronRight className="size-4" />

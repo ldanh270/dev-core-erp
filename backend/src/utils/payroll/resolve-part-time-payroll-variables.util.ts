@@ -31,7 +31,9 @@ export function pickPartTimePayrollContext(
 
   return {
     partTimeOvertimeMultiplier: variableMap.get(PART_TIME_PAYROLL_VARIABLE.OVERTIME_MULTIPLIER),
-    partTimeWorkingDayMultiplier: variableMap.get(PART_TIME_PAYROLL_VARIABLE.WORKING_DAY_MULTIPLIER),
+    partTimeWorkingDayMultiplier: variableMap.get(
+      PART_TIME_PAYROLL_VARIABLE.WORKING_DAY_MULTIPLIER,
+    ),
     partTimeDefaultHourlyRate: variableMap.get(PART_TIME_PAYROLL_VARIABLE.DEFAULT_HOURLY_RATE),
   }
 }
@@ -40,11 +42,8 @@ export function pickPartTimePayrollContext(
 export function resolvePartTimePayrollVariables(
   context: PartTimePayrollContext,
 ): ResolvedPartTimePayrollVariables {
-  const {
-    partTimeOvertimeMultiplier,
-    partTimeWorkingDayMultiplier,
-    partTimeDefaultHourlyRate,
-  } = context
+  const { partTimeOvertimeMultiplier, partTimeWorkingDayMultiplier, partTimeDefaultHourlyRate } =
+    context
 
   const overtimeMultiplier = readOptionalNumber(
     partTimeOvertimeMultiplier,

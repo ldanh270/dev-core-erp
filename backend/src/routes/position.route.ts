@@ -2,10 +2,11 @@ import { PositionController } from "@/controllers/position.controller.ts"
 import { prisma } from "@/libs/database.ts"
 import { authenticate } from "@/middlewares/auth.middleware.ts"
 import { requirePermission } from "@/middlewares/permission.middleware.ts"
-import { PrismaPositionRepository } from "@/repositories/position.repository.ts"
 import { PrismaEmployeeRepository } from "@/repositories/employee.repository.ts"
+import { PrismaPositionRepository } from "@/repositories/position.repository.ts"
 import { PrismaProjectRepository } from "@/repositories/project.repository.ts"
 import { PositionService } from "@/services/position.service.ts"
+
 import express from "express"
 
 /**
@@ -31,23 +32,29 @@ positionRoutes.get("/:id", controller.getOne as express.RequestHandler)
 positionRoutes.post(
   "/",
   requirePermission("permission.create"),
-  controller.create as express.RequestHandler
+  controller.create as express.RequestHandler,
 )
 
 positionRoutes.put(
   "/:id",
   requirePermission("permission.update"),
-  controller.update as express.RequestHandler
+  controller.update as express.RequestHandler,
 )
 
 positionRoutes.delete(
   "/:id",
   requirePermission("permission.delete"),
-  controller.delete as express.RequestHandler
+  controller.delete as express.RequestHandler,
 )
 
 // Project-specific Position rules
-positionRoutes.get("/projects/:projectId/position-rules", controller.listProjectRules as express.RequestHandler)
-positionRoutes.post("/projects/:projectId/position-rules", controller.saveProjectRules as express.RequestHandler)
+positionRoutes.get(
+  "/projects/:projectId/position-rules",
+  controller.listProjectRules as express.RequestHandler,
+)
+positionRoutes.post(
+  "/projects/:projectId/position-rules",
+  controller.saveProjectRules as express.RequestHandler,
+)
 
 export default positionRoutes

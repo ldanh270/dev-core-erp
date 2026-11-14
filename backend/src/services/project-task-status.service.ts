@@ -66,7 +66,11 @@ export class ProjectTaskStatusService implements IProjectTaskStatusService {
 
     const isMember = await this.projectRepository.isMember(projectId, userId)
     if (!isTL && !isMember) {
-      throw new AppError("Access denied to this project's statuses.", HttpStatusCode.FORBIDDEN, LAYER_NAME)
+      throw new AppError(
+        "Access denied to this project's statuses.",
+        HttpStatusCode.FORBIDDEN,
+        LAYER_NAME,
+      )
     }
   }
 
@@ -98,7 +102,11 @@ export class ProjectTaskStatusService implements IProjectTaskStatusService {
 
     const existing = await this.repository.findByProjectAndName(data.projectId, data.name)
     if (existing) {
-      throw new AppError("Status name already exists in this project", HttpStatusCode.CONFLICT, LAYER_NAME)
+      throw new AppError(
+        "Status name already exists in this project",
+        HttpStatusCode.CONFLICT,
+        LAYER_NAME,
+      )
     }
 
     if (data.order === undefined) {
@@ -135,7 +143,11 @@ export class ProjectTaskStatusService implements IProjectTaskStatusService {
     if (data.name && data.name !== status.name) {
       const existing = await this.repository.findByProjectAndName(status.projectId, data.name)
       if (existing) {
-        throw new AppError("Status name already exists in this project", HttpStatusCode.CONFLICT, LAYER_NAME)
+        throw new AppError(
+          "Status name already exists in this project",
+          HttpStatusCode.CONFLICT,
+          LAYER_NAME,
+        )
       }
     }
 
@@ -163,7 +175,11 @@ export class ProjectTaskStatusService implements IProjectTaskStatusService {
    * Deletes a status column after moving attached tasks to a fallback column when provided.
    * The default status and the last remaining status cannot be removed.
    */
-  async deleteStatus(id: string, fallbackStatusId: string | undefined, userId: string): Promise<boolean> {
+  async deleteStatus(
+    id: string,
+    fallbackStatusId: string | undefined,
+    userId: string,
+  ): Promise<boolean> {
     const status = await this.repository.findById(id)
     if (!status) {
       throw new AppError("Status not found", HttpStatusCode.NOT_FOUND, LAYER_NAME)
@@ -180,7 +196,11 @@ export class ProjectTaskStatusService implements IProjectTaskStatusService {
 
     const list = await this.repository.listByProjectId(status.projectId)
     if (list.length <= 1) {
-      throw new AppError("Cannot delete the only status in the project.", HttpStatusCode.BAD_REQUEST, LAYER_NAME)
+      throw new AppError(
+        "Cannot delete the only status in the project.",
+        HttpStatusCode.BAD_REQUEST,
+        LAYER_NAME,
+      )
     }
 
     if (fallbackStatusId) {
@@ -201,7 +221,10 @@ export class ProjectTaskStatusService implements IProjectTaskStatusService {
       }
       await this.taskRepository.updateTasksStatusId(status.projectId, id, fallbackStatusId)
       const legacyEnum = mapStatusNameToEnum(fallback.name, fallback.isCompleted)
-      await this.taskRepository.syncLegacyStatus(fallbackStatusId, legacyEnum as ReturnType<typeof mapStatusNameToEnum>)
+      await this.taskRepository.syncLegacyStatus(
+        fallbackStatusId,
+        legacyEnum as ReturnType<typeof mapStatusNameToEnum>,
+      )
     } else {
       await this.taskRepository.updateTasksStatusId(status.projectId, id, null)
     }

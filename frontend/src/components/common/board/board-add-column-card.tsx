@@ -1,9 +1,10 @@
 import { cn } from "@/lib/utils"
-import { Plus } from "lucide-react"
+
 import type { ButtonHTMLAttributes } from "react"
 
-export interface BoardAddColumnCardProps
-  extends ButtonHTMLAttributes<HTMLButtonElement> {
+import { Plus } from "lucide-react"
+
+export interface BoardAddColumnCardProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   label?: string
 }
 
@@ -19,7 +20,7 @@ export function BoardAddColumnCard({
         "flex min-h-[140px] w-[280px] shrink-0 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl",
         "border-2 border-dashed border-border/70 bg-transparent text-muted-foreground",
         "transition-all duration-200 hover:border-primary/60 hover:bg-muted/30 hover:text-foreground",
-        className
+        className,
       )}
       {...props}
     >

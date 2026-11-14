@@ -1,19 +1,18 @@
+import { PERMISSION_CODE } from "@/configs/entities/permission.config.ts"
+import { UPLOAD_CONFIG } from "@/configs/system/upload.config.ts"
 import { ApplicationController } from "@/controllers/application.controller.ts"
 import { prisma } from "@/libs/database.ts"
 import { authenticate } from "@/middlewares/auth.middleware.ts"
-import { requirePermission, requireAnyPermission } from "@/middlewares/permission.middleware.ts"
-import { PERMISSION_CODE } from "@/configs/entities/permission.config.ts"
+import { requireAnyPermission, requirePermission } from "@/middlewares/permission.middleware.ts"
 import { PrismaApplicationRepository } from "@/repositories/application.repository.ts"
+import { PrismaEmployeeRepository } from "@/repositories/employee.repository.ts"
+import { PrismaPositionRepository } from "@/repositories/position.repository.ts"
+import { PrismaProjectRepository } from "@/repositories/project.repository.ts"
 import { ApplicationService } from "@/services/application.service.ts"
+import { PositionService } from "@/services/position.service.ts"
 
 import express from "express"
 import multer from "multer"
-import { UPLOAD_CONFIG } from "@/configs/system/upload.config.ts"
-
-import { PrismaPositionRepository } from "@/repositories/position.repository.ts"
-import { PrismaEmployeeRepository } from "@/repositories/employee.repository.ts"
-import { PrismaProjectRepository } from "@/repositories/project.repository.ts"
-import { PositionService } from "@/services/position.service.ts"
 
 /**
  * Application workflow routing configuration.
@@ -27,7 +26,12 @@ const repository = new PrismaApplicationRepository(prisma)
 const employeeRepository = new PrismaEmployeeRepository(prisma)
 const projectRepository = new PrismaProjectRepository(prisma)
 const positionRepository = new PrismaPositionRepository(prisma)
-const positionService = new PositionService(positionRepository, employeeRepository, projectRepository, prisma)
+const positionService = new PositionService(
+  positionRepository,
+  employeeRepository,
+  projectRepository,
+  prisma,
+)
 const service = new ApplicationService(repository, positionService)
 const controller = new ApplicationController(service)
 
@@ -50,7 +54,11 @@ const upload = multer({
 // ─── Employee endpoints ───────────────────────────────────────
 
 // Upload an attachment for an application
-applicationRoutes.post("/upload-attachment", upload.single("attachment"), controller.uploadAttachment as unknown as express.RequestHandler)
+applicationRoutes.post(
+  "/upload-attachment",
+  upload.single("attachment"),
+  controller.uploadAttachment as unknown as express.RequestHandler,
+)
 
 // Submit a new application (any authenticated employee)
 applicationRoutes.post("/", controller.submit)
@@ -61,21 +69,13 @@ applicationRoutes.post("/bulk", controller.submitBulk)
 // List own applications (with pagination + filters)
 applicationRoutes.get("/me", controller.listMine)
 
-
 // ─── Manager endpoints ────────────────────────────────────────
 
 // List applications that the current user has permission to approve (or is a swap partner for)
-applicationRoutes.get(
-  "/approvals",
-  controller.listApprovals,
-)
+applicationRoutes.get("/approvals", controller.listApprovals)
 
 // List all applications across all employees
-applicationRoutes.get(
-  "/",
-  requirePermission(PERMISSION_CODE.APPLICATION_READ),
-  controller.listAll,
-)
+applicationRoutes.get("/", requirePermission(PERMISSION_CODE.APPLICATION_READ), controller.listAll)
 
 // List applications for a specific employee
 applicationRoutes.get(

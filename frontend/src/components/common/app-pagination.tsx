@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils"
 import {
   Pagination,
   PaginationContent,
@@ -15,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 
 export interface AppPaginationProps {
   currentPage: number
@@ -78,11 +78,12 @@ export function AppPagination({
   }
 
   const startItemIndex = safeTotalItems > 0 ? (safeCurrentPage - 1) * itemsPerPage + 1 : 0
-  const endItemIndex = safeTotalItems > 0 ? Math.min(safeCurrentPage * itemsPerPage, safeTotalItems) : 0
+  const endItemIndex =
+    safeTotalItems > 0 ? Math.min(safeCurrentPage * itemsPerPage, safeTotalItems) : 0
 
-  const effectivePageSizeOptions = Array.from(
-    new Set([...pageSizeOptions, itemsPerPage]),
-  ).sort((a, b) => a - b)
+  const effectivePageSizeOptions = Array.from(new Set([...pageSizeOptions, itemsPerPage])).sort(
+    (a, b) => a - b,
+  )
 
   const isPrevDisabled = safeCurrentPage <= 1
   const isNextDisabled = safeCurrentPage >= effectiveTotalPages
@@ -105,7 +106,10 @@ export function AppPagination({
                 onItemsPerPageChange(Number(val))
               }}
             >
-              <SelectTrigger size="sm" className="w-20 bg-background rounded-full text-xs font-medium px-3 shadow-none border-border">
+              <SelectTrigger
+                size="sm"
+                className="w-20 bg-background rounded-full text-xs font-medium px-3 shadow-none border-border"
+              >
                 <SelectValue placeholder={itemsPerPage.toString()} />
               </SelectTrigger>
               <SelectContent>

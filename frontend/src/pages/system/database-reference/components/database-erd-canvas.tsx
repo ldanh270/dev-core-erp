@@ -1,10 +1,10 @@
-import type { ModuleDef, TableDef } from "../database-reference.types"
+import type { PointerEvent, RefObject } from "react"
+
 import type { ErdLayout, ErdPoint } from "../database-erd-geometry"
+import type { ModuleDef, TableDef } from "../database-reference.types"
+import { useDatabaseErdCanvas } from "../hooks/use-database-erd-canvas"
 import { DatabaseErdEdgesSvg } from "./database-erd-edges-svg"
 import { DatabaseErdNode } from "./database-erd-node"
-import { useDatabaseErdCanvas } from "../hooks/use-database-erd-canvas"
-
-import type { PointerEvent, RefObject } from "react"
 
 const ERD_GRID_SIZE = "22px 22px"
 
@@ -54,8 +54,7 @@ export function DatabaseErdCanvas({
       data-testid="database-erd-viewport"
       className="relative flex-1 min-h-0 w-full select-none touch-none cursor-grab overflow-hidden bg-background active:cursor-grabbing"
       style={{
-        backgroundImage:
-          "radial-gradient(var(--muted-foreground) 0.75px, transparent 0.75px)",
+        backgroundImage: "radial-gradient(var(--muted-foreground) 0.75px, transparent 0.75px)",
         backgroundSize: ERD_GRID_SIZE,
       }}
       onDragStart={(event) => {

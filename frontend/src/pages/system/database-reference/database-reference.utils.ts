@@ -1,8 +1,4 @@
-import type {
-  DbSchemaData,
-  ModuleTheme,
-  TableDef,
-} from "./database-reference.types"
+import type { DbSchemaData, ModuleTheme, TableDef } from "./database-reference.types"
 
 // Normalized relationship item rendered in the "Quan hệ liên kết" column (-> outgoing, <- incoming).
 export interface TableRelationItem {
@@ -99,7 +95,7 @@ export function filterTables(
         column.type,
         column.description,
         column.fkTargetTable ?? "",
-        ...(column.isEnum ? enumDefinitions.get(column.type)?.values ?? [] : []),
+        ...(column.isEnum ? (enumDefinitions.get(column.type)?.values ?? []) : []),
       ]),
     ].some((value) => value.toLocaleLowerCase().includes(query))
   })

@@ -1,8 +1,8 @@
 import { DAY_OF_WEEK_VALUES } from "@/configs/entities/attendance.config.ts"
 import {
+  type IPartTimeAvailabilityStatus,
   PART_TIME_AVAILABILITY_RULES,
   PART_TIME_AVAILABILITY_STATUS,
-  type IPartTimeAvailabilityStatus,
 } from "@/configs/entities/part-time-availability.config.ts"
 import { PART_TIME_AVAILABILITY_MESSAGES } from "@/configs/messages/part-time-availability.message.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"

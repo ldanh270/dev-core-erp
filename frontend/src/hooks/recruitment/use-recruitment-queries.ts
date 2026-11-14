@@ -1,17 +1,18 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
 import {
-  requisitionApi,
-  candidateApi,
-  applicationApi,
-  interviewApi,
-  scorecardApi,
-  offerApi,
-  backgroundCheckApi,
   applicantIntakeApi,
+  applicationApi,
+  backgroundCheckApi,
+  candidateApi,
+  interviewApi,
   jobPostingApi,
   oauthAccountApi,
+  offerApi,
+  requisitionApi,
+  scorecardApi,
 } from "@/lib/api/recruitment.api"
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 interface RecruitmentApiError {
   response?: {
@@ -68,10 +69,15 @@ export function usePublishJobPosting() {
     mutationFn: jobPostingApi.publish,
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({ queryKey: ["recruitment", "job-postings"] })
-      toast.success(variables.mode === "connector" ? "Đã tạo và public Google Form" : "Đã ghi nhận bài đăng")
+      toast.success(
+        variables.mode === "connector" ? "Đã tạo và public Google Form" : "Đã ghi nhận bài đăng",
+      )
     },
     onError: (error: { response?: { data?: { error?: { message?: string } } } }) => {
-      toast.error(error.response?.data?.error?.message ?? "Kênh chưa được cấu hình hoặc chưa có đường dẫn bài đăng")
+      toast.error(
+        error.response?.data?.error?.message ??
+          "Kênh chưa được cấu hình hoặc chưa có đường dẫn bài đăng",
+      )
     },
   })
 }
@@ -84,7 +90,8 @@ export function useArchiveJobPosting() {
       void queryClient.invalidateQueries({ queryKey: ["recruitment", "job-postings"] })
       toast.success("Đã lưu trữ bài đăng, ứng viên và lịch sử vẫn được giữ lại")
     },
-    onError: (error: RecruitmentApiError) => toast.error(getRecruitmentErrorMessage(error, "Không thể lưu trữ bài đăng")),
+    onError: (error: RecruitmentApiError) =>
+      toast.error(getRecruitmentErrorMessage(error, "Không thể lưu trữ bài đăng")),
   })
 }
 
@@ -108,7 +115,9 @@ export function useSyncJobPosting() {
       void queryClient.invalidateQueries({ queryKey: ["recruitment", "job-postings"] })
       void queryClient.invalidateQueries({ queryKey: ["recruitment", "candidates"] })
       void queryClient.invalidateQueries({ queryKey: ["recruitment", "applications"] })
-      toast.success(`Đã đồng bộ ${result.applicationsCreated}/${result.total} lượt ứng tuyển từ Google Form`)
+      toast.success(
+        `Đã đồng bộ ${result.applicationsCreated}/${result.total} lượt ứng tuyển từ Google Form`,
+      )
     },
     onError: (error: { response?: { data?: { error?: { message?: string } } } }) => {
       toast.error(error.response?.data?.error?.message ?? "Không thể đồng bộ kênh tuyển dụng")
@@ -325,8 +334,13 @@ export function useCreateApplication() {
 export function useUpdateApplicationStatus() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Parameters<typeof applicationApi.updateStatus>[1] }) =>
-      applicationApi.updateStatus(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string
+      data: Parameters<typeof applicationApi.updateStatus>[1]
+    }) => applicationApi.updateStatus(id, data),
     onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({ queryKey: ["recruitment", "applications"] })
       void queryClient.invalidateQueries({ queryKey: ["recruitment", "applications", id] })
@@ -397,7 +411,9 @@ export function useCreateInterview() {
   return useMutation({
     mutationFn: interviewApi.create,
     onSuccess: (_, data) => {
-      void queryClient.invalidateQueries({ queryKey: ["recruitment", "interviews", data.applicationId] })
+      void queryClient.invalidateQueries({
+        queryKey: ["recruitment", "interviews", data.applicationId],
+      })
       toast.success("Đã tạo lịch phỏng vấn")
     },
     onError: (error: { response?: { data?: { error?: { message?: string } } } }) => {
@@ -451,7 +467,9 @@ export function useCreateScorecard() {
   return useMutation({
     mutationFn: scorecardApi.create,
     onSuccess: (_, data) => {
-      void queryClient.invalidateQueries({ queryKey: ["recruitment", "scorecards", data.interviewId] })
+      void queryClient.invalidateQueries({
+        queryKey: ["recruitment", "scorecards", data.interviewId],
+      })
       toast.success("Đã tạo đánh giá")
     },
     onError: (error: { response?: { data?: { error?: { message?: string } } } }) => {

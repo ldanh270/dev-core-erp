@@ -1,5 +1,7 @@
 import type { DataTableTabItem } from "@/components/common"
-import type { ModuleDef } from "../database-reference.types"
+
+import { useMemo } from "react"
+
 import {
   Clock,
   Coins,
@@ -11,7 +13,8 @@ import {
   Users,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
-import { useMemo } from "react"
+
+import type { ModuleDef } from "../database-reference.types"
 
 // Friendly Vietnamese short names for modules to replace truncated single words.
 const MODULE_SHORT_NAMES: Record<string, string> = {

@@ -47,13 +47,20 @@ export default function RejectApprovalDialog({ open, onOpenChange, approvalId }:
 
         <Textarea
           value={reason}
-          onChange={(e) => { setReason(e.target.value); }}
+          onChange={(e) => {
+            setReason(e.target.value)
+          }}
           placeholder="Lý do từ chối..."
           className="resize-none h-24 mt-2"
         />
 
         <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={() => { onOpenChange(false); }}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              onOpenChange(false)
+            }}
+          >
             Hủy
           </Button>
           <Button

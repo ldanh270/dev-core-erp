@@ -1,10 +1,12 @@
 import {
-  ProjectTracker,
   CreateProjectTrackerDto,
-  UpdateProjectTrackerDto,
   IProjectTrackerRepository,
+  ProjectTracker,
+  UpdateProjectTrackerDto,
 } from "@/types"
+
 import { PrismaClient, ProjectTracker as PrismaProjectTracker } from "@prisma/client"
+
 import { BaseRepository } from "./base.repository.ts"
 
 /**
@@ -42,7 +44,7 @@ export class ProjectTrackerRepository extends BaseRepository implements IProject
       where: { projectId },
       orderBy: { createdAt: "asc" },
     })
-    return list.map(t => this.mapToDomain(t))
+    return list.map((t) => this.mapToDomain(t))
   }
 
   /**
@@ -63,7 +65,10 @@ export class ProjectTrackerRepository extends BaseRepository implements IProject
    * @param data - Tracker details.
    * @returns The created project tracker.
    */
-  async create(projectId: string, data: CreateProjectTrackerDto & { code: string }): Promise<ProjectTracker> {
+  async create(
+    projectId: string,
+    data: CreateProjectTrackerDto & { code: string },
+  ): Promise<ProjectTracker> {
     const tracker = await this.prisma.projectTracker.create({
       data: {
         projectId,
@@ -81,7 +86,10 @@ export class ProjectTrackerRepository extends BaseRepository implements IProject
    * @param data - Updated tracker details.
    * @returns The updated project tracker or null.
    */
-  async update(id: string, data: UpdateProjectTrackerDto & { code?: string }): Promise<ProjectTracker | null> {
+  async update(
+    id: string,
+    data: UpdateProjectTrackerDto & { code?: string },
+  ): Promise<ProjectTracker | null> {
     const tracker = await this.prisma.projectTracker.update({
       where: { id },
       data: {
@@ -108,9 +116,12 @@ export class ProjectTrackerRepository extends BaseRepository implements IProject
    * @param projectId - Project ID.
    * @param trackers - Array of tracker details.
    */
-  async createMany(projectId: string, trackers: Array<{ name: string; code: string; isActive: boolean }>): Promise<void> {
+  async createMany(
+    projectId: string,
+    trackers: Array<{ name: string; code: string; isActive: boolean }>,
+  ): Promise<void> {
     await this.prisma.projectTracker.createMany({
-      data: trackers.map(t => ({
+      data: trackers.map((t) => ({
         projectId,
         name: t.name,
         code: t.code,

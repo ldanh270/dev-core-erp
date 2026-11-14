@@ -1,7 +1,7 @@
 "use client"
 
-import { DatePicker, TimePicker } from "@/components/common"
 import { LEAVE_TYPE_OPTIONS } from "@/components/attendance/attendance-ui.meta"
+import { DatePicker, TimePicker } from "@/components/common"
 import { AddRegimeCategoryDialog } from "@/components/features/application/add-regime-category-dialog"
 import { FileUploader } from "@/components/ui/file-uploader"
 import {
@@ -214,7 +214,7 @@ export function CreateApplicationTimeSection({
                       <DatePicker
                         value={form.startDate || null}
                         onChange={(val) => {
-                          set("startDate", val || "");
+                          set("startDate", val || "")
                         }}
                         placeholder="Từ ngày"
                         size="sm"
@@ -225,7 +225,7 @@ export function CreateApplicationTimeSection({
                         value={form.endDate || null}
                         minDate={form.startDate}
                         onChange={(val) => {
-                          set("endDate", val || "");
+                          set("endDate", val || "")
                         }}
                         placeholder="Đến ngày"
                         size="sm"
@@ -308,7 +308,7 @@ export function CreateApplicationTimeSection({
               <DatePicker
                 value={form.startDate || null}
                 onChange={(val) => {
-                  set("startDate", val || "");
+                  set("startDate", val || "")
                 }}
                 placeholder="Chọn ngày..."
                 size="sm"
@@ -340,7 +340,7 @@ export function CreateApplicationTimeSection({
                   value={form.endDate || null}
                   minDate={form.startDate}
                   onChange={(val) => {
-                    set("endDate", val || "");
+                    set("endDate", val || "")
                   }}
                   placeholder="Chọn ngày kết thúc..."
                   size="sm"
@@ -575,7 +575,7 @@ export function CreateApplicationTimeSection({
                   <DatePicker
                     value={form.swapWithDate || null}
                     onChange={(val) => {
-                      set("swapWithDate", val || "");
+                      set("swapWithDate", val || "")
                     }}
                     placeholder="Chọn ngày ca đổi..."
                     size="sm"

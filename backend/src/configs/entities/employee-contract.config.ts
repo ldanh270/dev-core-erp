@@ -7,7 +7,14 @@ export const CONTRACT_TYPE = {
   INDEFINITE: "indefinite",
   SERVICE: "service",
 } as const
-export const CONTRACT_STATUS_VALUES = ["draft", "pending_signature", "active", "expired", "terminated", "renewed"] as const
+export const CONTRACT_STATUS_VALUES = [
+  "draft",
+  "pending_signature",
+  "active",
+  "expired",
+  "terminated",
+  "renewed",
+] as const
 
 export const CONTRACT_TYPE_LABELS: Record<IContractType, string> = {
   trial: "Thử việc",

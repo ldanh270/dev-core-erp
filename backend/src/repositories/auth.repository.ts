@@ -456,17 +456,17 @@ export class PrismaAuthRepository extends BaseRepository implements IAuthReposit
     actionType: string,
     timeRange: any = "today",
   ): Promise<number> {
-    let gteDate: Date | undefined;
-    
+    let gteDate: Date | undefined
+
     if (timeRange === "today") {
-      gteDate = new Date();
-      gteDate.setHours(0, 0, 0, 0);
+      gteDate = new Date()
+      gteDate.setHours(0, 0, 0, 0)
     } else if (timeRange === "7days") {
-      gteDate = new Date();
-      gteDate.setDate(gteDate.getDate() - 7);
+      gteDate = new Date()
+      gteDate.setDate(gteDate.getDate() - 7)
     } else if (timeRange === "30days") {
-      gteDate = new Date();
-      gteDate.setDate(gteDate.getDate() - 30);
+      gteDate = new Date()
+      gteDate.setDate(gteDate.getDate() - 30)
     }
 
     return this.prisma.activityLog.count({

@@ -19,7 +19,7 @@ export const employeeKeys = {
 /**
  * Custom React Query hook to fetch a paginated, filtered list of employees.
  * Supports placeholder data from previous pages to prevent sudden loading states.
- * 
+ *
  * @param query Filters, pagination, and sorting parameters for the list request
  * @param options Optional React Query settings, such as "enabled" control
  * @returns React Query query object containing the list of employees

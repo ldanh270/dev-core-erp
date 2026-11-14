@@ -38,8 +38,8 @@ export function useSubmitApplication(): UseSubmitApplicationReturn {
         // Controllers use { data, error: { message } } shape
         const status = axiosErr.response.status
         const msg =
-          axiosErr.response.data?.error?.message ??    // controller errors
-          axiosErr.response.data?.message ??  // auth middleware errors
+          axiosErr.response.data?.error?.message ?? // controller errors
+          axiosErr.response.data?.message ?? // auth middleware errors
           `Lỗi server (${status})`
 
         if (status === 401) {
@@ -47,7 +47,6 @@ export function useSubmitApplication(): UseSubmitApplicationReturn {
         } else {
           toast.error(msg)
         }
-
       } else if (axiosErr.code === "ERR_NETWORK" || axiosErr.message?.includes("Network Error")) {
         toast.error("Không thể kết nối server. Vui lòng kiểm tra backend đang chạy.")
       } else if (axiosErr.code === "ERR_CANCELED") {
@@ -92,7 +91,6 @@ export function useSubmitApplication(): UseSubmitApplicationReturn {
         } else {
           toast.error(msg)
         }
-
       } else if (axiosErr.code === "ERR_NETWORK" || axiosErr.message?.includes("Network Error")) {
         toast.error("Không thể kết nối server. Vui lòng kiểm tra backend đang chạy.")
       } else {
@@ -107,4 +105,3 @@ export function useSubmitApplication(): UseSubmitApplicationReturn {
 
   return { isSubmitting, submitApplication, submitBulkApplications }
 }
-

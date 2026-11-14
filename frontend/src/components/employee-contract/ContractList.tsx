@@ -1,10 +1,3 @@
-import {
-  CONTRACT_STATUS_LABELS,
-  CONTRACT_TYPE_LABELS,
-} from "@/config/entities/employee-contract.config"
-import { useEmployeeContracts } from "@/hooks/employee-contract/use-contracts"
-import type { IContract } from "@/types/employee-contract.types"
-
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,9 +8,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  CONTRACT_STATUS_LABELS,
+  CONTRACT_TYPE_LABELS,
+} from "@/config/entities/employee-contract.config"
+import { useEmployeeContracts } from "@/hooks/employee-contract/use-contracts"
 import { formatCurrency } from "@/lib/utils"
+import type { IContract } from "@/types/employee-contract.types"
 
-import { FileText, Pencil, RefreshCw, Trash2, CheckCircle2 } from "lucide-react"
+import { CheckCircle2, FileText, Pencil, RefreshCw, Trash2 } from "lucide-react"
 
 interface ContractListProps {
   employeeId: string
@@ -134,9 +133,7 @@ export function ContractList({
         <TableBody>
           {contracts.map((contract) => (
             <TableRow key={contract.id}>
-              <TableCell className="px-4 py-3 font-medium">
-                {contract.contractNumber}
-              </TableCell>
+              <TableCell className="px-4 py-3 font-medium">{contract.contractNumber}</TableCell>
               <TableCell className="px-4 py-3">
                 {CONTRACT_TYPE_LABELS[contract.contractType]}
               </TableCell>
@@ -155,7 +152,9 @@ export function ContractList({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => { onEdit(contract) }}
+                      onClick={() => {
+                        onEdit(contract)
+                      }}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -165,7 +164,9 @@ export function ContractList({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-primary hover:text-primary-foreground hover:bg-primary/10"
-                      onClick={() => { onSign(contract) }}
+                      onClick={() => {
+                        onSign(contract)
+                      }}
                       title="Ký hợp đồng"
                     >
                       <CheckCircle2 className="h-4 w-4" />
@@ -176,22 +177,25 @@ export function ContractList({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => { onTerminate(contract) }}
+                      onClick={() => {
+                        onTerminate(contract)
+                      }}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   )}
-                  {onRenew &&
-                    (contract.status === "active" || contract.status === "expired") && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => { onRenew(contract) }}
-                      >
-                        <RefreshCw className="h-4 w-4" />
-                      </Button>
-                    )}
+                  {onRenew && (contract.status === "active" || contract.status === "expired") && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => {
+                        onRenew(contract)
+                      }}
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </TableCell>
             </TableRow>

@@ -3,41 +3,50 @@ import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { ROLE_LABELS } from "@/config/entities/employee.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
-import { cn } from "@/lib/utils"
 import {
-  useRoles,
-  useRolePermissions,
-  useUpdateRolePermissions,
   usePermissions,
+  useRolePermissions,
+  useRoles,
+  useUpdateRolePermissions,
 } from "@/hooks/security/queries/use-security-query"
-import { useState, useMemo } from "react"
-import type { Role, Permission } from "@/types/security.types"
+import { cn } from "@/lib/utils"
+import type { Permission, Role } from "@/types/security.types"
+
+import { useMemo, useState } from "react"
+
 import {
-  Shield,
-  ShieldCheck,
-  ArrowRight,
-  RefreshCw,
   AlertTriangle,
+  ArrowRight,
   FolderLock,
   Inbox,
+  RefreshCw,
+  Shield,
+  ShieldCheck,
 } from "lucide-react"
 import { toast } from "sonner"
 
 /**
  * RolePermissions Component.
  * Renders a list of system roles and allows configuring their permissions.
- * Includes a sidebar drawer with custom checkboxes, using a local state buffer 
+ * Includes a sidebar drawer with custom checkboxes, using a local state buffer
  * to speed up interaction and save all permission changes in a single batch request.
  */
 export default function RolePermissions() {
   const [selectedRole, setSelectedRole] = useState<Role | null>(null)
 
   // Queries
-  const { data: rolesData, isLoading: isLoadingRoles, isError: isErrorRoles, refetch: refetchRoles } = useRoles()
+  const {
+    data: rolesData,
+    isLoading: isLoadingRoles,
+    isError: isErrorRoles,
+    refetch: refetchRoles,
+  } = useRoles()
   const { data: allPermissions } = usePermissions({ limit: 100 })
 
   // Fetch permissions of the selected role
-  const { data: rolePermissions, isLoading: isLoadingRolePerms } = useRolePermissions(selectedRole?.id || "")
+  const { data: rolePermissions, isLoading: isLoadingRolePerms } = useRolePermissions(
+    selectedRole?.id || "",
+  )
 
   const handleOpenRoleDetail = (role: Role) => {
     setSelectedRole(role)
@@ -58,7 +67,9 @@ export default function RolePermissions() {
       {isLoadingRoles ? (
         <div className="py-24 flex flex-col items-center justify-center">
           <RefreshCw className="h-9 w-9 animate-spin text-primary" />
-          <p className="text-xs text-muted-foreground mt-4 font-medium">Đang tải danh sách vai trò...</p>
+          <p className="text-xs text-muted-foreground mt-4 font-medium">
+            Đang tải danh sách vai trò...
+          </p>
         </div>
       ) : isErrorRoles ? (
         <div className="py-12 max-w-md mx-auto text-center border border-destructive/20 bg-destructive/10 rounded-xl p-6">
@@ -67,7 +78,14 @@ export default function RolePermissions() {
           <p className="text-xs text-muted-foreground mt-1.5 leading-normal">
             Hệ thống gặp sự cố khi tải thông tin vai trò. Vui lòng kiểm tra lại kết nối.
           </p>
-          <Button variant="outline" size="sm" className="mt-4 h-8 rounded-full text-xs font-semibold" onClick={() => { refetchRoles(); }}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-4 h-8 rounded-full text-xs font-semibold"
+            onClick={() => {
+              refetchRoles()
+            }}
+          >
             Tải lại trang
           </Button>
         </div>
@@ -118,7 +136,9 @@ export default function RolePermissions() {
                     variant="ghost"
                     size="sm"
                     className="gap-1.5 rounded-full px-3 text-xs font-semibold text-primary hover:text-primary hover:bg-primary/5"
-                    onClick={() => { handleOpenRoleDetail(role); }}
+                    onClick={() => {
+                      handleOpenRoleDetail(role)
+                    }}
                   >
                     Cấu hình quyền
                     <ArrowRight size={13} />
@@ -131,9 +151,13 @@ export default function RolePermissions() {
       )}
 
       {/* AppDrawer for Role Permissions */}
-      <AppDrawer isOpen={!!selectedRole} onClose={handleCloseDrawer} widthClassName="w-full sm:max-w-[32rem]">
-        {selectedRole && (
-          isLoadingRolePerms ? (
+      <AppDrawer
+        isOpen={!!selectedRole}
+        onClose={handleCloseDrawer}
+        widthClassName="w-full sm:max-w-[32rem]"
+      >
+        {selectedRole &&
+          (isLoadingRolePerms ? (
             <div className="p-6 py-12 flex flex-col items-center justify-center">
               <RefreshCw className="h-7 w-7 animate-spin text-muted-foreground" />
               <p className="text-xs text-muted-foreground mt-3">Đang tải cấu hình quyền...</p>
@@ -146,8 +170,7 @@ export default function RolePermissions() {
               rolePermissions={rolePermissions || []}
               allPermissions={allPermissions?.data || []}
             />
-          )
-        )}
+          ))}
       </AppDrawer>
     </PageContainer>
   )
@@ -172,7 +195,7 @@ function RolePermissionsDrawerContent({
 }: RolePermissionsDrawerContentProps) {
   // Initialize state directly from props since key changing forces remount
   const [selectedPermissionIds, setSelectedPermissionIds] = useState<string[]>(() =>
-    rolePermissions.map((rp) => rp.id)
+    rolePermissions.map((rp) => rp.id),
   )
   const [prevRolePermissions, setPrevRolePermissions] = useState<Permission[]>(rolePermissions)
 
@@ -246,7 +269,12 @@ function RolePermissionsDrawerContent({
           <div className="space-y-6">
             {Object.entries(groupedPermissions).map(([moduleName, perms]) => (
               <div key={moduleName} className="space-y-2">
-                <h3 className={cn(TYPOGRAPHY.TABLE_HEADER, "text-xs font-bold uppercase tracking-wider text-muted-foreground border-b border-border/40 pb-1 font-mono")}>
+                <h3
+                  className={cn(
+                    TYPOGRAPHY.TABLE_HEADER,
+                    "text-xs font-bold uppercase tracking-wider text-muted-foreground border-b border-border/40 pb-1 font-mono",
+                  )}
+                >
                   {moduleName}
                 </h3>
                 <div className="space-y-2.5">
@@ -268,7 +296,9 @@ function RolePermissionsDrawerContent({
                         <Switch
                           checked={!!isChecked}
                           disabled={selectedRole.isSystem && selectedRole.name === "admin"} // Disable changing admin permissions
-                          onCheckedChange={() => { handleTogglePermission(p.id, !!isChecked); }}
+                          onCheckedChange={() => {
+                            handleTogglePermission(p.id, !!isChecked)
+                          }}
                         />
                       </div>
                     )

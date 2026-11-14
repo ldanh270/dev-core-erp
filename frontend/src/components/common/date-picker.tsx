@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { getControlSizeClass, type ControlSize } from "@/config/ui-density.config"
+import { type ControlSize, getControlSizeClass } from "@/config/ui-density.config"
 import { cn } from "@/lib/utils"
 
 import * as React from "react"
@@ -169,9 +169,7 @@ export function DatePicker({
   const isToday = (day: number) => {
     const now = new Date()
     return (
-      now.getFullYear() === currentYear &&
-      now.getMonth() === currentMonth &&
-      now.getDate() === day
+      now.getFullYear() === currentYear && now.getMonth() === currentMonth && now.getDate() === day
     )
   }
 
@@ -299,7 +297,9 @@ export function DatePicker({
                   key={`day-${day}`}
                   type="button"
                   disabled={disabledDay}
-                  onClick={() => { handleSelectDay(day); }}
+                  onClick={() => {
+                    handleSelectDay(day)
+                  }}
                   className={cn(
                     "h-7 w-7 text-xs rounded-full flex items-center justify-center transition-all cursor-pointer font-medium",
                     selected && "bg-primary text-primary-foreground font-semibold shadow-xs",
@@ -308,7 +308,8 @@ export function DatePicker({
                       !today &&
                       !disabledDay &&
                       "text-foreground hover:bg-muted hover:text-foreground",
-                    disabledDay && "text-muted-foreground/30 cursor-not-allowed hover:bg-transparent",
+                    disabledDay &&
+                      "text-muted-foreground/30 cursor-not-allowed hover:bg-transparent",
                   )}
                 >
                   {day}
@@ -460,7 +461,9 @@ export function DateRangePicker({
               <label className="text-[11px] font-medium text-foreground">Từ ngày</label>
               <DatePicker
                 value={tempStart}
-                onChange={(d) => { setTempStart(d); }}
+                onChange={(d) => {
+                  setTempStart(d)
+                }}
                 size="sm"
                 placeholder="Ngày bắt đầu"
                 maxDate={tempEnd || undefined}
@@ -471,7 +474,9 @@ export function DateRangePicker({
               <label className="text-[11px] font-medium text-foreground">Đến ngày</label>
               <DatePicker
                 value={tempEnd}
-                onChange={(d) => { setTempEnd(d); }}
+                onChange={(d) => {
+                  setTempEnd(d)
+                }}
                 size="sm"
                 placeholder="Ngày kết thúc"
                 minDate={tempStart || undefined}
@@ -482,7 +487,9 @@ export function DateRangePicker({
           <div className="flex items-center justify-between pt-2 border-t border-border">
             <button
               type="button"
-              onClick={() => { handleClear(); }}
+              onClick={() => {
+                handleClear()
+              }}
               className="text-xs text-muted-foreground hover:text-destructive cursor-pointer"
             >
               Đặt lại
@@ -492,7 +499,9 @@ export function DateRangePicker({
                 type="button"
                 variant="ghost"
                 size="xs"
-                onClick={() => { setOpen(false); }}
+                onClick={() => {
+                  setOpen(false)
+                }}
                 className="rounded-full"
               >
                 Hủy

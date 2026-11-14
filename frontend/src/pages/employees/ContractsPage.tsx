@@ -1,14 +1,11 @@
 import {
-  DataTablePage,
   type DataTableColumn,
+  DataTablePage,
   StatusPill,
   TABLE_COL_WIDTH,
   useConfirm,
 } from "@/components/common"
-import {
-  ContractModal,
-  type ContractModalMode,
-} from "@/components/employee-contract/ContractModal"
+import { ContractModal, type ContractModalMode } from "@/components/employee-contract/ContractModal"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -20,8 +17,8 @@ import {
   CONTRACT_STATUS,
   CONTRACT_STATUS_LABELS,
   CONTRACT_TYPE_LABELS,
-  getContractStatusVariant,
   type ContractStatus,
+  getContractStatusVariant,
 } from "@/config/entities/employee-contract.config"
 import { ROUTES } from "@/config/routes.config"
 import { SYSTEM_CONFIG } from "@/config/system.config"
@@ -31,6 +28,7 @@ import { formatCurrency } from "@/lib/utils"
 import type { IContract } from "@/types/employee-contract.types"
 
 import { useCallback, useMemo, useState } from "react"
+
 import { MoreHorizontal, Plus } from "lucide-react"
 import { useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
@@ -101,28 +99,31 @@ export default function ContractsPage() {
     setIsModalOpen(true)
   }
 
-  const handleSign = useCallback(async (contract: IContract) => {
-    const isConfirmed = await confirm({
-      title: "Ký hợp đồng lao động",
-      description: `Bạn có chắc chắn muốn xác nhận ký hợp đồng số ${contract.contractNumber}? Trạng thái hợp đồng sẽ chuyển sang "Đang hiệu lực".`,
-    })
-
-    if (!isConfirmed) return
-
-    const toastId = toast.loading("Đang thực hiện ký hợp đồng...")
-    try {
-      await updateMutation.mutateAsync({
-        id: contract.id,
-        data: {
-          status: CONTRACT_STATUS.ACTIVE,
-          signedDate: new Date().toISOString().slice(0, 10),
-        },
+  const handleSign = useCallback(
+    async (contract: IContract) => {
+      const isConfirmed = await confirm({
+        title: "Ký hợp đồng lao động",
+        description: `Bạn có chắc chắn muốn xác nhận ký hợp đồng số ${contract.contractNumber}? Trạng thái hợp đồng sẽ chuyển sang "Đang hiệu lực".`,
       })
-      toast.dismiss(toastId)
-    } catch (_error) {
-      toast.dismiss(toastId)
-    }
-  }, [confirm, updateMutation])
+
+      if (!isConfirmed) return
+
+      const toastId = toast.loading("Đang thực hiện ký hợp đồng...")
+      try {
+        await updateMutation.mutateAsync({
+          id: contract.id,
+          data: {
+            status: CONTRACT_STATUS.ACTIVE,
+            signedDate: new Date().toISOString().slice(0, 10),
+          },
+        })
+        toast.dismiss(toastId)
+      } catch (_error) {
+        toast.dismiss(toastId)
+      }
+    },
+    [confirm, updateMutation],
+  )
 
   const formatDate = (dateStr?: string | null) => {
     if (!dateStr) return "—"
@@ -165,9 +166,7 @@ export default function ContractsPage() {
         minWidth: `${TABLE_COL_WIDTH.INDEX}px`,
         sticky: true,
         cell: (_contract, index) => (
-          <span className="text-muted-foreground text-xs">
-            {(page - 1) * limit + index + 1}
-          </span>
+          <span className="text-muted-foreground text-xs">{(page - 1) * limit + index + 1}</span>
         ),
       },
       {

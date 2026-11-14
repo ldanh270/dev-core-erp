@@ -1,8 +1,9 @@
-import { createHash } from "node:crypto"
 import { prisma } from "@/libs/database"
 import type { ImportRecruitmentIntakeInput } from "@/schemas/recruitment.schema"
 import type { ConnectorImportInput, ConnectorIntakeRow } from "@/types/recruitment-connector.types"
+
 import type { Prisma } from "@prisma/client"
+import { createHash } from "node:crypto"
 
 export interface IntakeRowError {
   row: number
@@ -17,9 +18,12 @@ const normalizedEmail = (email: string) => email.trim().toLowerCase()
 
 function sourceRef(input: IntakeInput, row: IntakeInput["rows"][number]): string {
   const externalId = "externalResponseId" in row ? row.externalResponseId : undefined
-  const stableValue = externalId ?? row.sourceRef ?? createHash("sha256")
-    .update(`${input.postingId}:${normalizedEmail(row.email)}`)
-    .digest("base64url")
+  const stableValue =
+    externalId ??
+    row.sourceRef ??
+    createHash("sha256")
+      .update(`${input.postingId}:${normalizedEmail(row.email)}`)
+      .digest("base64url")
   return `${input.postingId}:${input.source}:${stableValue}`
 }
 
@@ -52,7 +56,11 @@ export class RecruitmentIntakeRepository {
               processedStatus: "failed",
               errorMessage: connectorError.message,
             },
-            update: { rawPayload: connectorError.responseData, processedStatus: "failed", errorMessage: connectorError.message },
+            update: {
+              rawPayload: connectorError.responseData,
+              processedStatus: "failed",
+              errorMessage: connectorError.message,
+            },
           })
           errors.push(connectorError)
         }
@@ -78,7 +86,11 @@ export class RecruitmentIntakeRepository {
             sourceRef: recordRef,
             rawPayload: row as unknown as Prisma.InputJsonValue,
           },
-          update: { rawPayload: row as unknown as Prisma.InputJsonValue, processedStatus: "received", errorMessage: null },
+          update: {
+            rawPayload: row as unknown as Prisma.InputJsonValue,
+            processedStatus: "received",
+            errorMessage: null,
+          },
           select: { id: true },
         })
 
@@ -92,8 +104,12 @@ export class RecruitmentIntakeRepository {
           } else {
             candidate = await tx.candidate.create({
               data: {
-                fullName: row.fullName.trim(), email, phone: row.phone, cvUrl: row.cvUrl,
-                notes: row.notes, source: input.source,
+                fullName: row.fullName.trim(),
+                email,
+                phone: row.phone,
+                cvUrl: row.cvUrl,
+                notes: row.notes,
+                source: input.source,
               },
               select: { id: true },
             })
@@ -107,7 +123,11 @@ export class RecruitmentIntakeRepository {
           if (existingApplication) {
             await tx.recruitmentIntakeRecord.update({
               where: { id: intakeRecord.id },
-              data: { processedStatus: "processed", candidateId: candidate.id, applicationId: existingApplication.id },
+              data: {
+                processedStatus: "processed",
+                candidateId: candidate.id,
+                applicationId: existingApplication.id,
+              },
             })
             skipped += 1
             continue
@@ -115,30 +135,61 @@ export class RecruitmentIntakeRepository {
 
           const application = await tx.recruitmentApplication.create({
             data: {
-              requisitionId: input.requisitionId, candidateId: candidate.id, postingId: input.postingId,
-              source: input.source, sourceRef: postingSourceRef ?? row.sourceRef, pipelineStageId: defaultStage.id,
+              requisitionId: input.requisitionId,
+              candidateId: candidate.id,
+              postingId: input.postingId,
+              source: input.source,
+              sourceRef: postingSourceRef ?? row.sourceRef,
+              pipelineStageId: defaultStage.id,
             },
             select: { id: true },
           })
           if ("responseData" in row) {
-            await Promise.all(Object.entries((row as ConnectorIntakeRow).responseData as Record<string, string>)
-              .filter(([key, value]) => Boolean(key) && value.trim().length > 0)
-              .map(([metaKey, value]) => tx.candidateMeta.upsert({
-                where: { candidateId_metaKey: { candidateId: candidate.id, metaKey } },
-                create: { candidateId: candidate.id, metaKey, value: value as Prisma.InputJsonValue },
-                update: { value: value as Prisma.InputJsonValue },
-              })))
+            await Promise.all(
+              Object.entries((row as ConnectorIntakeRow).responseData as Record<string, string>)
+                .filter(([key, value]) => Boolean(key) && value.trim().length > 0)
+                .map(([metaKey, value]) =>
+                  tx.candidateMeta.upsert({
+                    where: { candidateId_metaKey: { candidateId: candidate.id, metaKey } },
+                    create: {
+                      candidateId: candidate.id,
+                      metaKey,
+                      value: value as Prisma.InputJsonValue,
+                    },
+                    update: { value: value as Prisma.InputJsonValue },
+                  }),
+                ),
+            )
           }
           if ("externalResponseId" in row && row.externalResponseId) {
             await tx.recruitmentConnectorResponse.upsert({
-              where: { postingId_externalResponseId: { postingId: input.postingId, externalResponseId: row.externalResponseId } },
-              create: { postingId: input.postingId, externalResponseId: row.externalResponseId, applicationId: application.id, responseData: row.responseData },
-              update: { applicationId: application.id, errorCode: null, errorMessage: null, responseData: row.responseData },
+              where: {
+                postingId_externalResponseId: {
+                  postingId: input.postingId,
+                  externalResponseId: row.externalResponseId,
+                },
+              },
+              create: {
+                postingId: input.postingId,
+                externalResponseId: row.externalResponseId,
+                applicationId: application.id,
+                responseData: row.responseData,
+              },
+              update: {
+                applicationId: application.id,
+                errorCode: null,
+                errorMessage: null,
+                responseData: row.responseData,
+              },
             })
           }
           await tx.recruitmentIntakeRecord.update({
             where: { id: intakeRecord.id },
-            data: { processedStatus: "processed", candidateId: candidate.id, applicationId: application.id },
+            data: {
+              processedStatus: "processed",
+              candidateId: candidate.id,
+              applicationId: application.id,
+            },
           })
           created += 1
         } catch (error) {
@@ -153,8 +204,14 @@ export class RecruitmentIntakeRepository {
 
       return {
         total: input.rows.length + (isConnectorImport ? input.connectorErrors.length : 0),
-        created, matched, applicationsCreated: created, candidatesCreated, candidatesMatched: matched,
-        skipped, failed: errors.length, errors,
+        created,
+        matched,
+        applicationsCreated: created,
+        candidatesCreated,
+        candidatesMatched: matched,
+        skipped,
+        failed: errors.length,
+        errors,
       }
     })
   }

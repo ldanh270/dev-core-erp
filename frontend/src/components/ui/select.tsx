@@ -1,4 +1,4 @@
-import { getControlSizeClass, type ControlSize } from "@/config/ui-density.config"
+import { type ControlSize, getControlSizeClass } from "@/config/ui-density.config"
 import { cn } from "@/lib/utils"
 
 import * as React from "react"

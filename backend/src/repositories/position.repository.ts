@@ -1,7 +1,15 @@
-import { IPositionRepository, Position, ProjectPositionRule, CreatePositionDto, UpdatePositionDto } from "@/types/position.types.ts"
-import { TaskTracker } from "@/types/task.types.ts"
 import { IApplicationType } from "@/types/attendance.types.ts"
+import {
+  CreatePositionDto,
+  IPositionRepository,
+  Position,
+  ProjectPositionRule,
+  UpdatePositionDto,
+} from "@/types/position.types.ts"
+import { TaskTracker } from "@/types/task.types.ts"
+
 import { PrismaClient } from "@prisma/client"
+
 import { BaseRepository } from "./base.repository.ts"
 
 /**
@@ -19,7 +27,7 @@ export class PrismaPositionRepository extends BaseRepository implements IPositio
   async findAll(): Promise<Position[]> {
     const records = await this.prisma.position.findMany({
       where: { deletedAt: null },
-      orderBy: { name: "asc" }
+      orderBy: { name: "asc" },
     })
     return records as unknown as Position[]
   }
@@ -31,7 +39,7 @@ export class PrismaPositionRepository extends BaseRepository implements IPositio
    */
   async findById(id: string): Promise<Position | null> {
     const record = await this.prisma.position.findFirst({
-      where: { id, deletedAt: null }
+      where: { id, deletedAt: null },
     })
     return record as unknown as Position | null
   }
@@ -43,7 +51,7 @@ export class PrismaPositionRepository extends BaseRepository implements IPositio
    */
   async findByCode(code: string): Promise<Position | null> {
     const record = await this.prisma.position.findFirst({
-      where: { code, deletedAt: null }
+      where: { code, deletedAt: null },
     })
     return record as unknown as Position | null
   }
@@ -60,8 +68,8 @@ export class PrismaPositionRepository extends BaseRepository implements IPositio
         code: data.code,
         description: data.description || null,
         allowedTaskTrackers: data.allowedTaskTrackers || [],
-        allowedApplicationTypes: data.allowedApplicationTypes || []
-      }
+        allowedApplicationTypes: data.allowedApplicationTypes || [],
+      },
     })
     return record as unknown as Position
   }
@@ -80,8 +88,8 @@ export class PrismaPositionRepository extends BaseRepository implements IPositio
         code: data.code,
         description: data.description,
         allowedTaskTrackers: data.allowedTaskTrackers,
-        allowedApplicationTypes: data.allowedApplicationTypes
-      }
+        allowedApplicationTypes: data.allowedApplicationTypes,
+      },
     })
     return record as unknown as Position
   }
@@ -94,7 +102,7 @@ export class PrismaPositionRepository extends BaseRepository implements IPositio
   async delete(id: string): Promise<Position> {
     const record = await this.prisma.position.update({
       where: { id },
-      data: { deletedAt: new Date() }
+      data: { deletedAt: new Date() },
     })
     return record as unknown as Position
   }
@@ -104,24 +112,26 @@ export class PrismaPositionRepository extends BaseRepository implements IPositio
    * @param employeeId - Employee ID.
    * @returns Array of active memberships with project metadata.
    */
-  async findActiveProjectMemberships(employeeId: string): Promise<{ projectId: string; projectName: string }[]> {
+  async findActiveProjectMemberships(
+    employeeId: string,
+  ): Promise<{ projectId: string; projectName: string }[]> {
     const memberships = await this.prisma.projectMember.findMany({
       where: {
         employeeId,
-        removedAt: null
+        removedAt: null,
       },
       select: {
         projectId: true,
         project: {
           select: {
-            name: true
-          }
-        }
-      }
+            name: true,
+          },
+        },
+      },
     })
-    return memberships.map(m => ({
+    return memberships.map((m) => ({
       projectId: m.projectId,
-      projectName: m.project.name
+      projectName: m.project.name,
     }))
   }
 }

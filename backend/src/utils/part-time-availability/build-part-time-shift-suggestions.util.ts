@@ -55,7 +55,8 @@ export function buildPartTimeShiftSuggestions(options: {
         const day = availability.days.find((entry) => entry.dayOfWeek === requirement.dayOfWeek)
         // Slot must fit within the employee's declared free window and not overlap existing assignments.
         if (!shiftFitsAvailabilityDay(requirement, day)) return false
-        const occupied = occupiedByEmployeeDay.get(`${availability.employeeId}:${requirement.dayOfWeek}`) ?? []
+        const occupied =
+          occupiedByEmployeeDay.get(`${availability.employeeId}:${requirement.dayOfWeek}`) ?? []
         return !occupied.some(
           (slot) => requirement.startTime < slot.endTime && requirement.endTime > slot.startTime,
         )

@@ -18,20 +18,8 @@ shiftRoutes.use(authenticate)
 shiftRoutes.get("/", controller.list)
 shiftRoutes.get("/:id", controller.getOne)
 
-shiftRoutes.post(
-  "/",
-  requirePermission("attendance.create"),
-  controller.create,
-)
-shiftRoutes.patch(
-  "/:id",
-  requirePermission("attendance.update"),
-  controller.update,
-)
-shiftRoutes.delete(
-  "/:id",
-  requirePermission("attendance.delete"),
-  controller.delete,
-)
+shiftRoutes.post("/", requirePermission("attendance.create"), controller.create)
+shiftRoutes.patch("/:id", requirePermission("attendance.update"), controller.update)
+shiftRoutes.delete("/:id", requirePermission("attendance.delete"), controller.delete)
 
 export default shiftRoutes

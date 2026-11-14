@@ -1,18 +1,5 @@
-import { useState, useEffect } from "react"
-import { 
-  Brain, 
-  Sparkles, 
-  UserCheck, 
-  TrendingUp, 
-  Calendar, 
-  UserPlus, 
-  Loader2,
-  Briefcase,
-  AlertTriangle,
-  CheckCircle2,
-  XCircle
-} from "lucide-react"
-
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -20,11 +7,25 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { taskEstimateAiApi } from "@/lib/api/task-estimate-ai.api"
 import type { TaskEstimateAiSuggestion } from "@/lib/api/task-estimate-ai.api"
+
+import { useEffect, useState } from "react"
+
+import {
+  AlertTriangle,
+  Brain,
+  Briefcase,
+  Calendar,
+  CheckCircle2,
+  Loader2,
+  Sparkles,
+  TrendingUp,
+  UserCheck,
+  UserPlus,
+  XCircle,
+} from "lucide-react"
 import { toast } from "sonner"
 
 interface TaskAssigneeAiModalProps {
@@ -45,10 +46,10 @@ export function TaskAssigneeAiModal({
 
   useEffect(() => {
     if (isOpen && taskId) {
-// eslint-disable-next-line react-hooks/immutability
+      // eslint-disable-next-line react-hooks/immutability
       void fetchSuggestions()
     }
-// eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, taskId])
 
   const fetchSuggestions = async () => {
@@ -67,8 +68,10 @@ export function TaskAssigneeAiModal({
 
   // Get score color
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900"
-    if (score >= 50) return "text-amber-500 bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900"
+    if (score >= 80)
+      return "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900"
+    if (score >= 50)
+      return "text-amber-500 bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900"
     return "text-rose-500 bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900"
   }
 
@@ -86,7 +89,8 @@ export function TaskAssigneeAiModal({
             </DialogTitle>
           </div>
           <DialogDescription>
-            AI tự động đánh giá chéo kỹ năng lịch sử, khối lượng công việc hiện tại và lịch trình nghỉ phép của thành viên trong dự án để đưa ra gợi ý tối ưu nhất.
+            AI tự động đánh giá chéo kỹ năng lịch sử, khối lượng công việc hiện tại và lịch trình
+            nghỉ phép của thành viên trong dự án để đưa ra gợi ý tối ưu nhất.
           </DialogDescription>
         </DialogHeader>
 
@@ -127,10 +131,12 @@ export function TaskAssigneeAiModal({
           ) : (
             <div className="space-y-4 py-2">
               {suggestions.map((suggestion, index) => (
-                <div 
-                  key={suggestion.employeeId} 
+                <div
+                  key={suggestion.employeeId}
                   className={`relative p-5 border rounded-2xl transition-all duration-300 hover:shadow-md bg-card/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
-                    index === 0 ? "border-primary bg-primary/5 dark:bg-primary/5" : "border-border/60"
+                    index === 0
+                      ? "border-primary bg-primary/5 dark:bg-primary/5"
+                      : "border-border/60"
                   }`}
                 >
                   {index === 0 && (
@@ -149,19 +155,30 @@ export function TaskAssigneeAiModal({
                         <h4 className="font-bold text-foreground flex items-center gap-1.5">
                           {suggestion.fullName}
                           {suggestion.position && (
-                            <Badge variant="outline" className="text-[10px] py-0 px-2 font-normal flex items-center gap-1 border-border rounded-full">
+                            <Badge
+                              variant="outline"
+                              className="text-[10px] py-0 px-2 font-normal flex items-center gap-1 border-border rounded-full"
+                            >
                               <Briefcase className="h-2.5 w-2.5" />
                               {suggestion.position}
                             </Badge>
                           )}
                         </h4>
-                        
+
                         {/* Sub stats row */}
                         <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1 font-medium">
                             <TrendingUp className="h-3.5 w-3.5" />
                             Khối lượng:{" "}
-                            <span className={suggestion.workloadScore >= 80 ? "text-emerald-600 dark:text-emerald-400 font-semibold" : suggestion.workloadScore >= 50 ? "text-amber-600 dark:text-amber-400 font-semibold" : "text-rose-600 dark:text-rose-400 font-semibold"}>
+                            <span
+                              className={
+                                suggestion.workloadScore >= 80
+                                  ? "text-emerald-600 dark:text-emerald-400 font-semibold"
+                                  : suggestion.workloadScore >= 50
+                                    ? "text-amber-600 dark:text-amber-400 font-semibold"
+                                    : "text-rose-600 dark:text-rose-400 font-semibold"
+                              }
+                            >
                               {suggestion.workloadScore}%
                             </span>
                           </span>
@@ -188,7 +205,10 @@ export function TaskAssigneeAiModal({
                         <Brain className="h-3 w-3" /> Nhận định của AI:
                       </div>
                       {suggestion.reasons.map((reason, idx) => (
-                        <p key={idx} className="text-xs text-muted-foreground pl-3 relative before:content-['•'] before:absolute before:left-0 before:text-primary">
+                        <p
+                          key={idx}
+                          className="text-xs text-muted-foreground pl-3 relative before:content-['•'] before:absolute before:left-0 before:text-primary"
+                        >
                           {reason}
                         </p>
                       ))}
@@ -198,12 +218,14 @@ export function TaskAssigneeAiModal({
                   {/* Score badge & Assign button */}
                   <div className="flex flex-row sm:flex-col items-center justify-between sm:justify-center gap-3 sm:border-l border-border/40 sm:pl-6 min-w-[120px]">
                     <div className="flex flex-col items-center">
-                      <div className={`px-3 py-1 rounded-full border text-xs font-bold ${getScoreColor(suggestion.finalScore)}`}>
+                      <div
+                        className={`px-3 py-1 rounded-full border text-xs font-bold ${getScoreColor(suggestion.finalScore)}`}
+                      >
                         {suggestion.finalScore}% Khớp
                       </div>
                     </div>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       onClick={() => {
                         onAssign(suggestion.employeeId)
                         onOpenChange(false)

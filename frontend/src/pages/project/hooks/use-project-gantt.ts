@@ -1,19 +1,27 @@
-import { useState, useMemo, useEffect } from "react"
-import { useSearchParams } from "react-router-dom"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { format, differenceInDays, addDays, eachDayOfInterval, startOfDay } from "date-fns"
-import { projectApi } from "@/lib/api/project.api"
-import { taskApi } from "@/lib/api/task.api"
+import {
+  CUSTOM_QUERY_TYPE,
+  TASK_PRIORITY,
+  TASK_STATUS,
+  TASK_TRACKER,
+} from "@/config/entities/project.config"
+import { usePermission } from "@/hooks/use-permission"
 import { customQueryApi } from "@/lib/api/custom-query.api"
 import type { CustomQuery } from "@/lib/api/custom-query.api"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
-import { TASK_STATUS, TASK_PRIORITY, TASK_TRACKER, CUSTOM_QUERY_TYPE } from "@/config/entities/project.config"
+import { projectApi } from "@/lib/api/project.api"
+import { taskApi } from "@/lib/api/task.api"
 import { useAuthStore } from "@/store/auth-store"
 import type { Project } from "@/types/project.types"
 import type { Task, UpdateTaskDto } from "@/types/task.types"
 import { extractErrorMessage } from "@/utils/error-helper"
-import { usePermission } from "@/hooks/use-permission"
+
+import { useEffect, useMemo, useState } from "react"
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { addDays, differenceInDays, eachDayOfInterval, format, startOfDay } from "date-fns"
+import { useSearchParams } from "react-router-dom"
+import { toast } from "sonner"
+
 import {
   DEFAULT_MONTHS_RANGE,
   DEFAULT_MONTHS_RANGE_STRING,
@@ -165,7 +173,6 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
         try {
           const data = JSON.parse(matched.queryData)
           if (data && Array.isArray(data.activeFilterKeys) && data.filterStates) {
- 
             setActiveFilterKeys(data.activeFilterKeys)
             setFilterStates(data.filterStates)
             setAppliedFilterKeys(data.activeFilterKeys)
@@ -173,8 +180,10 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
 
             if (data.options) {
               if (data.options.showEstTime !== undefined) setShowEstTime(data.options.showEstTime)
-              if (data.options.showAssignee !== undefined) setShowAssignee(data.options.showAssignee)
-              if (data.options.showProgress !== undefined) setShowProgress(data.options.showProgress)
+              if (data.options.showAssignee !== undefined)
+                setShowAssignee(data.options.showAssignee)
+              if (data.options.showProgress !== undefined)
+                setShowProgress(data.options.showProgress)
             }
             setAppliedUrlQueryId(urlQueryId)
             toast.success(`Đã tự động áp dụng truy vấn: ${matched.name}`)
@@ -334,8 +343,7 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
 
   const getDefaultOperator = (key: string) => {
     const def = Reflect.get(FILTER_DEFINITIONS, key) as
-      | { label: string; type: string; group: string }
-      | undefined
+      { label: string; type: string; group: string } | undefined
     if (def === undefined) return GANTT_FILTER_OPERATOR.IS
     if (key === GANTT_FILTER_KEY.DATE_DUE) return GANTT_FILTER_OPERATOR.OVERDUE
     if (key === GANTT_FILTER_KEY.STATUS) return GANTT_FILTER_OPERATOR.OPEN
@@ -352,8 +360,7 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
 
   const getDefaultValue = (key: string) => {
     const def = Reflect.get(FILTER_DEFINITIONS, key) as
-      | { label: string; type: string; group: string }
-      | undefined
+      { label: string; type: string; group: string } | undefined
     if (def === undefined) return ""
     if (key === GANTT_FILTER_KEY.TRACKER) return TASK_TRACKER.TASK
     if (key === GANTT_FILTER_KEY.PRIORITY) return TASK_PRIORITY.MEDIUM
@@ -433,8 +440,7 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
       for (const key of appliedFilterKeys) {
         if (!Object.prototype.hasOwnProperty.call(appliedFilterStates, key)) continue
         const filter = Reflect.get(appliedFilterStates, key) as
-          | { enabled: boolean; operator: string; value: string }
-          | undefined
+          { enabled: boolean; operator: string; value: string } | undefined
         if (!filter?.enabled) continue
 
         if (key === GANTT_FILTER_KEY.STATUS) {
@@ -735,13 +741,13 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
       if (parent) {
         if (parent.startDate && newStart < new Date(parent.startDate)) {
           toast.warning(
-            `Ngày bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha (${format(new Date(parent.startDate), "dd/MM/yyyy")})`
+            `Ngày bắt đầu của công việc con không được trước ngày bắt đầu của công việc cha (${format(new Date(parent.startDate), "dd/MM/yyyy")})`,
           )
           return
         }
         if (parent.dueDate && newDue > new Date(parent.dueDate)) {
           toast.warning(
-            `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${format(new Date(parent.dueDate), "dd/MM/yyyy")})`
+            `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${format(new Date(parent.dueDate), "dd/MM/yyyy")})`,
           )
           return
         }
@@ -754,13 +760,13 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
       for (const child of children) {
         if (child.startDate && newStart > new Date(child.startDate)) {
           toast.warning(
-            `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (bắt đầu ${format(new Date(child.startDate), "dd/MM/yyyy")})`
+            `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (bắt đầu ${format(new Date(child.startDate), "dd/MM/yyyy")})`,
           )
           return
         }
         if (child.dueDate && newDue < new Date(child.dueDate)) {
           toast.warning(
-            `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (hạn hoàn thành ${format(new Date(child.dueDate), "dd/MM/yyyy")})`
+            `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (hạn hoàn thành ${format(new Date(child.dueDate), "dd/MM/yyyy")})`,
           )
           return
         }
@@ -827,7 +833,7 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
     // Apply filters
     setAppliedFilterKeys([...activeFilterKeys])
     setAppliedFilterStates(JSON.parse(JSON.stringify(filterStates)))
-    
+
     // Clear queryId from URL
     if (urlQueryId) {
       const newParams = new URLSearchParams(searchParams)
@@ -835,7 +841,7 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
       setSearchParams(newParams)
       setAppliedUrlQueryId(null)
     }
-    
+
     toast.success("Đã áp dụng bộ lọc và dòng thời gian")
   }
 
@@ -901,7 +907,7 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
     setFilterStates(defaultStates)
     setAppliedFilterKeys(["status"])
     setAppliedFilterStates(defaultStates)
-    
+
     // Clear queryId from URL
     if (urlQueryId) {
       const newParams = new URLSearchParams(searchParams)
@@ -909,7 +915,7 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
       setSearchParams(newParams)
       setAppliedUrlQueryId(null)
     }
-    
+
     toast.info("Đã khôi phục bộ lọc mặc định")
   }
 

@@ -9,15 +9,15 @@ import { getWeekStart } from "@/utils/attendance/get-week-start"
 import { mapPlannedWeekToScheduleDays } from "@/utils/attendance/map-planned-week-to-schedule-days.util"
 import { resolveScheduleDay } from "@/utils/attendance/resolve-schedule-day"
 import {
-  buildTodayShiftInfo,
   GEOLOCATION_TIMEOUT_MS,
+  type ScanAction,
+  type TodayShiftInfo,
+  buildTodayShiftInfo,
   getCurrentScannerLocation,
   getScannerApiErrorMessage,
   persistScannerLocation,
   readCachedScannerLocation,
   resolveNextScanAction,
-  type ScanAction,
-  type TodayShiftInfo,
 } from "@/utils/attendance/virtual-scanner.utils"
 
 import { useEffect, useMemo, useState } from "react"
@@ -91,7 +91,9 @@ export function useVirtualScanner(): {
     const timer = setInterval(() => {
       setCurrentTime(new Date())
     }, 1000)
-    return () => { clearInterval(timer); }
+    return () => {
+      clearInterval(timer)
+    }
   }, [])
 
   useEffect(() => {

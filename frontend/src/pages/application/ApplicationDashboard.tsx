@@ -16,6 +16,7 @@ import {
 } from "@/lib/api/application.api"
 
 import { startTransition, useEffect, useState } from "react"
+
 import { Plus } from "lucide-react"
 import { useLocation, useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
@@ -90,31 +91,32 @@ export default function ApplicationDashboard() {
     }
   }
 
-  const subHeader = activeTab === "mine" ? (
-    <div className="border-b border-border px-1 shrink-0">
-      <Tabs
-        value={mineSubTab}
-        onValueChange={(val) => {
-          setMineSubTab(val as "list" | "leaves")
-        }}
-      >
-        <TabsList variant="line" className="h-10 gap-6 bg-transparent p-0">
-          <TabsTrigger
-            value="list"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary px-1 py-2 font-medium text-sm transition-colors shadow-none"
-          >
-            Danh sách đơn
-          </TabsTrigger>
-          <TabsTrigger
-            value="leaves"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary px-1 py-2 font-medium text-sm transition-colors shadow-none"
-          >
-            Tổng phép
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-    </div>
-  ) : undefined
+  const subHeader =
+    activeTab === "mine" ? (
+      <div className="border-b border-border px-1 shrink-0">
+        <Tabs
+          value={mineSubTab}
+          onValueChange={(val) => {
+            setMineSubTab(val as "list" | "leaves")
+          }}
+        >
+          <TabsList variant="line" className="h-10 gap-6 bg-transparent p-0">
+            <TabsTrigger
+              value="list"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary px-1 py-2 font-medium text-sm transition-colors shadow-none"
+            >
+              Danh sách đơn
+            </TabsTrigger>
+            <TabsTrigger
+              value="leaves"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary px-1 py-2 font-medium text-sm transition-colors shadow-none"
+            >
+              Tổng phép
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+    ) : undefined
 
   const modals = (
     <ApplicationModals
@@ -189,7 +191,9 @@ export default function ApplicationDashboard() {
     <ApplicationList
       key={activeTab}
       mode={activeTab}
-      title={activeTab === "manage" ? "Bạn duyệt" : activeTab === "mine" ? "Đơn của tôi" : "Đơn thư"}
+      title={
+        activeTab === "manage" ? "Bạn duyệt" : activeTab === "mine" ? "Đơn của tôi" : "Đơn thư"
+      }
       description={
         activeTab === "manage"
           ? "Theo dõi và xử lý các đơn đang chờ bạn duyệt."

@@ -1,5 +1,5 @@
-import { FormActionFooter } from "@/components/common/form-action-footer"
 import { TimePicker } from "@/components/common"
+import { FormActionFooter } from "@/components/common/form-action-footer"
 import { GpsMapPicker } from "@/components/features/attendance/gps-map-picker"
 import {
   Dialog,
@@ -19,8 +19,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
-import { ATTENDANCE_MESSAGES } from "@/config/messages/attendance.message"
 import { MAP_INITIAL_CENTER } from "@/config/map.config"
+import { ATTENDANCE_MESSAGES } from "@/config/messages/attendance.message"
 import { ATTENDANCE_GPS_RULES, WORKING_SHIFT_FORM_RULES } from "@/config/rules/attendance.config"
 import { useCreateShift, useUpdateShift } from "@/hooks/attendance/use-shifts"
 import { minutesToTime } from "@/lib/utils"
@@ -258,7 +258,12 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                     <FormItem>
                       <FormLabel>Bắt đầu nghỉ</FormLabel>
                       <FormControl>
-                        <TimePicker value={field.value} onChange={field.onChange} className="h-11" placeholder="--:--" />
+                        <TimePicker
+                          value={field.value}
+                          onChange={field.onChange}
+                          className="h-11"
+                          placeholder="--:--"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -271,7 +276,12 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                     <FormItem>
                       <FormLabel>Kết thúc nghỉ</FormLabel>
                       <FormControl>
-                        <TimePicker value={field.value} onChange={field.onChange} className="h-11" placeholder="--:--" />
+                        <TimePicker
+                          value={field.value}
+                          onChange={field.onChange}
+                          className="h-11"
+                          placeholder="--:--"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -310,7 +320,12 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                         Start Time <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
-                        <TimePicker value={field.value} onChange={field.onChange} className="h-11" placeholder="--:--" />
+                        <TimePicker
+                          value={field.value}
+                          onChange={field.onChange}
+                          className="h-11"
+                          placeholder="--:--"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -327,7 +342,12 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                         End Time <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
-                        <TimePicker value={field.value} onChange={field.onChange} className="h-11" placeholder="--:--" />
+                        <TimePicker
+                          value={field.value}
+                          onChange={field.onChange}
+                          className="h-11"
+                          placeholder="--:--"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -395,10 +415,11 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                           className="h-11"
                           {...field}
                           value={field.value ?? ""}
-                          onChange={(e) => { field.onChange(
+                          onChange={(e) => {
+                            field.onChange(
                               e.target.value === "" ? undefined : Number(e.target.value),
-                            ); }
-                          }
+                            )
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -420,10 +441,11 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                           className="h-11"
                           {...field}
                           value={field.value ?? ""}
-                          onChange={(e) => { field.onChange(
+                          onChange={(e) => {
+                            field.onChange(
                               e.target.value === "" ? undefined : Number(e.target.value),
-                            ); }
-                          }
+                            )
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -453,8 +475,9 @@ export function ShiftDialog({ open, onOpenChange, initialData }: Props) {
                         className="h-11"
                         {...field}
                         value={field.value ?? ""}
-                        onChange={(e) => { field.onChange(e.target.value === "" ? undefined : Number(e.target.value)); }
-                        }
+                        onChange={(e) => {
+                          field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
+                        }}
                       />
                     </FormControl>
                     <FormMessage />

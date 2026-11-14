@@ -152,7 +152,8 @@ export default function EmployeeSalaryConfigDialog({ open, onOpenChange, employe
                 Cấu hình lương: {employee?.fullName}
               </DialogTitle>
               <DialogDescription className="text-xs">
-                {employee?.position || "Nhân viên"} • ID: {employee?.id ? employee.id.slice(-6).toUpperCase() : "—"}
+                {employee?.position || "Nhân viên"} • ID:{" "}
+                {employee?.id ? employee.id.slice(-6).toUpperCase() : "—"}
               </DialogDescription>
             </div>
           </div>
@@ -182,190 +183,196 @@ export default function EmployeeSalaryConfigDialog({ open, onOpenChange, employe
             {canReadConfig && (
               <>
                 <TabsContent value="config" className="mt-0 outline-none">
-              {isActiveLoading ? (
-                <div className="flex h-40 items-center justify-center">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                </div>
-              ) : (
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-xs">
-                    <div className="grid grid-cols-2 gap-4">
-                      {/* Template */}
-                      <FormField
-                        control={form.control}
-                        name="templateId"
-                        render={({ field }) => (
-                          <FormItem className="col-span-2 bg-muted/20 p-4 rounded-xl border border-border/50">
-                            <FormLabel className="text-sm font-semibold text-foreground">
-                              Mẫu phiếu lương áp dụng
-                            </FormLabel>
-                            <FormDescription className="text-xs mb-2">
-                              Nhân sự sẽ được tính lương tự động dựa trên các thành phần
-                              (components) của mẫu này.
-                            </FormDescription>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="rounded-full h-10 bg-background">
-                                  <SelectValue placeholder="-- Chọn mẫu phiếu lương --" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {templates?.map((t) => (
-                                  <SelectItem key={t.id} value={t.id}>
-                                    {t.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Base Salary */}
-                      <FormField
-                        control={form.control}
-                        name="baseSalary"
-                        render={({ field }) => (
-                          <FormItem className="col-span-2 md:col-span-1">
-                            <FormLabel className="font-semibold">Lương cơ bản (VND)</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                className="rounded-md h-9"
-                                placeholder="Nhập lương cơ bản..."
-                                {...field}
-                                onChange={(e) => { field.onChange(Number(e.target.value)); }}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Effective Date */}
-                      <FormField
-                        control={form.control}
-                        name="effectiveFrom"
-                        render={({ field }) => (
-                          <FormItem className="col-span-2 md:col-span-1">
-                            <FormLabel className="font-semibold">Ngày áp dụng</FormLabel>
-                            <FormControl>
-                              <DatePicker
-                                value={field.value || null}
-                                onChange={(val) => { field.onChange(val || ""); }}
-                                placeholder="Chọn ngày áp dụng..."
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Note */}
-                      <FormField
-                        control={form.control}
-                        name="note"
-                        render={({ field }) => (
-                          <FormItem className="col-span-2 border-t pt-4">
-                            <FormLabel className="font-semibold">Ghi chú thay đổi</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder="Lý do thay đổi lương hoặc ghi chú thêm..."
-                                className="rounded-lg resize-none min-h-16"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormDescription className="text-[10px]">
-                              Sẽ được ghi lại trong lịch sử để đối chiếu sau này.
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                  {isActiveLoading ? (
+                    <div className="flex h-40 items-center justify-center">
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                     </div>
-
-                    <DialogFooter className="pt-4 border-t gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => { onOpenChange(false); }}
-                        className="rounded-full"
-                      >
-                        Hủy
-                      </Button>
-                      <Button
-                        type="submit"
-                        disabled={assignMutation.isPending}
-                        className="rounded-full"
-                      >
-                        {assignMutation.isPending && (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        Lưu cấu hình
-                      </Button>
-                    </DialogFooter>
-                  </form>
-                </Form>
-              )}
-            </TabsContent>
-
-            <TabsContent value="history" className="mt-0 outline-none">
-              {isHistoryLoading ? (
-                <div className="flex h-40 items-center justify-center">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                </div>
-              ) : !history || history.length === 0 ? (
-                <div className="flex h-40 items-center justify-center text-muted-foreground text-xs">
-                  Chưa có lịch sử thay đổi cấu hình lương nào.
-                </div>
-              ) : (
-                <div className="relative pl-6 border-l border-muted space-y-6 text-xs">
-                  {history.map((h) => {
-                    return (
-                      <div key={h.id} className="relative">
-                        {/* Timeline Bullet */}
-                        <div className="absolute -left-8.5 top-0.5 h-5 w-5 rounded-full border border-background bg-muted flex items-center justify-center">
-                          <Calendar className="h-3 w-3 text-muted-foreground" />
-                        </div>
-
-                        <div className="bg-muted/30 hover:bg-muted/50 p-3 rounded-lg border border-border/50 transition-colors">
-                          <div className="flex justify-between items-start mb-2">
-                            <span className="font-bold text-foreground">
-                              Áp dụng từ: {formatDate(h.effectiveFrom)}
-                            </span>
-                            {h.effectiveTo ? (
-                              <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                                Đến: {formatDate(h.effectiveTo)}
-                              </span>
-                            ) : (
-                              <span className="text-[10px] text-success bg-success/10 px-2 py-0.5 rounded-full">
-                                Đang hoạt động
-                              </span>
+                  ) : (
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-xs">
+                        <div className="grid grid-cols-2 gap-4">
+                          {/* Template */}
+                          <FormField
+                            control={form.control}
+                            name="templateId"
+                            render={({ field }) => (
+                              <FormItem className="col-span-2 bg-muted/20 p-4 rounded-xl border border-border/50">
+                                <FormLabel className="text-sm font-semibold text-foreground">
+                                  Mẫu phiếu lương áp dụng
+                                </FormLabel>
+                                <FormDescription className="text-xs mb-2">
+                                  Nhân sự sẽ được tính lương tự động dựa trên các thành phần
+                                  (components) của mẫu này.
+                                </FormDescription>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="rounded-full h-10 bg-background">
+                                      <SelectValue placeholder="-- Chọn mẫu phiếu lương --" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {templates?.map((t) => (
+                                      <SelectItem key={t.id} value={t.id}>
+                                        {t.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
                             )}
-                          </div>
+                          />
 
-                          <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-muted-foreground mb-2">
-                            <div>
-                              Lương cơ bản:{" "}
-                              <span className="font-semibold text-foreground">
-                                {formatCurrency(Number(h.baseSalary))}
-                              </span>
-                            </div>
-                          </div>
+                          {/* Base Salary */}
+                          <FormField
+                            control={form.control}
+                            name="baseSalary"
+                            render={({ field }) => (
+                              <FormItem className="col-span-2 md:col-span-1">
+                                <FormLabel className="font-semibold">Lương cơ bản (VND)</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    className="rounded-md h-9"
+                                    placeholder="Nhập lương cơ bản..."
+                                    {...field}
+                                    onChange={(e) => {
+                                      field.onChange(Number(e.target.value))
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                          {h.note && (
-                            <div className="mt-2 text-[11px] text-muted-foreground italic bg-background p-1.5 rounded border border-border/30">
-                              Ghi chú: {h.note}
-                            </div>
-                          )}
+                          {/* Effective Date */}
+                          <FormField
+                            control={form.control}
+                            name="effectiveFrom"
+                            render={({ field }) => (
+                              <FormItem className="col-span-2 md:col-span-1">
+                                <FormLabel className="font-semibold">Ngày áp dụng</FormLabel>
+                                <FormControl>
+                                  <DatePicker
+                                    value={field.value || null}
+                                    onChange={(val) => {
+                                      field.onChange(val || "")
+                                    }}
+                                    placeholder="Chọn ngày áp dụng..."
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          {/* Note */}
+                          <FormField
+                            control={form.control}
+                            name="note"
+                            render={({ field }) => (
+                              <FormItem className="col-span-2 border-t pt-4">
+                                <FormLabel className="font-semibold">Ghi chú thay đổi</FormLabel>
+                                <FormControl>
+                                  <Textarea
+                                    placeholder="Lý do thay đổi lương hoặc ghi chú thêm..."
+                                    className="rounded-lg resize-none min-h-16"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormDescription className="text-[10px]">
+                                  Sẽ được ghi lại trong lịch sử để đối chiếu sau này.
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
                         </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-            </TabsContent>
+
+                        <DialogFooter className="pt-4 border-t gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                              onOpenChange(false)
+                            }}
+                            className="rounded-full"
+                          >
+                            Hủy
+                          </Button>
+                          <Button
+                            type="submit"
+                            disabled={assignMutation.isPending}
+                            className="rounded-full"
+                          >
+                            {assignMutation.isPending && (
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            )}
+                            Lưu cấu hình
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </Form>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="history" className="mt-0 outline-none">
+                  {isHistoryLoading ? (
+                    <div className="flex h-40 items-center justify-center">
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : !history || history.length === 0 ? (
+                    <div className="flex h-40 items-center justify-center text-muted-foreground text-xs">
+                      Chưa có lịch sử thay đổi cấu hình lương nào.
+                    </div>
+                  ) : (
+                    <div className="relative pl-6 border-l border-muted space-y-6 text-xs">
+                      {history.map((h) => {
+                        return (
+                          <div key={h.id} className="relative">
+                            {/* Timeline Bullet */}
+                            <div className="absolute -left-8.5 top-0.5 h-5 w-5 rounded-full border border-background bg-muted flex items-center justify-center">
+                              <Calendar className="h-3 w-3 text-muted-foreground" />
+                            </div>
+
+                            <div className="bg-muted/30 hover:bg-muted/50 p-3 rounded-lg border border-border/50 transition-colors">
+                              <div className="flex justify-between items-start mb-2">
+                                <span className="font-bold text-foreground">
+                                  Áp dụng từ: {formatDate(h.effectiveFrom)}
+                                </span>
+                                {h.effectiveTo ? (
+                                  <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                                    Đến: {formatDate(h.effectiveTo)}
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] text-success bg-success/10 px-2 py-0.5 rounded-full">
+                                    Đang hoạt động
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-muted-foreground mb-2">
+                                <div>
+                                  Lương cơ bản:{" "}
+                                  <span className="font-semibold text-foreground">
+                                    {formatCurrency(Number(h.baseSalary))}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {h.note && (
+                                <div className="mt-2 text-[11px] text-muted-foreground italic bg-background p-1.5 rounded border border-border/30">
+                                  Ghi chú: {h.note}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </TabsContent>
               </>
             )}
           </div>

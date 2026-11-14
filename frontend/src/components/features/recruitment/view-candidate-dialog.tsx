@@ -1,9 +1,16 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { RECRUITMENT_SOURCE_LABELS } from "@/config/entities/recruitment.config"
 import type { Candidate } from "@/types/recruitment.types"
+
 import { ExternalLink, Mail, MapPin, Phone, User } from "lucide-react"
 
 interface Props {
@@ -24,7 +31,10 @@ export function ViewCandidateDialog({ open, onOpenChange, candidate }: Props) {
               {RECRUITMENT_SOURCE_LABELS[candidate.source] || candidate.source}
             </Badge>
             {candidate.yearsOfExperience !== undefined && (
-              <Badge variant="secondary" className="rounded-full bg-secondary text-secondary-foreground">
+              <Badge
+                variant="secondary"
+                className="rounded-full bg-secondary text-secondary-foreground"
+              >
                 {candidate.yearsOfExperience} năm kinh nghiệm
               </Badge>
             )}
@@ -36,7 +46,9 @@ export function ViewCandidateDialog({ open, onOpenChange, candidate }: Props) {
             <div>
               <div>{candidate.fullName}</div>
               {candidate.currentPosition && (
-                <p className="text-xs font-normal text-muted-foreground mt-0.5">{candidate.currentPosition}</p>
+                <p className="text-xs font-normal text-muted-foreground mt-0.5">
+                  {candidate.currentPosition}
+                </p>
               )}
             </div>
           </DialogTitle>
@@ -107,7 +119,9 @@ export function ViewCandidateDialog({ open, onOpenChange, candidate }: Props) {
             <div>
               <span>Ngày tạo: </span>
               <span className="font-medium text-foreground">
-                {candidate.createdAt ? new Date(candidate.createdAt).toLocaleDateString("vi-VN") : "—"}
+                {candidate.createdAt
+                  ? new Date(candidate.createdAt).toLocaleDateString("vi-VN")
+                  : "—"}
               </span>
             </div>
             <div>
@@ -118,7 +132,13 @@ export function ViewCandidateDialog({ open, onOpenChange, candidate }: Props) {
         </div>
 
         <DialogFooter>
-          <Button variant="outline" className="rounded-full border-border text-foreground hover:bg-muted" onClick={() => { onOpenChange(false); }}>
+          <Button
+            variant="outline"
+            className="rounded-full border-border text-foreground hover:bg-muted"
+            onClick={() => {
+              onOpenChange(false)
+            }}
+          >
             Đóng
           </Button>
         </DialogFooter>

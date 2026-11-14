@@ -1,4 +1,5 @@
 import { EventEmitter } from "events"
+
 import { ICacheService } from "../types/index.ts"
 
 interface CacheEntry {
@@ -72,4 +73,3 @@ export function createCacheService(): ICacheService {
 }
 
 export const cacheService = createCacheService()
-

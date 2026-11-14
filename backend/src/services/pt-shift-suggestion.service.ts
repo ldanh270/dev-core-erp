@@ -4,19 +4,17 @@
  */
 import { PART_TIME_SHIFT_SUGGEST } from "@/configs/entities/part-time-availability.config.ts"
 import type { IAttendanceRepository } from "@/types/attendance.types.ts"
-import type { IEmployeeShiftRepository, IWorkingShiftRepository } from "@/types/shift.types.ts"
 import type {
   IPartTimeAvailabilityService,
   IPtShiftSuggestionService,
   ISuggestPartTimeShiftsResult,
 } from "@/types/part-time-availability.types.ts"
-import {
-  normalizeWeekStart,
-} from "@/utils/part-time-availability.util.ts"
+import type { IEmployeeShiftRepository, IWorkingShiftRepository } from "@/types/shift.types.ts"
+import { normalizeWeekStart } from "@/utils/part-time-availability.util.ts"
 import { buildPartTimeShiftSuggestions } from "@/utils/part-time-availability/build-part-time-shift-suggestions.util.ts"
 import {
-  scorePartTimeReliability,
   type IPartTimeReliabilityScore,
+  scorePartTimeReliability,
 } from "@/utils/part-time-availability/score-part-time-reliability.util.ts"
 import { formatScheduleDateKey } from "@/utils/schedule.util.ts"
 
@@ -46,7 +44,9 @@ export class PtShiftSuggestionService implements IPtShiftSuggestionService {
    * @param input.weekStart - ISO date string for the Monday of the target week.
    * @param input.coverageRequirements - Optional explicit slot requirements; defaults to 1/shift/day.
    */
-  async suggest(input: Parameters<IPtShiftSuggestionService["suggest"]>[0]): Promise<ISuggestPartTimeShiftsResult> {
+  async suggest(
+    input: Parameters<IPtShiftSuggestionService["suggest"]>[0],
+  ): Promise<ISuggestPartTimeShiftsResult> {
     const weekStartDate = normalizeWeekStart(input.weekStart)
     const weekStartKey = formatScheduleDateKey(weekStartDate)
     const availabilities = await this.availabilityService.listForWeek(weekStartKey)
@@ -94,19 +94,23 @@ export class PtShiftSuggestionService implements IPtShiftSuggestionService {
     }
 
     const shiftById = new Map(workingShifts.map((shift) => [shift.id, shift]))
-    const coverageRequirements = input.coverageRequirements?.map((requirement) => ({
-      ...requirement,
-      shiftName: shiftById.get(requirement.shiftId)?.name ?? requirement.shiftId,
-    })) ?? workingShifts
-      .filter((shift) => shift.isActive)
-      .flatMap((shift) => [1, 2, 3, 4, 5, 6, 0].map((dayOfWeek) => ({
-        shiftId: shift.id,
-        shiftName: shift.name,
-        dayOfWeek,
-        startTime: shift.startTime,
-        endTime: shift.endTime,
-        requiredCount: 1,
-      })))
+    const coverageRequirements =
+      input.coverageRequirements?.map((requirement) => ({
+        ...requirement,
+        shiftName: shiftById.get(requirement.shiftId)?.name ?? requirement.shiftId,
+      })) ??
+      workingShifts
+        .filter((shift) => shift.isActive)
+        .flatMap((shift) =>
+          [1, 2, 3, 4, 5, 6, 0].map((dayOfWeek) => ({
+            shiftId: shift.id,
+            shiftName: shift.name,
+            dayOfWeek,
+            startTime: shift.startTime,
+            endTime: shift.endTime,
+            requiredCount: 1,
+          })),
+        )
 
     const assignedMinutesByEmployeeId = new Map<string, number>()
     for (const employeeShift of existingShifts) {

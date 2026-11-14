@@ -1,35 +1,35 @@
-import { z } from "zod"
-import { EXTERNAL_URL_PROTOCOLS } from "@/configs/system/url.config"
 import {
-  REQUISITION_STATUSES,
-  REQUISITION_PRIORITIES,
-  POSTING_STATUSES,
-  RECRUITMENT_APPLICATION_STATUSES,
-  RECRUITMENT_SOURCES,
-  INTERVIEW_FORMATS,
-  INTERVIEW_ROUND_STATUSES,
-  INTERVIEW_RESULTS,
   BGC_GROUPS,
   BGC_STATUSES,
-  RECRUITMENT_OFFER_STATUSES,
+  INTERVIEW_FORMATS,
+  INTERVIEW_RESULTS,
+  INTERVIEW_ROUND_STATUSES,
+  POSTING_STATUSES,
+  RECRUITMENT_APPLICATION_STATUSES,
   RECRUITMENT_CHANNELS,
+  RECRUITMENT_OFFER_STATUSES,
+  RECRUITMENT_SOURCES,
+  REQUISITION_PRIORITIES,
+  REQUISITION_STATUSES,
 } from "@/configs/entities/recruitment.config"
 import { GOOGLE_FORM_FIELD_TYPES } from "@/configs/rules/google-form.config"
+import { EXTERNAL_URL_PROTOCOLS } from "@/configs/system/url.config"
+
+import { z } from "zod"
 
 const secureExternalUrlSchema = z
   .string()
   .trim()
-  .refine(
-    (value) => {
-      try {
-        const url = new URL(value)
-        return EXTERNAL_URL_PROTOCOLS.includes(url.protocol as (typeof EXTERNAL_URL_PROTOCOLS)[number])
-      } catch {
-        return false
-      }
-    },
-    "Only HTTPS URLs are allowed",
-  )
+  .refine((value) => {
+    try {
+      const url = new URL(value)
+      return EXTERNAL_URL_PROTOCOLS.includes(
+        url.protocol as (typeof EXTERNAL_URL_PROTOCOLS)[number],
+      )
+    } catch {
+      return false
+    }
+  }, "Only HTTPS URLs are allowed")
 
 // ── Requisition Schemas ────────────────────────────────────────────────────────
 
@@ -53,7 +53,11 @@ const validateCandidateSchema = (
   }
   for (const requiredKey of ["full_name", "email"] as const) {
     if (fields.filter((field) => field.key === requiredKey && field.required).length !== 1) {
-      context.addIssue({ code: "custom", path: [path], message: `${requiredKey} must exist exactly once and be required` })
+      context.addIssue({
+        code: "custom",
+        path: [path],
+        message: `${requiredKey} must exist exactly once and be required`,
+      })
     }
   }
 }
@@ -77,21 +81,32 @@ const jobRequisitionFieldsSchema = z.object({
 })
 
 export const createJobRequisitionSchema = jobRequisitionFieldsSchema.superRefine(
-  ({ candidateSchema }, context) => { validateCandidateSchema(candidateSchema, context, "candidateSchema") },
+  ({ candidateSchema }, context) => {
+    validateCandidateSchema(candidateSchema, context, "candidateSchema")
+  },
 )
 
-export const updateJobRequisitionSchema = jobRequisitionFieldsSchema.partial().strict().superRefine(
-  ({ candidateSchema }, context) => { validateCandidateSchema(candidateSchema, context, "candidateSchema") },
-)
+export const updateJobRequisitionSchema = jobRequisitionFieldsSchema
+  .partial()
+  .strict()
+  .superRefine(({ candidateSchema }, context) => {
+    validateCandidateSchema(candidateSchema, context, "candidateSchema")
+  })
 
-export const approveRequisitionSchema = z.object({
-  approved: z.boolean(),
-  comment: z.string().max(500).optional(),
-}).superRefine(({ approved, comment }, context) => {
-  if (!approved && !comment?.trim()) {
-    context.addIssue({ code: z.ZodIssueCode.custom, path: ["comment"], message: "Rejection reason is required" })
-  }
-})
+export const approveRequisitionSchema = z
+  .object({
+    approved: z.boolean(),
+    comment: z.string().max(500).optional(),
+  })
+  .superRefine(({ approved, comment }, context) => {
+    if (!approved && !comment?.trim()) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["comment"],
+        message: "Rejection reason is required",
+      })
+    }
+  })
 
 // ── Job Description Schemas ────────────────────────────────────────────────────
 
@@ -106,7 +121,9 @@ export const createJobDescriptionSchema = z.object({
   salaryMax: z.number().positive().optional(),
 })
 
-export const updateJobDescriptionSchema = createJobDescriptionSchema.omit({ requisitionId: true }).partial()
+export const updateJobDescriptionSchema = createJobDescriptionSchema
+  .omit({ requisitionId: true })
+  .partial()
 
 export const listJobDescriptionsQuerySchema = z.object({
   requisitionId: z.string().cuid().optional(),
@@ -115,14 +132,16 @@ export const listJobDescriptionsQuerySchema = z.object({
   pageSize: z.coerce.number().int().positive().max(100).default(20),
 })
 
-export const createJobPostingSchema = z.object({
-  requisitionId: z.string().cuid(),
-  channel: z.enum(RECRUITMENT_CHANNELS).default("google_form"),
-  oauthAccountId: z.string().cuid().optional().nullable(),
-  fields: candidateSchemaFields.optional(),
-}).superRefine(({ fields }, context) => {
-  validateCandidateSchema(fields, context, "fields")
-})
+export const createJobPostingSchema = z
+  .object({
+    requisitionId: z.string().cuid(),
+    channel: z.enum(RECRUITMENT_CHANNELS).default("google_form"),
+    oauthAccountId: z.string().cuid().optional().nullable(),
+    fields: candidateSchemaFields.optional(),
+  })
+  .superRefine(({ fields }, context) => {
+    validateCandidateSchema(fields, context, "fields")
+  })
 
 export const updateJobPostingSchema = z.object({
   status: z.enum(POSTING_STATUSES).optional(),
@@ -269,31 +288,39 @@ export const createBackgroundCheckSchema = z.object({
   group: z.enum(BGC_GROUPS),
 })
 
-export const completeBackgroundCheckSchema = z.object({
-  passed: z.boolean(),
-  failReason: z.string().trim().min(1).max(1000).optional(),
-}).superRefine(({ passed, failReason }, context) => {
-  if (!passed && !failReason) {
-    context.addIssue({ code: z.ZodIssueCode.custom, path: ["failReason"], message: "Lý do không đạt là bắt buộc" })
-  }
-})
+export const completeBackgroundCheckSchema = z
+  .object({
+    passed: z.boolean(),
+    failReason: z.string().trim().min(1).max(1000).optional(),
+  })
+  .superRefine(({ passed, failReason }, context) => {
+    if (!passed && !failReason) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["failReason"],
+        message: "Lý do không đạt là bắt buộc",
+      })
+    }
+  })
 
 export const offerActionReasonSchema = z.object({
   reason: z.string().trim().min(1).max(1000),
 })
 
-export const updateBackgroundCheckSchema = z.object({
-  idVerified: z.boolean().optional(),
-  addressVerified: z.boolean().optional(),
-  criminalRecordCheck: z.boolean().optional(),
-  legalStatusCheck: z.boolean().optional(),
-  certificationVerified: z.boolean().optional(),
-  employmentHistoryVerified: z.boolean().optional(),
-  financialCheckCompleted: z.boolean().optional(),
-  creditScoreCheck: z.boolean().optional(),
-  failReason: z.string().max(1000).optional(),
-  documents: z.record(z.string(), z.unknown()).optional(),
-}).strict()
+export const updateBackgroundCheckSchema = z
+  .object({
+    idVerified: z.boolean().optional(),
+    addressVerified: z.boolean().optional(),
+    criminalRecordCheck: z.boolean().optional(),
+    legalStatusCheck: z.boolean().optional(),
+    certificationVerified: z.boolean().optional(),
+    employmentHistoryVerified: z.boolean().optional(),
+    financialCheckCompleted: z.boolean().optional(),
+    creditScoreCheck: z.boolean().optional(),
+    failReason: z.string().max(1000).optional(),
+    documents: z.record(z.string(), z.unknown()).optional(),
+  })
+  .strict()
 
 // ── Query Schemas ─────────────────────────────────────────────────────────────
 

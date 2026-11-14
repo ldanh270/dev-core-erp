@@ -1,8 +1,4 @@
-import {
-  DataTablePage,
-  StatusPill,
-  type DataTableColumn,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage, StatusPill } from "@/components/common"
 import { CreateRequisitionDialog } from "@/components/features/recruitment/create-requisition-dialog"
 import { RejectRequisitionDialog } from "@/components/features/recruitment/reject-requisition-dialog"
 import { RequisitionDetailsDrawer } from "@/components/features/recruitment/requisition-details-drawer"
@@ -24,12 +20,12 @@ import {
 } from "@/config/entities/recruitment.config"
 import { getTableColWidthPx } from "@/config/table-columns.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
+import { usePersonalEmployeeId } from "@/hooks/attendance/use-personal-employee-id"
 import {
   useApproveRequisition,
   useRequisitions,
   useSubmitRequisitionForApproval,
 } from "@/hooks/recruitment/use-recruitment-queries"
-import { usePersonalEmployeeId } from "@/hooks/attendance/use-personal-employee-id"
 import { usePermission } from "@/hooks/use-permission"
 import { routerNavigate } from "@/lib/router-navigator"
 import { cn } from "@/lib/utils"
@@ -37,7 +33,18 @@ import type { JobRequisition } from "@/types/recruitment.types"
 
 import { useMemo, useState } from "react"
 
-import { Check, Eye, FilePlus2, FileSearch, Filter, Pencil, Plus, RotateCcw, Send, X } from "lucide-react"
+import {
+  Check,
+  Eye,
+  FilePlus2,
+  FileSearch,
+  Filter,
+  Pencil,
+  Plus,
+  RotateCcw,
+  Send,
+  X,
+} from "lucide-react"
 
 const priorityVariantMap: Record<string, "destructive" | "secondary" | "outline"> = {
   [REQUISITION_PRIORITY.URGENT]: "destructive",
@@ -62,8 +69,14 @@ const TAB_DEFINITIONS = [
     id: REQUISITION_STATUS.PENDING_APPROVAL,
     label: REQUISITION_STATUS_LABELS[REQUISITION_STATUS.PENDING_APPROVAL],
   },
-  { id: REQUISITION_STATUS.APPROVED, label: REQUISITION_STATUS_LABELS[REQUISITION_STATUS.APPROVED] },
-  { id: REQUISITION_STATUS.REJECTED, label: REQUISITION_STATUS_LABELS[REQUISITION_STATUS.REJECTED] },
+  {
+    id: REQUISITION_STATUS.APPROVED,
+    label: REQUISITION_STATUS_LABELS[REQUISITION_STATUS.APPROVED],
+  },
+  {
+    id: REQUISITION_STATUS.REJECTED,
+    label: REQUISITION_STATUS_LABELS[REQUISITION_STATUS.REJECTED],
+  },
   { id: REQUISITION_STATUS.CLOSED, label: REQUISITION_STATUS_LABELS[REQUISITION_STATUS.CLOSED] },
   { id: REQUISITION_STATUS.FILLED, label: REQUISITION_STATUS_LABELS[REQUISITION_STATUS.FILLED] },
 ]
@@ -115,7 +128,9 @@ function RequisitionRowActions({
     <>
       <div
         className="flex items-center justify-end gap-1"
-        onClick={(e) => { e.stopPropagation(); }}
+        onClick={(e) => {
+          e.stopPropagation()
+        }}
       >
         <Tooltip>
           <TooltipTrigger asChild>
@@ -221,10 +236,11 @@ function RequisitionRowActions({
                 size="icon"
                 className="rounded-full hover:text-primary hover:bg-primary/10 h-8 w-8"
                 aria-label={`Tạo JD cho ${requisition.code}`}
-                onClick={() => { routerNavigate(
+                onClick={() => {
+                  routerNavigate(
                     `/recruitment/job-descriptions/create?requisitionId=${requisition.id}`,
-                  ); }
-                }
+                  )
+                }}
               >
                 <FilePlus2 className="h-3.5 w-3.5" />
               </Button>
@@ -239,11 +255,16 @@ function RequisitionRowActions({
         open={isRejectOpen}
         pending={approve.isPending}
         onOpenChange={setIsRejectOpen}
-        onConfirm={(comment) => { approve.mutate(
+        onConfirm={(comment) => {
+          approve.mutate(
             { id: requisition.id, data: { approved: false, comment } },
-            { onSuccess: () => { setIsRejectOpen(false); } },
-          ); }
-        }
+            {
+              onSuccess: () => {
+                setIsRejectOpen(false)
+              },
+            },
+          )
+        }}
       />
     </>
   )
@@ -317,8 +338,13 @@ export default function RequisitionsPage() {
         sticky: true,
         cell: (requisition) => (
           <button
-            onClick={() => { routerNavigate(`/recruitment/requisitions/${requisition.id}/overview`); }}
-            className={cn(TYPOGRAPHY.CELL_CODE, "text-primary hover:underline focus-visible:outline-none text-left")}
+            onClick={() => {
+              routerNavigate(`/recruitment/requisitions/${requisition.id}/overview`)
+            }}
+            className={cn(
+              TYPOGRAPHY.CELL_CODE,
+              "text-primary hover:underline focus-visible:outline-none text-left",
+            )}
           >
             {requisition.code}
           </button>
@@ -333,8 +359,13 @@ export default function RequisitionsPage() {
         cell: (requisition) => (
           <div className="min-w-0 max-w-[240px]">
             <button
-              onClick={() => { routerNavigate(`/recruitment/requisitions/${requisition.id}/overview`); }}
-              className={cn(TYPOGRAPHY.CELL_PRIMARY, "text-left hover:text-primary hover:underline transition-colors focus-visible:outline-none block truncate w-full")}
+              onClick={() => {
+                routerNavigate(`/recruitment/requisitions/${requisition.id}/overview`)
+              }}
+              className={cn(
+                TYPOGRAPHY.CELL_PRIMARY,
+                "text-left hover:text-primary hover:underline transition-colors focus-visible:outline-none block truncate w-full",
+              )}
               title={requisition.title}
             >
               {requisition.title}
@@ -343,7 +374,9 @@ export default function RequisitionsPage() {
               <span className="truncate">{requisition.department || "Chưa có phòng ban"}</span>
               {requisition.positionLevel && (
                 <>
-                  <span aria-hidden className="shrink-0">•</span>
+                  <span aria-hidden className="shrink-0">
+                    •
+                  </span>
                   <span className="shrink-0">{requisition.positionLevel}</span>
                 </>
               )}
@@ -374,9 +407,7 @@ export default function RequisitionsPage() {
         minWidth: getTableColWidthPx("DATE"),
         hideBelow: "xl",
         cell: (requisition) => (
-          <span className={TYPOGRAPHY.CELL_DATE}>
-            {formatDate(requisition.targetHireDate)}
-          </span>
+          <span className={TYPOGRAPHY.CELL_DATE}>{formatDate(requisition.targetHireDate)}</span>
         ),
       },
       {
@@ -426,7 +457,9 @@ export default function RequisitionsPage() {
               hasPermission("recruitment.update") &&
               (requisition.status === "draft" || requisition.status === "pending_approval")
             }
-            onViewDetails={(id) => { routerNavigate(`/recruitment/requisitions/${id}/overview`); }}
+            onViewDetails={(id) => {
+              routerNavigate(`/recruitment/requisitions/${id}/overview`)
+            }}
             onEdit={(req) => {
               setSelectedRequisition(req)
               setIsEditOpen(true)
@@ -509,7 +542,12 @@ export default function RequisitionsPage() {
         }
         primaryAction={
           hasPermission("recruitment.create") ? (
-            <Button onClick={() => { setIsCreateOpen(true); }} className="rounded-full font-semibold">
+            <Button
+              onClick={() => {
+                setIsCreateOpen(true)
+              }}
+              className="rounded-full font-semibold"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Tạo yêu cầu mới
             </Button>
@@ -551,7 +589,9 @@ export default function RequisitionsPage() {
 
       <RequisitionDetailsDrawer
         requisitionId={viewingRequisitionId}
-        onClose={() => { setViewingRequisitionId(null); }}
+        onClose={() => {
+          setViewingRequisitionId(null)
+        }}
         onEdit={(req) => {
           setSelectedRequisition(req)
           setIsEditOpen(true)

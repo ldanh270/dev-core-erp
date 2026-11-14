@@ -169,17 +169,13 @@
   "indexes": [
     {
       "name": "IX_PayrollSettings_updatedById",
-      "columns": [
-        "updatedById"
-      ],
+      "columns": ["updatedById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_PayrollSettings",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -189,12 +185,8 @@
       "virtualName": "updatedBy",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "updatedById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["updatedById"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

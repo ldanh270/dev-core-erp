@@ -1,10 +1,15 @@
-import { useMemo, useState } from "react"
-import { AppPagination, DataTableToolbar, PageCard, PageContainer, PageHeader } from "@/components/common"
+import {
+  AppPagination,
+  DataTableToolbar,
+  PageCard,
+  PageContainer,
+  PageHeader,
+} from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
 import { ViewInterviewDialog } from "@/components/features/recruitment/view-interview-dialog"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
@@ -14,35 +19,34 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { useUpcomingInterviews } from "@/hooks/recruitment/use-recruitment-queries"
-import {
-  INTERVIEW_TYPE_LABELS,
   INTERVIEW_FORMAT_LABELS,
-  INTERVIEW_RESULT_LABELS,
   INTERVIEW_RESULT,
+  INTERVIEW_RESULT_LABELS,
+  INTERVIEW_TYPE_LABELS,
 } from "@/config/entities/recruitment.config"
+import { useUpcomingInterviews } from "@/hooks/recruitment/use-recruitment-queries"
 import type { InterviewRound } from "@/types/recruitment.types"
+
+import { useMemo, useState } from "react"
+
+import { format, parseISO } from "date-fns"
+import { vi } from "date-fns/locale"
 import {
-  Plus,
   Calendar,
-  Clock,
-  Video,
-  MapPin,
-  Users,
   CheckCircle,
-  XCircle,
-  Minus,
+  Clock,
   Eye,
   LayoutGrid,
   List,
+  MapPin,
+  Minus,
+  Plus,
+  Users,
+  Video,
+  XCircle,
 } from "lucide-react"
-import { format, parseISO } from "date-fns"
-import { vi } from "date-fns/locale"
 
 const resultIconMap: Record<string, React.ReactNode> = {
   [INTERVIEW_RESULT.PASS]: <CheckCircle className="h-4 w-4 text-emerald-500" />,
@@ -127,11 +131,7 @@ function InterviewCard({ interview }: InterviewCardProps) {
           </div>
         )}
         <div className="flex items-center gap-2">
-          {isOnline ? (
-            <Video className="h-3.5 w-3.5" />
-          ) : (
-            <MapPin className="h-3.5 w-3.5" />
-          )}
+          {isOnline ? <Video className="h-3.5 w-3.5" /> : <MapPin className="h-3.5 w-3.5" />}
           <span>
             {isOnline
               ? interview.meetingLink
@@ -447,7 +447,9 @@ export default function InterviewsPage() {
                       </TableCell>
                       <TableCell
                         className="h-[60px] px-4 py-3 text-right"
-                        onClick={(e) => { e.stopPropagation(); }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                        }}
                       >
                         <Tooltip>
                           <TooltipTrigger asChild>

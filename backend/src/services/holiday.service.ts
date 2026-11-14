@@ -31,7 +31,11 @@ export class HolidayService implements IHolidayService {
   ): Promise<IHolidayCalendarDTO[]> {
     const startInput = data.startDate ?? data.date
     if (!startInput) {
-      throw new AppError("Holiday start date is required", HttpStatusCode.BAD_REQUEST, ErrorLayer.SERVICE)
+      throw new AppError(
+        "Holiday start date is required",
+        HttpStatusCode.BAD_REQUEST,
+        ErrorLayer.SERVICE,
+      )
     }
     const start = new Date(startInput)
     const end = new Date(data.endDate ?? startInput)
@@ -69,10 +73,7 @@ export class HolidayService implements IHolidayService {
     return this.holidayRepo.checkIsHoliday(date)
   }
 
-  private async validateScopeTargets(
-    scope: string,
-    data: ICreateHolidayDTO,
-  ): Promise<void> {
+  private async validateScopeTargets(scope: string, data: ICreateHolidayDTO): Promise<void> {
     // Reject stale/deleted targets before a transaction creates partially unusable holidays.
     if (scope === HOLIDAY_SCOPE.POSITION) {
       if (!data.positionId) {

@@ -1,7 +1,7 @@
-import type { ErdEdge } from "../database-erd-geometry"
-import { getErdEdgeClassName } from "../database-erd-edge-style"
-
 import { memo } from "react"
+
+import { getErdEdgeClassName } from "../database-erd-edge-style"
+import type { ErdEdge } from "../database-erd-geometry"
 
 interface DatabaseErdEdgeItemProps {
   d: string

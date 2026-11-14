@@ -23,6 +23,10 @@ employeeSalaryConfigRoutes.post(
 )
 employeeSalaryConfigRoutes.get("/:id/salary-config", controller.getActiveConfig)
 employeeSalaryConfigRoutes.get("/:id/salary-config/history", controller.getConfigHistory)
-employeeSalaryConfigRoutes.post("/:id/salary-config", requirePermission("payroll.create"), controller.assignConfig)
+employeeSalaryConfigRoutes.post(
+  "/:id/salary-config",
+  requirePermission("payroll.create"),
+  controller.assignConfig,
+)
 
 export default employeeSalaryConfigRoutes

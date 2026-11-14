@@ -1,5 +1,6 @@
-import type { TableDef } from "./database-reference.types"
 import { createEdges } from "./database-erd-edges"
+import { ERD_NODE_WIDTH, MIN_NODE_HEIGHT, getNodeHeight } from "./database-erd-geometry"
+import type { BaseErdLayout, ErdEdge, ErdLayout, ErdNode, ErdPoint } from "./database-erd-geometry"
 import {
   assignRanks,
   centerHubLayers,
@@ -9,18 +10,7 @@ import {
   orderLayers,
   splitLargeLayers,
 } from "./database-erd-ranking"
-import {
-  ERD_NODE_WIDTH,
-  MIN_NODE_HEIGHT,
-  getNodeHeight,
-} from "./database-erd-geometry"
-import type {
-  BaseErdLayout,
-  ErdEdge,
-  ErdLayout,
-  ErdNode,
-  ErdPoint,
-} from "./database-erd-geometry"
+import type { TableDef } from "./database-reference.types"
 
 export type { ErdPoint, ErdNode, ErdEdge, ErdLayout, BaseErdLayout }
 export {
@@ -61,12 +51,7 @@ export function createBaseErdLayout(tables: TableDef[], minWidth = 0): BaseErdLa
   const tableByName = new Map(visibleTables.map((table) => [table.name, table]))
   const dependencies = createDependencyMaps(visibleTables, visibleNames)
   const ranks = assignRanks(visibleTables, dependencies.parents, dependencies.children)
-  const rawLayers = groupByRank(
-    visibleTables,
-    ranks,
-    dependencies.parents,
-    dependencies.children,
-  )
+  const rawLayers = groupByRank(visibleTables, ranks, dependencies.parents, dependencies.children)
 
   orderLayers(rawLayers, dependencies.parents, dependencies.children)
   const maxNodesPerColumn = getMaxNodesPerColumn(visibleTables.length)
@@ -129,7 +114,9 @@ export function createBaseErdLayout(tables: TableDef[], minWidth = 0): BaseErdLa
     basePositions,
     heights,
     baseWidth:
-      CANVAS_MARGIN * 2 + widestLayer * ERD_NODE_WIDTH + Math.max(0, widestLayer - 1) * horizontalGap,
+      CANVAS_MARGIN * 2 +
+      widestLayer * ERD_NODE_WIDTH +
+      Math.max(0, widestLayer - 1) * horizontalGap,
     baseHeight: cursorY - nodeGapY + CANVAS_MARGIN,
   }
 }

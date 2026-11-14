@@ -2,29 +2,29 @@ import { API_BASE_URL, API_ENDPOINTS } from "@/config/api.config"
 import { ATTENDANCE_QUERY_PARAMS } from "@/constants/attendance.constants"
 import apiClient from "@/lib/api-client"
 import type {
+  IApplyWeeklyScheduleTemplatePayload,
   IApproval,
   IAssignSchedulePayload,
-  IAttendanceQuery,
   IAttendanceMatrixQuery,
   IAttendanceMatrixResult,
+  IAttendanceQuery,
   IAttendanceRecord,
   ICheckInOutRequest,
   ICreateShiftPayload,
+  ICreateWeeklyScheduleTemplatePayload,
   IHoliday,
   IHolidayPayload,
   IHolidayQuery,
   IOverrideShiftPayload,
-  IProcessApprovalPayload,
   IPlannedWeek,
+  IProcessApprovalPayload,
   ISchedule,
   IShiftChangeRequest,
   ISubmitShiftChangeRequestPayload,
   IUpdateShiftPayload,
-  IWorkingShift,
-  IWeeklyScheduleTemplate,
-  ICreateWeeklyScheduleTemplatePayload,
   IUpdateWeeklyScheduleTemplatePayload,
-  IApplyWeeklyScheduleTemplatePayload,
+  IWeeklyScheduleTemplate,
+  IWorkingShift,
 } from "@/types/attendance.types"
 
 /**
@@ -101,9 +101,9 @@ export const schedulesApi = {
   },
 
   /** Fetches specific employee shifts for the authenticated user within a date range. */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getMyShifts: async (startDate: string, endDate: string): Promise<any[]> => {
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const res = await apiClient.get<ApiResponse<any[]>>(API_ENDPOINTS.SCHEDULES.MY_SHIFTS, {
       params: { startDate, endDate },
     })
@@ -111,9 +111,13 @@ export const schedulesApi = {
   },
 
   /** Fetches EmployeeShifts for a specific employee (used for shift-swap partner ca selection). */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-  getShiftsByEmployee: async (employeeId: string, startDate: string, endDate: string): Promise<any[]> => {
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getShiftsByEmployee: async (
+    employeeId: string,
+    startDate: string,
+    endDate: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Promise<any[]> => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const res = await apiClient.get<ApiResponse<any[]>>(
       API_ENDPOINTS.SCHEDULES.EMPLOYEE_SHIFTS(employeeId),
       { params: { startDate, endDate } },
@@ -155,13 +159,9 @@ export const schedulesApi = {
 
   /** Overrides a single day's shift for an employee. */
   override: async (data: IOverrideShiftPayload): Promise<ISchedule> => {
-    const res = await apiClient.post<ApiResponse<ISchedule>>(
-      API_ENDPOINTS.SCHEDULES.OVERRIDE,
-      data,
-    )
+    const res = await apiClient.post<ApiResponse<ISchedule>>(API_ENDPOINTS.SCHEDULES.OVERRIDE, data)
     return res.data.data
   },
-
 }
 
 /**
@@ -179,12 +179,15 @@ export const attendanceApi = {
 
   /** Fetches attendance logs filtered by date range, employee, or status. */
   getRecords: async (query?: IAttendanceQuery): Promise<IAttendanceRecord[]> => {
-    const res = await apiClient.get<ApiResponse<IAttendanceRecord[]>>(API_ENDPOINTS.ATTENDANCE.BASE, {
-      params: {
-        ...query,
-        personalOnly: query?.personalOnly ? "true" : undefined,
+    const res = await apiClient.get<ApiResponse<IAttendanceRecord[]>>(
+      API_ENDPOINTS.ATTENDANCE.BASE,
+      {
+        params: {
+          ...query,
+          personalOnly: query?.personalOnly ? "true" : undefined,
+        },
       },
-    })
+    )
     return res.data.data
   },
 

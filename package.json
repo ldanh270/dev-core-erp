@@ -2,6 +2,10 @@
   "name": "devcore-erp",
   "version": "1.0.0",
   "description": "DevCore ERP: Web-Based Enterprise Resource Planning System for IT Outsourcing Companies",
+  "packageManager": "pnpm@11.15.1",
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
     "dev": "concurrently \"nr dev:backend\" \"nr dev:frontend\"",
     "dev:all": "concurrently \"nr dev:backend\" \"nr dev:frontend\" \"nr dev:mcp\" \"nr dev:gateway\"",
@@ -31,7 +35,14 @@
     "hash-password": "cd backend && nr hash-password",
     "test": "jest",
     "lint:codacy": "cd frontend && nr lint && nr lint:styles",
-    "quality:codacy": "nr lint:codacy"
+    "quality:codacy": "nr lint:codacy",
+    "format": "prettier --write \"backend/src/**/*.{ts,js,json}\" \"frontend/src/**/*.{ts,tsx,js,jsx,css,json}\"",
+    "format:check": "prettier --check \"backend/src/**/*.{ts,js,json}\" \"frontend/src/**/*.{ts,tsx,js,jsx,css,json}\"",
+    "typecheck": "concurrently \"nr typecheck:backend\" \"nr typecheck:frontend\"",
+    "typecheck:backend": "cd backend && nr typecheck",
+    "typecheck:frontend": "cd frontend && nr typecheck",
+    "lint": "nr lint:codacy",
+    "check:all": "nr format:check && nr typecheck && nr lint"
   },
   "dependencies": {
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
@@ -44,6 +55,7 @@
     "@ldanh270/aatest": "^1.0.19",
     "concurrently": "^9.2.4",
     "jest": "^30.4.2",
+    "prettier": "^3.5.0",
     "supertest": "^7.2.2"
   }
 }

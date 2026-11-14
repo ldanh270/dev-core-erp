@@ -1,4 +1,5 @@
 import { useMemo } from "react"
+
 import { getLinkedColumns, isPrimaryErdTable } from "../database-erd-layout"
 import type { ModuleDef, TableDef } from "../database-reference.types"
 import { getModuleTheme } from "../database-reference.utils"

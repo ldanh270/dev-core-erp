@@ -1,6 +1,6 @@
-import type { Prisma } from "@prisma/client"
-
 import type { IShiftScheduleWithTemplate } from "@/types/shift-schedule.types.ts"
+
+import type { Prisma } from "@prisma/client"
 
 export interface IWeeklyScheduleTemplateDayDTO {
   dayOfWeek: number
@@ -56,7 +56,10 @@ export type IWeeklyScheduleTemplateWithWeeks = Prisma.WeeklyScheduleTemplateGetP
 
 export interface IWeeklyScheduleTemplateRepository {
   create(data: ICreateWeeklyScheduleTemplateDTO): Promise<IWeeklyScheduleTemplateWithWeeks>
-  update(id: string, data: IUpdateWeeklyScheduleTemplateDTO): Promise<IWeeklyScheduleTemplateWithWeeks>
+  update(
+    id: string,
+    data: IUpdateWeeklyScheduleTemplateDTO,
+  ): Promise<IWeeklyScheduleTemplateWithWeeks>
   delete(id: string): Promise<void>
   findById(id: string): Promise<IWeeklyScheduleTemplateWithWeeks | null>
   listAll(): Promise<IWeeklyScheduleTemplateWithWeeks[]>

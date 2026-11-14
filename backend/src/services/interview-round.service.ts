@@ -1,7 +1,11 @@
-import { AppError } from "@/utils/error.util"
 import { interviewRoundRepository } from "@/repositories/interview-round.repository"
 import { scorecardRepository } from "@/repositories/scorecard.repository"
-import type { CreateInterviewRoundInput, UpdateInterviewRoundInput } from "@/types/recruitment.types"
+import type {
+  CreateInterviewRoundInput,
+  UpdateInterviewRoundInput,
+} from "@/types/recruitment.types"
+import { AppError } from "@/utils/error.util"
+
 import { recruitmentApplicationService } from "./recruitment-application.service"
 
 export class InterviewRoundService {
@@ -9,7 +13,11 @@ export class InterviewRoundService {
     // Validate application exists and is not closed/terminal
     const application = await recruitmentApplicationService.findById(input.applicationId)
     if (["rejected", "hired", "withdrawn"].includes(application.status)) {
-      throw new AppError("Không thể lên lịch phỏng vấn cho hồ sơ đã từ chối hoặc đã tuyển dụng", 400, "Service")
+      throw new AppError(
+        "Không thể lên lịch phỏng vấn cho hồ sơ đã từ chối hoặc đã tuyển dụng",
+        400,
+        "Service",
+      )
     }
 
     // Validate scheduled date validity
@@ -54,7 +62,11 @@ export class InterviewRoundService {
       throw new Error("Cannot complete a cancelled interview")
     }
 
-    const interview = await interviewRoundRepository.markCompletedAndTransition(id, result, feedback)
+    const interview = await interviewRoundRepository.markCompletedAndTransition(
+      id,
+      result,
+      feedback,
+    )
 
     // Calculate average rating from scorecards
     const avgRating = await scorecardRepository.getAverageRating(id)

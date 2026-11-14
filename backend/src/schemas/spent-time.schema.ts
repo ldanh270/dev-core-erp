@@ -1,5 +1,10 @@
 /** Zod boundary for PT spent-time API — logs start pending; workTimeType affects OT payroll multiplier. */
-import { SPENT_TIME_ACTIVITIES, SPENT_TIME_STATUSES, SPENT_TIME_WORK_TIME_TYPES } from "@/configs/entities/project.config.ts"
+import {
+  SPENT_TIME_ACTIVITIES,
+  SPENT_TIME_STATUSES,
+  SPENT_TIME_WORK_TIME_TYPES,
+} from "@/configs/entities/project.config.ts"
+
 import { z } from "zod"
 
 export const createSpentTimeSchema = z

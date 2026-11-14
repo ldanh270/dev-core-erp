@@ -6,15 +6,21 @@ import {
 } from "@/configs/auth/auth.config.ts"
 import { JwtPayload } from "@/types/auth.types.ts"
 
-import jwt from "jsonwebtoken"
 import crypto from "crypto"
+import jwt from "jsonwebtoken"
 
 /**
  * JwtUtil provides helper methods for signing and verifying JSON Web Tokens
  */
+/**
+ * Provides static helper methods for signing and cryptographically verifying JSON Web Tokens (JWT).
+ */
 export class JwtUtil {
   /**
-   * Generates a new Access Token for a given payload
+   * Generates a signed Access Token containing a unique JTI claim.
+   *
+   * @param payload - Key-value claims to encode inside the JWT payload
+   * @returns Signed JWT string valid for ACCESS_TOKEN_TTL duration
    */
   static generateAccessToken(payload: object): string {
     const uniquePayload = { ...payload, jti: crypto.randomUUID() }
@@ -24,7 +30,10 @@ export class JwtUtil {
   }
 
   /**
-   * Generates a new Refresh Token for a given payload
+   * Generates a signed Refresh Token containing a unique JTI claim.
+   *
+   * @param payload - Key-value claims to encode inside the JWT payload
+   * @returns Signed JWT string valid for REFRESH_TOKEN_TTL duration
    */
   static generateRefreshToken(payload: object): string {
     const uniquePayload = { ...payload, jti: crypto.randomUUID() }
@@ -34,7 +43,10 @@ export class JwtUtil {
   }
 
   /**
-   * Verifies an Access Token and returns the decoded payload if valid
+   * Verifies an Access Token against the configured access secret.
+   *
+   * @param token - Raw JWT string to verify
+   * @returns Decoded JwtPayload if valid and unexpired; null if signature mismatch or expired
    */
   static verifyAccessToken(token: string): JwtPayload | null {
     try {
@@ -45,7 +57,10 @@ export class JwtUtil {
   }
 
   /**
-   * Verifies a Refresh Token and returns the decoded payload if valid
+   * Verifies a Refresh Token against the configured refresh secret.
+   *
+   * @param token - Raw JWT string to verify
+   * @returns Decoded JwtPayload if valid and unexpired; null if signature mismatch or expired
    */
   static verifyRefreshToken(token: string): JwtPayload | null {
     try {

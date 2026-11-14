@@ -1,8 +1,4 @@
-import {
-  DataTablePage,
-  type DataTableColumn,
-  StatusPill,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage, StatusPill } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -18,13 +14,14 @@ import {
 } from "@/config/entities/attendance.config"
 import { TABLE_COL_WIDTH } from "@/config/table-columns.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
-import { cn } from "@/lib/utils"
 import { useAllApplications } from "@/hooks/application/useAllApplications"
 import { useManageApplications } from "@/hooks/application/useManageApplications"
 import { useMyApplications } from "@/hooks/application/useMyApplications"
 import type { IApplicationListItem } from "@/lib/api/application.api"
+import { cn } from "@/lib/utils"
 
 import { type ReactNode, useEffect, useMemo, useState } from "react"
+
 import { type LucideIcon, RotateCcw } from "lucide-react"
 
 type StatusVariant = "success" | "warning" | "danger" | "neutral"
@@ -37,9 +34,7 @@ const STATUS_MAP = new Map<string, { label: string; variant: StatusVariant }>([
   [APPLICATION_STATUS.CANCELLED, { label: "Đã hủy", variant: "neutral" }],
 ])
 
-const APPLICATION_TYPE_MAP = new Map<string, string>(
-  Object.entries(APPLICATION_TYPE_LABELS),
-)
+const APPLICATION_TYPE_MAP = new Map<string, string>(Object.entries(APPLICATION_TYPE_LABELS))
 
 export interface ApplicationListProps {
   mode: "mine" | "manage" | "all"
@@ -111,12 +106,15 @@ export function ApplicationList({
     }
   }, [applications, statusFilter, typeFilter, keyword, page, pageSize])
 
-  const statusTabs = useMemo(() => [
-    { id: "all", label: "Tất cả", count: stats.total },
-    { id: "pending", label: "Chờ duyệt", count: stats.pending },
-    { id: "approved", label: "Đã duyệt", count: stats.approved },
-    { id: "rejected", label: "Không duyệt", count: stats.rejected },
-  ], [stats])
+  const statusTabs = useMemo(
+    () => [
+      { id: "all", label: "Tất cả", count: stats.total },
+      { id: "pending", label: "Chờ duyệt", count: stats.pending },
+      { id: "approved", label: "Đã duyệt", count: stats.approved },
+      { id: "rejected", label: "Không duyệt", count: stats.rejected },
+    ],
+    [stats],
+  )
 
   const columns: DataTableColumn<IApplicationListItem>[] = useMemo(() => {
     const cols: DataTableColumn<IApplicationListItem>[] = [
@@ -143,7 +141,10 @@ export function ApplicationList({
           minWidth: `${TABLE_COL_WIDTH.EMPLOYEE}px`,
           sticky: true,
           cell: (app) => (
-            <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "truncate")} title={app.employee?.fullName}>
+            <span
+              className={cn(TYPOGRAPHY.CELL_PRIMARY, "truncate")}
+              title={app.employee?.fullName}
+            >
               {app.employee?.fullName || "N/A"}
             </span>
           ),
@@ -181,12 +182,7 @@ export function ApplicationList({
         minWidth: `${TABLE_COL_WIDTH.STATUS}px`,
         cell: (app) => {
           const s = STATUS_MAP.get(app.status)
-          return (
-            <StatusPill
-              label={s?.label || app.status}
-              variant={s?.variant || "neutral"}
-            />
-          )
+          return <StatusPill label={s?.label || app.status} variant={s?.variant || "neutral"} />
         },
       },
       {
@@ -210,7 +206,10 @@ export function ApplicationList({
             <span className={cn(TYPOGRAPHY.CELL_CODE, "text-primary font-medium")}>
               {app.employeeId.substring(0, 10)}
             </span>
-            <span className={cn(TYPOGRAPHY.CELL_SECONDARY, "truncate max-w-40")} title={app.employee?.fullName}>
+            <span
+              className={cn(TYPOGRAPHY.CELL_SECONDARY, "truncate max-w-40")}
+              title={app.employee?.fullName}
+            >
               {app.employee?.fullName || "N/A"}
             </span>
           </div>
@@ -319,7 +318,9 @@ export function ApplicationList({
       columns={columns}
       data={applications}
       isLoading={showLoading}
-      onRowClick={(app) => { onRowClick(app) }}
+      onRowClick={(app) => {
+        onRowClick(app)
+      }}
       emptyState={{
         title: "Không tìm thấy đơn phù hợp",
         description: "Không có đơn từ nào phù hợp với bộ lọc hoặc từ khóa tìm kiếm hiện tại.",

@@ -120,25 +120,19 @@
   "indexes": [
     {
       "name": "IX_positions_code",
-      "columns": [
-        "code"
-      ],
+      "columns": ["code"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_positions_name",
-      "columns": [
-        "name"
-      ],
+      "columns": ["name"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "PK_positions",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }

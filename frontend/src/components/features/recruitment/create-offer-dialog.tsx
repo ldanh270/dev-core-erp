@@ -1,12 +1,25 @@
-import { useEffect, useState } from "react"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useCreateOffer } from "@/hooks/recruitment/use-recruitment-queries"
 import type { KanbanApplication } from "@/types/recruitment.types"
+
+import { useEffect, useState } from "react"
 
 interface CreateOfferDialogProps {
   applications: KanbanApplication[]
@@ -23,7 +36,13 @@ const EMPLOYMENT_TYPES = [
   ["intern", "Thực tập"],
 ] as const
 
-export function CreateOfferDialog({ applications, defaultApplicationId, open, onOpenChange, onCreated }: CreateOfferDialogProps) {
+export function CreateOfferDialog({
+  applications,
+  defaultApplicationId,
+  open,
+  onOpenChange,
+  onCreated,
+}: CreateOfferDialogProps) {
   const [applicationId, setApplicationId] = useState("")
   const [salary, setSalary] = useState("")
   const [startDate, setStartDate] = useState("")
@@ -33,7 +52,8 @@ export function CreateOfferDialog({ applications, defaultApplicationId, open, on
 
   useEffect(() => {
     if (open) {
-      const selectedId = defaultApplicationId || (applications.length === 1 ? applications[0].id : "")
+      const selectedId =
+        defaultApplicationId || (applications.length === 1 ? applications[0].id : "")
       if (selectedId) {
         setApplicationId(selectedId)
       }
@@ -58,20 +78,23 @@ export function CreateOfferDialog({ applications, defaultApplicationId, open, on
 
   const submit = () => {
     if (!application || !salary || !startDate) return
-    createOffer.mutate({
-      applicationId: application.id,
-      offeredSalary: Number(salary),
-      currency: "VND",
-      startDate: new Date(startDate).toISOString(),
-      jobTitle: application.requisition.title,
-      department: application.requisition.department,
-      employmentType,
-    }, {
-      onSuccess: () => {
-        onCreated()
-        close(false)
+    createOffer.mutate(
+      {
+        applicationId: application.id,
+        offeredSalary: Number(salary),
+        currency: "VND",
+        startDate: new Date(startDate).toISOString(),
+        jobTitle: application.requisition.title,
+        department: application.requisition.department,
+        employmentType,
       },
-    })
+      {
+        onSuccess: () => {
+          onCreated()
+          close(false)
+        },
+      },
+    )
   }
 
   return (
@@ -86,7 +109,11 @@ export function CreateOfferDialog({ applications, defaultApplicationId, open, on
             {applications.length === 1 || defaultApplicationId ? (
               <Input
                 readOnly
-                value={application ? `${application.candidate.fullName} · ${application.requisition.title}` : "Đang chọn..."}
+                value={
+                  application
+                    ? `${application.candidate.fullName} · ${application.requisition.title}`
+                    : "Đang chọn..."
+                }
                 className="rounded-full bg-muted font-medium text-foreground cursor-not-allowed"
               />
             ) : (
@@ -107,13 +134,23 @@ export function CreateOfferDialog({ applications, defaultApplicationId, open, on
           <div className="grid gap-2 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label>Mức lương (VND)</Label>
-              <Input type="number" min="1" value={salary} onChange={(event) => { setSalary(event.target.value); }} className="rounded-full" />
+              <Input
+                type="number"
+                min="1"
+                value={salary}
+                onChange={(event) => {
+                  setSalary(event.target.value)
+                }}
+                className="rounded-full"
+              />
             </div>
             <div className="grid gap-2">
               <Label>Ngày bắt đầu</Label>
               <DatePicker
                 value={startDate || null}
-                onChange={(val) => { setStartDate(val || ""); }}
+                onChange={(val) => {
+                  setStartDate(val || "")
+                }}
                 placeholder="Chọn ngày bắt đầu..."
               />
             </div>
@@ -126,17 +163,31 @@ export function CreateOfferDialog({ applications, defaultApplicationId, open, on
               </SelectTrigger>
               <SelectContent>
                 {EMPLOYMENT_TYPES.map(([value, label]) => (
-                  <SelectItem key={value} value={value}>{label}</SelectItem>
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" className="rounded-full" onClick={() => { close(false) }}>
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-full"
+            onClick={() => {
+              close(false)
+            }}
+          >
             Hủy
           </Button>
-          <Button type="button" className="rounded-full" onClick={submit} disabled={!application || !salary || !startDate || createOffer.isPending}>
+          <Button
+            type="button"
+            className="rounded-full"
+            onClick={submit}
+            disabled={!application || !salary || !startDate || createOffer.isPending}
+          >
             {createOffer.isPending ? "Đang tạo..." : "Tạo offer nháp"}
           </Button>
         </DialogFooter>

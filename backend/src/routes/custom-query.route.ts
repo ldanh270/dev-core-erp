@@ -3,6 +3,7 @@ import { prisma } from "@/libs/database.ts"
 import { authenticate } from "@/middlewares/auth.middleware.ts"
 import { PrismaCustomQueryRepository } from "@/repositories/custom-query.repository.ts"
 import { CustomQueryService } from "@/services/custom-query.service.ts"
+
 import express from "express"
 
 const customQueryRoutes = express.Router()

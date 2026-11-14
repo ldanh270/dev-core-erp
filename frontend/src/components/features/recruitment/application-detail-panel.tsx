@@ -1,27 +1,10 @@
-import { useState } from "react"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { format } from "date-fns"
-import {
-  Calendar,
-  ExternalLink,
-  MapPin,
-  Plus,
-  Video,
-} from "lucide-react"
-import { Link } from "react-router-dom"
-
 import { StatusPill } from "@/components/common/status-pill"
+import { CreateOfferDialog } from "@/components/features/recruitment/create-offer-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CreateOfferDialog } from "@/components/features/recruitment/create-offer-dialog"
 import {
   INTERVIEW_FORMAT_LABELS,
   INTERVIEW_RESULT_LABELS,
@@ -29,6 +12,13 @@ import {
 import { usePermission } from "@/hooks/use-permission"
 import { applicationApi, interviewApi } from "@/lib/api/recruitment.api"
 import type { ApplicationNote, KanbanApplication } from "@/types/recruitment.types"
+
+import { useState } from "react"
+
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { format } from "date-fns"
+import { Calendar, ExternalLink, MapPin, Plus, Video } from "lucide-react"
+import { Link } from "react-router-dom"
 
 interface ApplicationDetailPanelProps {
   applicationId: string | null
@@ -46,19 +36,28 @@ export function ApplicationDetailPanel({
 
   const { data: application, isLoading } = useQuery({
     queryKey: ["recruitment", "application", applicationId],
-    queryFn: () => (applicationId ? applicationApi.getOne(applicationId) : Promise.reject(new Error("No application ID"))),
+    queryFn: () =>
+      applicationId
+        ? applicationApi.getOne(applicationId)
+        : Promise.reject(new Error("No application ID")),
     enabled: Boolean(applicationId) && open,
   })
 
   const { data: interviews = [], isLoading: isLoadingInterviews } = useQuery({
     queryKey: ["recruitment", "application-interviews", applicationId],
-    queryFn: () => (applicationId ? interviewApi.listByApplication(applicationId) : Promise.reject(new Error("No application ID"))),
+    queryFn: () =>
+      applicationId
+        ? interviewApi.listByApplication(applicationId)
+        : Promise.reject(new Error("No application ID")),
     enabled: Boolean(applicationId) && open,
   })
 
   const { data: notes = [] } = useQuery({
     queryKey: ["recruitment", "application-notes", applicationId],
-    queryFn: () => (applicationId ? applicationApi.getNotes(applicationId) : Promise.reject(new Error("No application ID"))),
+    queryFn: () =>
+      applicationId
+        ? applicationApi.getNotes(applicationId)
+        : Promise.reject(new Error("No application ID")),
     enabled: Boolean(applicationId) && open,
   })
 
@@ -87,7 +86,11 @@ export function ApplicationDetailPanel({
             <div className="flex items-center gap-4">
               <div className="flex size-12 items-center justify-center rounded-xl border border-border/50 bg-primary/10 text-lg font-bold text-primary overflow-hidden">
                 {application.candidate.avatarUrl ? (
-                  <img src={application.candidate.avatarUrl} alt={application.candidate.fullName} className="size-full object-cover" />
+                  <img
+                    src={application.candidate.avatarUrl}
+                    alt={application.candidate.fullName}
+                    className="size-full object-cover"
+                  />
                 ) : (
                   application.candidate.fullName.charAt(0).toUpperCase()
                 )}
@@ -108,7 +111,12 @@ export function ApplicationDetailPanel({
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="h-8 rounded-full text-xs font-semibold" asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 rounded-full text-xs font-semibold"
+                asChild
+              >
                 <Link to={`/recruitment/applications/${application.id}`}>
                   <ExternalLink className="mr-1.5 size-3" />
                   Xem chi tiết
@@ -163,16 +171,22 @@ export function ApplicationDetailPanel({
                     <div>
                       <span className="text-xs text-muted-foreground">Vị trí</span>
                       <p className="mt-0.5 text-sm font-medium">
-                        {application.requisition?.position?.name ?? application.requisition?.positionLevel ?? "—"}
+                        {application.requisition?.position?.name ??
+                          application.requisition?.positionLevel ??
+                          "—"}
                       </p>
                     </div>
                     <div>
                       <span className="text-xs text-muted-foreground">Yêu cầu tuyển dụng</span>
-                      <p className="mt-0.5 text-sm font-medium">{application.requisition?.title ?? "—"}</p>
+                      <p className="mt-0.5 text-sm font-medium">
+                        {application.requisition?.title ?? "—"}
+                      </p>
                     </div>
                     <div>
                       <span className="text-xs text-muted-foreground">Người phụ trách</span>
-                      <p className="mt-0.5 text-sm font-medium">{application.assignedTo?.fullName ?? "—"}</p>
+                      <p className="mt-0.5 text-sm font-medium">
+                        {application.assignedTo?.fullName ?? "—"}
+                      </p>
                     </div>
                     <div>
                       <span className="text-xs text-muted-foreground">CV / Hồ sơ</span>
@@ -199,11 +213,18 @@ export function ApplicationDetailPanel({
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-semibold">Các vòng phỏng vấn</h3>
                   {canManageInterviews && (
-                    <Button size="sm" variant="outline" className="h-8 rounded-full text-xs font-semibold" asChild>
-                       <Link to={`/recruitment/applications/${application.id}?tab=interviews&createInterview=1`}>
-                          <Plus className="mr-1.5 size-3" />
-                          Thêm vòng
-                       </Link>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 rounded-full text-xs font-semibold"
+                      asChild
+                    >
+                      <Link
+                        to={`/recruitment/applications/${application.id}?tab=interviews&createInterview=1`}
+                      >
+                        <Plus className="mr-1.5 size-3" />
+                        Thêm vòng
+                      </Link>
                     </Button>
                   )}
                 </div>
@@ -244,14 +265,16 @@ export function ApplicationDetailPanel({
                                 ) : (
                                   <MapPin className="size-3.5" />
                                 )}
-                                <span>{INTERVIEW_FORMAT_LABELS[interview.format] ?? interview.format}</span>
+                                <span>
+                                  {INTERVIEW_FORMAT_LABELS[interview.format] ?? interview.format}
+                                </span>
                               </div>
                             </div>
                           </div>
                           <StatusPill
                             label={
                               interview.status === "completed"
-                                ? INTERVIEW_RESULT_LABELS[interview.result as string] ?? "Đã xong"
+                                ? (INTERVIEW_RESULT_LABELS[interview.result as string] ?? "Đã xong")
                                 : interview.status === "scheduled"
                                   ? "Đã lên lịch"
                                   : interview.status === "cancelled"
@@ -261,7 +284,9 @@ export function ApplicationDetailPanel({
                             variant={
                               interview.result === "pass"
                                 ? "success"
-                                : interview.result === "fail" || interview.status === "cancelled" || interview.status === "no_show"
+                                : interview.result === "fail" ||
+                                    interview.status === "cancelled" ||
+                                    interview.status === "no_show"
                                   ? "danger"
                                   : "neutral"
                             }
@@ -275,7 +300,10 @@ export function ApplicationDetailPanel({
                             </span>
                             <div className="flex -space-x-2">
                               {interview.interviewers?.map((interviewer) => (
-                                <div key={interviewer.id} className="flex size-6 items-center justify-center rounded-full border-2 border-background bg-primary/20 text-[10px] font-bold text-primary">
+                                <div
+                                  key={interviewer.id}
+                                  className="flex size-6 items-center justify-center rounded-full border-2 border-background bg-primary/20 text-[10px] font-bold text-primary"
+                                >
                                   {interviewer.fullName.charAt(0)}
                                 </div>
                               ))}
@@ -284,10 +312,15 @@ export function ApplicationDetailPanel({
                               )}
                             </div>
                           </div>
-                          
-                          <Button size="sm" variant="ghost" className="h-8 rounded-full text-xs font-semibold text-primary" asChild>
+
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 rounded-full text-xs font-semibold text-primary"
+                            asChild
+                          >
                             <Link to={`/recruitment/applications/${application.id}?tab=interviews`}>
-                                Chi tiết
+                              Chi tiết
                             </Link>
                           </Button>
                         </div>
@@ -305,7 +338,9 @@ export function ApplicationDetailPanel({
                       size="sm"
                       variant="outline"
                       className="h-8 rounded-full text-xs font-semibold"
-                      onClick={() => { setIsOfferDialogOpen(true); }}
+                      onClick={() => {
+                        setIsOfferDialogOpen(true)
+                      }}
                     >
                       <Plus className="mr-1.5 size-3" />
                       Tạo Offer
@@ -322,13 +357,17 @@ export function ApplicationDetailPanel({
                       >
                         <div className="flex items-center justify-between">
                           <span className="font-semibold text-sm">{offer.jobTitle ?? "Offer"}</span>
-                          <StatusPill label={offer.status} variant={offer.status === "accepted" ? "success" : "neutral"} />
+                          <StatusPill
+                            label={offer.status}
+                            variant={offer.status === "accepted" ? "success" : "neutral"}
+                          />
                         </div>
                         <p className="text-xs font-semibold text-primary">
                           Lương: {Number(offer.offeredSalary).toLocaleString()} {offer.currency}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Ngày bắt đầu: {offer.startDate ? format(new Date(offer.startDate), "dd/MM/yyyy") : "—"}
+                          Ngày bắt đầu:{" "}
+                          {offer.startDate ? format(new Date(offer.startDate), "dd/MM/yyyy") : "—"}
                         </p>
                       </div>
                     ))}
@@ -341,7 +380,9 @@ export function ApplicationDetailPanel({
                         size="sm"
                         variant="outline"
                         className="h-8 rounded-full text-xs font-semibold"
-                        onClick={() => { setIsOfferDialogOpen(true) }}
+                        onClick={() => {
+                          setIsOfferDialogOpen(true)
+                        }}
                       >
                         <Plus className="mr-1.5 size-3" />
                         Tạo Offer ngay
@@ -352,24 +393,29 @@ export function ApplicationDetailPanel({
               </TabsContent>
 
               <TabsContent value="notes" className="m-0 space-y-4">
-                  <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-semibold">Ghi chú</h3>
-                  </div>
-                  {notes.length === 0 ? (
-                      <p className="text-sm text-muted-foreground">Chưa có ghi chú nào.</p>
-                  ) : (
-                      <div className="space-y-3">
-                          {notes.map((note: ApplicationNote) => (
-                              <div key={note.id} className="rounded-xl border border-border/50 bg-secondary/10 p-3">
-                                  <div className="flex items-center justify-between">
-                                      <p className="text-xs font-bold">{note.addedBy.fullName}</p>
-                                      <span className="text-[10px] text-muted-foreground">{format(new Date(note.createdAt), "HH:mm dd/MM/yyyy")}</span>
-                                  </div>
-                                  <p className="mt-2 text-sm text-foreground">{note.note}</p>
-                              </div>
-                          ))}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold">Ghi chú</h3>
+                </div>
+                {notes.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Chưa có ghi chú nào.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {notes.map((note: ApplicationNote) => (
+                      <div
+                        key={note.id}
+                        className="rounded-xl border border-border/50 bg-secondary/10 p-3"
+                      >
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-bold">{note.addedBy.fullName}</p>
+                          <span className="text-[10px] text-muted-foreground">
+                            {format(new Date(note.createdAt), "HH:mm dd/MM/yyyy")}
+                          </span>
+                        </div>
+                        <p className="mt-2 text-sm text-foreground">{note.note}</p>
                       </div>
-                  )}
+                    ))}
+                  </div>
+                )}
               </TabsContent>
             </div>
           </ScrollArea>
@@ -380,7 +426,9 @@ export function ApplicationDetailPanel({
             onOpenChange={setIsOfferDialogOpen}
             applications={[application as unknown as KanbanApplication]}
             onCreated={() => {
-              void queryClient.invalidateQueries({ queryKey: ["recruitment", "application", applicationId] })
+              void queryClient.invalidateQueries({
+                queryKey: ["recruitment", "application", applicationId],
+              })
             }}
           />
         )}

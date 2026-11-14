@@ -14,6 +14,7 @@ import {
 import { ROUTES } from "@/config/routes.config"
 import { useEmployeeCreateWizard } from "@/hooks/employees/useEmployeeCreateWizard"
 import { routerNavigate } from "@/lib/router-navigator"
+
 import { HelpCircle } from "lucide-react"
 
 export default function EmployeeCreatePage() {
@@ -59,7 +60,9 @@ export default function EmployeeCreatePage() {
         <div className="border border-border rounded-full bg-card overflow-hidden p-1 flex items-center gap-1 shadow-none">
           <button
             type="button"
-            onClick={() => { moveToTab("bio"); }}
+            onClick={() => {
+              moveToTab("bio")
+            }}
             className={`flex-1 py-2 px-5 text-sm font-medium rounded-full transition-all text-center ${
               activeTab === "bio"
                 ? "bg-primary text-primary-foreground shadow-none font-semibold"
@@ -70,7 +73,9 @@ export default function EmployeeCreatePage() {
           </button>
           <button
             type="button"
-            onClick={() => { moveToTab("job"); }}
+            onClick={() => {
+              moveToTab("job")
+            }}
             className={`flex-1 py-2 px-5 text-sm font-medium rounded-full transition-all text-center ${
               activeTab === "job"
                 ? "bg-primary text-primary-foreground shadow-none font-semibold"
@@ -81,7 +86,9 @@ export default function EmployeeCreatePage() {
           </button>
           <button
             type="button"
-            onClick={() => { moveToTab("family"); }}
+            onClick={() => {
+              moveToTab("family")
+            }}
             className={`flex-1 py-2 px-5 text-sm font-medium rounded-full transition-all text-center ${
               activeTab === "family"
                 ? "bg-primary text-primary-foreground shadow-none font-semibold"
@@ -142,7 +149,9 @@ export default function EmployeeCreatePage() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => { setIsConfirmModalOpen(false); }}
+              onClick={() => {
+                setIsConfirmModalOpen(false)
+              }}
               className="rounded-full min-w-24"
               disabled={isSubmitting}
             >

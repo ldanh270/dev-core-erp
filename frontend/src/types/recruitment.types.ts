@@ -58,13 +58,7 @@ export interface JobRequisition {
 }
 
 export type PostingChannel =
-  | "linkedin"
-  | "facebook"
-  | "google_form"
-  | "company_website"
-  | "agency"
-  | "referral"
-  | "other"
+  "linkedin" | "facebook" | "google_form" | "company_website" | "agency" | "referral" | "other"
 
 export type ConnectorStatus = "not_configured" | "ready" | "error"
 
@@ -122,7 +116,16 @@ export interface RecruitmentPostingActivity {
   application: { id: string; candidate: { id: string; fullName: string } } | null
 }
 
-export interface RecruitmentPipelineStage { id: string; requisitionId?: string | null; postingId?: string | null; name: string; color: string; position: number; isDefault: boolean; isCompleted: boolean }
+export interface RecruitmentPipelineStage {
+  id: string
+  requisitionId?: string | null
+  postingId?: string | null
+  name: string
+  color: string
+  position: number
+  isDefault: boolean
+  isCompleted: boolean
+}
 
 export interface ApplicantImportRow {
   fullName: string

@@ -1,8 +1,4 @@
-import {
-  DataTablePage,
-  StatusPill,
-  type DataTableColumn,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage, StatusPill } from "@/components/common"
 import { PayslipDetailPage } from "@/components/features/payroll/payslip-detail-page"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -19,6 +15,7 @@ import { cn, formatCurrency } from "@/lib/utils"
 import type { IPayslip } from "@/types/payroll.types"
 
 import { useCallback, useMemo, useState } from "react"
+
 import { CalendarDays, ChevronRight, Inbox } from "lucide-react"
 
 const getPayrollStatusVariant = (status?: string): "info" | "success" | "danger" | "neutral" => {
@@ -96,9 +93,7 @@ export default function MyPayslips() {
         align: "center",
         sticky: true,
         cell: (_, index) => (
-          <span className={TYPOGRAPHY.CELL_CODE}>
-            {(page - 1) * limit + index + 1}
-          </span>
+          <span className={TYPOGRAPHY.CELL_CODE}>{(page - 1) * limit + index + 1}</span>
         ),
       },
       {
@@ -119,13 +114,23 @@ export default function MyPayslips() {
               <CalendarDays className="size-4" />
             </div>
             <div className="min-w-0">
-              <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-semibold text-foreground group-hover:text-primary transition-colors")}>
+              <div
+                className={cn(
+                  TYPOGRAPHY.CELL_PRIMARY,
+                  "font-semibold text-foreground group-hover:text-primary transition-colors",
+                )}
+              >
                 Tháng {payslip.periodMonth}/{payslip.periodYear}
               </div>
-              <div className={cn(TYPOGRAPHY.CELL_SECONDARY, "flex items-center gap-2 mt-0.5 text-xs")}>
+              <div
+                className={cn(TYPOGRAPHY.CELL_SECONDARY, "flex items-center gap-2 mt-0.5 text-xs")}
+              >
                 <span>Kỳ lương định kỳ</span>
                 {payslip.isPreview ? (
-                  <Badge variant="secondary" className="rounded-full text-[10px] px-2 py-0 shadow-none font-normal">
+                  <Badge
+                    variant="secondary"
+                    className="rounded-full text-[10px] px-2 py-0 shadow-none font-normal"
+                  >
                     Xem trước
                   </Badge>
                 ) : null}

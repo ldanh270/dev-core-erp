@@ -53,93 +53,73 @@ scheduleRoutes.get(
   controller.getShiftsByEmployee,
 )
 
-scheduleRoutes.post(
-  "/assign",
-  requirePermission("attendance.update"),
-  controller.assignSchedule,
-)
-scheduleRoutes.post(
-  "/override",
-  requirePermission("attendance.update"),
-  controller.overrideShift,
-)
+scheduleRoutes.post("/assign", requirePermission("attendance.update"), controller.assignSchedule)
+scheduleRoutes.post("/override", requirePermission("attendance.update"), controller.overrideShift)
 scheduleRoutes.post(
   "/generate/preview",
   requirePermission("attendance.update"),
   controller.previewGeneratedShifts,
 )
-scheduleRoutes.post(
-  "/generate",
-  requirePermission("attendance.update"),
-  controller.generateShifts,
-)
+scheduleRoutes.post("/generate", requirePermission("attendance.update"), controller.generateShifts)
 
-scheduleRoutes.get(
-  "/settings",
-  requirePermission("attendance.read"),
-  async (_req, res, next) => {
-    try {
-      const settings = await prisma.weeklyScheduleSettings.findUnique({
-        where: { id: WEEKLY_SCHEDULE_SETTINGS_ID },
-      })
-      res.json({ data: settings ?? getDefaultWeeklyScheduleSettings(), error: null })
-    } catch (error) {
-      next(error)
+scheduleRoutes.get("/settings", requirePermission("attendance.read"), async (_req, res, next) => {
+  try {
+    const settings = await prisma.weeklyScheduleSettings.findUnique({
+      where: { id: WEEKLY_SCHEDULE_SETTINGS_ID },
+    })
+    res.json({ data: settings ?? getDefaultWeeklyScheduleSettings(), error: null })
+  } catch (error) {
+    next(error)
+  }
+})
+
+scheduleRoutes.put("/settings", requirePermission("attendance.update"), async (req, res, next) => {
+  try {
+    const { triggerDayOfWeek, triggerHour, triggerMinute } = req.body
+    const updatedById = (req as { user?: { empId?: string } }).user?.empId
+    if (!updatedById) {
+      throw new AppError("Unauthorized", HttpStatusCode.UNAUTHORIZED, ErrorLayer.UNKNOWN)
     }
-  },
-)
 
-scheduleRoutes.put(
-  "/settings",
-  requirePermission("attendance.update"),
-  async (req, res, next) => {
-    try {
-      const { triggerDayOfWeek, triggerHour, triggerMinute } = req.body
-      const updatedById = (req as { user?: { empId?: string } }).user?.empId
-      if (!updatedById) {
-        throw new AppError("Unauthorized", HttpStatusCode.UNAUTHORIZED, ErrorLayer.UNKNOWN)
-      }
+    const day = Number(triggerDayOfWeek)
+    const hour = triggerHour !== undefined ? Number(triggerHour) : 7
+    const minute = triggerMinute !== undefined ? Number(triggerMinute) : 0
 
-      const day = Number(triggerDayOfWeek)
-      const hour = triggerHour !== undefined ? Number(triggerHour) : 7
-      const minute = triggerMinute !== undefined ? Number(triggerMinute) : 0
-
-      if (!DAY_OF_WEEK_VALUES.includes(day as (typeof DAY_OF_WEEK_VALUES)[number])) {
-        throw new AppError(
-          "Ngày kích hoạt phải từ Chủ nhật (0) đến Thứ bảy (6)",
-          HttpStatusCode.BAD_REQUEST,
-          ErrorLayer.VALIDATION,
-        )
-      }
-      if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
-        throw new AppError(
-          "Thời gian kích hoạt không hợp lệ",
-          HttpStatusCode.BAD_REQUEST,
-          ErrorLayer.VALIDATION,
-        )
-      }
-
-      const settings = await prisma.weeklyScheduleSettings.upsert({
-        where: { id: WEEKLY_SCHEDULE_SETTINGS_ID },
-        create: {
-          id: WEEKLY_SCHEDULE_SETTINGS_ID,
-          triggerDayOfWeek: day,
-          triggerHour: hour,
-          triggerMinute: minute,
-          updatedById,
-        },
-        update: {
-          triggerDayOfWeek: day,
-          triggerHour: hour,
-          triggerMinute: minute,
-          updatedById,
-        },
-      })
-      res.json({ data: settings, error: null })
-    } catch (error) {
-      next(error)
+    if (!DAY_OF_WEEK_VALUES.includes(day as (typeof DAY_OF_WEEK_VALUES)[number])) {
+      throw new AppError(
+        "Ngày kích hoạt phải từ Chủ nhật (0) đến Thứ bảy (6)",
+        HttpStatusCode.BAD_REQUEST,
+        ErrorLayer.VALIDATION,
+      )
     }
-  },
-)
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+      throw new AppError(
+        "Thời gian kích hoạt không hợp lệ",
+        HttpStatusCode.BAD_REQUEST,
+        ErrorLayer.VALIDATION,
+      )
+    }
+
+    const settings = await prisma.weeklyScheduleSettings.upsert({
+      where: { id: WEEKLY_SCHEDULE_SETTINGS_ID },
+      create: {
+        id: WEEKLY_SCHEDULE_SETTINGS_ID,
+        triggerDayOfWeek: day,
+        triggerHour: hour,
+        triggerMinute: minute,
+        updatedById,
+      },
+      update: {
+        triggerDayOfWeek: day,
+        triggerHour: hour,
+        triggerMinute: minute,
+        updatedById,
+      },
+    })
+    res.json({ data: settings, error: null })
+  } catch (error) {
+    next(error)
+  }
+})
 
 export default scheduleRoutes

@@ -233,25 +233,19 @@
   "indexes": [
     {
       "name": "IX_WorkingShift_createdById",
-      "columns": [
-        "createdById"
-      ],
+      "columns": ["createdById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_WorkingShift_isActive",
-      "columns": [
-        "isActive"
-      ],
+      "columns": ["isActive"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_WorkingShift",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -261,12 +255,8 @@
       "virtualName": "createdBy",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "createdById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["createdById"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "applicationShiftSwapDetails",

@@ -99,7 +99,8 @@ export function GeneratePayrollModal({
             Generate Payroll
           </DialogTitle>
           <DialogDescription className="text-[15px] leading-relaxed text-muted-foreground mt-2">
-            Select the month and year to generate the payroll for all active employees. You can provide a custom name for mid-month payrolls.
+            Select the month and year to generate the payroll for all active employees. You can
+            provide a custom name for mid-month payrolls.
           </DialogDescription>
         </DialogHeader>
 
@@ -120,8 +121,8 @@ export function GeneratePayrollModal({
                       </FormControl>
                       <SelectContent className="border-border rounded-xl shadow-sm">
                         {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                          <SelectItem 
-                            key={m} 
+                          <SelectItem
+                            key={m}
                             value={m.toString()}
                             className="rounded-lg cursor-pointer focus:bg-muted"
                           >
@@ -149,8 +150,8 @@ export function GeneratePayrollModal({
                       </FormControl>
                       <SelectContent className="border-border rounded-xl shadow-sm">
                         {[currentYear - 1, currentYear, currentYear + 1].map((y) => (
-                          <SelectItem 
-                            key={y} 
+                          <SelectItem
+                            key={y}
                             value={y.toString()}
                             className="rounded-lg cursor-pointer focus:bg-muted"
                           >
@@ -170,12 +171,14 @@ export function GeneratePayrollModal({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-foreground">Payroll Name (Optional)</FormLabel>
+                  <FormLabel className="text-sm font-medium text-foreground">
+                    Payroll Name (Optional)
+                  </FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder={`e.g. Bảng lương tháng ${watchMonth ?? currentMonth}/${watchYear ?? currentYear}`} 
+                    <Input
+                      placeholder={`e.g. Bảng lương tháng ${watchMonth ?? currentMonth}/${watchYear ?? currentYear}`}
                       className="rounded-full border-border h-11 bg-card focus-visible:ring-1 focus-visible:ring-primary shadow-none"
-                      {...field} 
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -188,14 +191,16 @@ export function GeneratePayrollModal({
                 type="button"
                 variant="outline"
                 className="rounded-full border-border text-foreground hover:bg-accent"
-                onClick={() => { setOpen(false); }}
+                onClick={() => {
+                  setOpen(false)
+                }}
                 disabled={isPending}
               >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
-                className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[0.98] transition-transform shadow-none" 
+              <Button
+                type="submit"
+                className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[0.98] transition-transform shadow-none"
                 disabled={isPending}
               >
                 {isPending ? "Generating..." : "Generate"}

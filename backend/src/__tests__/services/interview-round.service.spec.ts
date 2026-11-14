@@ -1,3 +1,8 @@
+import { interviewRoundRepository } from "@/repositories/interview-round.repository"
+import { scorecardRepository } from "@/repositories/scorecard.repository"
+import { InterviewRoundService } from "@/services/interview-round.service"
+import { recruitmentApplicationService } from "@/services/recruitment-application.service"
+
 jest.mock("@/repositories/interview-round.repository", () => ({
   interviewRoundRepository: {
     createAndStart: jest.fn(),
@@ -18,18 +23,15 @@ jest.mock("@/services/recruitment-application.service", () => ({
   },
 }))
 
-import { interviewRoundRepository } from "@/repositories/interview-round.repository"
-import { scorecardRepository } from "@/repositories/scorecard.repository"
-import { recruitmentApplicationService } from "@/services/recruitment-application.service"
-import { InterviewRoundService } from "@/services/interview-round.service"
-
 describe("InterviewRoundService workflow", () => {
   const service = new InterviewRoundService()
 
   beforeEach(() => jest.clearAllMocks())
 
   it("starts the application workflow atomically when scheduling", async () => {
-    jest.mocked(recruitmentApplicationService.findById).mockResolvedValue({ status: "shortlisted" } as never)
+    jest
+      .mocked(recruitmentApplicationService.findById)
+      .mockResolvedValue({ status: "shortlisted" } as never)
     jest.mocked(interviewRoundRepository.createAndStart).mockResolvedValue({ id: "interview-1" })
 
     const result = await service.create({
@@ -49,7 +51,9 @@ describe("InterviewRoundService workflow", () => {
       status: "scheduled",
       applicationId: "application-1",
     } as never)
-    jest.mocked(interviewRoundRepository.markCompletedAndTransition).mockResolvedValue({ id: "interview-1" } as never)
+    jest
+      .mocked(interviewRoundRepository.markCompletedAndTransition)
+      .mockResolvedValue({ id: "interview-1" } as never)
     jest.mocked(scorecardRepository.getAverageRating).mockResolvedValue(4.5)
 
     const result = await service.markCompleted("interview-1", "pass", "Strong signal")

@@ -1,4 +1,9 @@
-import { DataTablePage, type DataTableColumn, StatusPill, TABLE_COL_WIDTH } from "@/components/common"
+import {
+  type DataTableColumn,
+  DataTablePage,
+  StatusPill,
+  TABLE_COL_WIDTH,
+} from "@/components/common"
 import { EmployeeCreateModal } from "@/components/features/employees/EmployeeCreateModal"
 import { EmployeeDetailsDrawer } from "@/components/features/employees/EmployeeDetailsDrawer"
 import { EmployeeEditDrawer } from "@/components/features/employees/EmployeeEditDrawer"
@@ -26,16 +31,8 @@ import { routerNavigate } from "@/lib/router-navigator"
 import type { Employee, EmployeeType } from "@/types/employee.types"
 
 import { useCallback, useMemo } from "react"
-import {
-  Edit,
-  FileDown,
-  MoreHorizontal,
-  Plus,
-  RotateCcw,
-  Trash2,
-  Unlock,
-  User,
-} from "lucide-react"
+
+import { Edit, FileDown, MoreHorizontal, Plus, RotateCcw, Trash2, Unlock, User } from "lucide-react"
 
 type ActiveTab =
   | "all"
@@ -113,14 +110,22 @@ export default function EmployeeList() {
     if (!data?.stats) return 0
     const stats = data.stats
     switch (tabId) {
-      case "all": return stats.total
-      case "full_time": return stats.full_time
-      case EMPLOYEE_LIST_TAB_SCHEDULE_PART_TIME: return stats.part_time
-      case "intern": return stats.intern
-      case "contractor": return stats.contractor
-      case "locked": return stats.locked
-      case EMPLOYEE_STATUS.TERMINATED: return stats.terminated
-      default: return 0
+      case "all":
+        return stats.total
+      case "full_time":
+        return stats.full_time
+      case EMPLOYEE_LIST_TAB_SCHEDULE_PART_TIME:
+        return stats.part_time
+      case "intern":
+        return stats.intern
+      case "contractor":
+        return stats.contractor
+      case "locked":
+        return stats.locked
+      case EMPLOYEE_STATUS.TERMINATED:
+        return stats.terminated
+      default:
+        return 0
     }
   }
 
@@ -148,7 +153,10 @@ export default function EmployeeList() {
               >
                 {employee.fullName}
               </p>
-              <p className="text-xs leading-4 text-muted-foreground truncate" title={employee.username}>
+              <p
+                className="text-xs leading-4 text-muted-foreground truncate"
+                title={employee.username}
+              >
                 {employee.username}
               </p>
             </div>
@@ -177,10 +185,16 @@ export default function EmployeeList() {
         minWidth: `${COL_WIDTH.position}px`,
         cell: (employee) => (
           <div className="min-w-0 flex flex-col justify-center">
-            <p className="text-sm font-medium leading-5 text-foreground truncate" title={employee.position || ""}>
+            <p
+              className="text-sm font-medium leading-5 text-foreground truncate"
+              title={employee.position || ""}
+            >
               {employee.position || "—"}
             </p>
-            <p className="text-xs leading-4 text-muted-foreground truncate" title={employee.role || ""}>
+            <p
+              className="text-xs leading-4 text-muted-foreground truncate"
+              title={employee.role || ""}
+            >
               {employee.role || "—"}
             </p>
           </div>
@@ -193,7 +207,10 @@ export default function EmployeeList() {
         minWidth: `${COL_WIDTH.contact}px`,
         cell: (employee) => (
           <div className="min-w-0 flex flex-col justify-center">
-            <p className="text-sm font-medium leading-5 text-foreground truncate" title={employee.phone || "—"}>
+            <p
+              className="text-sm font-medium leading-5 text-foreground truncate"
+              title={employee.phone || "—"}
+            >
               {employee.phone || "—"}
             </p>
             <p className="text-xs leading-4 text-muted-foreground truncate" title={employee.email}>
@@ -209,9 +226,14 @@ export default function EmployeeList() {
         minWidth: `${COL_WIDTH.startDate}px`,
         hideBelow: "lg",
         cell: (employee) => {
-          const dateStr = employee.startDate ? new Date(employee.startDate).toLocaleDateString("vi-VN") : "—"
+          const dateStr = employee.startDate
+            ? new Date(employee.startDate).toLocaleDateString("vi-VN")
+            : "—"
           return (
-            <span className="text-sm text-muted-foreground font-medium whitespace-nowrap" title={dateStr}>
+            <span
+              className="text-sm text-muted-foreground font-medium whitespace-nowrap"
+              title={dateStr}
+            >
               {dateStr}
             </span>
           )
@@ -228,7 +250,10 @@ export default function EmployeeList() {
           const scheduleLabel = getWorkScheduleTypeLabel(employee.workScheduleType)
           return (
             <div className="min-w-0 flex flex-col justify-center">
-              <p className="text-sm font-medium leading-5 text-foreground truncate" title={typeLabel}>
+              <p
+                className="text-sm font-medium leading-5 text-foreground truncate"
+                title={typeLabel}
+              >
                 {typeLabel}
               </p>
               <p className="text-xs leading-4 text-muted-foreground truncate" title={scheduleLabel}>
@@ -331,7 +356,14 @@ export default function EmployeeList() {
         ),
       },
     ],
-    [isAdminOrManager, handleDelete, handleReinstate, handleUnlock, setEditEmployee, setViewingEmployeeId],
+    [
+      isAdminOrManager,
+      handleDelete,
+      handleReinstate,
+      handleUnlock,
+      setEditEmployee,
+      setViewingEmployeeId,
+    ],
   )
 
   return (
@@ -352,11 +384,7 @@ export default function EmployeeList() {
       }
       /* Toolbar Action: Secondary Export button (40px) */
       toolbarActions={
-        <Button
-          type="button"
-          variant="outline"
-          className="rounded-full gap-2"
-        >
+        <Button type="button" variant="outline" className="rounded-full gap-2">
           <FileDown className="size-4" />
           Xuất Excel
         </Button>

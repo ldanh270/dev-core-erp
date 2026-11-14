@@ -5,7 +5,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export function getBioFieldError(
   field: "fullName" | "phone" | "email",
-  value: string
+  value: string,
 ): string | undefined {
   const trimmedValue = value.trim()
 
@@ -28,7 +28,7 @@ export function getBioFieldError(
 
 export function getJobFieldError(
   field: "employeeCode" | "workLocation" | "department" | "positionId" | "startDate",
-  value: string
+  value: string,
 ): string | undefined {
   const labels = {
     employeeCode: "mã nhân sự",
@@ -43,12 +43,14 @@ export function getJobFieldError(
 }
 
 export function hasRequiredEmployeeFields(data: IEmployeeWizardFormData): boolean {
-  return !getBioFieldError("fullName", data.fullName)
-    && !getBioFieldError("phone", data.phone)
-    && !getBioFieldError("email", data.email)
-    && !getJobFieldError("employeeCode", data.employeeCode)
-    && !getJobFieldError("workLocation", data.workLocation)
-    && !getJobFieldError("department", data.department)
-    && !getJobFieldError("positionId", data.positionId)
-    && !getJobFieldError("startDate", data.startDate)
+  return (
+    !getBioFieldError("fullName", data.fullName) &&
+    !getBioFieldError("phone", data.phone) &&
+    !getBioFieldError("email", data.email) &&
+    !getJobFieldError("employeeCode", data.employeeCode) &&
+    !getJobFieldError("workLocation", data.workLocation) &&
+    !getJobFieldError("department", data.department) &&
+    !getJobFieldError("positionId", data.positionId) &&
+    !getJobFieldError("startDate", data.startDate)
+  )
 }

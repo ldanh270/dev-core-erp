@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge"
 import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn } from "@/lib/utils"
+
 import type { ReactNode } from "react"
 
 export interface BoardColumnHeaderProps {
@@ -30,7 +31,7 @@ export function BoardColumnHeader({
             <span
               className={cn(
                 "h-2.5 w-2.5 rounded-full shrink-0 shadow-xs",
-                !dotColor.startsWith("#") && !dotColor.startsWith("rgb") && dotColor
+                !dotColor.startsWith("#") && !dotColor.startsWith("rgb") && dotColor,
               )}
               style={
                 dotColor.startsWith("#") || dotColor.startsWith("rgb")
@@ -40,9 +41,7 @@ export function BoardColumnHeader({
               aria-hidden
             />
           )}
-          <span className={cn(TYPOGRAPHY.BOARD_COLUMN_TITLE, "truncate")}>
-            {title}
-          </span>
+          <span className={cn(TYPOGRAPHY.BOARD_COLUMN_TITLE, "truncate")}>{title}</span>
           {count !== undefined && (
             <Badge
               variant="secondary"
@@ -55,11 +54,7 @@ export function BoardColumnHeader({
         </div>
         {actions && <div className="shrink-0">{actions}</div>}
       </div>
-      {subtitle && (
-        <div className={cn(TYPOGRAPHY.BOARD_COLUMN_SUB, "truncate")}>
-          {subtitle}
-        </div>
-      )}
+      {subtitle && <div className={cn(TYPOGRAPHY.BOARD_COLUMN_SUB, "truncate")}>{subtitle}</div>}
     </div>
   )
 }

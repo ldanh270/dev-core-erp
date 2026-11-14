@@ -1,6 +1,7 @@
 import { BackButton } from "@/components/common"
 import { Button } from "@/components/ui/button"
-import { Plus, Settings, UserPlus, Sparkles } from "lucide-react"
+
+import { Plus, Settings, Sparkles, UserPlus } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 interface ProjectHeaderProps {

@@ -1,8 +1,4 @@
-import {
-  DataTablePage,
-  StatusPill,
-  type DataTableColumn,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage, StatusPill } from "@/components/common"
 import { GeneratePayrollModal } from "@/components/payroll/GeneratePayrollModal"
 import { PayrollDetailSheet } from "@/components/payroll/PayrollDetailSheet"
 import { Button } from "@/components/ui/button"
@@ -12,29 +8,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  PAYROLL_STATUS,
-  PAYROLL_STATUS_LABELS,
-} from "@/config/entities/payroll.config"
+import { PAYROLL_STATUS, PAYROLL_STATUS_LABELS } from "@/config/entities/payroll.config"
 import { getTableColWidthPx } from "@/config/table-columns.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
-import {
-  useApprovePayroll,
-  usePayrolls,
-  useRejectPayroll,
-} from "@/hooks/payroll/use-payrolls"
+import { useApprovePayroll, usePayrolls, useRejectPayroll } from "@/hooks/payroll/use-payrolls"
 import { cn, formatCurrency } from "@/lib/utils"
 import type { IPayroll } from "@/types/payroll.types"
 import { exportPayrollsToCSV } from "@/utils/export.util"
 
 import { useCallback, useMemo, useState } from "react"
-import {
-  CheckCircle2,
-  Download,
-  Inbox,
-  MoreHorizontal,
-  XCircle,
-} from "lucide-react"
+
+import { CheckCircle2, Download, Inbox, MoreHorizontal, XCircle } from "lucide-react"
 
 const getPayrollStatusVariant = (status: string): "info" | "success" | "danger" | "neutral" => {
   switch (status) {
@@ -126,9 +110,7 @@ export default function PayrollManagement() {
         align: "center",
         sticky: true,
         cell: (_, index) => (
-          <span className={TYPOGRAPHY.CELL_CODE}>
-            {(page - 1) * limit + index + 1}
-          </span>
+          <span className={TYPOGRAPHY.CELL_CODE}>{(page - 1) * limit + index + 1}</span>
         ),
       },
       {

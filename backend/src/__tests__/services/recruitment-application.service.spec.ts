@@ -1,3 +1,6 @@
+import { recruitmentApplicationRepository } from "@/repositories/recruitment-application.repository"
+import { RecruitmentApplicationService } from "@/services/recruitment-application.service"
+
 jest.mock("@/repositories/recruitment-application.repository", () => ({
   recruitmentApplicationRepository: {
     create: jest.fn(),
@@ -22,9 +25,6 @@ jest.mock("@/repositories/job-posting.repository", () => ({
   jobPostingRepository: { findById: jest.fn() },
 }))
 
-import { recruitmentApplicationRepository } from "@/repositories/recruitment-application.repository"
-import { RecruitmentApplicationService } from "@/services/recruitment-application.service"
-
 describe("RecruitmentApplicationService workflow invariants", () => {
   const service = new RecruitmentApplicationService()
 
@@ -36,7 +36,9 @@ describe("RecruitmentApplicationService workflow invariants", () => {
       status: "reviewing",
       version: 4,
     } as never)
-    jest.mocked(recruitmentApplicationRepository.updateStatus).mockResolvedValue({ id: "application-1" } as never)
+    jest
+      .mocked(recruitmentApplicationRepository.updateStatus)
+      .mockResolvedValue({ id: "application-1" } as never)
 
     await service.updateStatus("application-1", { status: "shortlisted" })
 
@@ -53,10 +55,13 @@ describe("RecruitmentApplicationService workflow invariants", () => {
       status: "reviewing",
       version: 4,
     } as never)
-    jest.mocked(recruitmentApplicationRepository.updateStatus).mockRejectedValue(new Error("APPLICATION_VERSION_CONFLICT"))
+    jest
+      .mocked(recruitmentApplicationRepository.updateStatus)
+      .mockRejectedValue(new Error("APPLICATION_VERSION_CONFLICT"))
 
-    await expect(service.updateStatus("application-1", { status: "shortlisted" }))
-      .rejects.toMatchObject({ statusCode: 409, errorCode: "APPLICATION_VERSION_CONFLICT" })
+    await expect(
+      service.updateStatus("application-1", { status: "shortlisted" }),
+    ).rejects.toMatchObject({ statusCode: 409, errorCode: "APPLICATION_VERSION_CONFLICT" })
   })
 
   it("moves only the canonical pipeline stage and uses CAS", async () => {
@@ -64,7 +69,9 @@ describe("RecruitmentApplicationService workflow invariants", () => {
       id: "application-1",
       version: 7,
     } as never)
-    jest.mocked(recruitmentApplicationRepository.moveToPipelineStage).mockResolvedValue({ id: "application-1" } as never)
+    jest
+      .mocked(recruitmentApplicationRepository.moveToPipelineStage)
+      .mockResolvedValue({ id: "application-1" } as never)
 
     await service.moveKanban("application-1", "stage-2")
 

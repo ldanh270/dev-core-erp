@@ -72,10 +72,7 @@ export function useBulkAssignSalaryTemplate() {
       effectiveFrom: string
       note?: string
     }) => {
-      const response = await apiClient.post(
-        API_ENDPOINTS.PAYROLL.BULK_ASSIGN_SALARY_TEMPLATE,
-        data,
-      )
+      const response = await apiClient.post(API_ENDPOINTS.PAYROLL.BULK_ASSIGN_SALARY_TEMPLATE, data)
       return response.data.data as { assignedCount: number }
     },
     onSuccess: () => {

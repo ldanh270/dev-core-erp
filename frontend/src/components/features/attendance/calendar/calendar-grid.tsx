@@ -1,8 +1,13 @@
-import { CalendarDayColumn } from "@/components/features/attendance/calendar/calendar-day-column"
 import { EmptyState } from "@/components/common"
+import { CalendarDayColumn } from "@/components/features/attendance/calendar/calendar-day-column"
 import { CALENDAR_HOURS, type CalendarTab } from "@/config/rules/calendar.config"
 import { cn } from "@/lib/utils"
-import type { IAttendanceRecord, IHoliday, IScheduleDay, IWorkingShift } from "@/types/attendance.types"
+import type {
+  IAttendanceRecord,
+  IHoliday,
+  IScheduleDay,
+  IWorkingShift,
+} from "@/types/attendance.types"
 import type { WeekDay } from "@/utils/attendance/get-week-dates"
 
 import { Loader2 } from "lucide-react"
@@ -33,10 +38,7 @@ function CalendarGridSegment({
 
   return (
     <div className="overflow-x-auto rounded-lg border border-border/70">
-      <div
-        className="w-full min-w-0"
-        style={{ minWidth: `${7 + dayColumnCount * 6.5}rem` }}
-      >
+      <div className="w-full min-w-0" style={{ minWidth: `${7 + dayColumnCount * 6.5}rem` }}>
         <div
           className="grid border-b border-border/60 bg-secondary/40 text-center text-xs font-bold text-muted-foreground"
           style={{ gridTemplateColumns: gridTemplate }}
@@ -148,11 +150,7 @@ export function CalendarGrid({
 
       <div className={cn("space-y-4 xl:hidden", isEmpty && !isLoading && "opacity-60")}>
         {compactSegments.map((segmentDays, index) => (
-          <CalendarGridSegment
-            key={index}
-            weekDays={segmentDays}
-            {...segmentProps}
-          />
+          <CalendarGridSegment key={index} weekDays={segmentDays} {...segmentProps} />
         ))}
       </div>
     </div>

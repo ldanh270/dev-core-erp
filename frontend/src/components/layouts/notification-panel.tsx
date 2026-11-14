@@ -6,6 +6,7 @@ import { routerNavigate } from "@/lib/router-navigator"
 import type { NotificationItem } from "@/types/notification.types"
 
 import { useState } from "react"
+
 import { Bell, Check, Trash2 } from "lucide-react"
 
 function formatNotificationTime(dateStr: string): string {
@@ -29,14 +30,8 @@ function formatNotificationTime(dateStr: string): string {
  * Connects directly to backend SSE stream and REST endpoints.
  */
 export default function NotificationPanel() {
-  const {
-    notifications,
-    unreadCount,
-    isLoading,
-    markAsRead,
-    markAllAsRead,
-    deleteNotification,
-  } = useNotifications()
+  const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead, deleteNotification } =
+    useNotifications()
 
   const [open, setOpen] = useState(false)
   const displayCount = unreadCount > 9 ? "9+" : unreadCount
@@ -134,9 +129,7 @@ export default function NotificationPanel() {
                       {n.title}
                     </span>
                     <div className="flex items-center gap-1">
-                      {!n.read && (
-                        <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />
-                      )}
+                      {!n.read && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />}
                       <button
                         onClick={(e) => {
                           handleDelete(e, n.id)
@@ -159,9 +152,7 @@ export default function NotificationPanel() {
                       )}
                     </div>
                   </div>
-                  <span className="text-xs text-muted-foreground line-clamp-2">
-                    {n.message}
-                  </span>
+                  <span className="text-xs text-muted-foreground line-clamp-2">{n.message}</span>
                   <span className="text-[10px] text-muted-foreground/80 mt-1">
                     {formatNotificationTime(n.createdAt)}
                   </span>

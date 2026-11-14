@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button"
-import type { IncomingRelation } from "../database-reference.types"
+
 import { ExternalLink } from "lucide-react"
+
+import type { IncomingRelation } from "../database-reference.types"
 
 interface ColumnIncomingCellProps {
   incomingRelations: IncomingRelation[]
@@ -10,10 +12,7 @@ interface ColumnIncomingCellProps {
 /**
  * Renders incoming foreign key references from other models (<-) for a specific column.
  */
-export function ColumnIncomingCell({
-  incomingRelations,
-  onSelectTable,
-}: ColumnIncomingCellProps) {
+export function ColumnIncomingCell({ incomingRelations, onSelectTable }: ColumnIncomingCellProps) {
   if (incomingRelations.length === 0) {
     return <span className="text-muted-foreground">—</span>
   }
@@ -26,7 +25,9 @@ export function ColumnIncomingCell({
             type="button"
             variant="link"
             className="h-auto p-0 font-mono text-xs font-semibold text-primary justify-start"
-            onClick={() => { onSelectTable(rel.sourceTable); }}
+            onClick={() => {
+              onSelectTable(rel.sourceTable)
+            }}
           >
             <span className="mr-1 font-extrabold text-violet-600 dark:text-violet-400">←</span>
             <span>

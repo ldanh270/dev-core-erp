@@ -1,14 +1,17 @@
 import { API_ENDPOINTS } from "@/config/api.config"
-import { SECURITY_ACTIVITY_CATEGORY, SECURITY_AUDIT_ACTION_PREFIX } from "@/config/entities/security.config"
+import {
+  SECURITY_ACTIVITY_CATEGORY,
+  SECURITY_AUDIT_ACTION_PREFIX,
+} from "@/config/entities/security.config"
 import apiClient from "@/lib/api-client"
 import type {
   ActivityLogItem,
   ActivityLogQuery,
   LockedAccountItem,
   PaginatedActivityLogsDto,
-  SecuritySummaryDto,
-  Role,
   Permission,
+  Role,
+  SecuritySummaryDto,
 } from "@/types/security.types"
 
 import type { AxiosRequestConfig } from "axios"
@@ -87,10 +90,9 @@ function mapAuditToActivity(log: BackendAuditLog): ActivityLogItem {
 
 export const securityApi = {
   getSummary: async (timeRange: string = "today"): Promise<SecuritySummaryDto> => {
-    const response = await apiClient.get<ApiResponse<SecuritySummaryDto>>(
-      "/security/dashboard",
-      { params: { timeRange } }
-    )
+    const response = await apiClient.get<ApiResponse<SecuritySummaryDto>>("/security/dashboard", {
+      params: { timeRange },
+    })
     return response.data.data
   },
 
@@ -123,7 +125,7 @@ export const securityApi = {
       API_ENDPOINTS.SECURITY.ACTIVITY_LOGS,
       { params: backendQuery, ...config },
     )
-    
+
     const paginated = response.data.data
     return {
       data: (paginated.data || []).map(mapAuditToActivity),
@@ -146,7 +148,6 @@ export const securityApi = {
     }
   },
 
-
   getLogDetail: async (id: string): Promise<ActivityLogItem> => {
     const response = await apiClient.get<ApiResponse<BackendAuditLog>>(
       API_ENDPOINTS.SECURITY.ACTIVITY_LOG_DETAIL(id),
@@ -161,34 +162,41 @@ export const securityApi = {
     return mapAuditToActivity(response.data.data)
   },
 
-  listRoles: async (params?: { page?: number; limit?: number }): Promise<{ data: Role[]; meta: { total: number; page: number; limit: number; totalPages: number } }> => {
-    const response = await apiClient.get<ApiResponse<{ data: Role[]; meta: { total: number; page: number; limit: number; totalPages: number } }>>(
-      API_ENDPOINTS.ROLES.BASE,
-      { params }
-    )
+  listRoles: async (params?: {
+    page?: number
+    limit?: number
+  }): Promise<{
+    data: Role[]
+    meta: { total: number; page: number; limit: number; totalPages: number }
+  }> => {
+    const response = await apiClient.get<
+      ApiResponse<{
+        data: Role[]
+        meta: { total: number; page: number; limit: number; totalPages: number }
+      }>
+    >(API_ENDPOINTS.ROLES.BASE, { params })
     return response.data.data
   },
 
   getRole: async (id: string): Promise<Role> => {
-    const response = await apiClient.get<ApiResponse<Role>>(
-      API_ENDPOINTS.ROLES.DETAIL(id)
-    )
+    const response = await apiClient.get<ApiResponse<Role>>(API_ENDPOINTS.ROLES.DETAIL(id))
     return response.data.data
   },
 
-  createRole: async (data: { name: string; description: string; isDefault?: boolean }): Promise<Role> => {
-    const response = await apiClient.post<ApiResponse<Role>>(
-      API_ENDPOINTS.ROLES.BASE,
-      data
-    )
+  createRole: async (data: {
+    name: string
+    description: string
+    isDefault?: boolean
+  }): Promise<Role> => {
+    const response = await apiClient.post<ApiResponse<Role>>(API_ENDPOINTS.ROLES.BASE, data)
     return response.data.data
   },
 
-  updateRole: async (id: string, data: { name: string; description: string; isDefault?: boolean }): Promise<Role> => {
-    const response = await apiClient.put<ApiResponse<Role>>(
-      API_ENDPOINTS.ROLES.DETAIL(id),
-      data
-    )
+  updateRole: async (
+    id: string,
+    data: { name: string; description: string; isDefault?: boolean },
+  ): Promise<Role> => {
+    const response = await apiClient.put<ApiResponse<Role>>(API_ENDPOINTS.ROLES.DETAIL(id), data)
     return response.data.data
   },
 
@@ -198,7 +206,7 @@ export const securityApi = {
 
   getRolePermissions: async (roleId: string): Promise<Permission[]> => {
     const response = await apiClient.get<ApiResponse<Permission[]>>(
-      API_ENDPOINTS.ROLES.PERMISSIONS(roleId)
+      API_ENDPOINTS.ROLES.PERMISSIONS(roleId),
     )
     return response.data.data
   },
@@ -206,14 +214,14 @@ export const securityApi = {
   updateRolePermissions: async (roleId: string, permissionIds: string[]): Promise<unknown> => {
     const response = await apiClient.put<ApiResponse<unknown>>(
       API_ENDPOINTS.ROLES.PERMISSIONS(roleId),
-      { permissionIds }
+      { permissionIds },
     )
     return response.data.data
   },
 
   assignPermission: async (roleId: string, permissionId: string): Promise<unknown> => {
     const response = await apiClient.post<ApiResponse<unknown>>(
-      API_ENDPOINTS.ROLES.PERMISSION_DETAIL(roleId, permissionId)
+      API_ENDPOINTS.ROLES.PERMISSION_DETAIL(roleId, permissionId),
     )
     return response.data.data
   },
@@ -222,32 +230,44 @@ export const securityApi = {
     await apiClient.delete(API_ENDPOINTS.ROLES.PERMISSION_DETAIL(roleId, permissionId))
   },
 
-  listPermissions: async (params?: { page?: number; limit?: number }): Promise<{ data: Permission[]; meta: { total: number; page: number; limit: number; totalPages: number } }> => {
-    const response = await apiClient.get<ApiResponse<{ data: Permission[]; meta: { total: number; page: number; limit: number; totalPages: number } }>>(
-      API_ENDPOINTS.PERMISSIONS.BASE,
-      { params }
-    )
+  listPermissions: async (params?: {
+    page?: number
+    limit?: number
+  }): Promise<{
+    data: Permission[]
+    meta: { total: number; page: number; limit: number; totalPages: number }
+  }> => {
+    const response = await apiClient.get<
+      ApiResponse<{
+        data: Permission[]
+        meta: { total: number; page: number; limit: number; totalPages: number }
+      }>
+    >(API_ENDPOINTS.PERMISSIONS.BASE, { params })
     return response.data.data
   },
 
   getEmployeeRoles: async (employeeId: string): Promise<Role[]> => {
     const response = await apiClient.get<ApiResponse<Role[]>>(
-      API_ENDPOINTS.EMPLOYEES.ROLES(employeeId)
+      API_ENDPOINTS.EMPLOYEES.ROLES(employeeId),
     )
     return response.data.data
   },
 
-  updateEmployeeRoles: async (employeeId: string, roleIds: string[], version: number): Promise<unknown> => {
+  updateEmployeeRoles: async (
+    employeeId: string,
+    roleIds: string[],
+    version: number,
+  ): Promise<unknown> => {
     const response = await apiClient.put<ApiResponse<unknown>>(
       API_ENDPOINTS.EMPLOYEES.ROLES(employeeId),
-      { roleIds, version }
+      { roleIds, version },
     )
     return response.data.data
   },
 
   assignEmployeeRole: async (employeeId: string, roleId: string): Promise<unknown> => {
     const response = await apiClient.post<ApiResponse<unknown>>(
-      API_ENDPOINTS.EMPLOYEES.ROLE_DETAIL(employeeId, roleId)
+      API_ENDPOINTS.EMPLOYEES.ROLE_DETAIL(employeeId, roleId),
     )
     return response.data.data
   },

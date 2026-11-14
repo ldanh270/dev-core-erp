@@ -172,7 +172,12 @@ function AdminAttendanceDashboard() {
         title="Tổng quan chấm công"
         description="Dữ liệu chấm công toàn bộ nhân sự và cá nhân bạn."
         actions={
-          <Button variant="outline" size="default" className="gap-2 rounded-full shadow-xs font-semibold" onClick={handleExport}>
+          <Button
+            variant="outline"
+            size="default"
+            className="gap-2 rounded-full shadow-xs font-semibold"
+            onClick={handleExport}
+          >
             <Download size={16} /> Xuất CSV
           </Button>
         }
@@ -369,7 +374,9 @@ function AdminAttendanceDashboard() {
 
           <Select
             value={statusFilter}
-            onValueChange={(v) => { setStatusFilter(v as IAttendanceStatus | "all"); }}
+            onValueChange={(v) => {
+              setStatusFilter(v as IAttendanceStatus | "all")
+            }}
           >
             <SelectTrigger className="w-44 rounded-full text-sm font-semibold">
               <SelectValue placeholder="Trạng thái" />

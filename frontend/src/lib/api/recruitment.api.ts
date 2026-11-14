@@ -1,24 +1,24 @@
 import apiClient from "@/lib/api-client"
 import type {
-  JobRequisition,
-  Candidate,
-  RecruitmentApplication,
-  InterviewRound,
-  Scorecard,
-  RecruitmentOffer,
-  BackgroundCheck,
-  ApplicationNote,
-  KanbanApplication,
-  RequisitionStats,
-  ApplicationStats,
-  OfferStats,
-  BackgroundCheckStats,
-  OfferVersion,
-  JobPosting,
-  ApplicantImportRow,
   ApplicantImportResult,
+  ApplicantImportRow,
+  ApplicationNote,
+  ApplicationStats,
+  BackgroundCheck,
+  BackgroundCheckStats,
+  Candidate,
+  InterviewRound,
+  JobPosting,
+  JobRequisition,
+  KanbanApplication,
+  OfferStats,
+  OfferVersion,
+  RecruitmentApplication,
   RecruitmentFormField,
+  RecruitmentOffer,
   RecruitmentPostingActivity,
+  RequisitionStats,
+  Scorecard,
 } from "@/types/recruitment.types"
 
 interface PaginatedPayload<T> {
@@ -77,7 +77,9 @@ export type UpdateRequisitionDto = Partial<CreateRequisitionDto>
 
 export const requisitionApi = {
   getApprovers: async (): Promise<RequisitionApprover[]> => {
-    const response = await apiClient.get<{ data: RequisitionApprover[] }>("/recruitment/requisitions/approvers")
+    const response = await apiClient.get<{ data: RequisitionApprover[] }>(
+      "/recruitment/requisitions/approvers",
+    )
     return response.data.data
   },
 
@@ -88,52 +90,114 @@ export const requisitionApi = {
     page?: number
     pageSize?: number
   }) => {
-    const response = await apiClient.get<{ data: PaginatedPayload<JobRequisition> }>("/recruitment/requisitions", { params: query })
+    const response = await apiClient.get<{ data: PaginatedPayload<JobRequisition> }>(
+      "/recruitment/requisitions",
+      { params: query },
+    )
     return toPaginatedResult(response.data.data)
   },
 
   getOne: async (id: string): Promise<JobRequisition> => {
-    const response = await apiClient.get<{ data: JobRequisition }>(`/recruitment/requisitions/${id}`)
+    const response = await apiClient.get<{ data: JobRequisition }>(
+      `/recruitment/requisitions/${id}`,
+    )
     return response.data.data
   },
 
-  workspace: async (id: string): Promise<{ requisition: JobRequisition; stages: import("@/types/recruitment.types").RecruitmentPipelineStage[]; applications: { data: KanbanApplication[]; meta: { total: number; page: number; pageSize: number } } }> => {
-    const response = await apiClient.get<{ data: { requisition: JobRequisition; stages: import("@/types/recruitment.types").RecruitmentPipelineStage[]; applications: { items: KanbanApplication[]; total: number; page: number; pageSize: number } } }>(`/recruitment/requisitions/${id}/workspace`)
-    return { requisition: response.data.data.requisition, stages: response.data.data.stages, applications: toPaginatedResult(response.data.data.applications) }
+  workspace: async (
+    id: string,
+  ): Promise<{
+    requisition: JobRequisition
+    stages: import("@/types/recruitment.types").RecruitmentPipelineStage[]
+    applications: {
+      data: KanbanApplication[]
+      meta: { total: number; page: number; pageSize: number }
+    }
+  }> => {
+    const response = await apiClient.get<{
+      data: {
+        requisition: JobRequisition
+        stages: import("@/types/recruitment.types").RecruitmentPipelineStage[]
+        applications: { items: KanbanApplication[]; total: number; page: number; pageSize: number }
+      }
+    }>(`/recruitment/requisitions/${id}/workspace`)
+    return {
+      requisition: response.data.data.requisition,
+      stages: response.data.data.stages,
+      applications: toPaginatedResult(response.data.data.applications),
+    }
   },
-  activities: async (id: string): Promise<RecruitmentPostingActivity[]> => (await apiClient.get<{ data: PaginatedPayload<RecruitmentPostingActivity> }>(`/recruitment/requisitions/${id}/activities`)).data.data.items,
+  activities: async (id: string): Promise<RecruitmentPostingActivity[]> =>
+    (
+      await apiClient.get<{ data: PaginatedPayload<RecruitmentPostingActivity> }>(
+        `/recruitment/requisitions/${id}/activities`,
+      )
+    ).data.data.items,
 
-  stages: async (id: string) => (await apiClient.get<{
-    data: import("@/types/recruitment.types").RecruitmentPipelineStage[]
-  }>(`/recruitment/requisitions/${id}/stages`)).data.data,
-  createStage: async (id: string, data: { name: string; color?: string; isDefault?: boolean; isCompleted?: boolean }) => (await apiClient.post(`/recruitment/requisitions/${id}/stages`, data)).data.data,
-  updateStage: async (id: string, stageId: string, data: Record<string, unknown>) => (await apiClient.patch(`/recruitment/requisitions/${id}/stages/${stageId}`, data)).data.data,
-  deleteStage: async (id: string, stageId: string, fallbackStageId: string) => apiClient.delete(`/recruitment/requisitions/${id}/stages/${stageId}`, { params: { fallbackStageId } }),
-  reorderStages: async (id: string, stageIds: string[]) => (await apiClient.put(`/recruitment/requisitions/${id}/stages/reorder`, { stageIds })).data.data,
-  moveApplicationStage: async (id: string, applicationId: string, pipelineStageId: string) => (await apiClient.post(`/recruitment/requisitions/${id}/stages/move`, { applicationId, pipelineStageId })).data.data,
+  stages: async (id: string) =>
+    (
+      await apiClient.get<{
+        data: import("@/types/recruitment.types").RecruitmentPipelineStage[]
+      }>(`/recruitment/requisitions/${id}/stages`)
+    ).data.data,
+  createStage: async (
+    id: string,
+    data: { name: string; color?: string; isDefault?: boolean; isCompleted?: boolean },
+  ) => (await apiClient.post(`/recruitment/requisitions/${id}/stages`, data)).data.data,
+  updateStage: async (id: string, stageId: string, data: Record<string, unknown>) =>
+    (await apiClient.patch(`/recruitment/requisitions/${id}/stages/${stageId}`, data)).data.data,
+  deleteStage: async (id: string, stageId: string, fallbackStageId: string) =>
+    apiClient.delete(`/recruitment/requisitions/${id}/stages/${stageId}`, {
+      params: { fallbackStageId },
+    }),
+  reorderStages: async (id: string, stageIds: string[]) =>
+    (await apiClient.put(`/recruitment/requisitions/${id}/stages/reorder`, { stageIds })).data.data,
+  moveApplicationStage: async (id: string, applicationId: string, pipelineStageId: string) =>
+    (
+      await apiClient.post(`/recruitment/requisitions/${id}/stages/move`, {
+        applicationId,
+        pipelineStageId,
+      })
+    ).data.data,
 
   create: async (data: CreateRequisitionDto): Promise<JobRequisition> => {
-    const response = await apiClient.post<{ data: JobRequisition }>("/recruitment/requisitions", data)
+    const response = await apiClient.post<{ data: JobRequisition }>(
+      "/recruitment/requisitions",
+      data,
+    )
     return response.data.data
   },
 
   update: async (id: string, data: UpdateRequisitionDto): Promise<JobRequisition> => {
-    const response = await apiClient.patch<{ data: JobRequisition }>(`/recruitment/requisitions/${id}`, data)
+    const response = await apiClient.patch<{ data: JobRequisition }>(
+      `/recruitment/requisitions/${id}`,
+      data,
+    )
     return response.data.data
   },
 
   submitForApproval: async (id: string): Promise<JobRequisition> => {
-    const response = await apiClient.post<{ data: JobRequisition }>(`/recruitment/requisitions/${id}/submit`)
+    const response = await apiClient.post<{ data: JobRequisition }>(
+      `/recruitment/requisitions/${id}/submit`,
+    )
     return response.data.data
   },
 
-  approve: async (id: string, data: { approved: boolean; comment?: string }): Promise<JobRequisition> => {
-    const response = await apiClient.post<{ data: JobRequisition }>(`/recruitment/requisitions/${id}/approve`, data)
+  approve: async (
+    id: string,
+    data: { approved: boolean; comment?: string },
+  ): Promise<JobRequisition> => {
+    const response = await apiClient.post<{ data: JobRequisition }>(
+      `/recruitment/requisitions/${id}/approve`,
+      data,
+    )
     return response.data.data
   },
 
   close: async (id: string): Promise<JobRequisition> => {
-    const response = await apiClient.post<{ data: JobRequisition }>(`/recruitment/requisitions/${id}/close`)
+    const response = await apiClient.post<{ data: JobRequisition }>(
+      `/recruitment/requisitions/${id}/close`,
+    )
     return response.data.data
   },
 
@@ -142,7 +206,9 @@ export const requisitionApi = {
   },
 
   getStats: async (): Promise<RequisitionStats> => {
-    const response = await apiClient.get<{ data: RequisitionStats }>("/recruitment/requisitions/stats")
+    const response = await apiClient.get<{ data: RequisitionStats }>(
+      "/recruitment/requisitions/stats",
+    )
     return response.data.data
   },
 }
@@ -170,13 +236,22 @@ export interface CreateJobPostingDto {
 export type PublishJobPostingDto = { id: string; mode: "connector" }
 
 export const jobPostingApi = {
-  overview: async (id: string): Promise<{ posting: JobPosting; applicationTotal: number; stageGroups: Array<{ pipelineStageId: string | null; _count: { _all: number } }> }> => (await apiClient.get(`/recruitment/job-postings/${id}/overview`)).data.data,
+  overview: async (
+    id: string,
+  ): Promise<{
+    posting: JobPosting
+    applicationTotal: number
+    stageGroups: Array<{ pipelineStageId: string | null; _count: { _all: number } }>
+  }> => (await apiClient.get(`/recruitment/job-postings/${id}/overview`)).data.data,
   getOne: async (id: string): Promise<JobPosting> => {
     const response = await apiClient.get<{ data: JobPosting }>(`/recruitment/job-postings/${id}`)
     return response.data.data
   },
   list: async (requisitionId?: string): Promise<JobPosting[]> => {
-    const response = await apiClient.get<{ data: JobPosting[] | PaginatedPayload<JobPosting> }>("/recruitment/job-postings", { params: { requisitionId } })
+    const response = await apiClient.get<{ data: JobPosting[] | PaginatedPayload<JobPosting> }>(
+      "/recruitment/job-postings",
+      { params: { requisitionId } },
+    )
     const payload = response.data.data
     return Array.isArray(payload) ? payload : payload.items
   },
@@ -184,16 +259,29 @@ export const jobPostingApi = {
     const response = await apiClient.post<{ data: JobPosting }>("/recruitment/job-postings", data)
     return response.data.data
   },
-  update: async (id: string, data: { status?: JobPosting["status"]; postingUrl?: string }): Promise<JobPosting> => {
-    const response = await apiClient.patch<{ data: JobPosting }>(`/recruitment/job-postings/${id}`, data)
+  update: async (
+    id: string,
+    data: { status?: JobPosting["status"]; postingUrl?: string },
+  ): Promise<JobPosting> => {
+    const response = await apiClient.patch<{ data: JobPosting }>(
+      `/recruitment/job-postings/${id}`,
+      data,
+    )
     return response.data.data
   },
   publish: async ({ id, ...data }: PublishJobPostingDto): Promise<JobPosting> => {
-    const response = await apiClient.post<{ data: JobPosting }>(`/recruitment/job-postings/${id}/publish`, data)
+    const response = await apiClient.post<{ data: JobPosting }>(
+      `/recruitment/job-postings/${id}/publish`,
+      data,
+    )
     return response.data.data
   },
-  sync: async (id: string): Promise<ApplicantImportResult & { postingId: string; syncedAt: string }> => {
-    const response = await apiClient.post<{ data: ApplicantImportResult & { postingId: string; syncedAt: string } }>(`/recruitment/job-postings/${id}/sync`)
+  sync: async (
+    id: string,
+  ): Promise<ApplicantImportResult & { postingId: string; syncedAt: string }> => {
+    const response = await apiClient.post<{
+      data: ApplicantImportResult & { postingId: string; syncedAt: string }
+    }>(`/recruitment/job-postings/${id}/sync`)
     return response.data.data
   },
   archive: async (id: string): Promise<JobPosting> => {
@@ -201,20 +289,61 @@ export const jobPostingApi = {
     return response.data.data
   },
   activities: async (id: string): Promise<RecruitmentPostingActivity[]> => {
-    const response = await apiClient.get<{ data: PaginatedPayload<RecruitmentPostingActivity> }>(`/recruitment/job-postings/${id}/activities`)
+    const response = await apiClient.get<{ data: PaginatedPayload<RecruitmentPostingActivity> }>(
+      `/recruitment/job-postings/${id}/activities`,
+    )
     return response.data.data.items
   },
-  responses: async (id: string): Promise<Array<{ id: string; applicationId: string | null; errorMessage: string | null; responseData: Record<string, string> | null }>> => {
-    const response = await apiClient.get<{ data: Array<{ id: string; applicationId: string | null; errorMessage: string | null; responseData: Record<string, string> | null }>}>(`/recruitment/job-postings/${id}/responses`)
+  responses: async (
+    id: string,
+  ): Promise<
+    Array<{
+      id: string
+      applicationId: string | null
+      errorMessage: string | null
+      responseData: Record<string, string> | null
+    }>
+  > => {
+    const response = await apiClient.get<{
+      data: Array<{
+        id: string
+        applicationId: string | null
+        errorMessage: string | null
+        responseData: Record<string, string> | null
+      }>
+    }>(`/recruitment/job-postings/${id}/responses`)
     return response.data.data
   },
-  stages: async (id: string): Promise<import("@/types/recruitment.types").RecruitmentPipelineStage[]> => (await apiClient.get(`/recruitment/job-postings/${id}/stages`)).data.data,
-  createStage: async (id: string, data: { name: string; color?: string; isDefault?: boolean; isCompleted?: boolean }) => (await apiClient.post(`/recruitment/job-postings/${id}/stages`, data)).data.data,
-  updateStage: async (postingId: string, stageId: string, data: Record<string, unknown>) => (await apiClient.patch(`/recruitment/job-postings/${postingId}/stages/${stageId}`, data)).data.data,
-  deleteStage: async (postingId: string, stageId: string, fallbackStageId: string) => apiClient.delete(`/recruitment/job-postings/${postingId}/stages/${stageId}`, { params: { fallbackStageId } }),
-  reorderStages: async (postingId: string, stageIds: string[]): Promise<import("@/types/recruitment.types").RecruitmentPipelineStage[]> => (await apiClient.put(`/recruitment/job-postings/${postingId}/stages/reorder`, { stageIds })).data.data,
-  moveApplicationStage: async (postingId: string, applicationId: string, pipelineStageId: string) => (await apiClient.post(`/recruitment/job-postings/${postingId}/stages/move`, { applicationId, pipelineStageId })).data.data,
-  createCandidate: async (postingId: string, data: Omit<CreateCandidateDto, "source">) => (await apiClient.post(`/recruitment/job-postings/${postingId}/candidates`, data)).data.data,
+  stages: async (
+    id: string,
+  ): Promise<import("@/types/recruitment.types").RecruitmentPipelineStage[]> =>
+    (await apiClient.get(`/recruitment/job-postings/${id}/stages`)).data.data,
+  createStage: async (
+    id: string,
+    data: { name: string; color?: string; isDefault?: boolean; isCompleted?: boolean },
+  ) => (await apiClient.post(`/recruitment/job-postings/${id}/stages`, data)).data.data,
+  updateStage: async (postingId: string, stageId: string, data: Record<string, unknown>) =>
+    (await apiClient.patch(`/recruitment/job-postings/${postingId}/stages/${stageId}`, data)).data
+      .data,
+  deleteStage: async (postingId: string, stageId: string, fallbackStageId: string) =>
+    apiClient.delete(`/recruitment/job-postings/${postingId}/stages/${stageId}`, {
+      params: { fallbackStageId },
+    }),
+  reorderStages: async (
+    postingId: string,
+    stageIds: string[],
+  ): Promise<import("@/types/recruitment.types").RecruitmentPipelineStage[]> =>
+    (await apiClient.put(`/recruitment/job-postings/${postingId}/stages/reorder`, { stageIds }))
+      .data.data,
+  moveApplicationStage: async (postingId: string, applicationId: string, pipelineStageId: string) =>
+    (
+      await apiClient.post(`/recruitment/job-postings/${postingId}/stages/move`, {
+        applicationId,
+        pipelineStageId,
+      })
+    ).data.data,
+  createCandidate: async (postingId: string, data: Omit<CreateCandidateDto, "source">) =>
+    (await apiClient.post(`/recruitment/job-postings/${postingId}/candidates`, data)).data.data,
 }
 
 export const applicantIntakeApi = {
@@ -224,7 +353,10 @@ export const applicantIntakeApi = {
     source: string
     rows: ApplicantImportRow[]
   }): Promise<ApplicantImportResult> => {
-    const response = await apiClient.post<{ data: ApplicantImportResult }>("/recruitment/intake/import", data)
+    const response = await apiClient.post<{ data: ApplicantImportResult }>(
+      "/recruitment/intake/import",
+      data,
+    )
     return response.data.data
   },
 }
@@ -254,7 +386,10 @@ export const oauthAccountApi = {
     clientSecret: string
     refreshToken: string
   }): Promise<OAuthAccount> => {
-    const response = await apiClient.post<{ data: OAuthAccount }>("/recruitment/oauth-accounts", data)
+    const response = await apiClient.post<{ data: OAuthAccount }>(
+      "/recruitment/oauth-accounts",
+      data,
+    )
     return response.data.data
   },
   delete: async (id: string): Promise<void> => {
@@ -295,7 +430,10 @@ export const candidateApi = {
     page?: number
     pageSize?: number
   }) => {
-    const response = await apiClient.get<{ data: PaginatedPayload<Candidate> }>("/recruitment/candidates", { params: query })
+    const response = await apiClient.get<{ data: PaginatedPayload<Candidate> }>(
+      "/recruitment/candidates",
+      { params: query },
+    )
     return toPaginatedResult(response.data.data)
   },
 
@@ -310,7 +448,10 @@ export const candidateApi = {
   },
 
   update: async (id: string, data: UpdateCandidateDto): Promise<Candidate> => {
-    const response = await apiClient.patch<{ data: Candidate }>(`/recruitment/candidates/${id}`, data)
+    const response = await apiClient.patch<{ data: Candidate }>(
+      `/recruitment/candidates/${id}`,
+      data,
+    )
     return response.data.data
   },
 
@@ -348,22 +489,36 @@ export const applicationApi = {
     page?: number
     pageSize?: number
   }) => {
-    const response = await apiClient.get<{ data: PaginatedPayload<RecruitmentApplication> }>("/recruitment/applications", { params: query })
+    const response = await apiClient.get<{ data: PaginatedPayload<RecruitmentApplication> }>(
+      "/recruitment/applications",
+      { params: query },
+    )
     return toPaginatedResult(response.data.data)
   },
 
   getOne: async (id: string): Promise<RecruitmentApplication> => {
-    const response = await apiClient.get<{ data: RecruitmentApplication }>(`/recruitment/applications/${id}`)
+    const response = await apiClient.get<{ data: RecruitmentApplication }>(
+      `/recruitment/applications/${id}`,
+    )
     return response.data.data
   },
 
   create: async (data: CreateApplicationDto): Promise<RecruitmentApplication> => {
-    const response = await apiClient.post<{ data: RecruitmentApplication }>("/recruitment/applications", data)
+    const response = await apiClient.post<{ data: RecruitmentApplication }>(
+      "/recruitment/applications",
+      data,
+    )
     return response.data.data
   },
 
-  updateStatus: async (id: string, data: UpdateApplicationStatusDto): Promise<RecruitmentApplication> => {
-    const response = await apiClient.patch<{ data: RecruitmentApplication }>(`/recruitment/applications/${id}/status`, data)
+  updateStatus: async (
+    id: string,
+    data: UpdateApplicationStatusDto,
+  ): Promise<RecruitmentApplication> => {
+    const response = await apiClient.patch<{ data: RecruitmentApplication }>(
+      `/recruitment/applications/${id}/status`,
+      data,
+    )
     return response.data.data
   },
 
@@ -374,32 +529,48 @@ export const applicationApi = {
     page?: number
     pageSize?: number
   }) => {
-    const response = await apiClient.get<{ data: PaginatedPayload<KanbanApplication> }>("/recruitment/applications/kanban", { params: query })
+    const response = await apiClient.get<{ data: PaginatedPayload<KanbanApplication> }>(
+      "/recruitment/applications/kanban",
+      { params: query },
+    )
     return toPaginatedResult(response.data.data)
   },
 
   moveKanban: async (data: MoveKanbanDto): Promise<RecruitmentApplication> => {
-    const response = await apiClient.post<{ data: RecruitmentApplication }>("/recruitment/applications/kanban/move", data)
+    const response = await apiClient.post<{ data: RecruitmentApplication }>(
+      "/recruitment/applications/kanban/move",
+      data,
+    )
     return response.data.data
   },
 
   assignRecruiter: async (id: string, assignedToId: string): Promise<RecruitmentApplication> => {
-    const response = await apiClient.patch<{ data: RecruitmentApplication }>(`/recruitment/applications/${id}/assign`, { assignedToId })
+    const response = await apiClient.patch<{ data: RecruitmentApplication }>(
+      `/recruitment/applications/${id}/assign`,
+      { assignedToId },
+    )
     return response.data.data
   },
 
   addNote: async (id: string, note: string): Promise<ApplicationNote> => {
-    const response = await apiClient.post<{ data: ApplicationNote }>(`/recruitment/applications/${id}/notes`, { note })
+    const response = await apiClient.post<{ data: ApplicationNote }>(
+      `/recruitment/applications/${id}/notes`,
+      { note },
+    )
     return response.data.data
   },
 
   getNotes: async (id: string): Promise<ApplicationNote[]> => {
-    const response = await apiClient.get<{ data: ApplicationNote[] }>(`/recruitment/applications/${id}/notes`)
+    const response = await apiClient.get<{ data: ApplicationNote[] }>(
+      `/recruitment/applications/${id}/notes`,
+    )
     return response.data.data
   },
 
   getStats: async (): Promise<ApplicationStats> => {
-    const response = await apiClient.get<{ data: ApplicationStats }>("/recruitment/applications/stats")
+    const response = await apiClient.get<{ data: ApplicationStats }>(
+      "/recruitment/applications/stats",
+    )
     return response.data.data
   },
 }
@@ -418,13 +589,17 @@ export interface CreateInterviewDto {
   interviewerIds: string[]
 }
 
-export interface UpdateInterviewDto extends Partial<Omit<CreateInterviewDto, "applicationId" | "interviewerIds">> {
+export interface UpdateInterviewDto extends Partial<
+  Omit<CreateInterviewDto, "applicationId" | "interviewerIds">
+> {
   interviewerIds?: string[]
 }
 
 export const interviewApi = {
   listByApplication: async (applicationId: string): Promise<InterviewRound[]> => {
-    const response = await apiClient.get<{ data: InterviewRound[] }>(`/recruitment/applications/${applicationId}/interviews`)
+    const response = await apiClient.get<{ data: InterviewRound[] }>(
+      `/recruitment/applications/${applicationId}/interviews`,
+    )
     return response.data.data
   },
 
@@ -439,27 +614,43 @@ export const interviewApi = {
   },
 
   update: async (id: string, data: UpdateInterviewDto): Promise<InterviewRound> => {
-    const response = await apiClient.patch<{ data: InterviewRound }>(`/recruitment/interviews/${id}`, data)
+    const response = await apiClient.patch<{ data: InterviewRound }>(
+      `/recruitment/interviews/${id}`,
+      data,
+    )
     return response.data.data
   },
 
-  complete: async (id: string, data: { result?: string; feedback?: string }): Promise<InterviewRound> => {
-    const response = await apiClient.post<{ data: InterviewRound }>(`/recruitment/interviews/${id}/complete`, data)
+  complete: async (
+    id: string,
+    data: { result?: string; feedback?: string },
+  ): Promise<InterviewRound> => {
+    const response = await apiClient.post<{ data: InterviewRound }>(
+      `/recruitment/interviews/${id}/complete`,
+      data,
+    )
     return response.data.data
   },
 
   cancel: async (id: string): Promise<InterviewRound> => {
-    const response = await apiClient.post<{ data: InterviewRound }>(`/recruitment/interviews/${id}/cancel`)
+    const response = await apiClient.post<{ data: InterviewRound }>(
+      `/recruitment/interviews/${id}/cancel`,
+    )
     return response.data.data
   },
 
   markNoShow: async (id: string): Promise<InterviewRound> => {
-    const response = await apiClient.post<{ data: InterviewRound }>(`/recruitment/interviews/${id}/no-show`)
+    const response = await apiClient.post<{ data: InterviewRound }>(
+      `/recruitment/interviews/${id}/no-show`,
+    )
     return response.data.data
   },
 
   getUpcoming: async (days = 7): Promise<InterviewRound[]> => {
-    const response = await apiClient.get<{ data: InterviewRound[] }>("/recruitment/interviews/upcoming", { params: { days } })
+    const response = await apiClient.get<{ data: InterviewRound[] }>(
+      "/recruitment/interviews/upcoming",
+      { params: { days } },
+    )
     return response.data.data
   },
 }
@@ -478,7 +669,9 @@ export interface CreateScorecardDto {
 
 export const scorecardApi = {
   listByInterview: async (interviewId: string): Promise<Scorecard[]> => {
-    const response = await apiClient.get<{ data: Scorecard[] }>(`/recruitment/interviews/${interviewId}/scorecards`)
+    const response = await apiClient.get<{ data: Scorecard[] }>(
+      `/recruitment/interviews/${interviewId}/scorecards`,
+    )
     return response.data.data
   },
 
@@ -493,7 +686,10 @@ export const scorecardApi = {
   },
 
   update: async (id: string, data: Partial<CreateScorecardDto>): Promise<Scorecard> => {
-    const response = await apiClient.patch<{ data: Scorecard }>(`/recruitment/scorecards/${id}`, data)
+    const response = await apiClient.patch<{ data: Scorecard }>(
+      `/recruitment/scorecards/${id}`,
+      data,
+    )
     return response.data.data
   },
 
@@ -530,7 +726,10 @@ export interface RespondToOfferDto {
 
 export const offerApi = {
   list: async (query?: { page?: number; pageSize?: number }) => {
-    const response = await apiClient.get<{ data: PaginatedPayload<RecruitmentOffer> }>("/recruitment/offers", { params: query })
+    const response = await apiClient.get<{ data: PaginatedPayload<RecruitmentOffer> }>(
+      "/recruitment/offers",
+      { params: query },
+    )
     return toPaginatedResult(response.data.data)
   },
 
@@ -545,32 +744,47 @@ export const offerApi = {
   },
 
   update: async (id: string, data: UpdateOfferDto): Promise<RecruitmentOffer> => {
-    const response = await apiClient.patch<{ data: RecruitmentOffer }>(`/recruitment/offers/${id}`, data)
+    const response = await apiClient.patch<{ data: RecruitmentOffer }>(
+      `/recruitment/offers/${id}`,
+      data,
+    )
     return response.data.data
   },
 
   send: async (id: string): Promise<RecruitmentOffer> => {
-    const response = await apiClient.post<{ data: RecruitmentOffer }>(`/recruitment/offers/${id}/send`)
+    const response = await apiClient.post<{ data: RecruitmentOffer }>(
+      `/recruitment/offers/${id}/send`,
+    )
     return response.data.data
   },
 
   respond: async (data: RespondToOfferDto): Promise<RecruitmentOffer> => {
-    const response = await apiClient.post<{ data: RecruitmentOffer }>("/recruitment/offers/respond", data)
+    const response = await apiClient.post<{ data: RecruitmentOffer }>(
+      "/recruitment/offers/respond",
+      data,
+    )
     return response.data.data
   },
 
   rescind: async (id: string, reason?: string): Promise<RecruitmentOffer> => {
-    const response = await apiClient.post<{ data: RecruitmentOffer }>(`/recruitment/offers/${id}/rescind`, { reason })
+    const response = await apiClient.post<{ data: RecruitmentOffer }>(
+      `/recruitment/offers/${id}/rescind`,
+      { reason },
+    )
     return response.data.data
   },
 
   expire: async (id: string): Promise<RecruitmentOffer> => {
-    const response = await apiClient.post<{ data: RecruitmentOffer }>(`/recruitment/offers/${id}/expire`)
+    const response = await apiClient.post<{ data: RecruitmentOffer }>(
+      `/recruitment/offers/${id}/expire`,
+    )
     return response.data.data
   },
 
   getVersions: async (id: string): Promise<OfferVersion[]> => {
-    const response = await apiClient.get<{ data: OfferVersion[] }>(`/recruitment/offers/${id}/versions`)
+    const response = await apiClient.get<{ data: OfferVersion[] }>(
+      `/recruitment/offers/${id}/versions`,
+    )
     return response.data.data
   },
 
@@ -604,37 +818,58 @@ export interface UpdateBackgroundCheckDto {
 
 export const backgroundCheckApi = {
   list: async (query?: { status?: string; page?: number; pageSize?: number }) => {
-    const response = await apiClient.get<{ data: PaginatedPayload<BackgroundCheck> }>("/recruitment/background-checks", { params: query })
+    const response = await apiClient.get<{ data: PaginatedPayload<BackgroundCheck> }>(
+      "/recruitment/background-checks",
+      { params: query },
+    )
     return toPaginatedResult(response.data.data)
   },
 
   getOne: async (id: string): Promise<BackgroundCheck> => {
-    const response = await apiClient.get<{ data: BackgroundCheck }>(`/recruitment/background-checks/${id}`)
+    const response = await apiClient.get<{ data: BackgroundCheck }>(
+      `/recruitment/background-checks/${id}`,
+    )
     return response.data.data
   },
 
   getByOffer: async (offerId: string): Promise<BackgroundCheck> => {
-    const response = await apiClient.get<{ data: BackgroundCheck }>(`/recruitment/offers/${offerId}/background-check`)
+    const response = await apiClient.get<{ data: BackgroundCheck }>(
+      `/recruitment/offers/${offerId}/background-check`,
+    )
     return response.data.data
   },
 
   create: async (data: CreateBackgroundCheckDto): Promise<BackgroundCheck> => {
-    const response = await apiClient.post<{ data: BackgroundCheck }>("/recruitment/background-checks", data)
+    const response = await apiClient.post<{ data: BackgroundCheck }>(
+      "/recruitment/background-checks",
+      data,
+    )
     return response.data.data
   },
 
   update: async (id: string, data: UpdateBackgroundCheckDto): Promise<BackgroundCheck> => {
-    const response = await apiClient.patch<{ data: BackgroundCheck }>(`/recruitment/background-checks/${id}`, data)
+    const response = await apiClient.patch<{ data: BackgroundCheck }>(
+      `/recruitment/background-checks/${id}`,
+      data,
+    )
     return response.data.data
   },
 
   start: async (id: string): Promise<BackgroundCheck> => {
-    const response = await apiClient.post<{ data: BackgroundCheck }>(`/recruitment/background-checks/${id}/start`)
+    const response = await apiClient.post<{ data: BackgroundCheck }>(
+      `/recruitment/background-checks/${id}/start`,
+    )
     return response.data.data
   },
 
-  complete: async (id: string, data: { passed: boolean; failReason?: string }): Promise<BackgroundCheck> => {
-    const response = await apiClient.post<{ data: BackgroundCheck }>(`/recruitment/background-checks/${id}/complete`, data)
+  complete: async (
+    id: string,
+    data: { passed: boolean; failReason?: string },
+  ): Promise<BackgroundCheck> => {
+    const response = await apiClient.post<{ data: BackgroundCheck }>(
+      `/recruitment/background-checks/${id}/complete`,
+      data,
+    )
     return response.data.data
   },
 
@@ -643,7 +878,9 @@ export const backgroundCheckApi = {
   },
 
   getStats: async (): Promise<BackgroundCheckStats> => {
-    const response = await apiClient.get<{ data: BackgroundCheckStats }>("/recruitment/background-checks/stats")
+    const response = await apiClient.get<{ data: BackgroundCheckStats }>(
+      "/recruitment/background-checks/stats",
+    )
     return response.data.data
   },
 }

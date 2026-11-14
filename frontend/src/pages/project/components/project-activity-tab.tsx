@@ -1,5 +1,6 @@
 import { PageCard } from "@/components/common"
 import { Skeleton } from "@/components/ui/skeleton"
+
 import { Activity } from "lucide-react"
 
 interface ActivityItem {
@@ -17,10 +18,7 @@ interface ProjectActivityTabProps {
   isLoading: boolean
 }
 
-export function ProjectActivityTab({
-  activitiesList,
-  isLoading,
-}: ProjectActivityTabProps) {
+export function ProjectActivityTab({ activitiesList, isLoading }: ProjectActivityTabProps) {
   return (
     <PageCard className="p-6">
       <h3 className="font-bold text-base text-foreground mb-6 border-b border-border pb-2 flex items-center gap-1.5">

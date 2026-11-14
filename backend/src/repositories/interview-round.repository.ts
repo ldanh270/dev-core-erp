@@ -1,6 +1,10 @@
 import { prisma } from "@/libs/database"
-import { Prisma, type PrismaClient, $Enums } from "@prisma/client"
-import type { CreateInterviewRoundInput, UpdateInterviewRoundInput } from "@/types/recruitment.types"
+import type {
+  CreateInterviewRoundInput,
+  UpdateInterviewRoundInput,
+} from "@/types/recruitment.types"
+
+import { $Enums, Prisma, type PrismaClient } from "@prisma/client"
 
 export class InterviewRoundRepository {
   constructor(private readonly db: PrismaClient = prisma) {}
@@ -140,15 +144,19 @@ export class InterviewRoundRepository {
       })
       if (!existing) throw new Error("Interview round not found")
 
-      const nextStatus = result === "fail"
-        ? "rejected"
-        : result === "pass"
-          ? (await tx.interviewRound.count({
-              where: { applicationId: existing.applicationId, roundNumber: { gt: existing.roundNumber } },
-            })) > 0
-            ? "interviewing"
-            : "final_review"
-          : undefined
+      const nextStatus =
+        result === "fail"
+          ? "rejected"
+          : result === "pass"
+            ? (await tx.interviewRound.count({
+                where: {
+                  applicationId: existing.applicationId,
+                  roundNumber: { gt: existing.roundNumber },
+                },
+              })) > 0
+              ? "interviewing"
+              : "final_review"
+            : undefined
 
       const interview = await tx.interviewRound.update({
         where: { id },
@@ -208,7 +216,9 @@ export class InterviewRoundRepository {
       include: {
         application: {
           include: {
-            candidate: { select: { id: true, fullName: true, email: true, phone: true, avatarUrl: true } },
+            candidate: {
+              select: { id: true, fullName: true, email: true, phone: true, avatarUrl: true },
+            },
             requisition: { select: { id: true, title: true } },
           },
         },
@@ -230,7 +240,9 @@ export class InterviewRoundRepository {
       const empMap = new Map(employees.map((e) => [e.id, e]))
       return rounds.map((r) => ({
         ...r,
-        interviewers: (r.interviewerIds || []).map((empId) => empMap.get(empId)).filter(Boolean) as Array<{ id: string; fullName: string; email: string }>,
+        interviewers: (r.interviewerIds || [])
+          .map((empId) => empMap.get(empId))
+          .filter(Boolean) as Array<{ id: string; fullName: string; email: string }>,
       }))
     }
 

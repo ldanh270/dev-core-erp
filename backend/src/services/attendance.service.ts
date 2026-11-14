@@ -1,4 +1,3 @@
-import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util.ts"
 import { ATTENDANCE_STATUS } from "@/configs/entities/attendance.config.ts"
 import { ATTENDANCE_ERROR_MESSAGES } from "@/configs/messages/attendance.message.ts"
 import { ATTENDANCE_MATRIX_RULES } from "@/configs/rules/attendance.config.ts"
@@ -6,39 +5,40 @@ import { ATTENDANCE_TIME_RULES } from "@/configs/rules/attendance.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { ATTENDANCE_LAYERS } from "@/constants/attendance.constants.ts"
 import {
-  IAttendanceRecordQueryDTO,
   IAttendanceMatrixDTO,
   IAttendanceMatrixQueryDTO,
-  IAttendanceRepository,
   IAttendanceRecordDTO,
+  IAttendanceRecordQueryDTO,
+  IAttendanceRepository,
   IAttendanceScheduleDTO,
-  IAttendanceShiftDTO,
   IAttendanceService,
+  IAttendanceShiftDTO,
   IHolidayRepository,
 } from "@/types/attendance.types.ts"
-import {
-  buildAttendanceMatrix,
-  resolveAttendanceMatrixRange,
-} from "@/utils/attendance/attendance-matrix.util.ts"
+import { IEmployeeRepository } from "@/types/employee.types.ts"
 import {
   IEmployeeShiftRepository,
   IShiftScheduleRepository,
   IWorkingShiftRepository,
 } from "@/types/shift.types.ts"
-import { IEmployeeRepository } from "@/types/employee.types.ts"
-import { computeAttendanceMetrics } from "@/utils/attendance/attendance-metrics.util.ts"
 import { assertWithinShiftGps } from "@/utils/attendance/attendance-gps.util.ts"
+import {
+  buildAttendanceMatrix,
+  resolveAttendanceMatrixRange,
+} from "@/utils/attendance/attendance-matrix.util.ts"
+import { computeAttendanceMetrics } from "@/utils/attendance/attendance-metrics.util.ts"
 import {
   findActiveAttendanceRecord,
   normalizeAttendanceDate,
 } from "@/utils/attendance/attendance-record.util.ts"
 import {
   assertCheckInWindow,
-  getShiftDateTimes,
   getMinutesFromDateTime,
+  getShiftDateTimes,
   isActualShiftMatched,
   isBeforeCheckOutWindow,
 } from "@/utils/attendance/attendance-shift.util.ts"
+import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util.ts"
 import { AppError } from "@/utils/error.util.ts"
 import { resolveShiftFromSchedule } from "@/utils/schedule.util.ts"
 
@@ -81,11 +81,7 @@ export class AttendanceService implements IAttendanceService {
   }
 
   /** Derive provisional status when the employee checks in. */
-  private getCheckInMetrics(
-    now: Date,
-    date: Date,
-    shift: IAttendanceShiftDTO | null | undefined,
-  ) {
+  private getCheckInMetrics(now: Date, date: Date, shift: IAttendanceShiftDTO | null | undefined) {
     if (!shift) return { status: ATTENDANCE_STATUS.ON_TIME, lateMinutes: 0 }
 
     const { start } = getShiftDateTimes(date, shift)

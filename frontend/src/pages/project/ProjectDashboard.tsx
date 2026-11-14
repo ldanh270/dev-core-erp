@@ -1,45 +1,48 @@
 // Import layout containers and custom UI elements
 import {
-  DataTablePage,
   type DataTableColumn,
+  DataTablePage,
   PageCard,
   PageContainer,
   PageHeader,
   StatusPill,
 } from "@/components/common"
+// Import Spent Time log modal feature component
+import LogTimeModal from "@/components/features/project/LogTimeModal"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { TYPOGRAPHY } from "@/config/typography.config"
-import { cn } from "@/lib/utils"
+import { usePermission } from "@/hooks/use-permission"
 // Import project and task API wrappers
 import { projectApi } from "@/lib/api/project.api"
 import { taskApi } from "@/lib/api/task.api"
+import { cn } from "@/lib/utils"
 // Import authentication store for current employee details
 import { useAuthStore } from "@/store/auth-store"
+// Import Task data type structure
+import type { Task } from "@/types/task.types"
+
+// Import standard React hooks
+import { useEffect, useMemo, useState } from "react"
+
 // Import TanStack Query hooks for client state cache and mutations
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 // Import Lucide icons for layouts
 import {
   ClipboardList,
   ExternalLink,
-  Inbox,
   Folder,
-  User,
-  Plus,
+  Inbox,
   MoreHorizontal,
+  Plus,
+  User,
 } from "lucide-react"
 // Import React Router Navigation link
 import { Link, useNavigate } from "react-router-dom"
-// Import standard React hooks
-import { useState, useEffect, useMemo } from "react"
 // Import Toast notifications provider
 import { toast } from "sonner"
-// Import Spent Time log modal feature component
-import LogTimeModal from "@/components/features/project/LogTimeModal"
+
 import { TaskContextMenu } from "./components/task-context-menu"
-import { usePermission } from "@/hooks/use-permission"
-// Import Task data type structure
-import type { Task } from "@/types/task.types"
 
 // Main component to render the employee project portal ("My Page")
 /**
@@ -53,7 +56,7 @@ export default function ProjectDashboard() {
   const navigate = useNavigate()
   // Initialize react-query client to manage caching
   const queryClient = useQueryClient()
- 
+
   // State to track right-click/context menu positioning, visibility, and targeted task details
   const [contextMenu, setContextMenu] = useState<{
     isOpen: boolean
@@ -87,7 +90,8 @@ export default function ProjectDashboard() {
   // Query hook to fetch tasks created/reported by the current employee
   const { data: reportedTasksData, isLoading: isLoadingReported } = useQuery({
     queryKey: ["tasks", "reported", user?.id, reportedPage, reportedLimit],
-    queryFn: () => taskApi.list({ createdById: user?.id, page: reportedPage, limit: reportedLimit }),
+    queryFn: () =>
+      taskApi.list({ createdById: user?.id, page: reportedPage, limit: reportedLimit }),
     enabled: !!user?.id,
   })
 
@@ -141,7 +145,8 @@ export default function ProjectDashboard() {
     onError: (err: unknown) => {
       let errorMessage = "Failed to update issue"
       if (err && typeof err === "object" && "response" in err) {
-        const response = (err as { response?: { data?: { error?: { message?: string } } } }).response
+        const response = (err as { response?: { data?: { error?: { message?: string } } } })
+          .response
         if (response?.data?.error?.message) {
           errorMessage = response.data.error.message
         }
@@ -211,11 +216,7 @@ export default function ProjectDashboard() {
         id: "id",
         header: "ID",
         width: "60px",
-        cell: (task) => (
-          <span className={TYPOGRAPHY.CELL_CODE}>
-            #{task.id.substring(0, 5)}
-          </span>
-        ),
+        cell: (task) => <span className={TYPOGRAPHY.CELL_CODE}>#{task.id.substring(0, 5)}</span>,
       },
       {
         id: "project",
@@ -237,7 +238,8 @@ export default function ProjectDashboard() {
           if (task.tracker === "bug") {
             trackerColor = "bg-destructive/10 text-destructive border-destructive/20"
           } else if (task.tracker === "feature") {
-            trackerColor = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400"
+            trackerColor =
+              "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400"
           } else if (task.tracker === "support") {
             trackerColor = "bg-sky-500/10 text-sky-600 border-sky-500/20 dark:text-sky-400"
           }
@@ -245,7 +247,10 @@ export default function ProjectDashboard() {
           return (
             <Badge
               variant="outline"
-              className={cn("rounded-full px-2 py-0.5 text-xs font-semibold uppercase", trackerColor)}
+              className={cn(
+                "rounded-full px-2 py-0.5 text-xs font-semibold uppercase",
+                trackerColor,
+              )}
             >
               {task.tracker}
             </Badge>
@@ -339,9 +344,7 @@ export default function ProjectDashboard() {
         align: "right",
         width: "50px",
         cell: (task) => (
-          <span className={cn(TYPOGRAPHY.CELL_SECONDARY, "font-semibold")}>
-            {task.progress}%
-          </span>
+          <span className={cn(TYPOGRAPHY.CELL_SECONDARY, "font-semibold")}>{task.progress}%</span>
         ),
       },
       {
@@ -389,9 +392,7 @@ export default function ProjectDashboard() {
             <Folder className="size-4" />
           </div>
           <div>
-            <h3 className="font-bold text-sm text-foreground">
-              Dự án của tôi ({projects.length})
-            </h3>
+            <h3 className="font-bold text-sm text-foreground">Dự án của tôi ({projects.length})</h3>
             <p className="text-xs text-muted-foreground">Các dự án bạn tham gia hoặc quản lý</p>
           </div>
         </div>
@@ -417,7 +418,8 @@ export default function ProjectDashboard() {
             {projects.map((proj) => {
               const isLeader = proj.teamLeaderId === user?.id
               const isAdminOrGM = hasAnyPermission(["project.update", "project.task.approve"])
-              const canCreateInProj = isAdminOrGM || isLeader || proj.taskCreationPolicy === "all_members"
+              const canCreateInProj =
+                isAdminOrGM || isLeader || proj.taskCreationPolicy === "all_members"
 
               // Map member role to badges
               let memberRole = "Thành viên"
@@ -458,7 +460,10 @@ export default function ProjectDashboard() {
                     <span className="text-muted-foreground font-medium flex items-center gap-1 min-w-0 truncate">
                       <User className="size-3.5 shrink-0" />
                       <span className="truncate">
-                        Trưởng nhóm: <span className="font-semibold text-foreground">{proj.teamLeader?.fullName || "Chưa có"}</span>
+                        Trưởng nhóm:{" "}
+                        <span className="font-semibold text-foreground">
+                          {proj.teamLeader?.fullName || "Chưa có"}
+                        </span>
                       </span>
                     </span>
                     <div className="flex items-center gap-1.5 shrink-0">
@@ -466,14 +471,23 @@ export default function ProjectDashboard() {
                       {canCreateInProj && (
                         <Link
                           to={`/project/${proj.id}/task/new`}
-                          onClick={(e) => { e.stopPropagation(); sessionStorage.setItem("activeProjectId", proj.id); }}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            sessionStorage.setItem("activeProjectId", proj.id)
+                          }}
                           className="rounded-full bg-primary/10 hover:bg-primary/20 text-primary px-2.5 py-0.5 font-semibold text-xs flex items-center gap-1 transition-all duration-200 cursor-pointer"
                         >
                           <Plus className="size-3" />
                           Tạo CV
                         </Link>
                       )}
-                      <Badge variant="outline" className={cn("rounded-full text-xs font-semibold px-2 py-0.5", roleBadgeColor)}>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "rounded-full text-xs font-semibold px-2 py-0.5",
+                          roleBadgeColor,
+                        )}
+                      >
                         {memberRole}
                       </Badge>
                     </div>
@@ -594,4 +608,3 @@ export default function ProjectDashboard() {
     </PageContainer>
   )
 }
-

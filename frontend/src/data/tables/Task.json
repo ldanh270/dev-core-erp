@@ -349,61 +349,43 @@
   "indexes": [
     {
       "name": "IX_Task_assigneeId_status",
-      "columns": [
-        "assigneeId",
-        "status"
-      ],
+      "columns": ["assigneeId", "status"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Task_createdById",
-      "columns": [
-        "createdById"
-      ],
+      "columns": ["createdById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Task_dueDate_status",
-      "columns": [
-        "dueDate",
-        "status"
-      ],
+      "columns": ["dueDate", "status"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Task_parentTaskId",
-      "columns": [
-        "parentTaskId"
-      ],
+      "columns": ["parentTaskId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Task_projectId_status",
-      "columns": [
-        "projectId",
-        "status"
-      ],
+      "columns": ["projectId", "status"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Task_projectId_statusId",
-      "columns": [
-        "projectId",
-        "statusId"
-      ],
+      "columns": ["projectId", "statusId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_Task",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -413,45 +395,29 @@
       "virtualName": "project",
       "targetModel": "Project",
       "relationName": null,
-      "foreignKeyFields": [
-        "projectId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["projectId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "assignee",
       "targetModel": "Employee",
       "relationName": "TaskAssignee",
-      "foreignKeyFields": [
-        "assigneeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["assigneeId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "createdBy",
       "targetModel": "Employee",
       "relationName": "TaskCreator",
-      "foreignKeyFields": [
-        "createdById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["createdById"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "parentTask",
       "targetModel": "Task",
       "relationName": "TaskSubtasks",
-      "foreignKeyFields": [
-        "parentTaskId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["parentTaskId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "subtasks",
@@ -464,12 +430,8 @@
       "virtualName": "customStatus",
       "targetModel": "ProjectTaskStatus",
       "relationName": null,
-      "foreignKeyFields": [
-        "statusId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["statusId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "spentTimes",

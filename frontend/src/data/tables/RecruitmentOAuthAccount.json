@@ -153,25 +153,19 @@
   "indexes": [
     {
       "name": "IX_RecruitmentOAuthAccount_channel",
-      "columns": [
-        "channel"
-      ],
+      "columns": ["channel"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RecruitmentOAuthAccount_userId",
-      "columns": [
-        "userId"
-      ],
+      "columns": ["userId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_RecruitmentOAuthAccount",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -181,12 +175,8 @@
       "virtualName": "user",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "userId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["userId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

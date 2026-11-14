@@ -1,10 +1,12 @@
 import {
-  ProjectRole,
   CreateProjectRoleDto,
-  UpdateProjectRoleDto,
   IProjectRoleRepository,
+  ProjectRole,
+  UpdateProjectRoleDto,
 } from "@/types"
+
 import { PrismaClient, ProjectRole as PrismaProjectRole } from "@prisma/client"
+
 import { BaseRepository } from "./base.repository.ts"
 
 /**
@@ -42,7 +44,7 @@ export class ProjectRoleRepository extends BaseRepository implements IProjectRol
       where: { projectId },
       orderBy: { createdAt: "asc" },
     })
-    return list.map(r => this.mapToDomain(r))
+    return list.map((r) => this.mapToDomain(r))
   }
 
   /**
@@ -81,7 +83,10 @@ export class ProjectRoleRepository extends BaseRepository implements IProjectRol
    * @param data - Role details.
    * @returns The created project role.
    */
-  async create(projectId: string, data: CreateProjectRoleDto & { code: string }): Promise<ProjectRole> {
+  async create(
+    projectId: string,
+    data: CreateProjectRoleDto & { code: string },
+  ): Promise<ProjectRole> {
     const role = await this.prisma.projectRole.create({
       data: {
         projectId,
@@ -99,7 +104,10 @@ export class ProjectRoleRepository extends BaseRepository implements IProjectRol
    * @param data - Updated role details.
    * @returns The updated project role or null.
    */
-  async update(id: string, data: UpdateProjectRoleDto & { code?: string }): Promise<ProjectRole | null> {
+  async update(
+    id: string,
+    data: UpdateProjectRoleDto & { code?: string },
+  ): Promise<ProjectRole | null> {
     const role = await this.prisma.projectRole.update({
       where: { id },
       data: {
@@ -126,9 +134,12 @@ export class ProjectRoleRepository extends BaseRepository implements IProjectRol
    * @param projectId - Project ID.
    * @param roles - Array of role details.
    */
-  async createMany(projectId: string, roles: Array<{ name: string; code: string; allowedTaskTrackers: string[] }>): Promise<void> {
+  async createMany(
+    projectId: string,
+    roles: Array<{ name: string; code: string; allowedTaskTrackers: string[] }>,
+  ): Promise<void> {
     await this.prisma.projectRole.createMany({
-      data: roles.map(r => ({
+      data: roles.map((r) => ({
         projectId,
         name: r.name,
         code: r.code,

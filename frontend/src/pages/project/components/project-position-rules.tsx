@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { useProjectRoles, useCreateProjectRole, useUpdateProjectRole, useDeleteProjectRole } from "../hooks/use-project-role"
-import { useProjectTrackers } from "../hooks/use-project-tracker"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { PageCard, useConfirm } from "@/components/common"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Save, RefreshCw, Plus, Edit2, Trash2, X } from "lucide-react"
 import {
   Select,
   SelectContent,
@@ -17,9 +19,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { toast } from "sonner"
-import { projectApi } from "@/lib/api/project.api"
 import { PROJECT_ROLE, PROJECT_ROLES } from "@/config/entities/project.config"
+import { projectApi } from "@/lib/api/project.api"
+
+import { useEffect, useState } from "react"
+
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { Edit2, Plus, RefreshCw, Save, Trash2, X } from "lucide-react"
+import { toast } from "sonner"
+
+import {
+  useCreateProjectRole,
+  useDeleteProjectRole,
+  useProjectRoles,
+  useUpdateProjectRole,
+} from "../hooks/use-project-role"
+import { useProjectTrackers } from "../hooks/use-project-tracker"
 import { TrackerDropdown } from "./tracker-dropdown"
 
 const SELECT_NONE_VALUE = "none"
@@ -29,7 +44,11 @@ interface ProjectPositionRulesProps {
 }
 
 export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
-  const { data: roles = [], isLoading: isLoadingRoles, refetch: refetchRoles } = useProjectRoles(projectId)
+  const {
+    data: roles = [],
+    isLoading: isLoadingRoles,
+    refetch: refetchRoles,
+  } = useProjectRoles(projectId)
   const { data: trackers = [] } = useProjectTrackers(projectId)
   const confirm = useConfirm()
 
@@ -76,7 +95,8 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
    * Prompts the user with a unified custom confirmation dialog before performing the unassignment.
    */
   const handleRemoveMemberFromRole = async (employeeId: string, role: any) => {
-    const memberName = members.find((m) => m.employeeId === employeeId)?.employee?.fullName || "nhân sự này"
+    const memberName =
+      members.find((m) => m.employeeId === employeeId)?.employee?.fullName || "nhân sự này"
     const ok = await confirm({
       title: "Bỏ thành viên khỏi vai trò",
       description: `Bạn có chắc chắn muốn bỏ ${memberName} ra khỏi vai trò ${role.name}?`,
@@ -91,7 +111,9 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
       toast.success("Đã xóa nhân sự khỏi vai trò")
       await queryClient.invalidateQueries({ queryKey: ["members", projectId] })
     } catch (err: any) {
-      toast.error(err.response?.data?.error?.message || err.message || "Không thể bỏ nhân sự khỏi vai trò")
+      toast.error(
+        err.response?.data?.error?.message || err.message || "Không thể bỏ nhân sự khỏi vai trò",
+      )
     }
   }
 
@@ -102,15 +124,16 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
   const [roleCode, setRoleCode] = useState("")
 
   // State to track open dropdown for each role
-  const [openDropdown, setOpenDropdown] = useState<{ roleId: string; type: "tracker" | null }>({ roleId: "", type: null })
+  const [openDropdown, setOpenDropdown] = useState<{ roleId: string; type: "tracker" | null }>({
+    roleId: "",
+    type: null,
+  })
 
   const getRoleMembers = (role: any): any[] => {
     const assignedMembers = members.filter((m) => m.roleId === role.id)
     const teamLeader = project?.teamLeader
     if (role.code === PROJECT_ROLE.LEADER && teamLeader) {
-      const isAlreadyIncluded = assignedMembers.some(
-        (m) => m.employeeId === teamLeader.id
-      )
+      const isAlreadyIncluded = assignedMembers.some((m) => m.employeeId === teamLeader.id)
       if (!isAlreadyIncluded) {
         const leaderMember = {
           id: `leader_${teamLeader.id}`,
@@ -168,7 +191,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
 
     const payload = {
       name: roleName.trim(),
-      allowedTaskTrackers: editingId ? undefined : trackers.map(t => t.code) // Default to all trackers on creation
+      allowedTaskTrackers: editingId ? undefined : trackers.map((t) => t.code), // Default to all trackers on creation
     }
 
     try {
@@ -179,7 +202,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
       }
       setIsModalOpen(false)
       refetchRoles()
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: any) {
       // Handled by react query error toast
     }
@@ -206,7 +229,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
     try {
       await deleteRoleMutation.mutateAsync(id)
       refetchRoles()
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: any) {
       // Handled by react query error toast
     }
@@ -223,7 +246,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
       return
     }
 
-    const existingMember = members.find(m => m.employeeId === selectedEmpId)
+    const existingMember = members.find((m) => m.employeeId === selectedEmpId)
     if (!existingMember) {
       setAddMemberError("Nhân sự không hợp lệ")
       return
@@ -236,7 +259,9 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
       await projectApi.updateMember(projectId, selectedEmpId, {
         roleId: targetRole.id,
       })
-      toast.success(`Đã chuyển vai trò của ${existingMember.employee?.fullName || "thành viên"} sang ${targetRole.name}`)
+      toast.success(
+        `Đã chuyển vai trò của ${existingMember.employee?.fullName || "thành viên"} sang ${targetRole.name}`,
+      )
 
       // Invalidate queries to reload members
       await queryClient.invalidateQueries({ queryKey: ["members", projectId] })
@@ -256,11 +281,12 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
     if (roles.length > 0 && trackers.length > 0) {
       const initialTrackers: Record<string, string[]> = {}
       roles.forEach((r) => {
-        initialTrackers[r.id] = r.allowedTaskTrackers && r.allowedTaskTrackers.length > 0
-          ? r.allowedTaskTrackers
-          : trackers.map((t) => t.code)
+        initialTrackers[r.id] =
+          r.allowedTaskTrackers && r.allowedTaskTrackers.length > 0
+            ? r.allowedTaskTrackers
+            : trackers.map((t) => t.code)
       })
- 
+
       setLocalRules(initialTrackers)
     }
   }, [roles, trackers])
@@ -279,11 +305,14 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
   }
 
   const handleSave = async () => {
- 
-    const invalidRole = Object.entries(localRules).find(([_, allowedTaskTrackers]) => allowedTaskTrackers.length === 0)
+    const invalidRole = Object.entries(localRules).find(
+      ([_, allowedTaskTrackers]) => allowedTaskTrackers.length === 0,
+    )
     if (invalidRole) {
-      const roleObj = roles.find(r => r.id === invalidRole[0])
-      toast.error(`Vai trò "${roleObj?.name || 'Không xác định'}" chưa chọn loại yêu cầu nào. Vui lòng chọn ít nhất 1 loại yêu cầu.`)
+      const roleObj = roles.find((r) => r.id === invalidRole[0])
+      toast.error(
+        `Vai trò "${roleObj?.name || "Không xác định"}" chưa chọn loại yêu cầu nào. Vui lòng chọn ít nhất 1 loại yêu cầu.`,
+      )
       return
     }
 
@@ -294,7 +323,7 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
       await Promise.all(promises)
       toast.success("Lưu cấu hình phân quyền thành công")
       refetchRoles()
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Lưu cấu hình thất bại")
     }
@@ -307,9 +336,12 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
       <PageCard className="p-6 rounded-xl border border-border/80 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/40 pb-4">
           <div>
-            <h3 className="text-lg font-bold text-foreground">Giới hạn Loại công việc theo Vai trò Dự án</h3>
+            <h3 className="text-lg font-bold text-foreground">
+              Giới hạn Loại công việc theo Vai trò Dự án
+            </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Cấu hình riêng cho dự án này: Chỉ định các loại công việc (Tracker) được phép tạo cho từng vai trò thành viên.
+              Cấu hình riêng cho dự án này: Chỉ định các loại công việc (Tracker) được phép tạo cho
+              từng vai trò thành viên.
             </p>
           </div>
           <div className="flex gap-2">
@@ -354,11 +386,17 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
               const isDefaultRole = (PROJECT_ROLES as readonly string[]).includes(role.code)
 
               return (
-                <div key={role.id} className="border border-border/50 rounded-xl p-4 bg-secondary/15 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div
+                  key={role.id}
+                  className="border border-border/50 rounded-xl p-4 bg-secondary/15 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                >
                   <div className="flex flex-col gap-1.5 shrink-0 min-w-[240px]">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-sm text-foreground">{role.name}</span>
-                      <Badge variant="outline" className="rounded-full text-[9px] font-mono font-bold border-border bg-background">
+                      <Badge
+                        variant="outline"
+                        className="rounded-full text-[9px] font-mono font-bold border-border bg-background"
+                      >
                         {role.code}
                       </Badge>
                       <div className="flex items-center gap-1 ml-1">
@@ -366,7 +404,9 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          onClick={() => { handleOpenEdit(role); }}
+                          onClick={() => {
+                            handleOpenEdit(role)
+                          }}
                           className="size-7 rounded-full hover:bg-muted"
                         >
                           <Edit2 className="size-3 text-muted-foreground hover:text-foreground" />
@@ -384,15 +424,21 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
                         )}
                       </div>
                     </div>
-                    
+
                     {/* Selected trackers display under role name */}
                     <div className="flex flex-wrap gap-1 mt-0.5">
                       {allowed.length === trackers.length ? (
-                        <Badge variant="secondary" className="rounded-full text-[9px] px-2 py-0.5 bg-muted text-muted-foreground border-transparent">
+                        <Badge
+                          variant="secondary"
+                          className="rounded-full text-[9px] px-2 py-0.5 bg-muted text-muted-foreground border-transparent"
+                        >
                           Cho phép tất cả
                         </Badge>
                       ) : allowed.length === 0 ? (
-                        <Badge variant="destructive" className="rounded-full text-[9px] px-2 py-0.5 border-transparent bg-red-500 text-white">
+                        <Badge
+                          variant="destructive"
+                          className="rounded-full text-[9px] px-2 py-0.5 border-transparent bg-red-500 text-white"
+                        >
                           Chọn ít nhất 1 loại yêu cầu
                         </Badge>
                       ) : (
@@ -400,7 +446,11 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
                           const match = trackers.find((t) => t.code === k)
                           const label = match ? match.name : k
                           return (
-                            <Badge key={k} variant="outline" className="rounded-full text-[9px] px-2 py-0.5 border-primary/20 bg-primary/5 text-primary">
+                            <Badge
+                              key={k}
+                              variant="outline"
+                              className="rounded-full text-[9px] px-2 py-0.5 border-primary/20 bg-primary/5 text-primary"
+                            >
                               {label}
                             </Badge>
                           )
@@ -421,7 +471,9 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
                               type="button"
                               variant="ghost"
                               size="icon"
-                              onClick={() => { handleOpenAddMemberToRole(role); }}
+                              onClick={() => {
+                                handleOpenAddMemberToRole(role)
+                              }}
                               className="size-5 rounded-full hover:bg-muted text-primary cursor-pointer"
                               title="Thêm/Chuyển nhân sự vào vai trò này"
                             >
@@ -429,7 +481,9 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
                             </Button>
                           </div>
                           {roleMembers.length === 0 ? (
-                            <span className="text-[10px] text-muted-foreground italic">Chưa có thành viên</span>
+                            <span className="text-[10px] text-muted-foreground italic">
+                              Chưa có thành viên
+                            </span>
                           ) : (
                             roleMembers.map((m) => (
                               <Badge
@@ -439,7 +493,9 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
                               >
                                 <span>{m.employee?.fullName || "Chưa rõ"}</span>
                                 {m.isTeamLeaderField && (
-                                  <span className="text-[8px] text-primary font-bold uppercase">Lead</span>
+                                  <span className="text-[8px] text-primary font-bold uppercase">
+                                    Lead
+                                  </span>
                                 )}
                                 {!m.isTeamLeaderField && (
                                   <button
@@ -468,7 +524,9 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
                         roleId={role.id}
                         allowed={allowed}
                         trackers={trackers}
-                        onToggle={(key) => { handleToggle(role.id, key); }}
+                        onToggle={(key) => {
+                          handleToggle(role.id, key)
+                        }}
                         onSelectAll={() => {
                           setLocalRules((prev) => ({
                             ...prev,
@@ -507,22 +565,30 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
 
           <form onSubmit={handleRoleSubmit} className="space-y-6 py-2">
             <div className="space-y-1.5">
-              <Label htmlFor="role_name" className="text-xs font-bold">Tên vai trò *</Label>
+              <Label htmlFor="role_name" className="text-xs font-bold">
+                Tên vai trò *
+              </Label>
               <Input
                 id="role_name"
                 value={roleName}
-                onChange={(e) => { handleNameChange(e.target.value); }}
+                onChange={(e) => {
+                  handleNameChange(e.target.value)
+                }}
                 placeholder="Ví dụ: Designer"
                 className="rounded-full h-10 text-sm"
                 required
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="role_code" className="text-xs font-bold">Mã vai trò (Tự động sinh) *</Label>
+              <Label htmlFor="role_code" className="text-xs font-bold">
+                Mã vai trò (Tự động sinh) *
+              </Label>
               <Input
                 id="role_code"
                 value={roleCode}
-                onChange={(e) => { setRoleCode(e.target.value); }}
+                onChange={(e) => {
+                  setRoleCode(e.target.value)
+                }}
                 placeholder="Ví dụ: designer"
                 className="rounded-full h-10 text-sm font-mono"
                 disabled
@@ -534,7 +600,9 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => { setIsModalOpen(false); }}
+                onClick={() => {
+                  setIsModalOpen(false)
+                }}
                 className="rounded-full text-xs h-9"
               >
                 Hủy bỏ
@@ -569,20 +637,31 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
             )}
 
             <div className="space-y-1.5">
-              <Label htmlFor="directMemberEmp" className="text-xs font-semibold text-muted-foreground">
+              <Label
+                htmlFor="directMemberEmp"
+                className="text-xs font-semibold text-muted-foreground"
+              >
                 Chọn thành viên
               </Label>
               <Select value={selectedEmpId} onValueChange={setSelectedEmpId}>
-                <SelectTrigger id="directMemberEmp" className="w-full h-10 border-border rounded-full px-4 bg-background">
+                <SelectTrigger
+                  id="directMemberEmp"
+                  className="w-full h-10 border-border rounded-full px-4 bg-background"
+                >
                   <SelectValue placeholder="Chọn thành viên" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-border bg-popover">
-                  <SelectItem value={SELECT_NONE_VALUE} className="rounded-lg">Chọn thành viên</SelectItem>
+                  <SelectItem value={SELECT_NONE_VALUE} className="rounded-lg">
+                    Chọn thành viên
+                  </SelectItem>
                   {members
-                    .filter((m) => m.employeeId !== project?.teamLeaderId && m.roleId !== targetRole?.id)
+                    .filter(
+                      (m) => m.employeeId !== project?.teamLeaderId && m.roleId !== targetRole?.id,
+                    )
                     .map((m) => (
                       <SelectItem key={m.employeeId} value={m.employeeId} className="rounded-lg">
-                        {m.employee?.fullName || "Chưa rõ"} (Vai trò hiện tại: {m.role?.name || "Chưa gán"})
+                        {m.employee?.fullName || "Chưa rõ"} (Vai trò hiện tại:{" "}
+                        {m.role?.name || "Chưa gán"})
                       </SelectItem>
                     ))}
                 </SelectContent>
@@ -593,7 +672,9 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => { setIsAddMemberModalOpen(false); }}
+                onClick={() => {
+                  setIsAddMemberModalOpen(false)
+                }}
                 className="rounded-full text-xs h-9"
                 disabled={isSubmittingMember}
               >
@@ -613,5 +694,3 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
     </>
   )
 }
-
-

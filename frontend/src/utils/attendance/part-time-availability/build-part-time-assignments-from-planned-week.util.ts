@@ -3,9 +3,9 @@
  * Only slots still allowed by the employee's submitted availability are retained.
  */
 import { WORK_WEEK_DISPLAY_DAY_ORDER } from "@/config/entities/attendance.config"
+import { minutesToTime } from "@/lib/utils"
 import type { IPlannedWeek } from "@/types/attendance.types"
 import type { IPartTimeWeeklyAvailability } from "@/types/part-time-availability.types"
-import { minutesToTime } from "@/lib/utils"
 import { buildScheduledSlotsFromAvailabilityDay } from "@/utils/attendance/part-time-availability/build-scheduled-slots-from-availability-day.util"
 import type {
   IPartTimeAssignmentDayForm,

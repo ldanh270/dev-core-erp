@@ -74,17 +74,13 @@
   "indexes": [
     {
       "name": "IX_ApplicationLateEarlyDetail_employeeShiftId",
-      "columns": [
-        "employeeShiftId"
-      ],
+      "columns": ["employeeShiftId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_ApplicationLateEarlyDetail",
-      "columns": [
-        "applicationId"
-      ],
+      "columns": ["applicationId"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -94,23 +90,15 @@
       "virtualName": "application",
       "targetModel": "Application",
       "relationName": null,
-      "foreignKeyFields": [
-        "applicationId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["applicationId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "employeeShift",
       "targetModel": "EmployeeShift",
       "relationName": "ApplicationLateEarlyShift",
-      "foreignKeyFields": [
-        "employeeShiftId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeShiftId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

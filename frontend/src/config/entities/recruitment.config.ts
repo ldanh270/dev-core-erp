@@ -203,12 +203,7 @@ export const BGC_GROUP = {
   D: "d",
 } as const
 
-export const BGC_GROUPS = [
-  BGC_GROUP.A,
-  BGC_GROUP.B,
-  BGC_GROUP.C,
-  BGC_GROUP.D,
-] as const
+export const BGC_GROUPS = [BGC_GROUP.A, BGC_GROUP.B, BGC_GROUP.C, BGC_GROUP.D] as const
 
 export const BGC_STATUS = {
   PENDING: "pending",
@@ -301,7 +296,10 @@ export const APPLICATION_STATUS_LABELS: Record<string, string> = {
   [RECRUITMENT_APPLICATION_STATUS.CANDIDATE_WITHDREW]: "Ứng viên rút lui",
 }
 
-export const APPLICATION_STATUS_VARIANTS: Record<string, "default" | "primary" | "success" | "warning" | "danger" | "info"> = {
+export const APPLICATION_STATUS_VARIANTS: Record<
+  string,
+  "default" | "primary" | "success" | "warning" | "danger" | "info"
+> = {
   [RECRUITMENT_APPLICATION_STATUS.NEW]: "info",
   [RECRUITMENT_APPLICATION_STATUS.REVIEWING]: "primary",
   [RECRUITMENT_APPLICATION_STATUS.SHORTLISTED]: "primary",

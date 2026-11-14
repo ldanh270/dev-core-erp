@@ -16,4 +16,3 @@ export function getGoogleFormsConfig(): GoogleFormsConfig | null {
   if (!clientId || !clientSecret || !refreshToken) return null
   return { clientId, clientSecret, refreshToken }
 }
-

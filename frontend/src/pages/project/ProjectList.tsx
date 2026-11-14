@@ -1,8 +1,4 @@
-import {
-  DataTablePage,
-  type DataTableColumn,
-  StatusPill,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage, StatusPill } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import {
   PROJECT_STATUS,
@@ -22,9 +18,10 @@ import { ProjectCreateModal } from "@/pages/project/components/project-create-mo
 import { useProjectTrackers } from "@/pages/project/hooks/use-project-tracker"
 import type { Project } from "@/types/project.types"
 
+import { useMemo, useState } from "react"
+
 import { useQuery } from "@tanstack/react-query"
 import { Plus, Users } from "lucide-react"
-import { useMemo, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 
 const STATUS_TABS = [
@@ -229,7 +226,9 @@ export default function ProjectList() {
         minWidth: "130px",
         cell: (proj) => (
           <span className={cn(TYPOGRAPHY.CELL_DATE, "whitespace-nowrap")}>
-            {proj.expectedEndDate ? new Date(proj.expectedEndDate).toLocaleDateString("vi-VN") : "—"}
+            {proj.expectedEndDate
+              ? new Date(proj.expectedEndDate).toLocaleDateString("vi-VN")
+              : "—"}
           </span>
         ),
       },

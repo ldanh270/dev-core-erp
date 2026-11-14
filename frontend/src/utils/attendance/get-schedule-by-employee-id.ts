@@ -4,5 +4,7 @@ import type { ISchedule } from "@/types/attendance.types"
 export function getScheduleByEmployeeId(
   schedules: (ISchedule | null | undefined)[],
 ): Map<string, ISchedule> {
-  return new Map(schedules.flatMap((schedule) => (schedule ? [[schedule.employeeId, schedule]] : [])))
+  return new Map(
+    schedules.flatMap((schedule) => (schedule ? [[schedule.employeeId, schedule]] : [])),
+  )
 }

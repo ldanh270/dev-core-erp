@@ -1,7 +1,4 @@
-import {
-  DataTablePage,
-  type DataTableColumn,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage } from "@/components/common"
 import { BulkAssignPayslipTemplateDialog } from "@/components/features/payroll/bulk-assign-payslip-template-dialog"
 import { CreatePayslipTemplateForm } from "@/components/payroll/CreatePayslipTemplateForm"
 import { Button } from "@/components/ui/button"
@@ -31,6 +28,7 @@ import { cn, formatDate } from "@/lib/utils"
 import type { IPayslipTemplate } from "@/types/payroll.types"
 
 import { useCallback, useMemo, useState } from "react"
+
 import { Inbox, MoreHorizontal, Pencil, Plus, Trash2, Users } from "lucide-react"
 import { toast } from "sonner"
 
@@ -86,9 +84,7 @@ export default function PayslipTemplates() {
     if (!templates) return []
     const s = searchTerm.toLowerCase().trim()
     if (!s) return templates
-    return templates.filter((template) =>
-      template.name.toLowerCase().includes(s),
-    )
+    return templates.filter((template) => template.name.toLowerCase().includes(s))
   }, [templates, searchTerm])
 
   const paginatedTemplates = useMemo(() => {
@@ -107,9 +103,7 @@ export default function PayslipTemplates() {
         align: "center",
         sticky: true,
         cell: (_, index) => (
-          <span className={TYPOGRAPHY.CELL_CODE}>
-            {(page - 1) * limit + index + 1}
-          </span>
+          <span className={TYPOGRAPHY.CELL_CODE}>{(page - 1) * limit + index + 1}</span>
         ),
       },
       {
@@ -268,9 +262,7 @@ export default function PayslipTemplates() {
         }}
         emptyState={{
           icon: Inbox,
-          title: searchTerm.trim()
-            ? "Không tìm thấy mẫu phiếu lương"
-            : "Chưa có mẫu phiếu lương",
+          title: searchTerm.trim() ? "Không tìm thấy mẫu phiếu lương" : "Chưa có mẫu phiếu lương",
           description: searchTerm.trim()
             ? `Không có mẫu phiếu lương nào khớp với từ khóa "${searchTerm}".`
             : "Tạo mẫu phiếu lương đầu tiên để gán cho các nhân sự trong tổ chức.",

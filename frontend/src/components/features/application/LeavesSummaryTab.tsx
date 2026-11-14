@@ -14,6 +14,7 @@ import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn } from "@/lib/utils"
 
 import type { ReactNode } from "react"
+
 import { Plus } from "lucide-react"
 
 interface LeavesSummaryTabProps {
@@ -23,11 +24,7 @@ interface LeavesSummaryTabProps {
 }
 
 /** Renders the personal leave entitlement summary and quotas. */
-export function LeavesSummaryTab({
-  subHeader,
-  onOpenCreate,
-  extraContent,
-}: LeavesSummaryTabProps) {
+export function LeavesSummaryTab({ subHeader, onOpenCreate, extraContent }: LeavesSummaryTabProps) {
   return (
     <PageContainer variant="table">
       <PageHeader
@@ -66,13 +63,22 @@ export function LeavesSummaryTab({
             </TableHeader>
             <TableBody>
               <TableRow className="hover:bg-transparent border-b-0">
-                <TableCell className={cn("py-6 text-center text-lg font-bold", TYPOGRAPHY.CELL_CODE)}>
+                <TableCell
+                  className={cn("py-6 text-center text-lg font-bold", TYPOGRAPHY.CELL_CODE)}
+                >
                   7
                 </TableCell>
-                <TableCell className={cn("py-6 text-center text-lg font-bold", TYPOGRAPHY.CELL_CODE)}>
+                <TableCell
+                  className={cn("py-6 text-center text-lg font-bold", TYPOGRAPHY.CELL_CODE)}
+                >
                   0
                 </TableCell>
-                <TableCell className={cn("py-6 text-center text-lg font-bold text-primary", TYPOGRAPHY.CELL_CODE)}>
+                <TableCell
+                  className={cn(
+                    "py-6 text-center text-lg font-bold text-primary",
+                    TYPOGRAPHY.CELL_CODE,
+                  )}
+                >
                   7
                 </TableCell>
               </TableRow>

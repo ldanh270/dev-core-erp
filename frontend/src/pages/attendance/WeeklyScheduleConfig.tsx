@@ -67,15 +67,15 @@ function ConfigContextPanel() {
                   <Info className="size-3.5 text-muted-foreground cursor-help" />
                 </TooltipTrigger>
                 <TooltipContent side="right" className="max-w-xs text-xs">
-                  Job chạy nền mỗi phút. Khi đúng thứ và giờ đã cấu hình, hệ thống sinh ca từ thứ
-                  đó đến hết tuần (7 ngày).
+                  Job chạy nền mỗi phút. Khi đúng thứ và giờ đã cấu hình, hệ thống sinh ca từ thứ đó
+                  đến hết tuần (7 ngày).
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Gán template cho từng nhân viên trong hồ sơ nhân sự. Trang này chỉ cấu hình lịch chạy
-            tự động.
+            Gán template cho từng nhân viên trong hồ sơ nhân sự. Trang này chỉ cấu hình lịch chạy tự
+            động.
           </p>
         </div>
       </div>
@@ -88,8 +88,7 @@ function SchedulePreviewBadge({ control }: { control: Control<WeeklyScheduleSett
   const triggerHour = useWatch({ control, name: "triggerHour" })
   const triggerMinute = useWatch({ control, name: "triggerMinute" })
 
-  const dayLabel =
-    triggerDayOfWeek !== undefined ? getDayOfWeekFullLabel(triggerDayOfWeek) : "..."
+  const dayLabel = triggerDayOfWeek !== undefined ? getDayOfWeekFullLabel(triggerDayOfWeek) : "..."
 
   return (
     <Badge
@@ -110,7 +109,8 @@ function TriggerTimeField({ control }: { control: Control<WeeklyScheduleSettings
           Thời gian chính xác
         </FormLabel>
         <FormDescription className="text-xs max-w-sm leading-relaxed">
-          Nên chọn thời điểm ngoài giờ hành chính (ví dụ 07:00 sáng Thứ Hai) để sinh lịch trước ca làm việc.
+          Nên chọn thời điểm ngoài giờ hành chính (ví dụ 07:00 sáng Thứ Hai) để sinh lịch trước ca
+          làm việc.
         </FormDescription>
       </div>
 
@@ -177,7 +177,11 @@ function TriggerTimeField({ control }: { control: Control<WeeklyScheduleSettings
   )
 }
 
-function TriggerDayOfWeekField({ control }: { control: Control<WeeklyScheduleSettingsFormValues> }) {
+function TriggerDayOfWeekField({
+  control,
+}: {
+  control: Control<WeeklyScheduleSettingsFormValues>
+}) {
   return (
     <FormField
       control={control}

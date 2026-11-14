@@ -200,51 +200,37 @@
   "indexes": [
     {
       "name": "IX_roles_deletedAt",
-      "columns": [
-        "deletedAt"
-      ],
+      "columns": ["deletedAt"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_roles_isActive",
-      "columns": [
-        "isActive"
-      ],
+      "columns": ["isActive"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_roles_isAdministrative_isActive_deletedAt",
-      "columns": [
-        "isAdministrative",
-        "isActive",
-        "deletedAt"
-      ],
+      "columns": ["isAdministrative", "isActive", "deletedAt"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_roles_isDefault",
-      "columns": [
-        "isDefault"
-      ],
+      "columns": ["isDefault"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_roles_name",
-      "columns": [
-        "name"
-      ],
+      "columns": ["name"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "PK_roles",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }

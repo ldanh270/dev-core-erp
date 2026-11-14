@@ -1,9 +1,18 @@
 import { StatusPill } from "@/components/common/status-pill"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { POSTING_CHANNELS } from "@/config/entities/recruitment.config"
 import type { JobPosting, RecruitmentFormField } from "@/types/recruitment.types"
+
+import { useState } from "react"
+
 import {
   Briefcase,
   Building2,
@@ -21,7 +30,6 @@ import {
   Users,
   Wallet,
 } from "lucide-react"
-import { useState } from "react"
 import { toast } from "sonner"
 
 interface Props {
@@ -30,7 +38,8 @@ interface Props {
   posting: JobPosting | null
 }
 
-const channelLabel = (value: string) => POSTING_CHANNELS.find((item) => item.value === value)?.label ?? value
+const channelLabel = (value: string) =>
+  POSTING_CHANNELS.find((item) => item.value === value)?.label ?? value
 
 const formatCurrency = (amount: number | null | undefined) => {
   if (amount == null) return null
@@ -71,11 +80,15 @@ export function ViewJobPostingDialog({ open, onOpenChange, posting }: Props) {
     if (type === "link") {
       setCopiedLink(true)
       toast.success("Đã sao chép đường dẫn ứng tuyển!")
-      setTimeout(() => { setCopiedLink(false); }, 2000)
+      setTimeout(() => {
+        setCopiedLink(false)
+      }, 2000)
     } else {
       setCopiedCode(true)
       toast.success("Đã sao chép mã nguồn!")
-      setTimeout(() => { setCopiedCode(false); }, 2000)
+      setTimeout(() => {
+        setCopiedCode(false)
+      }, 2000)
     }
   }
 
@@ -92,13 +105,28 @@ export function ViewJobPostingDialog({ open, onOpenChange, posting }: Props) {
         <DialogHeader className="space-y-3 pb-2 border-b border-border">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="rounded-full px-3 py-1 bg-primary/10 text-primary border-primary/20 text-xs font-semibold">
+              <Badge
+                variant="secondary"
+                className="rounded-full px-3 py-1 bg-primary/10 text-primary border-primary/20 text-xs font-semibold"
+              >
                 <Globe className="h-3.5 w-3.5 mr-1.5 shrink-0" />
                 {channelLabel(posting.channel)}
               </Badge>
               <StatusPill
-                label={posting.status === "open" ? "Đang mở" : posting.status === "closed" ? "Đã đóng" : "Nháp"}
-                variant={posting.status === "open" ? "success" : posting.status === "closed" ? "danger" : "neutral"}
+                label={
+                  posting.status === "open"
+                    ? "Đang mở"
+                    : posting.status === "closed"
+                      ? "Đã đóng"
+                      : "Nháp"
+                }
+                variant={
+                  posting.status === "open"
+                    ? "success"
+                    : posting.status === "closed"
+                      ? "danger"
+                      : "neutral"
+                }
               />
             </div>
             {isGoogleForm && (
@@ -126,13 +154,18 @@ export function ViewJobPostingDialog({ open, onOpenChange, posting }: Props) {
           <div className="rounded-xl bg-card p-4 border border-border space-y-3 shadow-xs">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Vị trí tuyển dụng</span>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Vị trí tuyển dụng
+                </span>
                 <h3 className="text-lg font-bold text-foreground mt-0.5">
                   {requisition?.title ?? "Chưa rõ vị trí"}
                 </h3>
               </div>
               {requisition?.code && (
-                <Badge variant="outline" className="rounded-full font-mono text-xs border-primary/30 text-primary bg-primary/5 font-semibold">
+                <Badge
+                  variant="outline"
+                  className="rounded-full font-mono text-xs border-primary/30 text-primary bg-primary/5 font-semibold"
+                >
                   {requisition.code}
                 </Badge>
               )}
@@ -155,7 +188,9 @@ export function ViewJobPostingDialog({ open, onOpenChange, posting }: Props) {
                 <span className="text-muted-foreground flex items-center gap-1">
                   <Clock className="h-3.5 w-3.5 text-muted-foreground" /> Hình thức
                 </span>
-                <p className="font-semibold text-foreground">{formatEmploymentType(requisition?.employmentType)}</p>
+                <p className="font-semibold text-foreground">
+                  {formatEmploymentType(requisition?.employmentType)}
+                </p>
               </div>
               <div className="space-y-1">
                 <span className="text-muted-foreground flex items-center gap-1">
@@ -167,14 +202,18 @@ export function ViewJobPostingDialog({ open, onOpenChange, posting }: Props) {
                 <span className="text-muted-foreground flex items-center gap-1">
                   <Users className="h-3.5 w-3.5 text-muted-foreground" /> Số lượng tuyển
                 </span>
-                <p className="font-semibold text-foreground">{requisition?.headcount ?? 1} ứng viên</p>
+                <p className="font-semibold text-foreground">
+                  {requisition?.headcount ?? 1} ứng viên
+                </p>
               </div>
               {requisition?.requestedBy?.fullName && (
                 <div className="space-y-1">
                   <span className="text-muted-foreground flex items-center gap-1">
                     <UserCheck className="h-3.5 w-3.5 text-muted-foreground" /> Người tạo
                   </span>
-                  <p className="font-semibold text-foreground">{requisition.requestedBy.fullName}</p>
+                  <p className="font-semibold text-foreground">
+                    {requisition.requestedBy.fullName}
+                  </p>
                 </div>
               )}
             </div>
@@ -197,10 +236,16 @@ export function ViewJobPostingDialog({ open, onOpenChange, posting }: Props) {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => { handleCopy(posting.postingUrl ?? "", "link"); }}
+                    onClick={() => {
+                      handleCopy(posting.postingUrl ?? "", "link")
+                    }}
                     className="rounded-full text-xs gap-1.5 h-8 border-border"
                   >
-                    {copiedLink ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                    {copiedLink ? (
+                      <Check className="h-3.5 w-3.5 text-emerald-500" />
+                    ) : (
+                      <Copy className="h-3.5 w-3.5" />
+                    )}
                     {copiedLink ? "Đã chép" : "Sao chép"}
                   </Button>
                   <a href={posting.postingUrl} target="_blank" rel="noreferrer">
@@ -216,7 +261,8 @@ export function ViewJobPostingDialog({ open, onOpenChange, posting }: Props) {
             <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-800 dark:text-amber-300">
               <p className="font-semibold">Chưa phát hành đường dẫn công khai</p>
               <p className="mt-0.5 text-amber-700/80 dark:text-amber-400/80">
-                Nhấn nút <strong>Public</strong> ở trang danh sách bài đăng để tự động tạo Google Form và phát hành link cho ứng viên.
+                Nhấn nút <strong>Public</strong> ở trang danh sách bài đăng để tự động tạo Google
+                Form và phát hành link cho ứng viên.
               </p>
             </div>
           )}
@@ -224,7 +270,9 @@ export function ViewJobPostingDialog({ open, onOpenChange, posting }: Props) {
           {/* Section 3: Connector Details & Source Code */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="rounded-xl bg-card p-3.5 border border-border space-y-1.5">
-              <span className="text-xs font-medium text-muted-foreground block">Mã nguồn (Source Code)</span>
+              <span className="text-xs font-medium text-muted-foreground block">
+                Mã nguồn (Source Code)
+              </span>
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 text-xs font-mono font-medium text-foreground truncate">
                   <Hash className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
@@ -233,17 +281,25 @@ export function ViewJobPostingDialog({ open, onOpenChange, posting }: Props) {
                 <Button
                   size="sm"
                   variant="ghost"
-                  onClick={() => { handleCopy(posting.sourceCode, "code") }}
+                  onClick={() => {
+                    handleCopy(posting.sourceCode, "code")
+                  }}
                   className="h-7 w-7 p-0 rounded-full shrink-0"
                   title="Sao chép Mã nguồn"
                 >
-                  {copiedCode ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5 text-muted-foreground" />}
+                  {copiedCode ? (
+                    <Check className="h-3.5 w-3.5 text-emerald-500" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5 text-muted-foreground" />
+                  )}
                 </Button>
               </div>
             </div>
 
             <div className="rounded-xl bg-card p-3.5 border border-border space-y-1.5">
-              <span className="text-xs font-medium text-muted-foreground block">Mã biểu mẫu Google (External Form ID)</span>
+              <span className="text-xs font-medium text-muted-foreground block">
+                Mã biểu mẫu Google (External Form ID)
+              </span>
               <p className="text-xs font-mono font-semibold text-foreground truncate">
                 {posting.sourceCode.replace(/^GFORM_/, "") || "—"}
               </p>
@@ -278,25 +334,44 @@ export function ViewJobPostingDialog({ open, onOpenChange, posting }: Props) {
           <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground pt-3 border-t border-border">
             <div className="flex items-center gap-1.5">
               <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-              <span>Ngày tạo: <strong>{posting.createdAt ? new Date(posting.createdAt).toLocaleDateString("vi-VN") : "—"}</strong></span>
+              <span>
+                Ngày tạo:{" "}
+                <strong>
+                  {posting.createdAt
+                    ? new Date(posting.createdAt).toLocaleDateString("vi-VN")
+                    : "—"}
+                </strong>
+              </span>
             </div>
             {posting.publishedAt && (
               <div className="flex items-center gap-1.5">
                 <Check className="h-3.5 w-3.5 text-emerald-500" />
-                <span>Phát hành: <strong>{new Date(posting.publishedAt).toLocaleDateString("vi-VN")}</strong></span>
+                <span>
+                  Phát hành:{" "}
+                  <strong>{new Date(posting.publishedAt).toLocaleDateString("vi-VN")}</strong>
+                </span>
               </div>
             )}
             {posting.lastSyncedAt && (
               <div className="flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5 text-primary" />
-                <span>Đồng bộ gần nhất: <strong>{new Date(posting.lastSyncedAt).toLocaleString("vi-VN")}</strong></span>
+                <span>
+                  Đồng bộ gần nhất:{" "}
+                  <strong>{new Date(posting.lastSyncedAt).toLocaleString("vi-VN")}</strong>
+                </span>
               </div>
             )}
           </div>
         </div>
 
         <DialogFooter className="pt-2">
-          <Button variant="outline" className="rounded-full border-border text-foreground hover:bg-muted" onClick={() => { onOpenChange(false); }}>
+          <Button
+            variant="outline"
+            className="rounded-full border-border text-foreground hover:bg-muted"
+            onClick={() => {
+              onOpenChange(false)
+            }}
+          >
             Đóng
           </Button>
         </DialogFooter>

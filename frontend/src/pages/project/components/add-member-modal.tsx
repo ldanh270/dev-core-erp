@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -8,7 +6,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -18,17 +15,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { PROJECT_MESSAGES } from "@/config/messages/project.message"
 import {
   PROJECT_MEMBER_WORK_MODE,
   PROJECT_MEMBER_WORK_MODES,
   getProjectMemberWorkModeLabel,
 } from "@/config/entities/project.config"
-import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util"
+import { PROJECT_MESSAGES } from "@/config/messages/project.message"
 import { projectApi } from "@/lib/api/project.api"
-import { extractErrorMessage } from "@/utils/error-helper"
 import type { Employee } from "@/types/employee.types"
 import type { ProjectMember } from "@/types/project.types"
+import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util"
+import { extractErrorMessage } from "@/utils/error-helper"
+
+import { useEffect, useState } from "react"
+
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
+
 import { useProjectRoles } from "../hooks/use-project-role"
 
 interface AddMemberModalProps {
@@ -65,7 +68,6 @@ export function AddMemberModal({
     if (roles.length > 0 && !roleId) {
       const devRole = roles.find((r) => r.code === "developer")
       if (devRole) {
- 
         setRoleId(devRole.id)
       } else {
         setRoleId(roles[0].id)
@@ -128,10 +130,18 @@ export function AddMemberModal({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleClose(); else onOpenChange(true); }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) handleClose()
+        else onOpenChange(true)
+      }}
+    >
       <DialogContent className="sm:max-w-[450px] rounded-xl bg-background border-border p-6 shadow-lg">
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold text-foreground">Thêm thành viên dự án</DialogTitle>
+          <DialogTitle className="text-lg font-bold text-foreground">
+            Thêm thành viên dự án
+          </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
             Chọn nhân viên, mức lương/giờ (bắt buộc với part-time) và chế độ làm việc.
           </DialogDescription>
@@ -149,16 +159,20 @@ export function AddMemberModal({
               Chọn nhân sự
             </Label>
             <Select value={memberEmployeeId} onValueChange={setMemberEmployeeId}>
-              <SelectTrigger id="memberEmp" className="w-full h-10 border-border rounded-full px-4 bg-background">
+              <SelectTrigger
+                id="memberEmp"
+                className="w-full h-10 border-border rounded-full px-4 bg-background"
+              >
                 <SelectValue placeholder="Chọn nhân sự" />
               </SelectTrigger>
               <SelectContent className="rounded-xl border-border bg-popover">
-                <SelectItem value={SELECT_NONE_VALUE} className="rounded-lg">Chọn nhân viên</SelectItem>
+                <SelectItem value={SELECT_NONE_VALUE} className="rounded-lg">
+                  Chọn nhân viên
+                </SelectItem>
                 {allEmployees
                   .filter(
                     (emp) =>
-                      !members.some((m) => m.employeeId === emp.id) &&
-                      emp.id !== teamLeaderId
+                      !members.some((m) => m.employeeId === emp.id) && emp.id !== teamLeaderId,
                   )
                   .map((emp) => (
                     <SelectItem key={emp.id} value={emp.id} className="rounded-lg">
@@ -192,7 +206,10 @@ export function AddMemberModal({
               Chế độ làm việc
             </Label>
             <Select value={workMode} onValueChange={setWorkMode}>
-              <SelectTrigger id="workMode" className="w-full h-10 border-border rounded-full px-4 bg-background">
+              <SelectTrigger
+                id="workMode"
+                className="w-full h-10 border-border rounded-full px-4 bg-background"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="rounded-xl border-border bg-popover">
@@ -210,7 +227,10 @@ export function AddMemberModal({
               Vai trò trong dự án
             </Label>
             <Select value={roleId} onValueChange={setRoleId}>
-              <SelectTrigger id="role" className="w-full h-10 border-border rounded-full px-4 bg-background">
+              <SelectTrigger
+                id="role"
+                className="w-full h-10 border-border rounded-full px-4 bg-background"
+              >
                 <SelectValue placeholder="Chọn vai trò" />
               </SelectTrigger>
               <SelectContent className="rounded-xl border-border bg-popover">

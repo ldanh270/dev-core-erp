@@ -52,7 +52,8 @@ export default function EmployeePayslipHistoryDialog({ open, onOpenChange, emplo
                   Lịch sử phiếu lương: {employee?.fullName}
                 </DialogTitle>
                 <DialogDescription className="text-xs">
-                  {employee?.position || "Nhân viên"} • ID: {employee?.id ? employee.id.slice(-6).toUpperCase() : "—"}
+                  {employee?.position || "Nhân viên"} • ID:{" "}
+                  {employee?.id ? employee.id.slice(-6).toUpperCase() : "—"}
                 </DialogDescription>
               </div>
             </div>
@@ -95,11 +96,12 @@ export default function EmployeePayslipHistoryDialog({ open, onOpenChange, emplo
                     <TableRow
                       key={payslip.id}
                       className="hover:bg-muted/30 cursor-pointer"
-                      onClick={() => { setSelectedPayslip({
+                      onClick={() => {
+                        setSelectedPayslip({
                           payrollId: payslip.payrollId,
                           employeeId: payslip.employeeId,
-                        }); }
-                      }
+                        })
+                      }}
                     >
                       <TableCell className="px-4 py-3 text-center text-muted-foreground">
                         {index + 1}
@@ -138,7 +140,9 @@ export default function EmployeePayslipHistoryDialog({ open, onOpenChange, emplo
               variant="outline"
               size="sm"
               className="rounded-full h-8"
-              onClick={() => { onOpenChange(false); }}
+              onClick={() => {
+                onOpenChange(false)
+              }}
             >
               Đóng
             </Button>
@@ -149,7 +153,9 @@ export default function EmployeePayslipHistoryDialog({ open, onOpenChange, emplo
       {selectedPayslip && (
         <PayrollDetailSheet
           payrollId={selectedPayslip.payrollId}
-          onClose={() => { setSelectedPayslip(null); }}
+          onClose={() => {
+            setSelectedPayslip(null)
+          }}
         />
       )}
     </>

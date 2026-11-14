@@ -170,35 +170,25 @@
   "indexes": [
     {
       "name": "IX_RealShift_attendanceRecordId",
-      "columns": [
-        "attendanceRecordId"
-      ],
+      "columns": ["attendanceRecordId"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_RealShift_employeeId_date",
-      "columns": [
-        "employeeId",
-        "date"
-      ],
+      "columns": ["employeeId", "date"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RealShift_isMatched_date",
-      "columns": [
-        "isMatched",
-        "date"
-      ],
+      "columns": ["isMatched", "date"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_RealShift",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -208,23 +198,15 @@
       "virtualName": "employee",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "employeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "attendanceRecord",
       "targetModel": "AttendanceRecord",
       "relationName": null,
-      "foreignKeyFields": [
-        "attendanceRecordId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["attendanceRecordId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

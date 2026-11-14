@@ -10,12 +10,7 @@ export const PAYROLL_DEMO = {
     "Demo attendance 01/06-18/07/2026",
     "Demo attendance 01/06-02/08/2026",
   ],
-  DETAILED_EMPLOYEE_USERNAMES: [
-    "hr_manager",
-    "general_manager",
-    "team_leader",
-    "employee",
-  ],
+  DETAILED_EMPLOYEE_USERNAMES: ["hr_manager", "general_manager", "team_leader", "employee"],
   STANDARD_WORKING_DAYS: 22,
   SYMBOLIC_WORKING_DAYS: 22,
 } as const

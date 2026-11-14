@@ -4,7 +4,12 @@ import { PlannedShiftBlock } from "@/components/features/attendance/calendar/pla
 import { ShiftOptionBlock } from "@/components/features/attendance/calendar/shift-option-block"
 import { CALENDAR_HOURS, type CalendarTab } from "@/config/rules/calendar.config"
 import { cn } from "@/lib/utils"
-import type { IAttendanceRecord, IHoliday, IScheduleDay, IWorkingShift } from "@/types/attendance.types"
+import type {
+  IAttendanceRecord,
+  IHoliday,
+  IScheduleDay,
+  IWorkingShift,
+} from "@/types/attendance.types"
 import { getMinutesFromDateTime } from "@/utils/attendance/get-minutes-from-date-time"
 import type { WeekDay } from "@/utils/attendance/get-week-dates"
 

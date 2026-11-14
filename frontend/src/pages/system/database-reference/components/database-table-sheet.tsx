@@ -1,13 +1,14 @@
 import { AppDrawer } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+
+import { Check, Copy, Network } from "lucide-react"
+
 import type { DbSchemaData, TableDef } from "../database-reference.types"
 import { getModuleTheme } from "../database-reference.utils"
 import { useDatabaseTableSheet } from "../hooks/use-database-table-sheet"
 import { TableSheetColumns } from "./database-table-sheet-columns"
 import { TableSheetIndexes } from "./database-table-sheet-indexes"
-
-import { Check, Copy, Network } from "lucide-react"
 
 interface DatabaseTableSheetProps {
   table: TableDef | null
@@ -32,17 +33,12 @@ export function DatabaseTableSheet({
   copied,
   onCopy,
 }: DatabaseTableSheetProps) {
-  const {
-    module,
-    enumDefinitions,
-    indexes,
-    metricCounts,
-    handleCopyMetadata,
-  } = useDatabaseTableSheet({
-    table,
-    schema,
-    onCopy,
-  })
+  const { module, enumDefinitions, indexes, metricCounts, handleCopyMetadata } =
+    useDatabaseTableSheet({
+      table,
+      schema,
+      onCopy,
+    })
 
   return (
     <AppDrawer
@@ -88,7 +84,9 @@ export function DatabaseTableSheet({
                   size="sm"
                   variant="outline"
                   className="rounded-full"
-                  onClick={() => { onViewErd(table.module); }}
+                  onClick={() => {
+                    onViewErd(table.module)
+                  }}
                 >
                   <Network className="mr-1.5 size-3.5" />
                   Xem trên ERD
@@ -100,7 +98,11 @@ export function DatabaseTableSheet({
                   className="rounded-full"
                   onClick={handleCopyMetadata}
                 >
-                  {copied ? <Check className="mr-1.5 size-3.5" /> : <Copy className="mr-1.5 size-3.5" />}
+                  {copied ? (
+                    <Check className="mr-1.5 size-3.5" />
+                  ) : (
+                    <Copy className="mr-1.5 size-3.5" />
+                  )}
                   {copied ? "Đã sao chép" : "Sao chép metadata"}
                 </Button>
               </div>

@@ -1,7 +1,4 @@
-import {
-  PAYROLL_STATUS,
-  generateDefaultPayrollName,
-} from "@/configs/entities/payroll.config.ts"
+import { PAYROLL_STATUS, generateDefaultPayrollName } from "@/configs/entities/payroll.config.ts"
 import { prisma } from "@/libs/database.ts"
 import { PAYROLL_DEMO } from "@/scripts/seeders/payroll-demo.config.ts"
 import { SeedContext, createEmptyContext } from "@/scripts/seeders/seed-context.ts"

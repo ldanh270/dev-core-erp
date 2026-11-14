@@ -1,37 +1,36 @@
-import { useState, useEffect } from "react"
-import { useParams, useSearchParams, useNavigate, Link } from "react-router-dom"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { AlertCircle } from "lucide-react"
-import { toast } from "sonner"
-
+import { PageContainer, useConfirm } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-
+import { SPENT_TIME_STATUS, TASK_TRACKERS } from "@/config/entities/project.config"
 import { usePermission } from "@/hooks/use-permission"
-import { TASK_TRACKERS, SPENT_TIME_STATUS } from "@/config/entities/project.config"
-import { projectApi } from "@/lib/api/project.api"
 import { employeeApi } from "@/lib/api/employee.api"
+import { projectApi } from "@/lib/api/project.api"
 import { taskApi } from "@/lib/api/task.api"
-import { useAuthStore } from "@/store/auth-store"
-
-import { extractErrorMessage } from "@/utils/error-helper"
-import { PageContainer, useConfirm } from "@/components/common"
 import { cn } from "@/lib/utils"
+import { useAuthStore } from "@/store/auth-store"
+import type { ProjectMember } from "@/types/project.types"
+import { extractErrorMessage } from "@/utils/error-helper"
 
-// Sub-components imports
-import { ProjectHeader } from "./components/project-header"
+import { useEffect, useState } from "react"
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { AlertCircle } from "lucide-react"
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { toast } from "sonner"
+
 import { AddMemberModal } from "./components/add-member-modal"
 import { EditMemberModal } from "./components/edit-member-modal"
 import { EditProjectModal } from "./components/edit-project-modal"
-import { ProjectOverviewTab } from "./components/project-overview-tab"
-import { ProjectIssuesTab } from "./components/project-issues-tab"
-import { ProjectKanbanTab } from "./components/project-kanban-tab"
 import { ProjectActivityTab } from "./components/project-activity-tab"
 import { ProjectGanttTab } from "./components/project-gantt-tab"
+// Sub-components imports
+import { ProjectHeader } from "./components/project-header"
+import { ProjectIssuesTab } from "./components/project-issues-tab"
+import { ProjectKanbanTab } from "./components/project-kanban-tab"
+import { ProjectOverviewTab } from "./components/project-overview-tab"
 import { ProjectPositionRules } from "./components/project-position-rules"
 import { ProjectTaskGeneratorModal } from "./components/project-task-generator-modal"
-import type { ProjectMember } from "@/types/project.types"
 
 interface ActivityItem {
   id: string
@@ -52,7 +51,7 @@ const PROJECT_TABS = {
   RULES: "rules",
 } as const
 
-type ProjectTab = typeof PROJECT_TABS[keyof typeof PROJECT_TABS]
+type ProjectTab = (typeof PROJECT_TABS)[keyof typeof PROJECT_TABS]
 
 /**
  * ProjectDetail Component.
@@ -77,8 +76,7 @@ export default function ProjectDetail() {
   }, [projectId])
 
   const isTabValid = tab ? (Object.values(PROJECT_TABS) as readonly string[]).includes(tab) : false
-  const activeTab: ProjectTab =
-    isTabValid ? (tab as ProjectTab) : PROJECT_TABS.OVERVIEW
+  const activeTab: ProjectTab = isTabValid ? (tab as ProjectTab) : PROJECT_TABS.OVERVIEW
 
   const [isOpenMemberModal, setIsOpenMemberModal] = useState(false)
   const [isOpenEditProjectModal, setIsOpenEditProjectModal] = useState(false)
@@ -158,9 +156,7 @@ export default function ProjectDetail() {
 
   // Enforce task creation policy based on user roles and project configuration settings
   const canCreateTask =
-    isAdminOrGM ||
-    isLeader ||
-    (isProjectMember && project?.taskCreationPolicy === "all_members")
+    isAdminOrGM || isLeader || (isProjectMember && project?.taskCreationPolicy === "all_members")
 
   // Auto-redirect to task creation screen if search parameter 'createTask' is present and user has permission
   useEffect(() => {
@@ -174,10 +170,10 @@ export default function ProjectDetail() {
 
   // Calculate statistics for the Overview Tab
   const openTasksCount = overviewTasks.filter((t) =>
-    ["todo", "in_progress", "in_review", "reopened"].includes(t.status)
+    ["todo", "in_progress", "in_review", "reopened"].includes(t.status),
   ).length
   const closedTasksCount = overviewTasks.filter((t) =>
-    ["done", "cancelled"].includes(t.status)
+    ["done", "cancelled"].includes(t.status),
   ).length
   const totalTasksCount = overviewTasks.length
 
@@ -185,7 +181,7 @@ export default function ProjectDetail() {
   const trackerStats = TASK_TRACKERS.reduce((acc, tr) => {
     const trTasks = overviewTasks.filter((t) => t.tracker === tr)
     const open = trTasks.filter((t) =>
-      ["todo", "in_progress", "in_review", "reopened"].includes(t.status)
+      ["todo", "in_progress", "in_review", "reopened"].includes(t.status),
     ).length
     const closed = trTasks.filter((t) => ["done", "cancelled"].includes(t.status)).length
     acc.set(tr, { open, closed, total: trTasks.length })
@@ -298,8 +294,13 @@ export default function ProjectDetail() {
       {/* Tabs navigation panel: switches between Overview, Issues, and Activity views */}
       <Tabs
         value={activeTab}
-        onValueChange={(newTab) => { navigate(`/project/${projectId}/${newTab}`); }}
-        className={cn("space-y-6", activeTab === PROJECT_TABS.KANBAN && "flex-1 min-h-0 flex flex-col space-y-4")}
+        onValueChange={(newTab) => {
+          navigate(`/project/${projectId}/${newTab}`)
+        }}
+        className={cn(
+          "space-y-6",
+          activeTab === PROJECT_TABS.KANBAN && "flex-1 min-h-0 flex flex-col space-y-4",
+        )}
       >
         <TabsList className="bg-secondary rounded-full p-1 border border-border/40 inline-flex shrink-0 self-start">
           <TabsTrigger
@@ -358,8 +359,10 @@ export default function ProjectDetail() {
             canManageMembers={canManageMembers}
             onRemoveMember={async (employeeId) => {
               // Retrieve employee full name for descriptive warning message
-              const memberName = projectMembers.find((m) => m.employeeId === employeeId)?.employee?.fullName || "thành viên này"
-              
+              const memberName =
+                projectMembers.find((m) => m.employeeId === employeeId)?.employee?.fullName ||
+                "thành viên này"
+
               // Prompt user with unified custom confirm modal before calling delete mutation
               const ok = await confirm({
                 title: "Xóa thành viên khỏi dự án",
@@ -376,8 +379,6 @@ export default function ProjectDetail() {
           />
         </TabsContent>
 
-
-
         {/* ISSUES TAB */}
         <TabsContent value={PROJECT_TABS.ISSUES}>
           <ProjectIssuesTab
@@ -389,7 +390,10 @@ export default function ProjectDetail() {
         </TabsContent>
 
         {/* KANBAN TAB */}
-        <TabsContent value={PROJECT_TABS.KANBAN} className="flex-1 min-h-0 h-full flex flex-col m-0 data-[state=inactive]:hidden">
+        <TabsContent
+          value={PROJECT_TABS.KANBAN}
+          className="flex-1 min-h-0 h-full flex flex-col m-0 data-[state=inactive]:hidden"
+        >
           <ProjectKanbanTab
             projectId={projectId}
             members={projectMembers}
@@ -400,18 +404,12 @@ export default function ProjectDetail() {
 
         {/* ACTIVITY TAB */}
         <TabsContent value={PROJECT_TABS.ACTIVITY}>
-          <ProjectActivityTab
-            activitiesList={activitiesList}
-            isLoading={isLoadingSpent}
-          />
+          <ProjectActivityTab activitiesList={activitiesList} isLoading={isLoadingSpent} />
         </TabsContent>
 
         {/* GANTT TAB */}
         <TabsContent value={PROJECT_TABS.GANTT}>
-          <ProjectGanttTab
-            projectId={projectId}
-            project={project}
-          />
+          <ProjectGanttTab projectId={projectId} project={project} />
         </TabsContent>
 
         {/* RULES TAB */}

@@ -1,4 +1,11 @@
-import { DatePicker, IconBox, PageCard, PageContainer, SectionHeader, StatusPill } from "@/components/common"
+import {
+  DatePicker,
+  IconBox,
+  PageCard,
+  PageContainer,
+  SectionHeader,
+  StatusPill,
+} from "@/components/common"
 import { PersonalEmployeeLinkSection } from "@/components/features/profile/personal-employee-link-section"
 import { Button } from "@/components/ui/button.tsx"
 import { Input } from "@/components/ui/input.tsx"
@@ -8,8 +15,8 @@ import {
   EMPLOYEE_STATUS,
   EMPLOYEE_STATUS_LABELS,
   EMPLOYEE_TYPE_LABELS,
-  getWorkScheduleTypeLabel,
   ROLE_LABELS,
+  getWorkScheduleTypeLabel,
 } from "@/config/entities/employee.config"
 import { useProfileMaster } from "@/hooks/profile/useProfileMaster"
 
@@ -209,7 +216,10 @@ export default function Profile() {
                       <DatePicker
                         value={profileForm.watch("dateOfBirth") || null}
                         onChange={(val) => {
-                          profileForm.setValue("dateOfBirth", val || "", { shouldValidate: true, shouldDirty: true });
+                          profileForm.setValue("dateOfBirth", val || "", {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          })
                         }}
                       />
                       {profileErrors.dateOfBirth && (

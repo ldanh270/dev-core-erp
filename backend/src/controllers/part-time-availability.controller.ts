@@ -12,6 +12,7 @@ import {
   upsertPartTimeAvailabilitySchema,
   weekStartQuerySchema,
 } from "@/schemas/part-time-availability.schema.ts"
+import { PartTimeAvailabilityService } from "@/services/part-time-availability.service.ts"
 import { ApiResponse } from "@/types"
 import {
   IPartTimeAvailabilityService,
@@ -19,7 +20,6 @@ import {
   IPtShiftSuggestionService,
   ISuggestPartTimeShiftsResult,
 } from "@/types/part-time-availability.types.ts"
-import { PartTimeAvailabilityService } from "@/services/part-time-availability.service.ts"
 import { resolvePersonalEmployeeId } from "@/utils/attendance/resolve-personal-employee-id.ts"
 
 import { Request, Response } from "express"
@@ -36,7 +36,10 @@ export class PartTimeAvailabilityController {
   ) {}
 
   /** Employee self-service: map auth account to HR employee record before week lookup. */
-  getMine = async (req: AuthRequest, res: Response<ApiResponse<IPartTimeWeeklyAvailability | null>>) => {
+  getMine = async (
+    req: AuthRequest,
+    res: Response<ApiResponse<IPartTimeWeeklyAvailability | null>>,
+  ) => {
     const accountId = req.user?.empId
     // JWT may be valid before HR links account → employee; fail closed instead of 500 on lookup.
     if (!accountId) {
@@ -56,7 +59,10 @@ export class PartTimeAvailabilityController {
   }
 
   /** Employee submits weekly availability; service forces submitted status, PT-only, future weeks, and slot rules. */
-  upsertMine = async (req: AuthRequest, res: Response<ApiResponse<IPartTimeWeeklyAvailability>>) => {
+  upsertMine = async (
+    req: AuthRequest,
+    res: Response<ApiResponse<IPartTimeWeeklyAvailability>>,
+  ) => {
     const accountId = req.user?.empId
     // Same guard as getMine — upsert must not run without a resolvable employee id.
     if (!accountId) {

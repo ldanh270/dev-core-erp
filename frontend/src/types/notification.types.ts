@@ -1,7 +1,4 @@
-import type {
-  NotificationPriority,
-  NotificationType,
-} from "@/config/entities/notification.config"
+import type { NotificationPriority, NotificationType } from "@/config/entities/notification.config"
 
 export interface NotificationItem {
   id: string

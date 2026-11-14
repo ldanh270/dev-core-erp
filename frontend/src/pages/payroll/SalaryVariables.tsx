@@ -1,9 +1,4 @@
-import {
-  DataTablePage,
-  StatusPill,
-  useConfirm,
-  type DataTableColumn,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage, StatusPill, useConfirm } from "@/components/common"
 import { SalaryVariableFormPage } from "@/components/features/payroll/salary-variable-form-page"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -15,6 +10,7 @@ import type { ISalaryVariable } from "@/hooks/payroll/use-salary-variable"
 import { cn } from "@/lib/utils"
 
 import { useCallback, useMemo, useState } from "react"
+
 import { Inbox, Pencil, Plus, Trash2 } from "lucide-react"
 
 type VariableRow = Omit<ISalaryVariable, "value"> & {
@@ -201,9 +197,7 @@ export default function SalaryVariablesPage() {
         align: "center",
         sticky: true,
         cell: (_, index) => (
-          <span className={TYPOGRAPHY.CELL_CODE}>
-            {(page - 1) * limit + index + 1}
-          </span>
+          <span className={TYPOGRAPHY.CELL_CODE}>{(page - 1) * limit + index + 1}</span>
         ),
       },
       {
@@ -251,7 +245,12 @@ export default function SalaryVariablesPage() {
         minWidth: "160px",
         hideBelow: "md",
         cell: (item) => (
-          <span className={cn(TYPOGRAPHY.CELL_CODE, "text-foreground bg-muted/50 px-2.5 py-1 rounded-md inline-block font-mono text-xs")}>
+          <span
+            className={cn(
+              TYPOGRAPHY.CELL_CODE,
+              "text-foreground bg-muted/50 px-2.5 py-1 rounded-md inline-block font-mono text-xs",
+            )}
+          >
             {item.value}
           </span>
         ),

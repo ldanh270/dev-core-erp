@@ -1,3 +1,4 @@
+import { APPLICATION_STATUS } from "@/config/entities/attendance.config"
 import {
   type IApplicationListItem,
   type IListApplicationsQuery,
@@ -5,11 +6,10 @@ import {
 } from "@/lib/api/application.api"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { APPLICATION_STATUS } from "@/config/entities/attendance.config"
 
 import { toast } from "sonner"
 
-export type StatusFilter = "all" | typeof APPLICATION_STATUS[keyof typeof APPLICATION_STATUS]
+export type StatusFilter = "all" | (typeof APPLICATION_STATUS)[keyof typeof APPLICATION_STATUS]
 
 interface UseManageApplicationsReturn {
   applications: IApplicationListItem[]
@@ -52,7 +52,7 @@ export function useManageApplications(enabled: boolean = true): UseManageApplica
     setPrevEnabled(enabled)
     setIsLoading(enabled)
   }
-  
+
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("pending") // Default to pending for managers
   const [typeFilter, setTypeFilter] = useState<string>("all")

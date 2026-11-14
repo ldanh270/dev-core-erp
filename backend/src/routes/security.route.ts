@@ -26,11 +26,7 @@ securityRoutes.use(authenticate)
  * @desc Get security summary for dashboard
  * @access Private (security.read permission)
  */
-securityRoutes.get(
-  "/dashboard",
-  requirePermission("security.read"),
-  controller.getSummary as any
-)
+securityRoutes.get("/dashboard", requirePermission("security.read"), controller.getSummary as any)
 
 /**
  * @route GET /api/security/locked-accounts
@@ -40,7 +36,7 @@ securityRoutes.get(
 securityRoutes.get(
   "/locked-accounts",
   requirePermission("security.read"),
-  controller.getLockedAccounts as any
+  controller.getLockedAccounts as any,
 )
 
 /**
@@ -51,7 +47,7 @@ securityRoutes.get(
 securityRoutes.patch(
   "/unlock/:employeeId",
   requirePermission("security.update"),
-  controller.unlockAccount as any
+  controller.unlockAccount as any,
 )
 
 export default securityRoutes

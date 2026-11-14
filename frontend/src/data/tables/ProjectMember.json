@@ -123,18 +123,13 @@
   "indexes": [
     {
       "name": "IX_ProjectMember_employeeId",
-      "columns": [
-        "employeeId"
-      ],
+      "columns": ["employeeId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_ProjectMember",
-      "columns": [
-        "projectId",
-        "employeeId"
-      ],
+      "columns": ["projectId", "employeeId"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -144,34 +139,22 @@
       "virtualName": "project",
       "targetModel": "Project",
       "relationName": null,
-      "foreignKeyFields": [
-        "projectId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["projectId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "employee",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "employeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "role",
       "targetModel": "ProjectRole",
       "relationName": null,
-      "foreignKeyFields": [
-        "roleId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["roleId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

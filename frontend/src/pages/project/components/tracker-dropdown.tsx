@@ -1,10 +1,11 @@
-import { ChevronDown, CheckSquare, Square } from "lucide-react"
 import React from "react"
+
+import { CheckSquare, ChevronDown, Square } from "lucide-react"
 
 interface TrackerDropdownProps {
   roleId: string
   allowed: string[]
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   trackers: any[]
   onToggle: (key: string) => void
   onSelectAll: () => void
@@ -26,7 +27,7 @@ export function TrackerDropdown({
   openUpward,
 }: TrackerDropdownProps) {
   const isOpen = openDropdown.roleId === roleId && openDropdown.type === "tracker"
-  
+
   const getLabel = () => {
     if (allowed.length === trackers.length) return "Cho phép tất cả"
     if (allowed.length === 0) return "Chọn nhất 1 loại yêu cầu"
@@ -36,7 +37,7 @@ export function TrackerDropdown({
     })
     return selectedLabels.join(", ")
   }
-  
+
   const label = getLabel()
 
   return (
@@ -64,11 +65,15 @@ export function TrackerDropdown({
         </button>
 
         {isOpen && (
-          <div className={`absolute right-0 md:left-0 w-72 bg-popover border border-border rounded-xl p-3 shadow-lg z-50 space-y-2 ${
-            openUpward ? "bottom-full mb-1" : "mt-1"
-          }`}>
+          <div
+            className={`absolute right-0 md:left-0 w-72 bg-popover border border-border rounded-xl p-3 shadow-lg z-50 space-y-2 ${
+              openUpward ? "bottom-full mb-1" : "mt-1"
+            }`}
+          >
             <div className="flex items-center justify-between border-b border-border pb-1.5 mb-1.5">
-              <span className="text-[10px] font-bold text-muted-foreground">Chọn loại công việc</span>
+              <span className="text-[10px] font-bold text-muted-foreground">
+                Chọn loại công việc
+              </span>
               <div className="flex gap-2">
                 <button
                   type="button"

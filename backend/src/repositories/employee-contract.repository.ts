@@ -1,10 +1,11 @@
-import { CONTRACT_STATUS, IContractStatus, IContractType } from "@/configs/entities/employee-contract.config.ts"
+import {
+  CONTRACT_STATUS,
+  IContractStatus,
+  IContractType,
+} from "@/configs/entities/employee-contract.config.ts"
+import { SORT_ORDER } from "@/configs/system/db.config.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
-import { AppError } from "@/utils/error.util.ts"
-import { SORT_ORDER } from "@/configs/system/db.config.ts"
-import { Prisma, PrismaClient } from "@prisma/client"
-
 import {
   ContractListQuery,
   ContractStatus,
@@ -15,6 +16,9 @@ import {
   TerminateContractDto,
   UpdateContractDto,
 } from "@/types/employee-contract.types.ts"
+import { AppError } from "@/utils/error.util.ts"
+
+import { Prisma, PrismaClient } from "@prisma/client"
 
 /**
  * Repository interface for Employee Contract data access.
@@ -57,7 +61,9 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
       terminationReason: contract.terminationReason,
       terminationDate: contract.terminationDate?.toISOString() ?? null,
       probationSalary: contract.probationSalary ? Number(contract.probationSalary) : null,
-      probationSalaryRate: contract.probationSalaryRate ? Number(contract.probationSalaryRate) : null,
+      probationSalaryRate: contract.probationSalaryRate
+        ? Number(contract.probationSalaryRate)
+        : null,
       createdById: contract.createdById,
       updatedById: contract.updatedById,
       note: contract.note,
@@ -79,7 +85,9 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
       where: {
         employeeId,
         deletedAt: null,
-        ...(includeInactive ? {} : { status: { notIn: [CONTRACT_STATUS.EXPIRED, CONTRACT_STATUS.TERMINATED] } }),
+        ...(includeInactive
+          ? {}
+          : { status: { notIn: [CONTRACT_STATUS.EXPIRED, CONTRACT_STATUS.TERMINATED] } }),
       },
       orderBy: { startDate: SORT_ORDER.DESC },
     })
@@ -160,7 +168,7 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
         trialEndDate: data.trialEndDate ? new Date(data.trialEndDate) : null,
         salary: data.salary,
         currency: data.currency || "VND",
-        allowances: ((data.allowances || []) as unknown) as Prisma.InputJsonValue,
+        allowances: (data.allowances || []) as unknown as Prisma.InputJsonValue,
         attachments: data.attachments || [],
         probationSalary: data.probationSalary,
         probationSalaryRate: data.probationSalaryRate,
@@ -171,7 +179,11 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
     return this.mapToDomain(contract)
   }
 
-  async update(id: string, data: UpdateContractDto, updatedById: string): Promise<EmployeeContract | null> {
+  async update(
+    id: string,
+    data: UpdateContractDto,
+    updatedById: string,
+  ): Promise<EmployeeContract | null> {
     const existing = await this.prisma.employeeContract.findFirst({
       where: { id, deletedAt: null },
       select: { id: true },
@@ -195,7 +207,8 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
       updateData.trialEndDate = data.trialEndDate ? new Date(data.trialEndDate) : null
     if (data.salary !== undefined) updateData.salary = data.salary
     if (data.currency) updateData.currency = data.currency
-    if (data.allowances !== undefined) updateData.allowances = (data.allowances as unknown) as Prisma.InputJsonValue
+    if (data.allowances !== undefined)
+      updateData.allowances = data.allowances as unknown as Prisma.InputJsonValue
     if (data.attachments !== undefined) updateData.attachments = data.attachments
     if (data.probationSalary !== undefined) updateData.probationSalary = data.probationSalary
     if (data.probationSalaryRate !== undefined)
@@ -260,7 +273,7 @@ export class PrismaEmployeeContractRepository implements IEmployeeContractReposi
           trialEndDate: newData.trialEndDate ? new Date(newData.trialEndDate) : null,
           salary: newData.salary,
           currency: newData.currency || "VND",
-          allowances: ((newData.allowances || []) as unknown) as Prisma.InputJsonValue,
+          allowances: (newData.allowances || []) as unknown as Prisma.InputJsonValue,
           attachments: newData.attachments || [],
           probationSalary: newData.probationSalary,
           probationSalaryRate: newData.probationSalaryRate,

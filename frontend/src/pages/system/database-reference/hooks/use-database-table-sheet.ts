@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from "react"
+
 import type { DbSchemaData, TableDef } from "../database-reference.types"
 import { formatTableSummary } from "../database-reference.utils"
 
@@ -11,20 +12,13 @@ export interface UseDatabaseTableSheetParams {
 /**
  * Custom hook providing derived metadata, indexes, and summary metrics for table detail drawer.
  */
-export function useDatabaseTableSheet({
-  table,
-  schema,
-  onCopy,
-}: UseDatabaseTableSheetParams) {
+export function useDatabaseTableSheet({ table, schema, onCopy }: UseDatabaseTableSheetParams) {
   const module = useMemo(
     () => (table ? schema.modules.find((item) => item.id === table.module) : undefined),
     [table, schema.modules],
   )
 
-  const enumDefinitions = useMemo(
-    () => new Map(Object.entries(schema.enums)),
-    [schema.enums],
-  )
+  const enumDefinitions = useMemo(() => new Map(Object.entries(schema.enums)), [schema.enums])
 
   const indexes = useMemo(() => table?.indexes ?? [], [table?.indexes])
 

@@ -2,7 +2,13 @@ import { ATTENDANCE_STATUS } from "@/configs/entities/attendance.config.ts"
 import type { IAttendanceRecordDTO, IAttendanceShiftDTO } from "@/types/attendance.types.ts"
 import { computeAttendanceMetrics } from "@/utils/attendance/attendance-metrics.util.ts"
 
-function attendanceInstant(year: number, monthIndex: number, day: number, hour: number, minute = 0) {
+function attendanceInstant(
+  year: number,
+  monthIndex: number,
+  day: number,
+  hour: number,
+  minute = 0,
+) {
   return new Date(Date.UTC(year, monthIndex, day, hour - 7, minute))
 }
 

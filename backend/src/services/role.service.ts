@@ -1,4 +1,4 @@
-
+import { PROTECTED_PERMISSIONS } from "@/configs/auth/auth.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { prisma } from "@/libs/database.ts"
 import {
@@ -7,15 +7,14 @@ import {
   IRoleRepository,
   IRoleService,
   PaginatedRolesDto,
+  Permission,
   RoleListQuery,
   UpdateRoleDto,
-  Permission,
 } from "@/types"
 import { AppError } from "@/utils/error.util.ts"
-import { authorizationService } from "./authorization.service.ts"
-import { auditService } from "./audit.service.ts"
-import { PROTECTED_PERMISSIONS } from "@/configs/auth/auth.config.ts"
 
+import { auditService } from "./audit.service.ts"
+import { authorizationService } from "./authorization.service.ts"
 
 /**
  * Service class implementing the business logic for AppRole CRUD operations.
@@ -99,13 +98,14 @@ export class RoleService implements IRoleService {
 
     // Enforce Admin role protection rules
     if (current.name.toLowerCase() === "admin") {
-      const isNameChanged = data.name !== undefined && data.name.trim().toLowerCase() !== current.name.toLowerCase()
+      const isNameChanged =
+        data.name !== undefined && data.name.trim().toLowerCase() !== current.name.toLowerCase()
       if (isNameChanged) {
         throw new AppError(
           "Cannot rename the Admin role.",
           HttpStatusCode.FORBIDDEN,
           "RoleService",
-          "SYSTEM_ROLE_PROTECTED"
+          "SYSTEM_ROLE_PROTECTED",
         )
       }
     }
@@ -153,8 +153,18 @@ export class RoleService implements IRoleService {
           actorId: data.actorId,
           targetRoleId: id,
           action: "ROLE_UPDATED",
-          oldValue: { name: current.name, description: current.description, isActive: current.isActive, isDefault: current.isDefault },
-          newValue: { name: updated.name, description: updated.description, isActive: updated.isActive, isDefault: updated.isDefault },
+          oldValue: {
+            name: current.name,
+            description: current.description,
+            isActive: current.isActive,
+            isDefault: current.isDefault,
+          },
+          newValue: {
+            name: updated.name,
+            description: updated.description,
+            isActive: updated.isActive,
+            isDefault: updated.isDefault,
+          },
         })
       }
       return updated
@@ -200,7 +210,12 @@ export class RoleService implements IRoleService {
 
     // Block deleting the Admin role for safety
     if (current.name.toLowerCase() === "admin") {
-      throw new AppError("Cannot delete the Admin role.", HttpStatusCode.FORBIDDEN, "RoleService", "SYSTEM_ROLE_PROTECTED")
+      throw new AppError(
+        "Cannot delete the Admin role.",
+        HttpStatusCode.FORBIDDEN,
+        "RoleService",
+        "SYSTEM_ROLE_PROTECTED",
+      )
     }
 
     // Block deleting the last active Admin role assignment in the system
@@ -245,7 +260,12 @@ export class RoleService implements IRoleService {
           )
         }
         if (error.message === "ROLE_SYSTEM_PROTECTED") {
-          throw new AppError("Cannot delete system roles.", HttpStatusCode.FORBIDDEN, "RoleService", "SYSTEM_ROLE_PROTECTED")
+          throw new AppError(
+            "Cannot delete system roles.",
+            HttpStatusCode.FORBIDDEN,
+            "RoleService",
+            "SYSTEM_ROLE_PROTECTED",
+          )
         }
         if (error.message === "ROLE_ASSIGNED_EMPLOYEE") {
           throw new AppError(
@@ -293,7 +313,11 @@ export class RoleService implements IRoleService {
       where: { id: permissionId, deletedAt: null, isActive: true },
     })
     if (!permission) {
-      throw new AppError("Permission not found or inactive", HttpStatusCode.NOT_FOUND, "RoleService")
+      throw new AppError(
+        "Permission not found or inactive",
+        HttpStatusCode.NOT_FOUND,
+        "RoleService",
+      )
     }
 
     if (PROTECTED_PERMISSIONS.includes(permission.code) && actorId) {
@@ -303,7 +327,7 @@ export class RoleService implements IRoleService {
           "Only administrators can assign protected permissions.",
           HttpStatusCode.FORBIDDEN,
           "RoleService",
-          "FORBIDDEN"
+          "FORBIDDEN",
         )
       }
     }
@@ -336,7 +360,7 @@ export class RoleService implements IRoleService {
           "Only administrators can revoke protected permissions.",
           HttpStatusCode.FORBIDDEN,
           "RoleService",
-          "FORBIDDEN"
+          "FORBIDDEN",
         )
       }
     }
@@ -382,7 +406,11 @@ export class RoleService implements IRoleService {
         select: { id: true, code: true },
       })
       if (perms.length !== permissionIds.length) {
-        throw new AppError("One or more permissions not found or inactive", HttpStatusCode.NOT_FOUND, "RoleService")
+        throw new AppError(
+          "One or more permissions not found or inactive",
+          HttpStatusCode.NOT_FOUND,
+          "RoleService",
+        )
       }
     }
 
@@ -409,7 +437,7 @@ export class RoleService implements IRoleService {
             "Only administrators can assign protected permissions.",
             HttpStatusCode.FORBIDDEN,
             "RoleService",
-            "FORBIDDEN"
+            "FORBIDDEN",
           )
         }
       }

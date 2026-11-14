@@ -1,8 +1,4 @@
-import {
-  DataTablePage,
-  StatusPill,
-  type DataTableColumn,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage, StatusPill } from "@/components/common"
 import { SalaryComponentFormPage } from "@/components/features/payroll/salary-component-form-page"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,6 +19,7 @@ import { cn } from "@/lib/utils"
 import type { ISalaryComponent } from "@/types/payroll.types"
 
 import { useCallback, useMemo, useState } from "react"
+
 import { Inbox, MoreHorizontal, Pencil, Plus } from "lucide-react"
 
 /**
@@ -84,9 +81,7 @@ export default function SalaryComponents() {
         align: "center",
         sticky: true,
         cell: (_, index) => (
-          <span className={TYPOGRAPHY.CELL_CODE}>
-            {(page - 1) * limit + index + 1}
-          </span>
+          <span className={TYPOGRAPHY.CELL_CODE}>{(page - 1) * limit + index + 1}</span>
         ),
       },
       {
@@ -230,9 +225,7 @@ export default function SalaryComponents() {
       }}
       emptyState={{
         icon: Inbox,
-        title: searchTerm.trim()
-          ? "Không tìm thấy thành phần lương"
-          : "Chưa có thành phần lương",
+        title: searchTerm.trim() ? "Không tìm thấy thành phần lương" : "Chưa có thành phần lương",
         description: searchTerm.trim()
           ? `Không có thành phần lương nào khớp với từ khóa "${searchTerm}".`
           : "Chưa có thành phần thu nhập hay khoản khấu trừ nào được thiết lập.",

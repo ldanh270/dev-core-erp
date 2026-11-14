@@ -1,6 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { positionApi } from "@/lib/api/position.api"
-import type { UpdatePositionDto, ProjectPositionRuleDto } from "@/lib/api/position.api"
+import type { ProjectPositionRuleDto, UpdatePositionDto } from "@/lib/api/position.api"
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 /**
  * Key definitions for caching position queries.
@@ -55,7 +56,8 @@ export function useCreatePosition() {
 export function useUpdatePosition() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdatePositionDto }) => positionApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: UpdatePositionDto }) =>
+      positionApi.update(id, data),
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({ queryKey: positionKeys.lists() })
       void queryClient.invalidateQueries({ queryKey: positionKeys.detail(variables.id) })
@@ -97,7 +99,9 @@ export function useSaveProjectPositionRules() {
     mutationFn: ({ projectId, rules }: { projectId: string; rules: ProjectPositionRuleDto[] }) =>
       positionApi.saveProjectRules(projectId, rules),
     onSuccess: (_, variables) => {
-      void queryClient.invalidateQueries({ queryKey: positionKeys.projectRules(variables.projectId) })
+      void queryClient.invalidateQueries({
+        queryKey: positionKeys.projectRules(variables.projectId),
+      })
     },
   })
 }

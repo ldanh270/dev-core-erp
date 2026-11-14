@@ -66,10 +66,7 @@ export class NotificationService implements INotificationService {
   /**
    * Retrieves a notification and verifies that the requesting employee belongs to its audience.
    */
-  async getNotification(
-    id: string,
-    employeeId: string,
-  ): Promise<Notification> {
+  async getNotification(id: string, employeeId: string): Promise<Notification> {
     // Resolve read and deletion state for the requesting employee.
     const notification = await this.repository.findById(id, employeeId)
 
@@ -96,9 +93,7 @@ export class NotificationService implements INotificationService {
   /**
    * Persists a notification before publishing it to its recipient or all subscribers.
    */
-  async createNotification(
-    data: CreateNotificationDto,
-  ): Promise<Notification> {
+  async createNotification(data: CreateNotificationDto): Promise<Notification> {
     // Publish delivery events only after persistence succeeds.
     const notification = await this.repository.create(data)
 
@@ -114,10 +109,7 @@ export class NotificationService implements INotificationService {
   /**
    * Verifies access and marks a notification as read for the requesting employee.
    */
-  async markAsRead(
-    id: string,
-    employeeId: string,
-  ): Promise<Notification> {
+  async markAsRead(id: string, employeeId: string): Promise<Notification> {
     // Verify access before updating recipient-specific read state.
     await this.getNotification(id, employeeId)
 
@@ -133,9 +125,7 @@ export class NotificationService implements INotificationService {
   /**
    * Marks all visible unread notifications as read and returns the affected count.
    */
-  async markAllAsRead(
-    employeeId: string,
-  ): Promise<{ updatedCount: number }> {
+  async markAllAsRead(employeeId: string): Promise<{ updatedCount: number }> {
     // Mark notifications that remain visible in this employee's inbox.
     const updatedCount = await this.repository.markAllAsRead(employeeId)
 
@@ -145,10 +135,7 @@ export class NotificationService implements INotificationService {
   /**
    * Verifies access and hides a notification only for the requesting employee.
    */
-  async deleteNotification(
-    id: string,
-    employeeId: string,
-  ): Promise<boolean> {
+  async deleteNotification(id: string, employeeId: string): Promise<boolean> {
     // Verify access; the repository hides the notification only for this recipient.
     await this.getNotification(id, employeeId)
 

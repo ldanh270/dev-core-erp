@@ -249,7 +249,7 @@ const App = () => {
           }
         >
           <Routes>
-                        {openRoutes.map((route, index) => {
+            {openRoutes.map((route, index) => {
               const Page = route.component
               const Layout = route.layout || Fragment
 
@@ -257,11 +257,7 @@ const App = () => {
                 <Route
                   key={`open-${index}`}
                   path={route.path}
-                  element={
-                    <Layout>
-                      {Page ? <Page /> : null}
-                    </Layout>
-                  }
+                  element={<Layout>{Page ? <Page /> : null}</Layout>}
                 />
               )
             })}

@@ -137,17 +137,13 @@
   "indexes": [
     {
       "name": "IX_WeeklyScheduleSettings_updatedById",
-      "columns": [
-        "updatedById"
-      ],
+      "columns": ["updatedById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_WeeklyScheduleSettings",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -157,12 +153,8 @@
       "virtualName": "updatedBy",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "updatedById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["updatedById"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

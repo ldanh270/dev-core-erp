@@ -11,10 +11,7 @@ interface UseDatabaseErdCanvasParams {
  * @param params - Canvas panning state and selected table name.
  * @returns Active focus table name and hover handler.
  */
-export function useDatabaseErdCanvas({
-  isPanning,
-  selectedTableName,
-}: UseDatabaseErdCanvasParams) {
+export function useDatabaseErdCanvas({ isPanning, selectedTableName }: UseDatabaseErdCanvasParams) {
   const [hoveredTableName, setHoveredTableName] = useState<string | null>(null)
   const isPanningRef = useRef(isPanning)
 

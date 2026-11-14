@@ -1,30 +1,31 @@
-import { cn } from "@/lib/utils"
-import { routerNavigate } from "@/lib/router-navigator"
 import { PageContainer, PageHeader } from "@/components/common"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-  Users,
-  FileText,
-  Calendar,
-  TrendingUp,
-  ArrowRight,
-  Briefcase,
-  CheckCircle,
-} from "lucide-react"
-import {
-  useRequisitionStats,
-  useApplicationStats,
-  useUpcomingInterviews,
-  useOfferStats,
-  useBackgroundCheckStats,
-} from "@/hooks/recruitment/use-recruitment-queries"
 import { ROUTES } from "@/config/routes.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
-import { format, parseISO, isToday, isTomorrow } from "date-fns"
+import {
+  useApplicationStats,
+  useBackgroundCheckStats,
+  useOfferStats,
+  useRequisitionStats,
+  useUpcomingInterviews,
+} from "@/hooks/recruitment/use-recruitment-queries"
+import { routerNavigate } from "@/lib/router-navigator"
+import { cn } from "@/lib/utils"
+
+import { format, isToday, isTomorrow, parseISO } from "date-fns"
 import { vi } from "date-fns/locale"
+import {
+  ArrowRight,
+  Briefcase,
+  Calendar,
+  CheckCircle,
+  FileText,
+  TrendingUp,
+  Users,
+} from "lucide-react"
 
 function StatCard({
   title,
@@ -40,7 +41,10 @@ function StatCard({
   onClick?: () => void
 }) {
   return (
-    <Card className="cursor-pointer border border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-primary/40 rounded-xl" onClick={onClick}>
+    <Card
+      className="cursor-pointer border border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-primary/40 rounded-xl"
+      onClick={onClick}
+    >
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className={TYPOGRAPHY.TABLE_HEADER}>{title}</CardTitle>
         <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center transition-transform hover:scale-110">
@@ -101,7 +105,10 @@ function InterviewItem({
         <div>
           <p className="text-sm font-bold text-foreground">{candidateName}</p>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {positionTitle} • <Badge variant="outline" className="rounded-full text-[10px] px-2 py-0">Vòng {roundNumber}</Badge>
+            {positionTitle} •{" "}
+            <Badge variant="outline" className="rounded-full text-[10px] px-2 py-0">
+              Vòng {roundNumber}
+            </Badge>
           </p>
         </div>
       </div>
@@ -129,7 +136,9 @@ function QuickLink({
   return (
     <Card
       className="cursor-pointer border border-border/60 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-primary/40 rounded-xl"
-      onClick={() => { routerNavigate(to); }}
+      onClick={() => {
+        routerNavigate(to)
+      }}
     >
       <CardContent className="flex items-center gap-4 p-4">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 shrink-0 transition-transform hover:scale-105">
@@ -191,28 +200,36 @@ export default function RecruitmentDashboard() {
               value={reqStats?.total ?? 0}
               description={`${reqStats?.pending ?? 0} đang chờ phê duyệt`}
               icon={FileText}
-              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS); }}
+              onClick={() => {
+                routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS)
+              }}
             />
             <StatCard
               title="Ứng viên"
               value={appStats?.total ?? 0}
               description={`${appStats?.active ?? 0} đang trong quá trình`}
               icon={Users}
-              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.CANDIDATES); }}
+              onClick={() => {
+                routerNavigate(ROUTES.RECRUITMENT.CANDIDATES)
+              }}
             />
             <StatCard
               title="Offer"
               value={offerStats?.total ?? 0}
               description={`${offerStats?.pending ?? 0} đang chờ phản hồi`}
               icon={Briefcase}
-              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS); }}
+              onClick={() => {
+                routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS)
+              }}
             />
             <StatCard
               title="Background Check"
               value={bgcStats?.total ?? 0}
               description={`${bgcStats?.inProgress ?? 0} đang kiểm tra`}
               icon={CheckCircle}
-              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS); }}
+              onClick={() => {
+                routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS)
+              }}
             />
           </>
         )}
@@ -230,7 +247,9 @@ export default function RecruitmentDashboard() {
               variant="ghost"
               size="sm"
               className="rounded-full text-xs"
-              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.MY_INTERVIEWS); }}
+              onClick={() => {
+                routerNavigate(ROUTES.RECRUITMENT.MY_INTERVIEWS)
+              }}
             >
               Xem tất cả
               <ArrowRight className="ml-1 h-3.5 w-3.5" />
@@ -277,7 +296,9 @@ export default function RecruitmentDashboard() {
               variant="ghost"
               size="sm"
               className="rounded-full text-xs"
-              onClick={() => { routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS); }}
+              onClick={() => {
+                routerNavigate(ROUTES.RECRUITMENT.REQUISITIONS)
+              }}
             >
               Xem Requisitions
               <ArrowRight className="ml-1 h-3.5 w-3.5" />
@@ -295,44 +316,76 @@ export default function RecruitmentDashboard() {
                 {/* Mới */}
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-info" />Ứng viên mới</span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-info" />
+                      Ứng viên mới
+                    </span>
                     <span>{appStats.byStatus?.new ?? 0}</span>
                   </div>
                   <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full bg-info rounded-full transition-all duration-500" style={{ width: `${Math.min(100, Math.round(((appStats.byStatus?.new ?? 0) / totalApps) * 100))}%` }} />
+                    <div
+                      className="h-full bg-info rounded-full transition-all duration-500"
+                      style={{
+                        width: `${Math.min(100, Math.round(((appStats.byStatus?.new ?? 0) / totalApps) * 100))}%`,
+                      }}
+                    />
                   </div>
                 </div>
 
                 {/* Phỏng vấn */}
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-warning" />Đang phỏng vấn</span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-warning" />
+                      Đang phỏng vấn
+                    </span>
                     <span>{appStats.byStatus?.interviewing ?? 0}</span>
                   </div>
                   <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full bg-warning rounded-full transition-all duration-500" style={{ width: `${Math.min(100, Math.round(((appStats.byStatus?.interviewing ?? 0) / totalApps) * 100))}%` }} />
+                    <div
+                      className="h-full bg-warning rounded-full transition-all duration-500"
+                      style={{
+                        width: `${Math.min(100, Math.round(((appStats.byStatus?.interviewing ?? 0) / totalApps) * 100))}%`,
+                      }}
+                    />
                   </div>
                 </div>
 
                 {/* Offer */}
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-primary" />Đã gửi Offer</span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-primary" />
+                      Đã gửi Offer
+                    </span>
                     <span>{appStats.byStatus?.offer_sent ?? 0}</span>
                   </div>
                   <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${Math.min(100, Math.round(((appStats.byStatus?.offer_sent ?? 0) / totalApps) * 100))}%` }} />
+                    <div
+                      className="h-full bg-primary rounded-full transition-all duration-500"
+                      style={{
+                        width: `${Math.min(100, Math.round(((appStats.byStatus?.offer_sent ?? 0) / totalApps) * 100))}%`,
+                      }}
+                    />
                   </div>
                 </div>
 
                 {/* Đã tuyển */}
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-success" />Tuyển dụng thành công</span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-success" />
+                      Tuyển dụng thành công
+                    </span>
                     <span>{appStats.byStatus?.hired ?? 0}</span>
                   </div>
                   <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full bg-success rounded-full transition-all duration-500" style={{ width: `${Math.min(100, Math.round(((appStats.byStatus?.hired ?? 0) / totalApps) * 100))}%` }} />
+                    <div
+                      className="h-full bg-success rounded-full transition-all duration-500"
+                      style={{
+                        width: `${Math.min(100, Math.round(((appStats.byStatus?.hired ?? 0) / totalApps) * 100))}%`,
+                      }}
+                    />
                   </div>
                 </div>
               </div>

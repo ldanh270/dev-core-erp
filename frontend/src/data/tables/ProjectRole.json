@@ -105,27 +105,19 @@
   "indexes": [
     {
       "name": "IX_project_roles_projectId_code",
-      "columns": [
-        "projectId",
-        "code"
-      ],
+      "columns": ["projectId", "code"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_project_roles_projectId_name",
-      "columns": [
-        "projectId",
-        "name"
-      ],
+      "columns": ["projectId", "name"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "PK_project_roles",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -135,12 +127,8 @@
       "virtualName": "project",
       "targetModel": "Project",
       "relationName": null,
-      "foreignKeyFields": [
-        "projectId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["projectId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

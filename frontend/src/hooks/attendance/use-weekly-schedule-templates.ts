@@ -34,7 +34,9 @@ export function useCreateWeeklyScheduleTemplate() {
   return useMutation({
     mutationFn: (data: ICreateWeeklyScheduleTemplatePayload) =>
       weeklyScheduleTemplatesApi.create(data),
-    onSuccess: () => { void qc.invalidateQueries({ queryKey: WEEKLY_SCHEDULE_TEMPLATES_KEY }) },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: WEEKLY_SCHEDULE_TEMPLATES_KEY })
+    },
   })
 }
 
@@ -43,7 +45,9 @@ export function useUpdateWeeklyScheduleTemplate() {
   return useMutation({
     mutationFn: ({ id, ...data }: IUpdateWeeklyScheduleTemplatePayload & { id: string }) =>
       weeklyScheduleTemplatesApi.update(id, data),
-    onSuccess: () => { void qc.invalidateQueries({ queryKey: WEEKLY_SCHEDULE_TEMPLATES_KEY }) },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: WEEKLY_SCHEDULE_TEMPLATES_KEY })
+    },
   })
 }
 
@@ -51,7 +55,9 @@ export function useDeleteWeeklyScheduleTemplate() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => weeklyScheduleTemplatesApi.delete(id),
-    onSuccess: () => { void qc.invalidateQueries({ queryKey: WEEKLY_SCHEDULE_TEMPLATES_KEY }) },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: WEEKLY_SCHEDULE_TEMPLATES_KEY })
+    },
   })
 }
 

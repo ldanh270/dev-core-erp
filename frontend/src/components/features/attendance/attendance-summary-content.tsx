@@ -1,11 +1,12 @@
+import { PageCard } from "@/components/common"
 import { AttendanceMonthPicker } from "@/components/features/attendance/attendance-month-picker"
 import { AttendanceSummaryStatCard } from "@/components/features/attendance/attendance-summary-stat-card"
-import { PageCard } from "@/components/common"
 import { ATTENDANCE_QUERY_KEYS } from "@/config/entities/attendance.config"
 import { useAttendanceRecords } from "@/hooks/attendance/use-attendance"
 import { useEmployee } from "@/hooks/employees/queries/useEmployeeQuery"
 import { useProfile } from "@/hooks/use-profile"
 import { holidaysApi, schedulesApi } from "@/lib/api/attendance.api"
+import { useAuthStore } from "@/store/auth-store"
 import { countScheduledShiftsInMonth } from "@/utils/attendance/count-scheduled-shifts-in-month"
 import { formatHours } from "@/utils/attendance/format-hours"
 import { getMonthRange } from "@/utils/attendance/get-month-range"
@@ -13,7 +14,6 @@ import {
   doesHolidayApplyToEmployee,
   groupHolidaysByDate,
 } from "@/utils/attendance/pick-holiday-for-employee.util"
-import { useAuthStore } from "@/store/auth-store"
 
 import { useState } from "react"
 
@@ -61,7 +61,9 @@ export function AttendanceSummaryContent({
       ? ATTENDANCE_QUERY_KEYS.EMPLOYEE_SCHEDULE(employeeId, startDate)
       : ATTENDANCE_QUERY_KEYS.MY_SCHEDULE(startDate),
     queryFn: () =>
-      employeeId ? schedulesApi.getByEmployee(employeeId, startDate) : schedulesApi.getMy(startDate),
+      employeeId
+        ? schedulesApi.getByEmployee(employeeId, startDate)
+        : schedulesApi.getMy(startDate),
     enabled: employeeId ? Boolean(employeeId) : true,
   })
   const { data: holidays, isLoading: isHolidaysLoading } = useQuery({
@@ -75,7 +77,8 @@ export function AttendanceSummaryContent({
   const onTimeCount = records?.filter((record) => record.status === "on_time").length ?? 0
   const overtimeCount = records?.filter((record) => record.overtimeMinutes > 0).length ?? 0
   const earlyLeaveCount = records?.filter((record) => record.earlyLeaveMinutes > 0).length ?? 0
-  const workedShiftCount = records?.filter((record) => record.checkInAt && record.checkOutAt).length ?? 0
+  const workedShiftCount =
+    records?.filter((record) => record.checkInAt && record.checkOutAt).length ?? 0
   const user = useAuthStore((state) => state.user)
   const targetEmployeeId = employeeId ?? user?.id ?? ""
   const holidaysByDate = new Map(
@@ -93,7 +96,8 @@ export function AttendanceSummaryContent({
   const scheduledShiftCount = countScheduledShiftsInMonth(schedule, year, month, holidaysByDate)
   const completionRate =
     scheduledShiftCount > 0 ? Math.round((workedShiftCount / scheduledShiftCount) * 100) : 0
-  const averageWorkMinutes = workedShiftCount > 0 ? Math.round(totalWorkMinutes / workedShiftCount) : 0
+  const averageWorkMinutes =
+    workedShiftCount > 0 ? Math.round(totalWorkMinutes / workedShiftCount) : 0
   const isLoading = isRecordsLoading || isScheduleLoading || isHolidaysLoading
 
   const goToPrev = () => {

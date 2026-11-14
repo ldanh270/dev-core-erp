@@ -171,42 +171,31 @@
   "indexes": [
     {
       "name": "IX_EmployeeSalaryConfig_createdById",
-      "columns": [
-        "createdById"
-      ],
+      "columns": ["createdById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_EmployeeSalaryConfig_effectiveTo",
-      "columns": [
-        "effectiveTo"
-      ],
+      "columns": ["effectiveTo"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_EmployeeSalaryConfig_employeeId_effectiveFrom",
-      "columns": [
-        "employeeId",
-        "effectiveFrom"
-      ],
+      "columns": ["employeeId", "effectiveFrom"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_EmployeeSalaryConfig_templateId",
-      "columns": [
-        "templateId"
-      ],
+      "columns": ["templateId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_EmployeeSalaryConfig",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -216,34 +205,22 @@
       "virtualName": "employee",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "employeeId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "template",
       "targetModel": "PayslipTemplate",
       "relationName": null,
-      "foreignKeyFields": [
-        "templateId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["templateId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "createdBy",
       "targetModel": "Employee",
       "relationName": "SalaryConfigCreator",
-      "foreignKeyFields": [
-        "createdById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["createdById"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

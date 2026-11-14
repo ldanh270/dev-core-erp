@@ -3,15 +3,15 @@ import { ATTENDANCE_STATUS, EMPLOYEE_SHIFT_STATUS } from "@/configs/entities/att
 import { EMPLOYEE_STATUS } from "@/configs/entities/employee.config.ts"
 import { prisma } from "@/libs/database.ts"
 import {
+  buildDemoShiftSelections,
+  demoAssignmentKey,
+} from "@/scripts/attendance-demo-assignment.util.ts"
+import {
   getPayrollDemoBusinessDates,
   getPayrollDemoScenario,
   getPayrollDemoShiftDuration,
 } from "@/scripts/seeders/payroll-demo-attendance.util.ts"
 import { PAYROLL_DEMO } from "@/scripts/seeders/payroll-demo.config.ts"
-import {
-  buildDemoShiftSelections,
-  demoAssignmentKey,
-} from "@/scripts/attendance-demo-assignment.util.ts"
 import {
   getAttendanceClockMinutes,
   toAttendanceInstant,
@@ -137,7 +137,10 @@ export class AttendanceDemoWeekSeeder implements ISeeder {
           overtimeMinutes: scenario.overtimeMinutes,
           totalWorkMinutes: isAbsent
             ? 0
-            : shiftDuration - scenario.lateMinutes - scenario.earlyLeaveMinutes + scenario.overtimeMinutes,
+            : shiftDuration -
+              scenario.lateMinutes -
+              scenario.earlyLeaveMinutes +
+              scenario.overtimeMinutes,
           note: PAYROLL_DEMO.ATTENDANCE_NOTE,
         }
       }),
@@ -166,7 +169,9 @@ export class AttendanceDemoWeekSeeder implements ISeeder {
       skipDuplicates: true,
     })
 
-    console.log(`Payroll demo attendance ready: ${assignedShifts.length} employee-days, 01/05-31/07/2026`)
+    console.log(
+      `Payroll demo attendance ready: ${assignedShifts.length} employee-days, 01/05-31/07/2026`,
+    )
     return {}
   }
 }

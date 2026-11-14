@@ -42,17 +42,13 @@
   "indexes": [
     {
       "name": "IX_ApplicationOvertimeDetail_employeeShiftId",
-      "columns": [
-        "employeeShiftId"
-      ],
+      "columns": ["employeeShiftId"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_ApplicationOvertimeDetail",
-      "columns": [
-        "applicationId"
-      ],
+      "columns": ["applicationId"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -62,23 +58,15 @@
       "virtualName": "application",
       "targetModel": "Application",
       "relationName": null,
-      "foreignKeyFields": [
-        "applicationId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["applicationId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "employeeShift",
       "targetModel": "EmployeeShift",
       "relationName": "ApplicationOvertimeShift",
-      "foreignKeyFields": [
-        "employeeShiftId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["employeeShiftId"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

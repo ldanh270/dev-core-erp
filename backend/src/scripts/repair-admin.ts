@@ -1,7 +1,7 @@
 import { EMPLOYEE_STATUS } from "../configs/entities/employee.config.ts"
 import { prisma } from "../libs/database.ts"
-import { getSeedPassword } from "./seeders/seed-password.util.ts"
 import { HashUtil } from "../utils/hash.util.ts"
+import { getSeedPassword } from "./seeders/seed-password.util.ts"
 
 async function runRepair() {
   console.log("Running fallback admin repair script...")

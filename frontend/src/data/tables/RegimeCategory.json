@@ -137,25 +137,19 @@
   "indexes": [
     {
       "name": "IX_RegimeCategory_createdById",
-      "columns": [
-        "createdById"
-      ],
+      "columns": ["createdById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_RegimeCategory_isDefault",
-      "columns": [
-        "isDefault"
-      ],
+      "columns": ["isDefault"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_RegimeCategory",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -165,12 +159,8 @@
       "virtualName": "createdBy",
       "targetModel": "Employee",
       "relationName": null,
-      "foreignKeyFields": [
-        "createdById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["createdById"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

@@ -1,6 +1,9 @@
-import { useMemo, useState } from "react"
-import { toast } from "sonner"
 import { SYSTEM_CONFIG } from "@/config/system.config"
+
+import { useMemo, useState } from "react"
+
+import { toast } from "sonner"
+
 import type { DbSchemaData, TableDef } from "../database-reference.types"
 import { filterTables } from "../database-reference.utils"
 
@@ -73,7 +76,9 @@ export function useDatabaseReference({
     try {
       await navigator.clipboard.writeText(text)
       setCopiedTableName(selectedTable?.name ?? null)
-      window.setTimeout(() => { setCopiedTableName(null); }, CLIPBOARD_FEEDBACK_DURATION_MS)
+      window.setTimeout(() => {
+        setCopiedTableName(null)
+      }, CLIPBOARD_FEEDBACK_DURATION_MS)
     } catch {
       toast.error("Không thể sao chép metadata. Hãy kiểm tra quyền truy cập clipboard.")
     }

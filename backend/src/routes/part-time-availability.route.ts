@@ -2,16 +2,14 @@
  * Composition root for the part-time availability feature.
  * It wires repositories/services once and protects employee/admin endpoints with route permissions.
  */
-import {
-  PartTimeAvailabilityController,
-} from "@/controllers/part-time-availability.controller.ts"
+import { PartTimeAvailabilityController } from "@/controllers/part-time-availability.controller.ts"
 import { capacityCopilotService } from "@/libs/capacity-copilot-runtime.ts"
 import { prisma } from "@/libs/database.ts"
 import { authenticate } from "@/middlewares/auth.middleware.ts"
 import { requirePermission } from "@/middlewares/permission.middleware.ts"
 import { PrismaAttendanceRepository } from "@/repositories/attendance.repository.ts"
-import { PrismaEmployeeRepository } from "@/repositories/employee.repository.ts"
 import { PrismaEmployeeShiftRepository } from "@/repositories/employee-shift.repository.ts"
+import { PrismaEmployeeRepository } from "@/repositories/employee.repository.ts"
 import { PrismaPartTimeAvailabilityRepository } from "@/repositories/part-time-availability.repository.ts"
 import { PrismaWorkingShiftRepository } from "@/repositories/shift.repository.ts"
 import { PartTimeAvailabilityService } from "@/services/part-time-availability.service.ts"
@@ -49,11 +47,7 @@ partTimeAvailabilityRoutes.get("/mine", controller.getMine)
 partTimeAvailabilityRoutes.put("/mine", controller.upsertMine)
 
 // Admin-only: roster for a week, per-employee drill-down, suggest + assign shifts.
-partTimeAvailabilityRoutes.get(
-  "/",
-  requirePermission("attendance.update"),
-  controller.listForWeek,
-)
+partTimeAvailabilityRoutes.get("/", requirePermission("attendance.update"), controller.listForWeek)
 partTimeAvailabilityRoutes.get(
   "/employee/:employeeId",
   requirePermission("attendance.update"),

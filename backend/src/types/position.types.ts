@@ -1,5 +1,5 @@
-import { TaskTracker } from "./task.types.ts"
 import { IApplicationType } from "./attendance.types.ts"
+import { TaskTracker } from "./task.types.ts"
 
 /**
  * Position domain entity.
@@ -70,9 +70,11 @@ export interface IPositionRepository {
   create(data: CreatePositionDto): Promise<Position>
   update(id: string, data: UpdatePositionDto): Promise<Position>
   delete(id: string): Promise<Position>
-  
+
   // Project Position Rules
-  findActiveProjectMemberships(employeeId: string): Promise<{ projectId: string; projectName: string }[]>
+  findActiveProjectMemberships(
+    employeeId: string,
+  ): Promise<{ projectId: string; projectName: string }[]>
 }
 
 /**
@@ -84,10 +86,13 @@ export interface IPositionService {
   createPosition(data: CreatePositionDto): Promise<Position>
   updatePosition(id: string, data: UpdatePositionDto): Promise<Position>
   deletePosition(id: string): Promise<Position>
-  
+
   // Project Position Rules
   getProjectRules(projectId: string): Promise<ProjectPositionRule[]>
-  saveProjectRules(projectId: string, rules: ProjectPositionRuleDto[]): Promise<ProjectPositionRule[]>
+  saveProjectRules(
+    projectId: string,
+    rules: ProjectPositionRuleDto[],
+  ): Promise<ProjectPositionRule[]>
   validateTaskCreation(projectId: string, employeeId: string, tracker: TaskTracker): Promise<void>
   validateApplicationSubmission(employeeId: string, type: IApplicationType): Promise<void>
 }

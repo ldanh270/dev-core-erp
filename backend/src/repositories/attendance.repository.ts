@@ -1,6 +1,4 @@
-import {
-  ATTENDANCE_ERROR_MESSAGES,
-} from "@/configs/messages/attendance.message.ts"
+import { ATTENDANCE_ERROR_MESSAGES } from "@/configs/messages/attendance.message.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { ATTENDANCE_LAYERS } from "@/constants/attendance.constants.ts"
 import {

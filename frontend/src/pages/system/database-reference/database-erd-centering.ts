@@ -1,9 +1,6 @@
-import type { TableDef } from "./database-reference.types"
-import {
-  clusterDisconnectedModules,
-  sortClusterByParentAffinity,
-} from "./database-erd-clustering"
+import { clusterDisconnectedModules, sortClusterByParentAffinity } from "./database-erd-clustering"
 import { splitLargeLayers } from "./database-erd-ranking"
+import type { TableDef } from "./database-reference.types"
 
 /**
  * Radiates tables outward from central hub: Outer-Left -> Inner-Left -> Center -> Inner-Right -> Outer-Right.

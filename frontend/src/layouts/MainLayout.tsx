@@ -35,7 +35,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <Sidebar className="hidden md:flex shrink-0" />
       <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         <Header />
-        <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden min-w-0 flex flex-col">{children}</main>
+        <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden min-w-0 flex flex-col">
+          {children}
+        </main>
       </div>
     </div>
   )

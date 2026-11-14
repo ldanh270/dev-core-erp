@@ -1,9 +1,4 @@
-import {
-  DataTablePage,
-  StatusPill,
-  useConfirm,
-  type DataTableColumn,
-} from "@/components/common"
+import { type DataTableColumn, DataTablePage, StatusPill, useConfirm } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -83,10 +78,7 @@ export default function OAuthAccountsPage() {
       if (activeTab === "google_form" && acc.channel !== "google_form") return false
       if (activeTab === "linkedin" && acc.channel !== "linkedin") return false
       if (activeTab === "facebook" && acc.channel !== "facebook") return false
-      if (
-        activeTab === "other" &&
-        ["google_form", "linkedin", "facebook"].includes(acc.channel)
-      ) {
+      if (activeTab === "other" && ["google_form", "linkedin", "facebook"].includes(acc.channel)) {
         return false
       }
 
@@ -214,9 +206,7 @@ export default function OAuthAccountsPage() {
               <div className={cn(TYPOGRAPHY.CELL_PRIMARY, "truncate")}>
                 {account.name || "Default Account"}
               </div>
-              <div className={cn(TYPOGRAPHY.CELL_CODE, "mt-0.5 truncate")}>
-                ID: {account.id}
-              </div>
+              <div className={cn(TYPOGRAPHY.CELL_CODE, "mt-0.5 truncate")}>ID: {account.id}</div>
             </div>
           </div>
         ),
@@ -226,7 +216,12 @@ export default function OAuthAccountsPage() {
         header: "Kênh tuyển dụng",
         minWidth: getTableColWidthPx("TYPE"),
         cell: (account) => (
-          <span className={cn(TYPOGRAPHY.STATUS_PILL, "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-foreground border border-border")}>
+          <span
+            className={cn(
+              TYPOGRAPHY.STATUS_PILL,
+              "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-foreground border border-border",
+            )}
+          >
             {getChannelLabel(account.channel)}
           </span>
         ),
@@ -272,7 +267,9 @@ export default function OAuthAccountsPage() {
           return (
             <div
               className="flex items-center justify-end gap-1.5"
-              onClick={(e) => { e.stopPropagation(); }}
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
             >
               {!isConnected && (
                 <Tooltip>
@@ -280,7 +277,9 @@ export default function OAuthAccountsPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => { handleOpenConnect(account.channel, account.id); }}
+                      onClick={() => {
+                        handleOpenConnect(account.channel, account.id)
+                      }}
                       className="h-8 px-2.5 text-xs rounded-full gap-1 border-primary/30 text-primary hover:bg-primary/5"
                     >
                       <RefreshCw className="h-3 w-3" />
@@ -353,7 +352,9 @@ export default function OAuthAccountsPage() {
         primaryAction={{
           label: "Kết nối tài khoản",
           icon: Plus,
-          onClick: () => { handleOpenConnect(); },
+          onClick: () => {
+            handleOpenConnect()
+          },
         }}
         filters={
           <div className="flex items-center gap-2">
@@ -445,7 +446,9 @@ export default function OAuthAccountsPage() {
               <Input
                 placeholder="Ví dụ: Google HR Team, LinkedIn Tuyển dụng..."
                 value={accountName}
-                onChange={(e) => { setAccountName(e.target.value); }}
+                onChange={(e) => {
+                  setAccountName(e.target.value)
+                }}
                 className="h-10 text-xs rounded-full"
               />
               <p className={TYPOGRAPHY.FORM_HELPER}>
@@ -457,7 +460,9 @@ export default function OAuthAccountsPage() {
           <DialogFooter className="gap-2 sm:gap-0">
             <Button
               variant="outline"
-              onClick={() => { setIsConnectModalOpen(false); }}
+              onClick={() => {
+                setIsConnectModalOpen(false)
+              }}
               disabled={isConnecting}
               className="rounded-full h-9 text-xs"
             >

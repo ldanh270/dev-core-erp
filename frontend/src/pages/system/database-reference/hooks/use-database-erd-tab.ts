@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react"
+
 import type { TableDef } from "../database-reference.types"
 import {
   MAX_SCALE,
   MIN_SCALE,
-  useDatabaseErdViewport,
   ZOOM_STEP,
+  useDatabaseErdViewport,
 } from "./use-database-erd-viewport"
 
 export type { ViewportSize } from "./use-database-erd-viewport"

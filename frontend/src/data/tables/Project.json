@@ -218,42 +218,31 @@
   "indexes": [
     {
       "name": "IX_Project_createdById",
-      "columns": [
-        "createdById"
-      ],
+      "columns": ["createdById"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Project_name",
-      "columns": [
-        "name"
-      ],
+      "columns": ["name"],
       "isUnique": true,
       "isPrimary": false
     },
     {
       "name": "IX_Project_status",
-      "columns": [
-        "status"
-      ],
+      "columns": ["status"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "IX_Project_teamLeaderId_status",
-      "columns": [
-        "teamLeaderId",
-        "status"
-      ],
+      "columns": ["teamLeaderId", "status"],
       "isUnique": false,
       "isPrimary": false
     },
     {
       "name": "PK_Project",
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "isUnique": true,
       "isPrimary": true
     }
@@ -263,23 +252,15 @@
       "virtualName": "teamLeader",
       "targetModel": "Employee",
       "relationName": "ProjectTeamLeader",
-      "foreignKeyFields": [
-        "teamLeaderId"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["teamLeaderId"],
+      "referenceFields": ["id"]
     },
     {
       "virtualName": "createdBy",
       "targetModel": "Employee",
       "relationName": "ProjectCreator",
-      "foreignKeyFields": [
-        "createdById"
-      ],
-      "referenceFields": [
-        "id"
-      ]
+      "foreignKeyFields": ["createdById"],
+      "referenceFields": ["id"]
     }
   ],
   "outgoingRelations": [

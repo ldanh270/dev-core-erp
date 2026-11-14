@@ -1,6 +1,7 @@
 import { EMPLOYEE_STATUS } from "@/configs/entities/employee.config.ts"
 import { assertCloudinaryConfigured, cloudinary } from "@/configs/system/cloudinary.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
+import { UPLOAD_CONFIG } from "@/configs/system/upload.config.ts"
 import { authorizationService } from "@/services/authorization.service.ts"
 import type {
   IProfileRepository,
@@ -11,15 +12,17 @@ import type {
   UpdatePersonalEmployeeLinkDto,
   UpdateProfileDto,
 } from "@/types/profile.types.ts"
+import { CloudinaryUtil } from "@/utils/cloudinary.util.ts"
 import { AppError } from "@/utils/error.util.ts"
 import { HashUtil } from "@/utils/hash.util.ts"
-import { CloudinaryUtil } from "@/utils/cloudinary.util.ts"
-import { UPLOAD_CONFIG } from "@/configs/system/upload.config.ts"
 
 const LAYER_NAME = "ProfileService"
+
 /**
- * Maps a Mongoose employee document to a clean ProfileDto
- * Centralizes the field-picking logic so controllers stay thin
+ * Maps a profile employee document into a clean ProfileDto response.
+ *
+ * @param emp - Employee document from repository
+ * @returns Clean, structured profile DTO with resolved permissions
  */
 async function toProfileDto(emp: ProfileEmployeeDocument): Promise<ProfileDto> {
   const authContext = await authorizationService.getAuthorizationContext(emp.id)
@@ -57,16 +60,23 @@ async function toProfileDto(emp: ProfileEmployeeDocument): Promise<ProfileDto> {
   }
 }
 
-
 /**
- * ProfileService implements business logic for profile read, update, and avatar upload
- * Depends on IProfileRepository abstraction (Dependency Injection)
+ * Service managing user profiles, personal details, avatar uploads, and credentials.
  */
 export class ProfileService implements IProfileService {
+  /**
+   * Initializes profile service with repository dependency.
+   *
+   * @param repo - Profile data access repository
+   */
   constructor(private repo: IProfileRepository) {}
 
   /**
-   * Retrieves the authenticated user's own profile
+   * Retrieves the authenticated user's own profile.
+   *
+   * @param empId - Authenticated employee unique identifier
+   * @returns Detailed employee profile DTO
+   * @throws {AppError} When employee profile is not found
    */
   async getMyProfile(empId: string): Promise<ProfileDto> {
     const employee = await this.repo.findById(empId)
@@ -79,7 +89,12 @@ export class ProfileService implements IProfileService {
   }
 
   /**
-   * Updates editable profile fields for the authenticated user
+   * Updates editable profile fields for the authenticated user.
+   *
+   * @param empId - Authenticated employee unique identifier
+   * @param data - Updated profile payload
+   * @returns Updated employee profile DTO
+   * @throws {AppError} When employee profile is not found
    */
   async updateMyProfile(empId: string, data: UpdateProfileDto): Promise<ProfileDto> {
     const updated = await this.repo.updateProfile(empId, data)
@@ -92,8 +107,13 @@ export class ProfileService implements IProfileService {
   }
 
   /**
-   * Uploads a new avatar image to Cloudinary and saves the result to the employee record
-   * Old Cloudinary image is deleted if a previous public_id exists
+   * Uploads a new avatar image to Cloudinary and saves the result to the employee record.
+   *
+   * @param empId - Authenticated employee unique identifier
+   * @param fileBuffer - Raw binary image buffer
+   * @param mimeType - File MIME type
+   * @returns Updated employee profile DTO with new avatar URL
+   * @throws {AppError} When Cloudinary is misconfigured or upload fails
    */
   async uploadAvatar(empId: string, fileBuffer: Buffer, mimeType: string): Promise<ProfileDto> {
     // Check if Cloudinary is configured
@@ -139,7 +159,13 @@ export class ProfileService implements IProfileService {
   }
 
   /**
-   * Updates the password for the authenticated user after verifying the current (old) password
+   * Updates the password for the authenticated user after verifying the current password.
+   *
+   * @param empId - Authenticated employee unique identifier
+   * @param oldPass - Current password to verify
+   * @param newPass - New password to set
+   * @returns Resolves when password successfully updated
+   * @throws {AppError} When current password is wrong or profile is missing
    */
   async changePassword(empId: string, oldPass: string, newPass: string): Promise<void> {
     const employee = await this.repo.findAuthById(empId)
@@ -164,7 +190,12 @@ export class ProfileService implements IProfileService {
   }
 
   /**
-   * Performs operations for updatePersonalEmployeeLink.
+   * Updates the linked personal attendance profile for an administrative account.
+   *
+   * @param empId - Managing administrator account ID
+   * @param data - Target personal employee link ID
+   * @returns Updated profile DTO
+   * @throws {AppError} When caller lacks permissions or link target is invalid
    */
   async updatePersonalEmployeeLink(
     empId: string,

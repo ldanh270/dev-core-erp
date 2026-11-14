@@ -75,10 +75,7 @@ export const createEmployeeSchema = z
       z.string().max(100, "Position too long").trim().optional().nullable(),
     ),
 
-    positionId: z.preprocess(
-      emptyToNull,
-      z.string().optional().nullable(),
-    ),
+    positionId: z.preprocess(emptyToNull, z.string().optional().nullable()),
 
     status: z.enum(EMPLOYEE_STATUSES).optional(),
 
@@ -165,10 +162,7 @@ export const updateEmployeeSchema = z
       z.string().max(100, "Position too long").trim().optional().nullable(),
     ),
 
-    positionId: z.preprocess(
-      emptyToNull,
-      z.string().optional().nullable(),
-    ),
+    positionId: z.preprocess(emptyToNull, z.string().optional().nullable()),
 
     employeeType: z.enum(EMPLOYEE_TYPES).optional(),
 

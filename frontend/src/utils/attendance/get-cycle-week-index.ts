@@ -6,11 +6,7 @@ export function normalizeScheduleDate(date: Date): Date {
 }
 
 /** Computes the rotating week index within a multi-week cycle. */
-export function getCycleWeekIndex(
-  targetDate: Date,
-  validFrom: Date,
-  cycleWeeks: number,
-): number {
+export function getCycleWeekIndex(targetDate: Date, validFrom: Date, cycleWeeks: number): number {
   if (cycleWeeks <= 1) return 0
 
   const start = normalizeScheduleDate(validFrom)

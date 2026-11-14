@@ -1,7 +1,4 @@
-import {
-  PROJECT_MEMBER_WORK_MODE,
-  SPENT_TIME_STATUS,
-} from "@/configs/entities/project.config.ts"
+import { PROJECT_MEMBER_WORK_MODE, SPENT_TIME_STATUS } from "@/configs/entities/project.config.ts"
 import { SPENT_TIME_RULES } from "@/configs/rules/project.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { authorizationService } from "@/services/authorization.service.ts"
@@ -133,7 +130,11 @@ export class SpentTimeService implements ISpentTimeService {
         const isTL = project.teamLeaderId === userId
         const isMember = await this.projectRepository.isMember(query.projectId, userId)
         if (!isTL && !isMember) {
-          throw new AppError("Access denied to this project's logs", HttpStatusCode.FORBIDDEN, LAYER_NAME)
+          throw new AppError(
+            "Access denied to this project's logs",
+            HttpStatusCode.FORBIDDEN,
+            LAYER_NAME,
+          )
         }
       } else if (query.taskId) {
         const task = await this.taskRepository.findById(query.taskId)
@@ -147,7 +148,11 @@ export class SpentTimeService implements ISpentTimeService {
         const isTL = project.teamLeaderId === userId
         const isMember = await this.projectRepository.isMember(task.projectId, userId)
         if (!isTL && !isMember) {
-          throw new AppError("Access denied to this task's logs", HttpStatusCode.FORBIDDEN, LAYER_NAME)
+          throw new AppError(
+            "Access denied to this task's logs",
+            HttpStatusCode.FORBIDDEN,
+            LAYER_NAME,
+          )
         }
       } else {
         query.employeeId = userId
@@ -177,7 +182,11 @@ export class SpentTimeService implements ISpentTimeService {
       const isTL = project.teamLeaderId === userId
       const isMember = await this.projectRepository.isMember(task.projectId, userId)
       if (!isTL && !isMember) {
-        throw new AppError("Access denied to log time for this project", HttpStatusCode.FORBIDDEN, LAYER_NAME)
+        throw new AppError(
+          "Access denied to log time for this project",
+          HttpStatusCode.FORBIDDEN,
+          LAYER_NAME,
+        )
       }
     } else if (!data.employeeId) {
       data.employeeId = userId
