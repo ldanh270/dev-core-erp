@@ -124,7 +124,35 @@ jobs:
         working-directory: ./backend
         run: pnpm run typecheck
 
-  # 5. Quality Gate: verify all quality checks passed before allowing PR merge
+  # 5. Run Unit Tests (Jest)
+  unit-test:
+    name: Unit Tests (Jest)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Generate Prisma client
+        working-directory: ./backend
+        run: npx prisma generate
+
+      - name: Run Backend Unit Tests
+        run: pnpm --dir backend test
+
+  # 6. Quality Gate: verify all quality checks passed before allowing PR merge
   quality-gate:
     name: CI Quality Gate & Merge Protection
     needs:
@@ -132,6 +160,7 @@ jobs:
       - lint-check
       - type-check
       - render-preview
+      - unit-test
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -140,12 +169,14 @@ jobs:
           if [ "${{ needs.format-check.result }}" != "success" ] || \
              [ "${{ needs.lint-check.result }}" != "success" ] || \
              [ "${{ needs.type-check.result }}" != "success" ] || \
-             [ "${{ needs.render-preview.result }}" != "success" ]; then
+             [ "${{ needs.render-preview.result }}" != "success" ] || \
+             [ "${{ needs.unit-test.result }}" != "success" ]; then
             echo "[ERROR] CI Quality Gate Failed! One or more checks failed:"
             echo "  - Format Check (Prettier):         ${{ needs.format-check.result }}"
             echo "  - Lint Check (ESLint & Stylelint): ${{ needs.lint-check.result }}"
             echo "  - Type Check (TypeScript):         ${{ needs.type-check.result }}"
             echo "  - Render Backend Build Check:      ${{ needs.render-preview.result }}"
+            echo "  - Unit Tests (Jest):               ${{ needs.unit-test.result }}"
             exit 1
           fi
           echo "[SUCCESS] All code quality checks passed! PR is ready to merge."
