@@ -106,6 +106,7 @@ export class AuthController {
         rawRefreshToken?.slice(0, 20),
       )
       if (!rawRefreshToken) {
+        CookieUtil.clearTokens(res)
         return res.status(HttpStatusCode.UNAUTHORIZED).json({
           data: null,
           error: {
@@ -130,6 +131,7 @@ export class AuthController {
       })
     } catch (error) {
       console.log("[REFRESH DEBUG] error:", (error as Error).message)
+      CookieUtil.clearTokens(res)
       throw error
     }
   }

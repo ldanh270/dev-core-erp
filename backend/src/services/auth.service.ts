@@ -286,7 +286,9 @@ export class AuthService implements IAuthService {
         category: ACTIVITY_CATEGORY.SECURITY,
         actionType: ACTIVITY_ACTION.TOKEN_REUSE_DETECTED,
         timestamp: new Date(),
-        details: "A revoked refresh token was used. All sessions terminated.",
+        details: JSON.stringify({
+          message: "A revoked refresh token was used. All sessions terminated.",
+        }),
       })
       throw new AppError(
         "Phiên đăng nhập bất thường",
