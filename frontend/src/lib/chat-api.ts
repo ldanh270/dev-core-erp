@@ -1,5 +1,6 @@
 import apiClient from "@/lib/api-client"
 import type {
+  AddChatParticipantsDto,
   ChatMessageDto,
   ConversationSummaryDto,
   CreateDirectConversationDto,
@@ -31,8 +32,13 @@ export const chatApi = {
   /**
    * Create or find a direct 1-1 conversation
    */
-  async createDirectConversation(dto: CreateDirectConversationDto): Promise<ConversationSummaryDto> {
-    const res = await apiClient.post<{ data: ConversationSummaryDto }>("/chat/conversations/direct", dto)
+  async createDirectConversation(
+    dto: CreateDirectConversationDto,
+  ): Promise<ConversationSummaryDto> {
+    const res = await apiClient.post<{ data: ConversationSummaryDto }>(
+      "/chat/conversations/direct",
+      dto,
+    )
     return res.data.data
   },
 
@@ -40,7 +46,24 @@ export const chatApi = {
    * Create a group conversation
    */
   async createGroupConversation(dto: CreateGroupConversationDto): Promise<ConversationSummaryDto> {
-    const res = await apiClient.post<{ data: ConversationSummaryDto }>("/chat/conversations/group", dto)
+    const res = await apiClient.post<{ data: ConversationSummaryDto }>(
+      "/chat/conversations/group",
+      dto,
+    )
+    return res.data.data
+  },
+
+  /**
+   * Add employees to an existing group conversation
+   */
+  async addParticipants(
+    conversationId: string,
+    dto: AddChatParticipantsDto,
+  ): Promise<ConversationSummaryDto> {
+    const res = await apiClient.post<{ data: ConversationSummaryDto }>(
+      `/chat/conversations/${conversationId}/participants`,
+      dto,
+    )
     return res.data.data
   },
 
@@ -58,6 +81,17 @@ export const chatApi = {
     const res = await apiClient.get<{ data: ChatMessageDto[] }>(
       `/chat/conversations/${conversationId}/messages`,
       { params },
+    )
+    return res.data.data || []
+  },
+
+  /**
+   * Search messages across a conversation's history
+   */
+  async searchMessages(conversationId: string, query: string): Promise<ChatMessageDto[]> {
+    const res = await apiClient.get<{ data: ChatMessageDto[] }>(
+      `/chat/conversations/${conversationId}/messages/search`,
+      { params: { q: query } },
     )
     return res.data.data || []
   },

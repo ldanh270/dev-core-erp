@@ -8,15 +8,7 @@ import type {
 
 import React, { useEffect, useRef, useState } from "react"
 
-import {
-  Briefcase,
-  CheckSquare,
-  Image as ImageIcon,
-  Paperclip,
-  Send,
-  User,
-  X,
-} from "lucide-react"
+import { Briefcase, CheckSquare, Image as ImageIcon, Paperclip, Send, User, X } from "lucide-react"
 
 interface MentionInputProps {
   onSendMessage: (data: {
@@ -74,7 +66,7 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
     }
   }
 
-  // Fetch mention items based on active prefix
+  // Debounce remote lookups and ignore responses from an earlier query or an unmounted component.
   useEffect(() => {
     if (!activeTrigger) return
 
@@ -89,7 +81,8 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
         } else if (activeTrigger === "#") {
           const res = await chatApi.searchMentionProjects(mentionQuery)
           if (isMounted) setProjects(res)
-        } else if (activeTrigger === "!") {
+        } else {
+          // TriggerType is limited to @, #, and !; after @ and #, the remaining case is a task.
           const res = await chatApi.searchMentionTasks(mentionQuery)
           if (isMounted) setTasks(res)
         }
@@ -100,7 +93,9 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
       }
     }
 
-    const timer = setTimeout(fetchMentions, 150)
+    const timer = setTimeout(() => {
+      void fetchMentions()
+    }, 150)
     return () => {
       isMounted = false
       clearTimeout(timer)
@@ -108,7 +103,12 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
   }, [activeTrigger, mentionQuery])
 
   // Insert structured mention token into text
-  const insertMention = (item: { id: string; label: string; prefix: TriggerType; type: "emp" | "proj" | "task" }) => {
+  const insertMention = (item: {
+    id: string
+    label: string
+    prefix: TriggerType
+    type: "emp" | "proj" | "task"
+  }) => {
     const cursorPos = textareaRef.current?.selectionStart || text.length
     const textBeforeCursor = text.slice(0, cursorPos)
     const textAfterCursor = text.slice(cursorPos)
@@ -116,7 +116,8 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
     // Replace the trigger and query with structured token: @[Label](emp:id)
     const newBeforeCursor = textBeforeCursor.replace(
       /(?:^|\s)[@#!][^\s]*$/,
-      (m) => (m.startsWith(" ") ? " " : "") + `${item.prefix}[${item.label}](${item.type}:${item.id}) `,
+      (m) =>
+        (m.startsWith(" ") ? " " : "") + `${item.prefix}[${item.label}](${item.type}:${item.id}) `,
     )
 
     setText(newBeforeCursor + textAfterCursor)
@@ -136,7 +137,11 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (activeTrigger) {
       const itemsCount =
-        activeTrigger === "@" ? employees.length : activeTrigger === "#" ? projects.length : tasks.length
+        activeTrigger === "@"
+          ? employees.length
+          : activeTrigger === "#"
+            ? projects.length
+            : tasks.length
 
       if (e.key === "ArrowDown") {
         e.preventDefault()
@@ -151,15 +156,22 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
       if (e.key === "Enter" || e.key === "Tab") {
         if (itemsCount > 0) {
           e.preventDefault()
-          if (activeTrigger === "@" && employees[mentionIndex]) {
-            const emp = employees[mentionIndex]
-            insertMention({ id: emp.id, label: emp.fullName, prefix: "@", type: "emp" })
-          } else if (activeTrigger === "#" && projects[mentionIndex]) {
-            const proj = projects[mentionIndex]
-            insertMention({ id: proj.id, label: proj.name, prefix: "#", type: "proj" })
-          } else if (activeTrigger === "!" && tasks[mentionIndex]) {
-            const t = tasks[mentionIndex]
-            insertMention({ id: t.id, label: t.title, prefix: "!", type: "task" })
+          if (activeTrigger === "@") {
+            // Resolve the current index from the latest results; it may be stale after a new search response.
+            const employee = employees.find((_, index) => index === mentionIndex)
+            if (employee) {
+              insertMention({ id: employee.id, label: employee.fullName, prefix: "@", type: "emp" })
+            }
+          } else if (activeTrigger === "#") {
+            const project = projects.find((_, index) => index === mentionIndex)
+            if (project) {
+              insertMention({ id: project.id, label: project.name, prefix: "#", type: "proj" })
+            }
+          } else {
+            const task = tasks.find((_, index) => index === mentionIndex)
+            if (task) {
+              insertMention({ id: task.id, label: task.title, prefix: "!", type: "task" })
+            }
           }
           return
         }
@@ -174,7 +186,7 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
     // Submit message on Enter without Shift
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
-      handleSend()
+      handleSendFromInput()
     }
   }
 
@@ -199,6 +211,13 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto"
     }
+  }
+
+  // The mutation hook reports send failures to the user; catch rejected event-handler promises and keep diagnostics.
+  const handleSendFromInput = () => {
+    void handleSend().catch((error: unknown) => {
+      console.error("Failed to send chat message:", error)
+    })
   }
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -248,15 +267,21 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
             {activeTrigger === "@" && (
               <>
                 {employees.length === 0 && !isLoadingMentions ? (
-                  <p className="px-3 py-2 text-xs text-muted-foreground text-center">Không tìm thấy nhân viên</p>
+                  <p className="px-3 py-2 text-xs text-muted-foreground text-center">
+                    Không tìm thấy nhân viên
+                  </p>
                 ) : (
                   employees.map((emp, idx) => (
                     <button
                       key={emp.id}
                       type="button"
-                      onClick={() => insertMention({ id: emp.id, label: emp.fullName, prefix: "@", type: "emp" })}
+                      onClick={() => {
+                        insertMention({ id: emp.id, label: emp.fullName, prefix: "@", type: "emp" })
+                      }}
                       className={`w-full px-3 py-2 text-left text-xs rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
-                        idx === mentionIndex ? "bg-accent text-accent-foreground font-medium" : "hover:bg-muted"
+                        idx === mentionIndex
+                          ? "bg-accent text-accent-foreground font-medium"
+                          : "hover:bg-muted"
                       }`}
                     >
                       <div className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold shrink-0">
@@ -264,7 +289,9 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
                       </div>
                       <div className="flex flex-col min-w-0">
                         <span className="truncate">{emp.fullName}</span>
-                        <span className="text-[10px] text-muted-foreground truncate">@{emp.username}</span>
+                        <span className="text-[10px] text-muted-foreground truncate">
+                          @{emp.username}
+                        </span>
                       </div>
                     </button>
                   ))
@@ -275,15 +302,21 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
             {activeTrigger === "#" && (
               <>
                 {projects.length === 0 && !isLoadingMentions ? (
-                  <p className="px-3 py-2 text-xs text-muted-foreground text-center">Không tìm thấy dự án</p>
+                  <p className="px-3 py-2 text-xs text-muted-foreground text-center">
+                    Không tìm thấy dự án
+                  </p>
                 ) : (
                   projects.map((proj, idx) => (
                     <button
                       key={proj.id}
                       type="button"
-                      onClick={() => insertMention({ id: proj.id, label: proj.name, prefix: "#", type: "proj" })}
+                      onClick={() => {
+                        insertMention({ id: proj.id, label: proj.name, prefix: "#", type: "proj" })
+                      }}
                       className={`w-full px-3 py-2 text-left text-xs rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
-                        idx === mentionIndex ? "bg-accent text-accent-foreground font-medium" : "hover:bg-muted"
+                        idx === mentionIndex
+                          ? "bg-accent text-accent-foreground font-medium"
+                          : "hover:bg-muted"
                       }`}
                     >
                       <div className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center shrink-0">
@@ -291,7 +324,9 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
                       </div>
                       <div className="flex flex-col min-w-0">
                         <span className="truncate">{proj.name}</span>
-                        <span className="text-[10px] text-muted-foreground uppercase">{proj.status}</span>
+                        <span className="text-[10px] text-muted-foreground uppercase">
+                          {proj.status}
+                        </span>
                       </div>
                     </button>
                   ))
@@ -302,15 +337,21 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
             {activeTrigger === "!" && (
               <>
                 {tasks.length === 0 && !isLoadingMentions ? (
-                  <p className="px-3 py-2 text-xs text-muted-foreground text-center">Không tìm thấy công việc</p>
+                  <p className="px-3 py-2 text-xs text-muted-foreground text-center">
+                    Không tìm thấy công việc
+                  </p>
                 ) : (
                   tasks.map((task, idx) => (
                     <button
                       key={task.id}
                       type="button"
-                      onClick={() => insertMention({ id: task.id, label: task.title, prefix: "!", type: "task" })}
+                      onClick={() => {
+                        insertMention({ id: task.id, label: task.title, prefix: "!", type: "task" })
+                      }}
                       className={`w-full px-3 py-2 text-left text-xs rounded-lg flex items-center gap-2 transition-colors cursor-pointer ${
-                        idx === mentionIndex ? "bg-accent text-accent-foreground font-medium" : "hover:bg-muted"
+                        idx === mentionIndex
+                          ? "bg-accent text-accent-foreground font-medium"
+                          : "hover:bg-muted"
                       }`}
                     >
                       <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
@@ -343,7 +384,9 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
           <span className="truncate max-w-[200px]">{attachedFile.fileName}</span>
           <button
             type="button"
-            onClick={() => setAttachedFile(null)}
+            onClick={() => {
+              setAttachedFile(null)
+            }}
             className="p-0.5 rounded-full hover:bg-background/80 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
           >
             <X className="w-3 h-3" />
@@ -356,7 +399,9 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
         <span className="text-[11px] font-medium mr-1">Gõ hoặc bấm:</span>
         <button
           type="button"
-          onClick={() => triggerMentionPrompt("@")}
+          onClick={() => {
+            triggerMentionPrompt("@")
+          }}
           className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-[11px] font-medium border border-primary/20 cursor-pointer"
         >
           <User className="w-3 h-3" />
@@ -364,7 +409,9 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
         </button>
         <button
           type="button"
-          onClick={() => triggerMentionPrompt("#")}
+          onClick={() => {
+            triggerMentionPrompt("#")
+          }}
           className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors text-[11px] font-medium border border-blue-500/20 cursor-pointer"
         >
           <Briefcase className="w-3 h-3" />
@@ -372,7 +419,9 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
         </button>
         <button
           type="button"
-          onClick={() => triggerMentionPrompt("!")}
+          onClick={() => {
+            triggerMentionPrompt("!")
+          }}
           className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors text-[11px] font-medium border border-emerald-500/20 cursor-pointer"
         >
           <CheckSquare className="w-3 h-3" />
@@ -398,13 +447,17 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
           <input
             ref={fileInputRef}
             type="file"
-            onChange={handleFileUpload}
+            onChange={(event) => {
+              void handleFileUpload(event)
+            }}
             className="hidden"
             disabled={disabled || isUploading}
           />
           <button
             type="button"
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => {
+              fileInputRef.current?.click()
+            }}
             disabled={disabled || isUploading}
             title="Đính kèm file hoặc hình ảnh"
             className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer transition-colors disabled:opacity-50"
@@ -415,7 +468,7 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
           {/* Send button */}
           <button
             type="button"
-            onClick={handleSend}
+            onClick={handleSendFromInput}
             disabled={(!text.trim() && !attachedFile) || disabled || isUploading}
             title="Gửi tin nhắn (Enter)"
             className="p-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"

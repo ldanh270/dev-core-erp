@@ -153,10 +153,11 @@ export interface IChatRepository {
     creatorId: string
     participantIds: string[]
   }): Promise<ConversationSummaryDto>
+  addParticipants(conversationId: string, participantIds: string[]): Promise<void>
   isParticipant(conversationId: string, employeeId: string): Promise<boolean>
   findMessages(
     conversationId: string,
-    options: { limit: number; beforeCursor?: string },
+    options: { limit: number; beforeCursor?: string; searchQuery?: string },
   ): Promise<ChatMessageDto[]>
   createMessage(
     conversationId: string,
@@ -184,10 +185,7 @@ export interface IChatRepository {
  */
 export interface IChatService {
   getMyConversations(employeeId: string): Promise<ConversationSummaryDto[]>
-  getConversationDetail(
-    conversationId: string,
-    employeeId: string,
-  ): Promise<ConversationSummaryDto>
+  getConversationDetail(conversationId: string, employeeId: string): Promise<ConversationSummaryDto>
   getOrCreateDirectConversation(
     currentUserId: string,
     partnerId: string,
@@ -196,11 +194,21 @@ export interface IChatService {
     currentUserId: string,
     data: CreateGroupConversationDto,
   ): Promise<ConversationSummaryDto>
+  addParticipants(
+    conversationId: string,
+    employeeId: string,
+    participantIds: string[],
+  ): Promise<ConversationSummaryDto>
   getMessages(
     conversationId: string,
     employeeId: string,
     limit?: number,
     beforeCursor?: string,
+  ): Promise<ChatMessageDto[]>
+  searchMessages(
+    conversationId: string,
+    employeeId: string,
+    query: string,
   ): Promise<ChatMessageDto[]>
   sendMessage(
     conversationId: string,
@@ -210,11 +218,7 @@ export interface IChatService {
   markAsRead(conversationId: string, employeeId: string): Promise<void>
   searchMentionEmployees(query: string, limit?: number): Promise<MentionEmployeeItem[]>
   searchMentionProjects(query: string, limit?: number): Promise<MentionProjectItem[]>
-  searchMentionTasks(
-    query: string,
-    limit?: number,
-    projectId?: string,
-  ): Promise<MentionTaskItem[]>
+  searchMentionTasks(query: string, limit?: number, projectId?: string): Promise<MentionTaskItem[]>
   subscribeToChatStream(
     employeeId: string,
     onMessage: (message: ChatMessageDto) => void,

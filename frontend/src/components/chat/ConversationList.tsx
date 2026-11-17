@@ -65,6 +65,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
     return matchesSearch && c.type === filterType
   })
 
+  // These controls sit inside a clickable conversation row, so stop the click before applying menu actions.
   const handleTogglePin = (e: React.MouseEvent, c: ConversationSummaryDto) => {
     e.stopPropagation()
     setMenuOpenId(null)
@@ -128,7 +129,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
           <input
             type="text"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value)
+            }}
             placeholder="Tìm cuộc trò chuyện..."
             className="w-full pl-9 pr-3 py-1.5 rounded-full bg-muted/60 text-xs text-foreground placeholder:text-muted-foreground outline-none border border-transparent focus:border-primary/50 transition-colors"
           />
@@ -138,7 +141,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
         <div className="flex items-center gap-1 mt-2.5">
           <button
             type="button"
-            onClick={() => setFilterType("all")}
+            onClick={() => {
+              setFilterType("all")
+            }}
             className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition-colors ${
               filterType === "all"
                 ? "bg-primary text-primary-foreground"
@@ -149,7 +154,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => setFilterType(CONVERSATION_TYPE.DIRECT)}
+            onClick={() => {
+              setFilterType(CONVERSATION_TYPE.DIRECT)
+            }}
             className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition-colors ${
               filterType === CONVERSATION_TYPE.DIRECT
                 ? "bg-primary text-primary-foreground"
@@ -160,7 +167,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => setFilterType(CONVERSATION_TYPE.GROUP)}
+            onClick={() => {
+              setFilterType(CONVERSATION_TYPE.GROUP)
+            }}
             className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition-colors ${
               filterType === CONVERSATION_TYPE.GROUP
                 ? "bg-primary text-primary-foreground"
@@ -186,13 +195,18 @@ export const ConversationList: React.FC<ConversationListProps> = ({
             const isActive = c.id === activeConversationId
             const isMenuOpen = menuOpenId === c.id
             const timeAgo = c.lastMessage?.createdAt
-              ? formatDistanceToNow(new Date(c.lastMessage.createdAt), { addSuffix: true, locale: vi })
+              ? formatDistanceToNow(new Date(c.lastMessage.createdAt), {
+                  addSuffix: true,
+                  locale: vi,
+                })
               : ""
 
             return (
               <div
                 key={c.id}
-                onClick={() => onSelectConversation(c.id)}
+                onClick={() => {
+                  onSelectConversation(c.id)
+                }}
                 className={`group relative w-full p-3 text-left flex items-start gap-3 transition-colors cursor-pointer ${
                   isActive ? "bg-accent/70" : "hover:bg-muted/40"
                 }`}
@@ -241,16 +255,24 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                     <div className="flex items-center gap-1.5 min-w-0">
                       <span
                         className={`text-sm truncate ${
-                          c.unreadCount > 0 ? "font-bold text-foreground" : "font-medium text-foreground"
+                          c.unreadCount > 0
+                            ? "font-bold text-foreground"
+                            : "font-medium text-foreground"
                         }`}
                       >
                         {c.title}
                       </span>
                       {c.isMuted && (
-                        <BellOff className="w-3 h-3 text-muted-foreground shrink-0" title="Đã tắt thông báo" />
+                        <BellOff
+                          className="w-3 h-3 text-muted-foreground shrink-0"
+                          aria-label="Đã tắt thông báo"
+                        />
                       )}
                       {c.isRestricted && (
-                        <ShieldAlert className="w-3 h-3 text-amber-500 shrink-0" title="Đang bị hạn chế" />
+                        <ShieldAlert
+                          className="w-3 h-3 text-amber-500 shrink-0"
+                          aria-label="Đang bị hạn chế"
+                        />
                       )}
                     </div>
                     <span className="text-[10px] text-muted-foreground shrink-0">{timeAgo}</span>
@@ -261,20 +283,16 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                       c.unreadCount > 0 ? "text-foreground font-medium" : "text-muted-foreground"
                     }`}
                   >
-                    {c.lastMessage ? (
-                      c.lastMessage.type === "image" ? (
-                        "Đã gửi một hình ảnh"
-                      ) : c.lastMessage.type === "file" ? (
-                        "Đã gửi một tệp đính kèm"
-                      ) : (
-                        c.lastMessage.content.replace(
-                          /[@#!]\[(.+?)\]\((?:emp|proj|task):[^)]+\)/g,
-                          "$1",
-                        )
-                      )
-                    ) : (
-                      "Bắt đầu trò chuyện"
-                    )}
+                    {c.lastMessage
+                      ? c.lastMessage.type === "image"
+                        ? "Đã gửi một hình ảnh"
+                        : c.lastMessage.type === "file"
+                          ? "Đã gửi một tệp đính kèm"
+                          : c.lastMessage.content.replace(
+                              /[@#!]\[(.+?)\]\((?:emp|proj|task):[^)]+\)/g,
+                              "$1",
+                            )
+                      : "Bắt đầu trò chuyện"}
                   </p>
                 </div>
 
@@ -298,14 +316,18 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                   {isMenuOpen && (
                     <div
                       ref={menuRef}
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                      }}
                       className="absolute right-0 top-full mt-1 w-44 bg-popover text-popover-foreground border border-border rounded-xl shadow-lg z-50 p-1 divide-y divide-border/50 animate-in fade-in zoom-in-95 duration-150"
                     >
                       <div className="py-0.5">
                         {/* Ghim / Bỏ ghim */}
                         <button
                           type="button"
-                          onClick={(e) => handleTogglePin(e, c)}
+                          onClick={(e) => {
+                            handleTogglePin(e, c)
+                          }}
                           className="w-full px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-2 hover:bg-muted cursor-pointer transition-colors text-foreground"
                         >
                           {c.isPinned ? (
@@ -324,7 +346,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                         {/* Tắt / Bật thông báo */}
                         <button
                           type="button"
-                          onClick={(e) => handleToggleMute(e, c)}
+                          onClick={(e) => {
+                            handleToggleMute(e, c)
+                          }}
                           className="w-full px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-2 hover:bg-muted cursor-pointer transition-colors text-foreground"
                         >
                           {c.isMuted ? (
@@ -343,7 +367,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                         {/* Hạn chế / Bỏ hạn chế */}
                         <button
                           type="button"
-                          onClick={(e) => handleToggleRestrict(e, c)}
+                          onClick={(e) => {
+                            handleToggleRestrict(e, c)
+                          }}
                           className="w-full px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-2 hover:bg-muted cursor-pointer transition-colors text-foreground"
                         >
                           {c.isRestricted ? (
@@ -364,7 +390,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                       <div className="pt-0.5">
                         <button
                           type="button"
-                          onClick={(e) => handleDeleteConversation(e, c)}
+                          onClick={(e) => {
+                            handleDeleteConversation(e, c)
+                          }}
                           className="w-full px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-2 hover:bg-destructive/10 text-destructive cursor-pointer transition-colors"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

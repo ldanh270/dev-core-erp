@@ -1,8 +1,4 @@
-import {
-  CHAT_CONFIG,
-  CHAT_MESSAGE_TYPES,
-  MENTION_TYPES,
-} from "@/configs/entities/chat.config.ts"
+import { CHAT_CONFIG, CHAT_MESSAGE_TYPES, MENTION_TYPES } from "@/configs/entities/chat.config.ts"
 import { ErrorCode, ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import type { AuthRequest } from "@/middlewares/auth.middleware.ts"
@@ -21,6 +17,10 @@ const createGroupSchema = z.object({
   title: z.string().min(1, "Group title is required").max(100),
   participantIds: z.array(z.string()).min(2, "At least 2 members are required"),
   avatarUrl: z.string().optional(),
+})
+
+const addParticipantsSchema = z.object({
+  participantIds: z.array(z.string().min(1)).min(1).max(CHAT_CONFIG.MAX_GROUP_MEMBERS),
 })
 
 const mentionItemSchema = z.object({
@@ -118,6 +118,22 @@ export class ChatController {
   }
 
   /**
+   * POST /api/chat/conversations/:id/participants
+   * Adds active employees to a group conversation.
+   */
+  addParticipants = async (req: AuthRequest, res: Response): Promise<void> => {
+    const employeeId = req.user?.empId
+    if (!employeeId) {
+      throw new AppError("Unauthorized", HttpStatusCode.UNAUTHORIZED, ErrorLayer.CONTROLLER)
+    }
+
+    const { participantIds } = addParticipantsSchema.parse(req.body)
+    const id = String(req.params.id)
+    const data = await this.service.addParticipants(id, employeeId, participantIds)
+    res.status(HttpStatusCode.OK).json({ data, error: null })
+  }
+
+  /**
    * GET /api/chat/conversations/:id/messages
    * Loads message history with optional cursor pagination.
    */
@@ -129,9 +145,26 @@ export class ChatController {
 
     const id = String(req.params.id)
     const limit = req.query.limit ? Number(req.query.limit) : CHAT_CONFIG.DEFAULT_PAGE_SIZE
-    const beforeCursor = typeof req.query.beforeCursor === "string" ? req.query.beforeCursor : undefined
+    const beforeCursor =
+      typeof req.query.beforeCursor === "string" ? req.query.beforeCursor : undefined
 
     const data = await this.service.getMessages(id, employeeId, limit, beforeCursor)
+    res.status(HttpStatusCode.OK).json({ data, error: null })
+  }
+
+  /**
+   * GET /api/chat/conversations/:id/messages/search?q=...
+   * Searches message history for the authenticated conversation participant.
+   */
+  searchMessages = async (req: AuthRequest, res: Response): Promise<void> => {
+    const employeeId = req.user?.empId
+    if (!employeeId) {
+      throw new AppError("Unauthorized", HttpStatusCode.UNAUTHORIZED, ErrorLayer.CONTROLLER)
+    }
+
+    const id = String(req.params.id)
+    const query = typeof req.query.q === "string" ? req.query.q : ""
+    const data = await this.service.searchMessages(id, employeeId, query)
     res.status(HttpStatusCode.OK).json({ data, error: null })
   }
 

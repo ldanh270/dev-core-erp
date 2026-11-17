@@ -1,13 +1,8 @@
-import {
-  CHAT_CONFIG,
-  CHAT_ERRORS,
-  CONVERSATION_TYPE,
-} from "@/configs/entities/chat.config.ts"
+import { CHAT_CONFIG, CHAT_ERRORS, CONVERSATION_TYPE } from "@/configs/entities/chat.config.ts"
 import { EMPLOYEE_STATUS } from "@/configs/entities/employee.config.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { eventBus } from "@/libs/event-bus.ts"
-import type { IEmployeeRepository } from "@/types/employee.types.ts"
 import type {
   ChatMessageDto,
   ConversationSummaryDto,
@@ -20,6 +15,7 @@ import type {
   SendMessageDto,
   UpdateParticipantSettingsDto,
 } from "@/types/chat.types.ts"
+import type { IEmployeeRepository } from "@/types/employee.types.ts"
 import { AppError } from "@/utils/error.util.ts"
 
 /**
@@ -127,6 +123,86 @@ export class ChatService implements IChatService {
   }
 
   /**
+   * Adds active employees to a group after validating membership, uniqueness, and the group limit.
+   */
+  async addParticipants(
+    conversationId: string,
+    employeeId: string,
+    participantIds: string[],
+  ): Promise<ConversationSummaryDto> {
+    const conversation = await this.chatRepo.findConversationById(conversationId, employeeId)
+    if (!conversation) {
+      throw new AppError(
+        CHAT_ERRORS.CONVERSATION_NOT_FOUND.message,
+        HttpStatusCode.NOT_FOUND,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.CONVERSATION_NOT_FOUND.code,
+      )
+    }
+
+    if (conversation.type !== CONVERSATION_TYPE.GROUP) {
+      throw new AppError(
+        CHAT_ERRORS.GROUP_CONVERSATION_REQUIRED.message,
+        HttpStatusCode.BAD_REQUEST,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.GROUP_CONVERSATION_REQUIRED.code,
+      )
+    }
+
+    // Exclude the caller and collapse duplicate IDs before validating counts or writing memberships.
+    const uniqueParticipantIds = Array.from(
+      new Set(participantIds.filter((id) => id !== employeeId)),
+    )
+    if (!uniqueParticipantIds.length) {
+      throw new AppError(
+        CHAT_ERRORS.INVALID_GROUP_PARTICIPANTS.message,
+        HttpStatusCode.BAD_REQUEST,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.INVALID_GROUP_PARTICIPANTS.code,
+      )
+    }
+
+    // Count only genuinely new members; existing participants must not consume capacity twice.
+    const currentParticipantIds = new Set(conversation.participants.map((p) => p.employeeId))
+    const newParticipantCount = uniqueParticipantIds.filter(
+      (id) => !currentParticipantIds.has(id),
+    ).length
+
+    if (conversation.participants.length + newParticipantCount > CHAT_CONFIG.MAX_GROUP_MEMBERS) {
+      throw new AppError(
+        CHAT_ERRORS.GROUP_MEMBER_LIMIT_REACHED.message,
+        HttpStatusCode.BAD_REQUEST,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.GROUP_MEMBER_LIMIT_REACHED.code,
+      )
+    }
+
+    const employees = await Promise.all(
+      uniqueParticipantIds.map((id) => this.employeeRepo.findById(id)),
+    )
+    if (employees.some((employee) => !employee || employee.status !== EMPLOYEE_STATUS.ACTIVE)) {
+      throw new AppError(
+        CHAT_ERRORS.EMPLOYEE_NOT_FOUND.message,
+        HttpStatusCode.NOT_FOUND,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.EMPLOYEE_NOT_FOUND.code,
+      )
+    }
+
+    await this.chatRepo.addParticipants(conversationId, uniqueParticipantIds)
+    const updatedConversation = await this.chatRepo.findConversationById(conversationId, employeeId)
+    if (!updatedConversation) {
+      throw new AppError(
+        CHAT_ERRORS.CONVERSATION_NOT_FOUND.message,
+        HttpStatusCode.NOT_FOUND,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.CONVERSATION_NOT_FOUND.code,
+      )
+    }
+    return updatedConversation
+  }
+
+  /**
    * Retrieves messages for a conversation, marks as read, and validates participant membership.
    */
   async getMessages(
@@ -150,6 +226,33 @@ export class ChatService implements IChatService {
 
     const clampedLimit = Math.min(Math.max(limit, 1), CHAT_CONFIG.MAX_PAGE_SIZE)
     return this.chatRepo.findMessages(conversationId, { limit: clampedLimit, beforeCursor })
+  }
+
+  /**
+   * Searches only after confirming membership; blank terms return without querying the repository.
+   */
+  async searchMessages(
+    conversationId: string,
+    employeeId: string,
+    query: string,
+  ): Promise<ChatMessageDto[]> {
+    const isMember = await this.chatRepo.isParticipant(conversationId, employeeId)
+    if (!isMember) {
+      throw new AppError(
+        CHAT_ERRORS.UNAUTHORIZED_PARTICIPANT.message,
+        HttpStatusCode.FORBIDDEN,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.UNAUTHORIZED_PARTICIPANT.code,
+      )
+    }
+
+    const searchQuery = query.trim()
+    if (!searchQuery) return []
+
+    return this.chatRepo.findMessages(conversationId, {
+      limit: CHAT_CONFIG.SEARCH_PAGE_SIZE,
+      searchQuery,
+    })
   }
 
   /**
@@ -263,10 +366,7 @@ export class ChatService implements IChatService {
   /**
    * Deletes / leaves / hides conversation for this employee
    */
-  async deleteConversationForEmployee(
-    conversationId: string,
-    employeeId: string,
-  ): Promise<void> {
+  async deleteConversationForEmployee(conversationId: string, employeeId: string): Promise<void> {
     const isMember = await this.chatRepo.isParticipant(conversationId, employeeId)
     if (!isMember) {
       throw new AppError(

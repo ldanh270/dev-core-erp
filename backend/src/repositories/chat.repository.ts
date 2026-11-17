@@ -42,6 +42,7 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
         conversation: {
           include: {
             participants: {
+              where: { isDeleted: false },
               include: {
                 employee: {
                   select: {
@@ -118,11 +119,12 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
         id: conversationId,
         deletedAt: null,
         participants: {
-          some: { employeeId },
+          some: { employeeId, isDeleted: false },
         },
       },
       include: {
         participants: {
+          where: { isDeleted: false },
           include: {
             employee: {
               select: {
@@ -181,12 +183,13 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
         type: CONVERSATION_TYPE.DIRECT,
         deletedAt: null,
         AND: [
-          { participants: { some: { employeeId: employeeId1 } } },
-          { participants: { some: { employeeId: employeeId2 } } },
+          { participants: { some: { employeeId: employeeId1, isDeleted: false } } },
+          { participants: { some: { employeeId: employeeId2, isDeleted: false } } },
         ],
       },
       include: {
         participants: {
+          where: { isDeleted: false },
           include: {
             employee: {
               select: {
@@ -276,9 +279,32 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
       where: {
         conversationId,
         employeeId,
+        isDeleted: false,
       },
     })
     return count > 0
+  }
+
+  async addParticipants(conversationId: string, participantIds: string[]): Promise<void> {
+    // Upsert reactivates a soft-deleted membership row instead of creating a duplicate unique key.
+    await this.prisma.$transaction(async (tx) => {
+      for (const employeeId of participantIds) {
+        await tx.conversationParticipant.upsert({
+          where: {
+            conversationId_employeeId: { conversationId, employeeId },
+          },
+          update: {
+            isDeleted: false,
+            joinedAt: new Date(),
+            lastReadAt: new Date(),
+          },
+          create: {
+            conversationId,
+            employeeId,
+          },
+        })
+      }
+    })
   }
 
   /**
@@ -286,7 +312,7 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
    */
   async findMessages(
     conversationId: string,
-    options: { limit: number; beforeCursor?: string },
+    options: { limit: number; beforeCursor?: string; searchQuery?: string },
   ): Promise<ChatMessageDto[]> {
     const where: Prisma.ChatMessageWhereInput = {
       conversationId,
@@ -294,6 +320,7 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
     }
 
     if (options.beforeCursor) {
+      // The API accepts a message ID; use its timestamp as the boundary for descending pagination.
       const cursorMessage = await this.prisma.chatMessage.findUnique({
         where: { id: options.beforeCursor },
         select: { createdAt: true },
@@ -301,6 +328,10 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
       if (cursorMessage) {
         where.createdAt = { lt: cursorMessage.createdAt }
       }
+    }
+
+    if (options.searchQuery) {
+      where.content = { contains: options.searchQuery, mode: "insensitive" }
     }
 
     const messages = await this.prisma.chatMessage.findMany({
@@ -632,10 +663,7 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
   /**
    * Soft deletes / hides a conversation for an employee
    */
-  async deleteConversationForEmployee(
-    conversationId: string,
-    employeeId: string,
-  ): Promise<void> {
+  async deleteConversationForEmployee(conversationId: string, employeeId: string): Promise<void> {
     await this.prisma.conversationParticipant.updateMany({
       where: { conversationId, employeeId },
       data: { isDeleted: true },

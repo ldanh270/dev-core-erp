@@ -36,9 +36,11 @@ chatRoutes.get("/stream", chatController.streamMessages)
 chatRoutes.get("/conversations", chatController.getMyConversations)
 chatRoutes.post("/conversations/direct", chatController.createDirectConversation)
 chatRoutes.post("/conversations/group", chatController.createGroupConversation)
+chatRoutes.post("/conversations/:id/participants", chatController.addParticipants)
 chatRoutes.get("/conversations/:id", chatController.getConversationDetail)
 
 // Messages management
+chatRoutes.get("/conversations/:id/messages/search", chatController.searchMessages)
 chatRoutes.get("/conversations/:id/messages", chatController.getMessages)
 chatRoutes.post("/conversations/:id/messages", chatController.sendMessage)
 chatRoutes.post("/conversations/:id/read", chatController.markAsRead)

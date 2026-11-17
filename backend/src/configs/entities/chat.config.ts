@@ -8,10 +8,7 @@ export const CONVERSATION_TYPE = {
   GROUP: "group",
 } as const
 
-export const CONVERSATION_TYPES = [
-  CONVERSATION_TYPE.DIRECT,
-  CONVERSATION_TYPE.GROUP,
-] as const
+export const CONVERSATION_TYPES = [CONVERSATION_TYPE.DIRECT, CONVERSATION_TYPE.GROUP] as const
 
 export type IConversationType = (typeof CONVERSATION_TYPES)[number]
 
@@ -61,6 +58,7 @@ export const CHAT_CONFIG = {
   MAX_PAGE_SIZE: 100,
   MAX_GROUP_MEMBERS: 100,
   KEEP_ALIVE_INTERVAL_MS: 15000,
+  SEARCH_PAGE_SIZE: 50,
 } as const
 
 export const CHAT_ERRORS = {
@@ -87,5 +85,13 @@ export const CHAT_ERRORS = {
   EMPLOYEE_NOT_FOUND: {
     message: "Nhân viên được chọn không tồn tại hoặc không hoạt động.",
     code: "CHAT_EMPLOYEE_NOT_FOUND",
+  },
+  GROUP_MEMBER_LIMIT_REACHED: {
+    message: "Nhóm chat đã đạt giới hạn thành viên.",
+    code: "CHAT_GROUP_MEMBER_LIMIT_REACHED",
+  },
+  GROUP_CONVERSATION_REQUIRED: {
+    message: "Chỉ có thể thêm thành viên vào cuộc trò chuyện nhóm.",
+    code: "CHAT_GROUP_CONVERSATION_REQUIRED",
   },
 } as const

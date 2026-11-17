@@ -4,6 +4,7 @@ import type {
   IMentionType,
 } from "@/config/entities/chat.config"
 
+// Browser-facing chat DTOs use serialized ISO date strings, unlike backend service DTOs.
 export interface ChatMessageMention {
   type: IMentionType
   id: string
@@ -70,6 +71,10 @@ export interface CreateGroupConversationDto {
   title: string
   participantIds: string[]
   avatarUrl?: string
+}
+
+export interface AddChatParticipantsDto {
+  participantIds: string[]
 }
 
 export interface SendMessageDto {

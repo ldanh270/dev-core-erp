@@ -2,6 +2,7 @@ import { API_BASE_URL } from "@/config/api.config"
 import { chatApi } from "@/lib/chat-api"
 import { useAuthStore } from "@/store/auth-store"
 import type {
+  AddChatParticipantsDto,
   ChatMessageDto,
   ConversationSummaryDto,
   CreateDirectConversationDto,
@@ -13,13 +14,27 @@ import type {
 import { useEffect } from "react"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import axios from "axios"
 import { toast } from "sonner"
+
+interface ChatApiErrorResponse {
+  error?: {
+    message?: string
+  }
+}
+
+const getApiErrorMessage = (error: unknown, fallback: string): string => {
+  // Only Axios errors have the response shape used by this API; network and other errors use the fallback.
+  if (!axios.isAxiosError<ChatApiErrorResponse>(error)) return fallback
+  return error.response?.data?.error?.message ?? fallback
+}
 
 export const CHAT_QUERY_KEYS = {
   ALL: ["chat"] as const,
   CONVERSATIONS: ["chat", "conversations"] as const,
   CONVERSATION: (id: string) => ["chat", "conversation", id] as const,
   MESSAGES: (id: string) => ["chat", "messages", id] as const,
+  SEARCH_MESSAGES: (id: string, query: string) => ["chat", "search-messages", id, query] as const,
 }
 
 /**
@@ -73,18 +88,20 @@ export function useChatConversations() {
               CHAT_QUERY_KEYS.CONVERSATIONS,
               (old) => {
                 if (!old) return old
-                return old.map((conv) => {
-                  if (conv.id === incomingMsg.conversationId) {
-                    const isFromMe = incomingMsg.senderId === user?.id
-                    return {
-                      ...conv,
-                      lastMessage: incomingMsg,
-                      unreadCount: isFromMe ? conv.unreadCount : conv.unreadCount + 1,
-                      updatedAt: incomingMsg.createdAt,
+                return old
+                  .map((conv) => {
+                    if (conv.id === incomingMsg.conversationId) {
+                      const isFromMe = incomingMsg.senderId === user?.id
+                      return {
+                        ...conv,
+                        lastMessage: incomingMsg,
+                        unreadCount: isFromMe ? conv.unreadCount : conv.unreadCount + 1,
+                        updatedAt: incomingMsg.createdAt,
+                      }
                     }
-                  }
-                  return conv
-                }).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+                    return conv
+                  })
+                  .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
               },
             )
           }
@@ -141,11 +158,10 @@ export function useChatMessages(conversationId?: string) {
       )
 
       // Update conversation list preview
-      queryClient.setQueryData<ConversationSummaryDto[]>(
-        CHAT_QUERY_KEYS.CONVERSATIONS,
-        (old) => {
-          if (!old) return old
-          return old.map((conv) => {
+      queryClient.setQueryData<ConversationSummaryDto[]>(CHAT_QUERY_KEYS.CONVERSATIONS, (old) => {
+        if (!old) return old
+        return old
+          .map((conv) => {
             if (conv.id === conversationId) {
               return {
                 ...conv,
@@ -154,12 +170,12 @@ export function useChatMessages(conversationId?: string) {
               }
             }
             return conv
-          }).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-        },
-      )
+          })
+          .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+      })
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.error?.message || "Không thể gửi tin nhắn")
+    onError: (error: unknown) => {
+      toast.error(getApiErrorMessage(error, "Không thể gửi tin nhắn"))
     },
   })
 
@@ -169,18 +185,15 @@ export function useChatMessages(conversationId?: string) {
       return chatApi.markAsRead(conversationId)
     },
     onSuccess: () => {
-      queryClient.setQueryData<ConversationSummaryDto[]>(
-        CHAT_QUERY_KEYS.CONVERSATIONS,
-        (old) => {
-          if (!old) return old
-          return old.map((conv) => {
-            if (conv.id === conversationId) {
-              return { ...conv, unreadCount: 0 }
-            }
-            return conv
-          })
-        },
-      )
+      queryClient.setQueryData<ConversationSummaryDto[]>(CHAT_QUERY_KEYS.CONVERSATIONS, (old) => {
+        if (!old) return old
+        return old.map((conv) => {
+          if (conv.id === conversationId) {
+            return { ...conv, unreadCount: 0 }
+          }
+          return conv
+        })
+      })
     },
   })
 
@@ -194,18 +207,19 @@ export function useChatMessages(conversationId?: string) {
 
 /**
  * Mutation hooks for creating conversations
+ * Mutations that invalidate the conversation list await the refresh before resolving.
  */
 export function useCreateDirectChat() {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (dto: CreateDirectConversationDto) => chatApi.createDirectConversation(dto),
-    onSuccess: (newConv) => {
-      queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.CONVERSATIONS })
-      return newConv
+    onSuccess: async () => {
+      // Wait for the list refresh so callers don't continue with stale conversation data.
+      await queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.CONVERSATIONS })
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.error?.message || "Không thể tạo cuộc trò chuyện")
+    onError: (error: unknown) => {
+      toast.error(getApiErrorMessage(error, "Không thể tạo cuộc trò chuyện"))
     },
   })
 }
@@ -215,13 +229,32 @@ export function useCreateGroupChat() {
 
   return useMutation({
     mutationFn: (dto: CreateGroupConversationDto) => chatApi.createGroupConversation(dto),
-    onSuccess: (newConv) => {
-      queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.CONVERSATIONS })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.CONVERSATIONS })
       toast.success("Tạo nhóm chat thành công")
-      return newConv
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.error?.message || "Không thể tạo nhóm chat")
+    onError: (error: unknown) => {
+      toast.error(getApiErrorMessage(error, "Không thể tạo nhóm chat"))
+    },
+  })
+}
+
+export function useAddChatParticipants() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ conversationId, ...dto }: { conversationId: string } & AddChatParticipantsDto) =>
+      chatApi.addParticipants(conversationId, dto),
+    onSuccess: (updatedConversation) => {
+      queryClient.setQueryData<ConversationSummaryDto[]>(CHAT_QUERY_KEYS.CONVERSATIONS, (old) =>
+        old?.map((conversation) =>
+          conversation.id === updatedConversation.id ? updatedConversation : conversation,
+        ),
+      )
+      toast.success("Đã thêm thành viên vào nhóm")
+    },
+    onError: (error: unknown) => {
+      toast.error(getApiErrorMessage(error, "Không thể thêm thành viên"))
     },
   })
 }
@@ -240,11 +273,11 @@ export function useUpdateChatSettings() {
       conversationId: string
       settings: UpdateParticipantSettingsDto
     }) => chatApi.updateSettings(conversationId, settings),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.CONVERSATIONS })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.CONVERSATIONS })
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.error?.message || "Không thể cập nhật cài đặt")
+    onError: (error: unknown) => {
+      toast.error(getApiErrorMessage(error, "Không thể cập nhật cài đặt"))
     },
   })
 }
@@ -257,12 +290,12 @@ export function useDeleteConversation() {
 
   return useMutation({
     mutationFn: (conversationId: string) => chatApi.deleteConversation(conversationId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.CONVERSATIONS })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.CONVERSATIONS })
       toast.success("Đã xoá cuộc trò chuyện")
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.error?.message || "Không thể xoá cuộc trò chuyện")
+    onError: (error: unknown) => {
+      toast.error(getApiErrorMessage(error, "Không thể xoá cuộc trò chuyện"))
     },
   })
 }

@@ -27,6 +27,7 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
   const [groupTitle, setGroupTitle] = useState("")
   const [selectedMembers, setSelectedMembers] = useState<MentionEmployeeItem[]>([])
 
+  // Debounce employee search and discard results when the query changes or the modal closes.
   useEffect(() => {
     if (!isOpen) return
 
@@ -44,7 +45,9 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
       }
     }
 
-    const timer = setTimeout(fetchEmps, 150)
+    const timer = setTimeout(() => {
+      void fetchEmps()
+    }, 150)
     return () => {
       isMounted = false
       clearTimeout(timer)
@@ -54,6 +57,7 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
   if (!isOpen) return null
 
   const handleSelectDirect = async (empId: string) => {
+    // Close only after creation succeeds so a failed request leaves the dialog available for retry.
     await onCreateDirect(empId)
     onClose()
   }
@@ -67,12 +71,26 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
   }
 
   const handleCreateGroup = async () => {
+    // The creator is added by the backend, so the picker requires two other members plus a title.
     if (!groupTitle.trim() || selectedMembers.length < 2) return
     await onCreateGroup({
       title: groupTitle.trim(),
       participantIds: selectedMembers.map((m) => m.id),
     })
     onClose()
+  }
+
+  // Parent mutations show user-facing errors; these wrappers also prevent unhandled rejections from click events.
+  const handleSelectDirectFromClick = (empId: string) => {
+    void handleSelectDirect(empId).catch((error: unknown) => {
+      console.error("Failed to create direct conversation:", error)
+    })
+  }
+
+  const handleCreateGroupFromClick = () => {
+    void handleCreateGroup().catch((error: unknown) => {
+      console.error("Failed to create group conversation:", error)
+    })
   }
 
   return (
@@ -94,9 +112,13 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
         <div className="flex border-b border-border p-1 bg-muted/40">
           <button
             type="button"
-            onClick={() => setTab("direct")}
+            onClick={() => {
+              setTab("direct")
+            }}
             className={`flex-1 py-1.5 text-xs font-medium rounded-full cursor-pointer transition-colors flex items-center justify-center gap-1.5 ${
-              tab === "direct" ? "bg-background text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
+              tab === "direct"
+                ? "bg-background text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <User className="w-3.5 h-3.5" />
@@ -104,9 +126,13 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => setTab("group")}
+            onClick={() => {
+              setTab("group")
+            }}
             className={`flex-1 py-1.5 text-xs font-medium rounded-full cursor-pointer transition-colors flex items-center justify-center gap-1.5 ${
-              tab === "group" ? "bg-background text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
+              tab === "group"
+                ? "bg-background text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Users className="w-3.5 h-3.5" />
@@ -120,7 +146,9 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
             <input
               type="text"
               value={groupTitle}
-              onChange={(e) => setGroupTitle(e.target.value)}
+              onChange={(e) => {
+                setGroupTitle(e.target.value)
+              }}
               placeholder="Đặt tên nhóm chat..."
               className="w-full px-3 py-1.5 rounded-full bg-muted/60 text-xs text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors"
             />
@@ -136,7 +164,9 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
                     <span>{m.fullName}</span>
                     <button
                       type="button"
-                      onClick={() => toggleMember(m)}
+                      onClick={() => {
+                        toggleMember(m)
+                      }}
                       className="p-0.5 hover:text-destructive cursor-pointer"
                     >
                       <X className="w-3 h-3" />
@@ -155,7 +185,9 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+              }}
               placeholder="Tìm theo tên hoặc tên đăng nhập..."
               className="w-full pl-9 pr-3 py-1.5 rounded-full bg-muted/60 text-xs text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors"
             />
@@ -167,7 +199,9 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
           {isLoading ? (
             <div className="p-4 text-center text-xs text-muted-foreground">Đang tìm...</div>
           ) : employees.length === 0 ? (
-            <div className="p-4 text-center text-xs text-muted-foreground">Không tìm thấy nhân viên phù hợp</div>
+            <div className="p-4 text-center text-xs text-muted-foreground">
+              Không tìm thấy nhân viên phù hợp
+            </div>
           ) : (
             employees.map((emp) => {
               const isSelected = selectedMembers.some((m) => m.id === emp.id)
@@ -176,7 +210,13 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
                 <button
                   key={emp.id}
                   type="button"
-                  onClick={() => (tab === "direct" ? handleSelectDirect(emp.id) : toggleMember(emp))}
+                  onClick={() => {
+                    if (tab === "direct") {
+                      handleSelectDirectFromClick(emp.id)
+                    } else {
+                      toggleMember(emp)
+                    }
+                  }}
                   className="w-full px-3 py-2.5 rounded-lg flex items-center justify-between text-left hover:bg-muted/50 cursor-pointer transition-colors"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -184,7 +224,9 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
                       {emp.fullName.charAt(0)}
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-medium text-foreground truncate">{emp.fullName}</span>
+                      <span className="text-xs font-medium text-foreground truncate">
+                        {emp.fullName}
+                      </span>
                       <span className="text-[10px] text-muted-foreground truncate">
                         @{emp.username} {emp.position ? `• ${emp.position}` : ""}
                       </span>
@@ -211,10 +253,12 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
         {/* Footer for group creation */}
         {tab === "group" && (
           <div className="p-3 border-t border-border flex items-center justify-between bg-muted/20">
-            <span className="text-xs text-muted-foreground">Đã chọn: {selectedMembers.length} thành viên</span>
+            <span className="text-xs text-muted-foreground">
+              Đã chọn: {selectedMembers.length} thành viên
+            </span>
             <button
               type="button"
-              onClick={handleCreateGroup}
+              onClick={handleCreateGroupFromClick}
               disabled={!groupTitle.trim() || selectedMembers.length < 2}
               className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-medium cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-xs"
             >

@@ -11,6 +11,7 @@ import {
 import { routerNavigate } from "@/lib/router-navigator"
 
 import React, { useEffect, useState } from "react"
+
 import { useParams } from "react-router-dom"
 
 /**
@@ -46,10 +47,12 @@ const ChatPage: React.FC = () => {
     }
   }, [conversationId, markAsRead])
 
+  // The route ID is the source of truth for the active chat and drives the message query above.
   const handleSelectConversation = (id: string) => {
     routerNavigate(`${ROUTES.CHAT.BASE}/${id}`)
   }
 
+  // Navigate only after creation returns an ID; failed mutations leave error handling to the modal flow.
   const handleCreateDirect = async (partnerId: string) => {
     const conv = await createDirectMutation.mutateAsync({ partnerId })
     if (conv?.id) {
@@ -72,7 +75,9 @@ const ChatPage: React.FC = () => {
           conversations={conversations}
           activeConversationId={conversationId}
           onSelectConversation={handleSelectConversation}
-          onOpenNewChatModal={() => setIsNewChatModalOpen(true)}
+          onOpenNewChatModal={() => {
+            setIsNewChatModalOpen(true)
+          }}
           isLoading={isLoadingConversations}
         />
       </div>
@@ -92,7 +97,9 @@ const ChatPage: React.FC = () => {
       {/* New Chat Modal */}
       <NewChatModal
         isOpen={isNewChatModalOpen}
-        onClose={() => setIsNewChatModalOpen(false)}
+        onClose={() => {
+          setIsNewChatModalOpen(false)
+        }}
         onCreateDirect={handleCreateDirect}
         onCreateGroup={handleCreateGroup}
       />

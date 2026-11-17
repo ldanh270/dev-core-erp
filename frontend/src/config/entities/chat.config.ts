@@ -8,10 +8,7 @@ export const CONVERSATION_TYPE = {
   GROUP: "group",
 } as const
 
-export const CONVERSATION_TYPES = [
-  CONVERSATION_TYPE.DIRECT,
-  CONVERSATION_TYPE.GROUP,
-] as const
+export const CONVERSATION_TYPES = [CONVERSATION_TYPE.DIRECT, CONVERSATION_TYPE.GROUP] as const
 
 export type IConversationType = (typeof CONVERSATION_TYPES)[number]
 

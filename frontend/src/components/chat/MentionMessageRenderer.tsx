@@ -23,8 +23,8 @@ export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
 }) => {
   if (!content) return null
 
-  // Regex matching structured mention tokens:
-  // @[Name](emp:id) | #[Project](proj:id) | ![Task](task:id)
+  // Match the token syntax emitted by MentionInput: @[Name](emp:id), #[Name](proj:id),
+  // or ![Name](task:id). The loop below preserves ordinary text between tokens.
   const mentionRegex = /([@#!])\[(.+?)\]\((emp|proj|task):([^)]+)\)/g
 
   const elements: React.ReactNode[] = []
@@ -76,7 +76,9 @@ export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
           }`}
           title={`Mở dự án: ${label}`}
         >
-          <Briefcase className={`w-3 h-3 shrink-0 ${isOutgoing ? "text-current" : "text-blue-500"}`} />
+          <Briefcase
+            className={`w-3 h-3 shrink-0 ${isOutgoing ? "text-current" : "text-blue-500"}`}
+          />
           <span>#{label}</span>
         </button>,
       )
@@ -97,7 +99,9 @@ export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
           }`}
           title={`Mở công việc: ${label}`}
         >
-          <CheckSquare className={`w-3 h-3 shrink-0 ${isOutgoing ? "text-current" : "text-emerald-500"}`} />
+          <CheckSquare
+            className={`w-3 h-3 shrink-0 ${isOutgoing ? "text-current" : "text-emerald-500"}`}
+          />
           <span>!{label}</span>
         </button>,
       )
