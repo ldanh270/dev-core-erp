@@ -62,9 +62,10 @@ const createConversation = (id = "conversation-1"): ConversationSummaryDto => ({
 describe("ChatService message actions", () => {
   it("only lets the sender edit and broadcasts a typed update event", async () => {
     const updatedMessage = createMessage({ content: "Updated text" })
+    const editMessage = jest.fn().mockResolvedValue(updatedMessage)
     const repository = {
       findMessageById: jest.fn().mockResolvedValue(createMessage()),
-      editMessage: jest.fn().mockResolvedValue(updatedMessage),
+      editMessage,
       findConversationById: jest.fn().mockResolvedValue(createConversation()),
     } as unknown as IChatRepository
     const service = new ChatService(repository, {} as IEmployeeRepository)
@@ -77,12 +78,12 @@ describe("ChatService message actions", () => {
       await expect(service.editMessage("message-1", "employee-2", "Unauthorized")).rejects.toThrow(
         AppError,
       )
-      expect(repository.editMessage).not.toHaveBeenCalled()
+      expect(editMessage).not.toHaveBeenCalled()
 
       const result = await service.editMessage("message-1", "employee-1", "  Updated text  ")
 
       expect(result.content).toBe("Updated text")
-      expect(repository.editMessage).toHaveBeenCalledWith("message-1", "employee-1", "Updated text")
+      expect(editMessage).toHaveBeenCalledWith("message-1", "employee-1", "Updated text")
       expect(received).toEqual([{ type: "message.updated", message: updatedMessage }])
     } finally {
       unsubscribe()
@@ -95,9 +96,10 @@ describe("ChatService message actions", () => {
       id: "forwarded-message",
       conversationId: "conversation-2",
     })
+    const forwardMessage = jest.fn().mockResolvedValue([forwardedMessage])
     const repository = {
       findMessageById: jest.fn().mockResolvedValue(sourceMessage),
-      forwardMessage: jest.fn().mockResolvedValue([forwardedMessage]),
+      forwardMessage,
       findConversationById: jest.fn().mockResolvedValue(createConversation("conversation-2")),
     } as unknown as IChatRepository
     const service = new ChatService(repository, {} as IEmployeeRepository)
@@ -113,9 +115,7 @@ describe("ChatService message actions", () => {
       ])
 
       expect(result).toEqual([forwardedMessage])
-      expect(repository.forwardMessage).toHaveBeenCalledWith("message-1", "employee-1", [
-        "conversation-2",
-      ])
+      expect(forwardMessage).toHaveBeenCalledWith("message-1", "employee-1", ["conversation-2"])
       expect(received).toEqual([{ type: "message.created", message: forwardedMessage }])
     } finally {
       unsubscribe()

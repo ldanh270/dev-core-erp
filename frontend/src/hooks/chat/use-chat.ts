@@ -250,13 +250,16 @@ export function useChatMessages(conversationId?: string) {
     ...messagesQuery,
     sendMessage: sendMutation.mutateAsync,
     isSending: sendMutation.isPending,
-    editMessage: (messageId: string, content: string) =>
-      editMessageMutation.mutate({ messageId, content }),
+    editMessage: (messageId: string, content: string) => {
+      editMessageMutation.mutate({ messageId, content })
+    },
     recallMessage: recallMessageMutation.mutate,
-    setMessagePinned: (messageId: string, isPinned: boolean) =>
-      pinMessageMutation.mutate({ messageId, isPinned }),
-    forwardMessage: (messageId: string, conversationIds: string[]) =>
-      forwardMessageMutation.mutate({ messageId, conversationIds }),
+    setMessagePinned: (messageId: string, isPinned: boolean) => {
+      pinMessageMutation.mutate({ messageId, isPinned })
+    },
+    forwardMessage: (messageId: string, conversationIds: string[]) => {
+      forwardMessageMutation.mutate({ messageId, conversationIds })
+    },
     isMessageActionPending:
       editMessageMutation.isPending ||
       recallMessageMutation.isPending ||
