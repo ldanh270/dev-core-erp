@@ -25,7 +25,7 @@ export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
 
   // Regex matching structured mention tokens:
   // @[Name](emp:id) | #[Project](proj:id) | ![Task](task:id)
-  const mentionRegex = /([@#!])\[([^\]]+)\]\((emp|proj|task):([^)]+)\)/g
+  const mentionRegex = /([@#!])\[(.+?)\]\((emp|proj|task):([^)]+)\)/g
 
   const elements: React.ReactNode[] = []
   let lastIndex = 0

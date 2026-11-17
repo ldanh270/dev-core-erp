@@ -267,7 +267,10 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                       ) : c.lastMessage.type === "file" ? (
                         "Đã gửi một tệp đính kèm"
                       ) : (
-                        c.lastMessage.content.replace(/[@#!]\[([^\]]+)\]\([^)]+\)/g, "$1")
+                        c.lastMessage.content.replace(
+                          /[@#!]\[(.+?)\]\((?:emp|proj|task):[^)]+\)/g,
+                          "$1",
+                        )
                       )
                     ) : (
                       "Bắt đầu trò chuyện"
