@@ -95,4 +95,9 @@ export const ROUTES = {
     PROJECTS: "/project/my-projects",
     APPLICATIONS: "/application/my-applications",
   },
+  // [CHAT MODULE INTEGRATION] Independent Chat Subsystem Routes
+  CHAT: {
+    BASE: "/chat",
+    CONVERSATION: "/chat/:id",
+  },
 } as const

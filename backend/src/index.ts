@@ -12,6 +12,8 @@ import attendanceRoutes from "@/routes/attendance.route.ts"
 import auditRoutes from "@/routes/audit.route.ts"
 import authRoutes from "@/routes/auth.route.ts"
 import capacityCopilotRoutes from "@/routes/capacity-copilot.route.ts"
+// [CHAT MODULE INTEGRATION] Independent Chat Subsystem Route
+import chatRoutes from "@/routes/chat.route.ts"
 import customQueryRoutes from "@/routes/custom-query.route.ts"
 import debugRoutes from "@/routes/debug.route.ts"
 import employeeContractRoutes from "@/routes/employee-contract.route.ts"
@@ -120,6 +122,8 @@ app.use("/api", auditRoutes)
 app.use("/api/spent-times", spentTimeRoutes)
 app.use("/api/custom-queries", customQueryRoutes)
 app.use("/api/notifications", notificationRoutes)
+// [CHAT MODULE INTEGRATION] Independent Chat Subsystem Route
+app.use("/api/chat", chatRoutes)
 app.use("/api/debug", debugRoutes)
 
 // 404 handler

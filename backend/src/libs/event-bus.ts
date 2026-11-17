@@ -1,3 +1,4 @@
+import type { ChatMessageDto } from "@/types/chat.types.ts"
 import type { CreateNotificationDto, Notification } from "@/types/notification.types.ts"
 
 import { EventEmitter } from "events"
@@ -9,6 +10,8 @@ import { EventEmitter } from "events"
 export interface DomainEvents {
   "notification:create": CreateNotificationDto
   "notification:broadcast": Notification
+  // [CHAT MODULE INTEGRATION] Chat message domain event
+  "chat:message": ChatMessageDto
 }
 
 /**
@@ -82,6 +85,31 @@ class AppEventBus extends EventEmitter {
   offNotification(employeeId: string, listener: (notification: Notification) => void): this {
     // Remove the exact callback when no longer needed, such as after an SSE connection closes.
     return this.off(`notification:${employeeId}`, listener)
+  }
+
+  // =========================================================================
+  // [CHAT MODULE INTEGRATION] Chat real-time messaging event bus methods
+  // =========================================================================
+
+  /**
+   * Publishes a real-time chat message to a specific recipient employee channel.
+   */
+  emitChatMessage(recipientEmployeeId: string, message: ChatMessageDto): boolean {
+    return this.emit(`chat:${recipientEmployeeId}`, message)
+  }
+
+  /**
+   * Registers a real-time chat message listener on an employee-specific channel.
+   */
+  onChatMessage(recipientEmployeeId: string, listener: (message: ChatMessageDto) => void): this {
+    return this.on(`chat:${recipientEmployeeId}`, listener)
+  }
+
+  /**
+   * Removes a real-time chat message listener from an employee-specific channel.
+   */
+  offChatMessage(recipientEmployeeId: string, listener: (message: ChatMessageDto) => void): this {
+    return this.off(`chat:${recipientEmployeeId}`, listener)
   }
 }
 

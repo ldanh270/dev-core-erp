@@ -352,6 +352,17 @@ const privateRoutes: RouteConfig[] = [
     component: lazy(() => import("@/pages/project/TaskDetail.tsx")),
     layout: MainLayout,
   },
+  // [CHAT MODULE INTEGRATION] Independent Chat Subsystem Routes
+  {
+    path: ROUTES.CHAT.BASE,
+    component: lazy(() => import("@/pages/chat/ChatPage.tsx")),
+    layout: MainLayout,
+  },
+  {
+    path: ROUTES.CHAT.CONVERSATION,
+    component: lazy(() => import("@/pages/chat/ChatPage.tsx")),
+    layout: MainLayout,
+  },
 ]
 
 export { privateRoutes, publicRoutes, openRoutes }
