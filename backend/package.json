@@ -14,6 +14,8 @@
     "seed": "tsx src/scripts/seed-all.ts --incremental",
     "seed:fresh": "tsx src/scripts/seed-all.ts --force-clear",
     "seed:incremental": "tsx src/scripts/seed-all.ts --incremental",
+    "seed:admin": "tsx src/scripts/repair-admin.ts",
+    "reset:admin-password": "tsx src/scripts/reset-admin-password.ts",
     "clear": "tsx src/scripts/clear-db.ts",
     "repair:admin": "tsx src/scripts/repair-admin.ts",
     "hash-password": "tsx src/scripts/hash-password.ts"
