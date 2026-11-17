@@ -9,6 +9,7 @@ import { Briefcase, CheckSquare, User } from "lucide-react"
 interface MentionMessageRendererProps {
   content: string
   mentions?: ChatMessageMention[] | null
+  isOutgoing?: boolean
 }
 
 /**
@@ -18,6 +19,7 @@ interface MentionMessageRendererProps {
  */
 export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
   content,
+  isOutgoing = false,
 }) => {
   if (!content) return null
 
@@ -46,10 +48,14 @@ export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
       elements.push(
         <span
           key={key}
-          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium border border-primary/20 align-middle select-all mx-0.5"
+          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium align-middle select-all mx-0.5 ${
+            isOutgoing
+              ? "bg-primary-foreground/15 text-primary-foreground border border-primary-foreground/30"
+              : "bg-primary/10 text-primary border border-primary/20"
+          }`}
           title={`Nhân viên: ${label}`}
         >
-          <User className="w-3 h-3 text-primary shrink-0" />
+          <User className="w-3 h-3 text-current shrink-0" />
           <span>@{label}</span>
         </span>,
       )
@@ -63,10 +69,14 @@ export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
             e.stopPropagation()
             routerNavigate(`${ROUTES.PROJECT.BASE}/${entityId}`)
           }}
-          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 text-xs font-medium border border-blue-500/20 align-middle cursor-pointer transition-colors mx-0.5"
+          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium align-middle cursor-pointer transition-colors mx-0.5 ${
+            isOutgoing
+              ? "bg-primary-foreground/15 text-primary-foreground hover:bg-primary-foreground/25 border border-primary-foreground/30"
+              : "bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 border border-blue-500/20"
+          }`}
           title={`Mở dự án: ${label}`}
         >
-          <Briefcase className="w-3 h-3 text-blue-500 shrink-0" />
+          <Briefcase className={`w-3 h-3 shrink-0 ${isOutgoing ? "text-current" : "text-blue-500"}`} />
           <span>#{label}</span>
         </button>,
       )
@@ -80,10 +90,14 @@ export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
             e.stopPropagation()
             routerNavigate(`${ROUTES.PROJECT.TASK_DETAIL}/${entityId}`)
           }}
-          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 text-xs font-medium border border-emerald-500/20 align-middle cursor-pointer transition-colors mx-0.5"
+          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium align-middle cursor-pointer transition-colors mx-0.5 ${
+            isOutgoing
+              ? "bg-primary-foreground/15 text-primary-foreground hover:bg-primary-foreground/25 border border-primary-foreground/30"
+              : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20"
+          }`}
           title={`Mở công việc: ${label}`}
         >
-          <CheckSquare className="w-3 h-3 text-emerald-500 shrink-0" />
+          <CheckSquare className={`w-3 h-3 shrink-0 ${isOutgoing ? "text-current" : "text-emerald-500"}`} />
           <span>!{label}</span>
         </button>,
       )

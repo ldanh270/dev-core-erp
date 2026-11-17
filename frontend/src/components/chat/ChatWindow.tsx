@@ -184,7 +184,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
                     {/* Text content with mentions */}
                     {msg.content && (
-                      <MentionMessageRenderer content={msg.content} mentions={msg.mentions} />
+                      <MentionMessageRenderer
+                        content={msg.content}
+                        mentions={msg.mentions}
+                        isOutgoing={isMe}
+                      />
                     )}
                   </div>
 
