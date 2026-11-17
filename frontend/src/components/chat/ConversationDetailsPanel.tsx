@@ -58,8 +58,12 @@ export const ConversationDetailsPanel: React.FC<ConversationDetailsPanelProps> =
   }, [conversation.participants, memberQuery])
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedMessageQuery(messageQuery.trim()), 250)
-    return () => clearTimeout(timer)
+    const timer = setTimeout(() => {
+      setDebouncedMessageQuery(messageQuery.trim())
+    }, 250)
+    return () => {
+      clearTimeout(timer)
+    }
   }, [messageQuery])
 
   // Include both the conversation and debounced term in the key so cached results never cross chats.
@@ -169,7 +173,9 @@ export const ConversationDetailsPanel: React.FC<ConversationDetailsPanelProps> =
           <input
             id="chat-message-search"
             value={messageQuery}
-            onChange={(event) => setMessageQuery(event.target.value)}
+            onChange={(event) => {
+              setMessageQuery(event.target.value)
+            }}
             placeholder="Tìm trong cuộc trò chuyện..."
             className="w-full rounded-full border border-border bg-muted/50 py-2 pl-9 pr-3 text-xs text-foreground outline-none focus:border-primary"
           />
@@ -217,7 +223,9 @@ export const ConversationDetailsPanel: React.FC<ConversationDetailsPanelProps> =
           {conversation.type === "group" && !isAddingMembers && (
             <button
               type="button"
-              onClick={() => setIsAddingMembers(true)}
+              onClick={() => {
+                setIsAddingMembers(true)
+              }}
               className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium text-primary hover:bg-primary/10"
             >
               <UserPlus className="h-3.5 w-3.5" />
@@ -233,7 +241,9 @@ export const ConversationDetailsPanel: React.FC<ConversationDetailsPanelProps> =
               <input
                 autoFocus
                 value={employeeQuery}
-                onChange={(event) => setEmployeeQuery(event.target.value)}
+                onChange={(event) => {
+                  setEmployeeQuery(event.target.value)
+                }}
                 placeholder="Tìm người để thêm..."
                 className="w-full rounded-full border border-border bg-muted/50 py-2 pl-9 pr-3 text-xs text-foreground outline-none focus:border-primary"
               />
@@ -260,7 +270,9 @@ export const ConversationDetailsPanel: React.FC<ConversationDetailsPanelProps> =
                       <input
                         type="checkbox"
                         checked={selected}
-                        onChange={() => toggleEmployee(employee.id)}
+                        onChange={() => {
+                          toggleEmployee(employee.id)
+                        }}
                         className="accent-primary"
                       />
                       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
@@ -310,7 +322,9 @@ export const ConversationDetailsPanel: React.FC<ConversationDetailsPanelProps> =
           <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <input
             value={memberQuery}
-            onChange={(event) => setMemberQuery(event.target.value)}
+            onChange={(event) => {
+              setMemberQuery(event.target.value)
+            }}
             placeholder="Tìm thành viên..."
             className="w-full rounded-full border border-border bg-muted/50 py-1.5 pl-8 pr-3 text-xs text-foreground outline-none focus:border-primary"
           />

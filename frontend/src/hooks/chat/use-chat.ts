@@ -26,7 +26,7 @@ interface ChatApiErrorResponse {
 const getApiErrorMessage = (error: unknown, fallback: string): string => {
   // Only Axios errors have the response shape used by this API; network and other errors use the fallback.
   if (!axios.isAxiosError<ChatApiErrorResponse>(error)) return fallback
-  return error.response?.data?.error?.message ?? fallback
+  return error.response?.data.error?.message ?? fallback
 }
 
 export const CHAT_QUERY_KEYS = {
