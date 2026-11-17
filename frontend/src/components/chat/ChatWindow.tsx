@@ -1,4 +1,18 @@
-import { CONVERSATION_TYPE } from "@/config/entities/chat.config"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { CHAT_CONFIG, CONVERSATION_TYPE } from "@/config/entities/chat.config"
 import { useAuthStore } from "@/store/auth-store"
 import type { ChatMessageDto, ConversationSummaryDto, SendMessageDto } from "@/types/chat.types"
 
@@ -6,7 +20,20 @@ import React, { useEffect, useRef, useState } from "react"
 
 import { format } from "date-fns"
 import { vi } from "date-fns/locale"
-import { Download, FileText, MessageSquare, Users, X } from "lucide-react"
+import {
+  Check,
+  Download,
+  FileText,
+  Forward,
+  MessageSquare,
+  MoreVertical,
+  Pencil,
+  Pin,
+  PinOff,
+  Trash2,
+  Users,
+  X,
+} from "lucide-react"
 
 import { ConversationDetailsPanel } from "./ConversationDetailsPanel"
 import { MentionInput } from "./MentionInput"
@@ -17,8 +44,14 @@ interface ChatWindowProps {
   conversation?: ConversationSummaryDto
   /** Chronological messages for the selected conversation. */
   messages: ChatMessageDto[]
+  /** Existing accessible conversations shown as possible forwarding destinations. */
+  conversations: ConversationSummaryDto[]
   /** Parent mutation handler; rejection is surfaced by the chat mutation hook. */
   onSendMessage: (data: SendMessageDto) => Promise<void>
+  onEditMessage: (messageId: string, content: string) => void
+  onRecallMessage: (messageId: string) => void
+  onSetMessagePinned: (messageId: string, isPinned: boolean) => void
+  onForwardMessage: (messageId: string, conversationIds: string[]) => void
   isLoading?: boolean
 }
 
@@ -30,13 +63,22 @@ interface ChatWindowProps {
 export const ChatWindow: React.FC<ChatWindowProps> = ({
   conversation,
   messages,
+  conversations,
   onSendMessage,
+  onEditMessage,
+  onRecallMessage,
+  onSetMessagePinned,
+  onForwardMessage,
   isLoading,
 }) => {
   const { user } = useAuthStore()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
+  const [editContent, setEditContent] = useState("")
+  const [forwardingMessageId, setForwardingMessageId] = useState<string | null>(null)
+  const [forwardConversationIds, setForwardConversationIds] = useState<string[]>([])
 
   // Keep the newest message in view whenever the rendered message list changes.
   useEffect(() => {
@@ -127,7 +169,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             return (
               <div
                 key={msg.id}
-                className={`flex gap-2.5 items-end ${isMe ? "justify-end" : "justify-start"}`}
+                className={`group flex gap-2.5 items-end ${isMe ? "justify-end" : "justify-start"}`}
               >
                 {/* Partner avatar if not me */}
                 {!isMe && (
@@ -152,54 +194,160 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                     </span>
                   )}
 
-                  <div
-                    className={`rounded-2xl px-3.5 py-2 text-xs shadow-xs leading-relaxed ${
-                      isMe
-                        ? "bg-primary text-primary-foreground rounded-br-xs"
-                        : "bg-muted text-foreground rounded-bl-xs border border-border/50"
-                    }`}
-                  >
-                    {/* Image Attachment */}
-                    {msg.type === "image" && msg.fileUrl && (
-                      <div className="mb-1.5 overflow-hidden rounded-lg">
-                        <img
-                          src={msg.fileUrl}
-                          alt={msg.fileName || "Ảnh đính kèm"}
-                          onClick={() => {
-                            setPreviewImage(msg.fileUrl || null)
-                          }}
-                          className="max-h-60 max-w-full rounded-lg object-cover cursor-pointer hover:opacity-95 transition-opacity"
-                        />
-                      </div>
-                    )}
+                  <div className="flex items-start gap-1">
+                    <div
+                      className={`rounded-2xl px-3.5 py-2 text-xs shadow-xs leading-relaxed ${
+                        isMe
+                          ? "bg-primary text-primary-foreground rounded-br-xs"
+                          : "bg-muted text-foreground rounded-bl-xs border border-border/50"
+                      }`}
+                    >
+                      {editingMessageId === msg.id ? (
+                        <div className="min-w-52 space-y-2">
+                          <textarea
+                            autoFocus
+                            value={editContent}
+                            onChange={(event) => {
+                              setEditContent(event.target.value)
+                            }}
+                            maxLength={4000}
+                            aria-label="Chỉnh sửa nội dung tin nhắn"
+                            className="w-full min-h-20 resize-y rounded-md border border-border bg-background p-2 text-foreground outline-none focus:ring-2 focus:ring-ring"
+                          />
+                          <div className="flex justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingMessageId(null)
+                              }}
+                              className="rounded px-2 py-1 text-[11px] hover:bg-background/20"
+                            >
+                              Hủy
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                onEditMessage(msg.id, editContent)
+                                setEditingMessageId(null)
+                              }}
+                              className="rounded bg-background/20 px-2 py-1 text-[11px] font-medium hover:bg-background/30"
+                            >
+                              Lưu
+                            </button>
+                          </div>
+                        </div>
+                      ) : msg.isRecalled ? (
+                        <span className="italic opacity-75">Tin nhắn đã được thu hồi</span>
+                      ) : (
+                        <>
+                          {msg.isPinned && (
+                            <div className="mb-1 flex items-center gap-1 text-[10px] opacity-80">
+                              <Pin className="h-3 w-3" />
+                              Đã ghim
+                            </div>
+                          )}
 
-                    {/* File Attachment */}
-                    {msg.type === "file" && msg.fileUrl && (
-                      <a
-                        href={msg.fileUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className={`flex items-center gap-2 p-2 rounded-lg mb-1 transition-colors ${
-                          isMe
-                            ? "bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground"
-                            : "bg-background hover:bg-background/80 text-foreground border border-border"
-                        }`}
-                      >
-                        <FileText className="w-4 h-4 shrink-0" />
-                        <span className="truncate max-w-[180px] font-medium">
-                          {msg.fileName || "Tệp đính kèm"}
-                        </span>
-                        <Download className="w-3.5 h-3.5 shrink-0 opacity-70" />
-                      </a>
-                    )}
+                          {/* Image Attachment */}
+                          {msg.type === "image" && msg.fileUrl && (
+                            <div className="mb-1.5 overflow-hidden rounded-lg">
+                              <img
+                                src={msg.fileUrl}
+                                alt={msg.fileName || "Ảnh đính kèm"}
+                                onClick={() => {
+                                  setPreviewImage(msg.fileUrl || null)
+                                }}
+                                className="max-h-60 max-w-full rounded-lg object-cover cursor-pointer hover:opacity-95 transition-opacity"
+                              />
+                            </div>
+                          )}
 
-                    {/* Text content with mentions */}
-                    {msg.content && (
-                      <MentionMessageRenderer
-                        content={msg.content}
-                        mentions={msg.mentions}
-                        isOutgoing={isMe}
-                      />
+                          {/* File Attachment */}
+                          {msg.type === "file" && msg.fileUrl && (
+                            <a
+                              href={msg.fileUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className={`flex items-center gap-2 p-2 rounded-lg mb-1 transition-colors ${
+                                isMe
+                                  ? "bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground"
+                                  : "bg-background hover:bg-background/80 text-foreground border border-border"
+                              }`}
+                            >
+                              <FileText className="w-4 h-4 shrink-0" />
+                              <span className="truncate max-w-[180px] font-medium">
+                                {msg.fileName || "Tệp đính kèm"}
+                              </span>
+                              <Download className="w-3.5 h-3.5 shrink-0 opacity-70" />
+                            </a>
+                          )}
+
+                          {/* Text content with mentions */}
+                          {msg.content && (
+                            <MentionMessageRenderer
+                              content={msg.content}
+                              mentions={msg.mentions}
+                              isOutgoing={isMe}
+                            />
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    {!msg.isRecalled && editingMessageId !== msg.id && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            aria-label="Thao tác tin nhắn"
+                            className="mt-1 rounded-full p-1 text-muted-foreground opacity-100 transition-opacity hover:bg-muted hover:text-foreground sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align={isMe ? "end" : "start"} className="w-44">
+                          {isMe && (
+                            <DropdownMenuItem
+                              onSelect={() => {
+                                setEditContent(msg.content)
+                                setEditingMessageId(msg.id)
+                              }}
+                            >
+                              <Pencil />
+                              Chỉnh sửa
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem
+                            onSelect={() => {
+                              setForwardConversationIds([])
+                              setForwardingMessageId(msg.id)
+                            }}
+                          >
+                            <Forward />
+                            Chuyển tiếp
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onSelect={() => {
+                              onSetMessagePinned(msg.id, !msg.isPinned)
+                            }}
+                          >
+                            {msg.isPinned ? <PinOff /> : <Pin />}
+                            {msg.isPinned ? "Bỏ ghim" : "Ghim"}
+                          </DropdownMenuItem>
+                          {isMe && (
+                            <DropdownMenuItem
+                              variant="destructive"
+                              onSelect={() => {
+                                if (window.confirm("Bạn có chắc muốn thu hồi tin nhắn này?")) {
+                                  onRecallMessage(msg.id)
+                                }
+                              }}
+                            >
+                              <Trash2 />
+                              Thu hồi
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     )}
                   </div>
 
@@ -224,6 +372,63 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           }}
         />
       )}
+
+      <Dialog
+        open={Boolean(forwardingMessageId)}
+        onOpenChange={(open) => {
+          if (!open) setForwardingMessageId(null)
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Chuyển tiếp tin nhắn</DialogTitle>
+            <DialogDescription>
+              Chọn một hoặc nhiều cuộc trò chuyện nhận tin nhắn.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-72 space-y-1 overflow-y-auto">
+            {conversations.map((item) => (
+              <label
+                key={item.id}
+                className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 hover:bg-muted"
+              >
+                <input
+                  type="checkbox"
+                  checked={forwardConversationIds.includes(item.id)}
+                  disabled={
+                    !forwardConversationIds.includes(item.id) &&
+                    forwardConversationIds.length >= CHAT_CONFIG.MAX_FORWARD_CONVERSATIONS
+                  }
+                  onChange={(event) => {
+                    setForwardConversationIds((selected) =>
+                      event.target.checked
+                        ? [...selected, item.id]
+                        : selected.filter((id) => id !== item.id),
+                    )
+                  }}
+                />
+                <span className="truncate text-sm">{item.title}</span>
+              </label>
+            ))}
+          </div>
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => {
+                if (forwardingMessageId && forwardConversationIds.length) {
+                  onForwardMessage(forwardingMessageId, forwardConversationIds)
+                  setForwardingMessageId(null)
+                }
+              }}
+              disabled={!forwardConversationIds.length}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Check className="h-4 w-4" />
+              Chuyển tiếp
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Image Preview Modal */}
       {previewImage && (

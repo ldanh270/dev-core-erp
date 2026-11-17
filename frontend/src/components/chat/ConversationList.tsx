@@ -295,14 +295,16 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                     }`}
                   >
                     {c.lastMessage
-                      ? c.lastMessage.type === "image"
-                        ? "Đã gửi một hình ảnh"
-                        : c.lastMessage.type === "file"
-                          ? "Đã gửi một tệp đính kèm"
-                          : c.lastMessage.content.replace(
-                              /[@#!]\[(.+?)\]\((?:emp|proj|task):[^)]+\)/g,
-                              "$1",
-                            )
+                      ? c.lastMessage.isRecalled
+                        ? "Tin nhắn đã được thu hồi"
+                        : c.lastMessage.type === "image"
+                          ? "Đã gửi một hình ảnh"
+                          : c.lastMessage.type === "file"
+                            ? "Đã gửi một tệp đính kèm"
+                            : c.lastMessage.content.replace(
+                                /[@#!]\[(.+?)\]\((?:emp|proj|task):[^)]+\)/g,
+                                "$1",
+                              )
                       : "Bắt đầu trò chuyện"}
                   </p>
                 </div>

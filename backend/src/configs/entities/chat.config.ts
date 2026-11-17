@@ -61,6 +61,7 @@ export const CHAT_CONFIG = {
   DEFAULT_PAGE_SIZE: 30, // Number of messages returned when the client omits a page size.
   MAX_PAGE_SIZE: 100, // Service-side ceiling applied even when a caller requests more.
   MAX_GROUP_MEMBERS: 100, // Maximum current group size allowed when adding members.
+  MAX_FORWARD_CONVERSATIONS: 20, // Bound one forward operation to a manageable number of destinations.
   KEEP_ALIVE_INTERVAL_MS: 15000, // SSE heartbeat interval; measured in milliseconds.
   SEARCH_PAGE_SIZE: 50, // Maximum number of messages returned by a history search.
 } as const
@@ -82,6 +83,22 @@ export const CHAT_ERRORS = {
   MESSAGE_CONTENT_REQUIRED: {
     message: "Nội dung tin nhắn không được để trống.",
     code: "CHAT_MESSAGE_CONTENT_REQUIRED",
+  },
+  MESSAGE_NOT_FOUND: {
+    message: "Tin nhắn không tồn tại hoặc bạn không có quyền truy cập.",
+    code: "CHAT_MESSAGE_NOT_FOUND",
+  },
+  MESSAGE_OWNER_REQUIRED: {
+    message: "Chỉ người gửi mới có thể chỉnh sửa hoặc thu hồi tin nhắn.",
+    code: "CHAT_MESSAGE_OWNER_REQUIRED",
+  },
+  MESSAGE_ALREADY_RECALLED: {
+    message: "Tin nhắn này đã được thu hồi.",
+    code: "CHAT_MESSAGE_ALREADY_RECALLED",
+  },
+  INVALID_FORWARD_DESTINATIONS: {
+    message: "Vui lòng chọn ít nhất một cuộc trò chuyện hợp lệ để chuyển tiếp.",
+    code: "CHAT_INVALID_FORWARD_DESTINATIONS",
   },
   UNAUTHORIZED_PARTICIPANT: {
     message: "Bạn không phải là thành viên của cuộc trò chuyện này.",

@@ -2236,8 +2236,8 @@ model ConversationParticipant {
   @@index([conversationId])
 }
 
-/// A message may contain text, an attachment, or both. `deletedAt` preserves history while hiding
-/// the message from normal queries; mention metadata is stored as JSON for typed entity references.
+/// A message may contain text, an attachment, or both. `deletedAt` marks a recalled message whose
+/// payload is redacted in normal responses; mention metadata is stored as JSON entity references.
 model ChatMessage {
   id             String          @id @default(uuid())
   conversationId String
@@ -2247,6 +2247,8 @@ model ChatMessage {
   fileUrl        String?
   fileName       String?
   fileSize       Int?
+  isPinned       Boolean         @default(false)
+  pinnedAt       DateTime?
   /// Automatically parsed mention metadata: [{ type: "employee"|"project"|"task", id: string, label: string }]
   mentions       Json?           @db.JsonB
   createdAt      DateTime        @default(now())

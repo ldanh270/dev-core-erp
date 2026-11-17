@@ -57,4 +57,5 @@ export const CHAT_CONFIG = {
   MAX_MESSAGE_LENGTH: 4000, // Mirror the backend text limit for client-side controls.
   DEFAULT_PAGE_SIZE: 30, // Default initial history page size; server-side values remain authoritative.
   MAX_PAGE_SIZE: 100, // Mirror the backend cap to avoid requesting an oversized page.
+  MAX_FORWARD_CONVERSATIONS: 20, // Mirror the maximum number of forwarding destinations.
 } as const

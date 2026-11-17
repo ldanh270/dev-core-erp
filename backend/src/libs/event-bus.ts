@@ -1,4 +1,4 @@
-import type { ChatMessageDto } from "@/types/chat.types.ts"
+import type { ChatStreamEvent } from "@/types/chat.types.ts"
 import type { CreateNotificationDto, Notification } from "@/types/notification.types.ts"
 
 import { EventEmitter } from "events"
@@ -11,7 +11,7 @@ export interface DomainEvents {
   "notification:create": CreateNotificationDto
   "notification:broadcast": Notification
   // Shared chat-message event payload; recipient-specific delivery uses `chat:<employeeId>` channels below.
-  "chat:message": ChatMessageDto
+  "chat:message": ChatStreamEvent
 }
 
 /**
@@ -95,21 +95,21 @@ class AppEventBus extends EventEmitter {
    * Publishes a persisted chat message only to one recipient's process-local channel.
    * Callers should emit once per participant; this event bus is not a cross-process broker.
    */
-  emitChatMessage(recipientEmployeeId: string, message: ChatMessageDto): boolean {
-    return this.emit(`chat:${recipientEmployeeId}`, message)
+  emitChatMessage(recipientEmployeeId: string, event: ChatStreamEvent): boolean {
+    return this.emit(`chat:${recipientEmployeeId}`, event)
   }
 
   /**
    * Registers a real-time chat message listener on an employee-specific channel.
    */
-  onChatMessage(recipientEmployeeId: string, listener: (message: ChatMessageDto) => void): this {
+  onChatMessage(recipientEmployeeId: string, listener: (event: ChatStreamEvent) => void): this {
     return this.on(`chat:${recipientEmployeeId}`, listener)
   }
 
   /**
    * Removes a real-time chat message listener from an employee-specific channel.
    */
-  offChatMessage(recipientEmployeeId: string, listener: (message: ChatMessageDto) => void): this {
+  offChatMessage(recipientEmployeeId: string, listener: (event: ChatStreamEvent) => void): this {
     return this.off(`chat:${recipientEmployeeId}`, listener)
   }
 }

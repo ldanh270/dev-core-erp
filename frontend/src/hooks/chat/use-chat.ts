@@ -4,16 +4,18 @@ import { useAuthStore } from "@/store/auth-store"
 import type {
   AddChatParticipantsDto,
   ChatMessageDto,
+  ChatStreamEvent,
   ConversationSummaryDto,
   CreateDirectConversationDto,
   CreateGroupConversationDto,
+  ForwardMessageDto,
   SendMessageDto,
   UpdateParticipantSettingsDto,
 } from "@/types/chat.types"
 
 import { useEffect } from "react"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { type QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { toast } from "sonner"
 
@@ -27,6 +29,58 @@ const getApiErrorMessage = (error: unknown, fallback: string): string => {
   // Only Axios errors have the response shape used by this API; network and other errors use the fallback.
   if (!axios.isAxiosError<ChatApiErrorResponse>(error)) return fallback
   return error.response?.data.error?.message ?? fallback
+}
+
+/** Apply a created/updated message consistently to history, search results, and list previews. */
+const applyMessageEvent = (
+  queryClient: QueryClient,
+  event: ChatStreamEvent,
+  currentEmployeeId?: string,
+) => {
+  const { message, type } = event
+  const isCreated = type === "message.created"
+
+  queryClient.setQueryData<ChatMessageDto[]>(
+    CHAT_QUERY_KEYS.MESSAGES(message.conversationId),
+    (old) => {
+      if (!old) return isCreated ? [message] : old
+      const exists = old.some((item) => item.id === message.id)
+      if (!exists) return isCreated ? [...old, message] : old
+      return old.map((item) => (item.id === message.id ? message : item))
+    },
+  )
+
+  queryClient.setQueriesData<ChatMessageDto[]>(
+    { queryKey: ["chat", "search-messages", message.conversationId] },
+    (old) =>
+      old?.flatMap((item) => {
+        if (item.id !== message.id) return [item]
+        return message.isRecalled ? [] : [message]
+      }),
+  )
+
+  queryClient.setQueryData<ConversationSummaryDto[]>(CHAT_QUERY_KEYS.CONVERSATIONS, (old) => {
+    if (!old) return old
+    return old
+      .map((conversation) => {
+        if (conversation.id !== message.conversationId) return conversation
+        const lastMessageMatches = conversation.lastMessage?.id === message.id
+        return {
+          ...conversation,
+          lastMessage: isCreated || lastMessageMatches ? message : conversation.lastMessage,
+          unreadCount:
+            isCreated && message.senderId !== currentEmployeeId
+              ? conversation.unreadCount + 1
+              : conversation.unreadCount,
+          updatedAt: isCreated ? message.createdAt : conversation.updatedAt,
+        }
+      })
+      .sort(
+        (a, b) =>
+          Number(Boolean(b.isPinned)) - Number(Boolean(a.isPinned)) ||
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      )
+  })
 }
 
 /** Centralized cache keys keep list, detail, history, and search results isolated. */
@@ -68,45 +122,13 @@ export function useChatConversations() {
 
       eventSource.onmessage = (event) => {
         try {
-          const payload = JSON.parse(event.data) as {
-            type: string
-            payload?: ChatMessageDto
-          }
-
-          if (payload.type === "message" && payload.payload) {
-            const incomingMsg = payload.payload
-
-            // 1. Append to active conversation messages cache if open
-            queryClient.setQueryData<ChatMessageDto[]>(
-              CHAT_QUERY_KEYS.MESSAGES(incomingMsg.conversationId),
-              (old) => {
-                if (!old) return [incomingMsg]
-                if (old.some((m) => m.id === incomingMsg.id)) return old
-                return [...old, incomingMsg]
-              },
-            )
-
-            // 2. Update conversation summary in list
-            queryClient.setQueryData<ConversationSummaryDto[]>(
-              CHAT_QUERY_KEYS.CONVERSATIONS,
-              (old) => {
-                if (!old) return old
-                return old
-                  .map((conv) => {
-                    if (conv.id === incomingMsg.conversationId) {
-                      const isFromMe = incomingMsg.senderId === user?.id
-                      return {
-                        ...conv,
-                        lastMessage: incomingMsg,
-                        unreadCount: isFromMe ? conv.unreadCount : conv.unreadCount + 1,
-                        updatedAt: incomingMsg.createdAt,
-                      }
-                    }
-                    return conv
-                  })
-                  .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-              },
-            )
+          const streamEvent = JSON.parse(event.data) as ChatStreamEvent
+          if (
+            ["message.created", "message.updated", "message.recalled"].includes(streamEvent.type) &&
+            streamEvent.message?.id &&
+            streamEvent.message.conversationId
+          ) {
+            applyMessageEvent(queryClient, streamEvent, user?.id)
           }
         } catch (e) {
           console.error("Failed to parse SSE chat message:", e)
@@ -138,6 +160,7 @@ export function useChatConversations() {
  */
 export function useChatMessages(conversationId?: string) {
   const queryClient = useQueryClient()
+  const { user } = useAuthStore()
 
   const messagesQuery = useQuery<ChatMessageDto[]>({
     queryKey: CHAT_QUERY_KEYS.MESSAGES(conversationId || ""),
@@ -152,35 +175,56 @@ export function useChatMessages(conversationId?: string) {
       return chatApi.sendMessage(conversationId, dto)
     },
     onSuccess: (newMsg) => {
-      // Optimistically insert message into cache
-      queryClient.setQueryData<ChatMessageDto[]>(
-        CHAT_QUERY_KEYS.MESSAGES(conversationId || ""),
-        (old) => {
-          if (!old) return [newMsg]
-          if (old.some((m) => m.id === newMsg.id)) return old
-          return [...old, newMsg]
-        },
-      )
-
-      // Update conversation list preview
-      queryClient.setQueryData<ConversationSummaryDto[]>(CHAT_QUERY_KEYS.CONVERSATIONS, (old) => {
-        if (!old) return old
-        return old
-          .map((conv) => {
-            if (conv.id === conversationId) {
-              return {
-                ...conv,
-                lastMessage: newMsg,
-                updatedAt: newMsg.createdAt,
-              }
-            }
-            return conv
-          })
-          .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-      })
+      applyMessageEvent(queryClient, { type: "message.created", message: newMsg }, user?.id)
     },
     onError: (error: unknown) => {
       toast.error(getApiErrorMessage(error, "Không thể gửi tin nhắn"))
+    },
+  })
+
+  const editMessageMutation = useMutation({
+    mutationFn: ({ messageId, content }: { messageId: string; content: string }) =>
+      chatApi.editMessage(messageId, content),
+    onSuccess: (message) => {
+      applyMessageEvent(queryClient, { type: "message.updated", message }, user?.id)
+    },
+    onError: (error: unknown) => {
+      toast.error(getApiErrorMessage(error, "Không thể chỉnh sửa tin nhắn"))
+    },
+  })
+
+  const recallMessageMutation = useMutation({
+    mutationFn: (messageId: string) => chatApi.recallMessage(messageId),
+    onSuccess: (message) => {
+      applyMessageEvent(queryClient, { type: "message.recalled", message }, user?.id)
+    },
+    onError: (error: unknown) => {
+      toast.error(getApiErrorMessage(error, "Không thể thu hồi tin nhắn"))
+    },
+  })
+
+  const pinMessageMutation = useMutation({
+    mutationFn: ({ messageId, isPinned }: { messageId: string; isPinned: boolean }) =>
+      chatApi.setMessagePinned(messageId, isPinned),
+    onSuccess: (message) => {
+      applyMessageEvent(queryClient, { type: "message.updated", message }, user?.id)
+    },
+    onError: (error: unknown) => {
+      toast.error(getApiErrorMessage(error, "Không thể cập nhật trạng thái ghim"))
+    },
+  })
+
+  const forwardMessageMutation = useMutation({
+    mutationFn: ({ messageId, ...dto }: { messageId: string } & ForwardMessageDto) =>
+      chatApi.forwardMessage(messageId, dto),
+    onSuccess: (messages) => {
+      messages.forEach((message) => {
+        applyMessageEvent(queryClient, { type: "message.created", message }, user?.id)
+      })
+      toast.success("Đã chuyển tiếp tin nhắn")
+    },
+    onError: (error: unknown) => {
+      toast.error(getApiErrorMessage(error, "Không thể chuyển tiếp tin nhắn"))
     },
   })
 
@@ -206,6 +250,18 @@ export function useChatMessages(conversationId?: string) {
     ...messagesQuery,
     sendMessage: sendMutation.mutateAsync,
     isSending: sendMutation.isPending,
+    editMessage: (messageId: string, content: string) =>
+      editMessageMutation.mutate({ messageId, content }),
+    recallMessage: recallMessageMutation.mutate,
+    setMessagePinned: (messageId: string, isPinned: boolean) =>
+      pinMessageMutation.mutate({ messageId, isPinned }),
+    forwardMessage: (messageId: string, conversationIds: string[]) =>
+      forwardMessageMutation.mutate({ messageId, conversationIds }),
+    isMessageActionPending:
+      editMessageMutation.isPending ||
+      recallMessageMutation.isPending ||
+      pinMessageMutation.isPending ||
+      forwardMessageMutation.isPending,
     markAsRead: markReadMutation.mutate,
   }
 }

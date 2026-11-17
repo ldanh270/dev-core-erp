@@ -47,6 +47,18 @@ const sendMessageSchema = z.object({
   mentions: z.array(mentionItemSchema).optional(),
 })
 
+const editMessageSchema = z.object({
+  content: z.string().min(1).max(CHAT_CONFIG.MAX_MESSAGE_LENGTH),
+})
+
+const setMessagePinnedSchema = z.object({
+  isPinned: z.boolean(),
+})
+
+const forwardMessageSchema = z.object({
+  conversationIds: z.array(z.string().min(1)).min(1).max(CHAT_CONFIG.MAX_FORWARD_CONVERSATIONS),
+})
+
 const updateSettingsSchema = z.object({
   isPinned: z.boolean().optional(),
   isMuted: z.boolean().optional(),
@@ -190,6 +202,73 @@ export class ChatController {
   }
 
   /**
+   * PATCH /api/chat/messages/:messageId
+   * Edits the text of a message sent by the authenticated employee.
+   */
+  editMessage = async (req: AuthRequest, res: Response): Promise<void> => {
+    const employeeId = req.user?.empId
+    if (!employeeId) {
+      throw new AppError("Unauthorized", HttpStatusCode.UNAUTHORIZED, ErrorLayer.CONTROLLER)
+    }
+
+    const { content } = editMessageSchema.parse(req.body)
+    const data = await this.service.editMessage(String(req.params.messageId), employeeId, content)
+    res.status(HttpStatusCode.OK).json({ data, error: null })
+  }
+
+  /**
+   * DELETE /api/chat/messages/:messageId
+   * Recalls the authenticated employee's message for all conversation participants.
+   */
+  recallMessage = async (req: AuthRequest, res: Response): Promise<void> => {
+    const employeeId = req.user?.empId
+    if (!employeeId) {
+      throw new AppError("Unauthorized", HttpStatusCode.UNAUTHORIZED, ErrorLayer.CONTROLLER)
+    }
+
+    const data = await this.service.recallMessage(String(req.params.messageId), employeeId)
+    res.status(HttpStatusCode.OK).json({ data, error: null })
+  }
+
+  /**
+   * PATCH /api/chat/messages/:messageId/pin
+   * Sets the shared pin state for an active conversation message.
+   */
+  setMessagePinned = async (req: AuthRequest, res: Response): Promise<void> => {
+    const employeeId = req.user?.empId
+    if (!employeeId) {
+      throw new AppError("Unauthorized", HttpStatusCode.UNAUTHORIZED, ErrorLayer.CONTROLLER)
+    }
+
+    const { isPinned } = setMessagePinnedSchema.parse(req.body)
+    const data = await this.service.setMessagePinned(
+      String(req.params.messageId),
+      employeeId,
+      isPinned,
+    )
+    res.status(HttpStatusCode.OK).json({ data, error: null })
+  }
+
+  /**
+   * POST /api/chat/messages/:messageId/forward
+   * Copies a visible message into one or more accessible conversations.
+   */
+  forwardMessage = async (req: AuthRequest, res: Response): Promise<void> => {
+    const employeeId = req.user?.empId
+    if (!employeeId) {
+      throw new AppError("Unauthorized", HttpStatusCode.UNAUTHORIZED, ErrorLayer.CONTROLLER)
+    }
+
+    const { conversationIds } = forwardMessageSchema.parse(req.body)
+    const data = await this.service.forwardMessage(
+      String(req.params.messageId),
+      employeeId,
+      conversationIds,
+    )
+    res.status(HttpStatusCode.CREATED).json({ data, error: null })
+  }
+
+  /**
    * POST /api/chat/conversations/:id/read
    * Marks all messages up to the present as read.
    */
@@ -295,8 +374,8 @@ export class ChatController {
     res.write(`data: ${JSON.stringify({ type: "connected" })}\n\n`)
 
     // Subscribe only to this employee's channel; the disposer is called when the stream closes.
-    const unsubscribe = this.service.subscribeToChatStream(employeeId, (message) => {
-      res.write(`data: ${JSON.stringify({ type: "message", payload: message })}\n\n`)
+    const unsubscribe = this.service.subscribeToChatStream(employeeId, (event) => {
+      res.write(`data: ${JSON.stringify(event)}\n\n`)
     })
 
     // Comment frames are ignored by EventSource but keep intermediaries from timing out the stream.

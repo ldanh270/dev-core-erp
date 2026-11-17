@@ -5,6 +5,7 @@ import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { eventBus } from "@/libs/event-bus.ts"
 import type {
   ChatMessageDto,
+  ChatStreamEvent,
   ConversationSummaryDto,
   CreateGroupConversationDto,
   IChatRepository,
@@ -263,8 +264,8 @@ export class ChatService implements IChatService {
   }
 
   /**
-   * Validate, persist, then publish a message to every other active conversation participant.
-   * The sender receives the normal HTTP response; recipient delivery is asynchronous via EventBus.
+   * Validate, persist, then publish a message event to every active conversation participant.
+   * Event delivery also updates other sessions owned by the sender.
    */
   async sendMessage(
     conversationId: string,
@@ -295,14 +296,164 @@ export class ChatService implements IChatService {
       content: data.content?.slice(0, CHAT_CONFIG.MAX_MESSAGE_LENGTH) ?? "",
     })
 
-    // Broadcast in real-time to all other conversation participants via EventBus
-    for (const participant of conversation.participants) {
-      if (participant.employeeId !== senderId) {
-        this.bus.emitChatMessage(participant.employeeId, createdMessage)
-      }
-    }
+    // Broadcast the typed creation event to every active member, including the sender's other sessions.
+    this.publishMessageEvent(conversation.participants, {
+      type: "message.created",
+      message: createdMessage,
+    })
 
     return createdMessage
+  }
+
+  /** Edit an active message owned by the caller and notify all active members. */
+  async editMessage(
+    messageId: string,
+    employeeId: string,
+    content: string,
+  ): Promise<ChatMessageDto> {
+    const message = await this.getAccessibleMessage(messageId, employeeId)
+    if (message.senderId !== employeeId) {
+      throw new AppError(
+        CHAT_ERRORS.MESSAGE_OWNER_REQUIRED.message,
+        HttpStatusCode.FORBIDDEN,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.MESSAGE_OWNER_REQUIRED.code,
+      )
+    }
+    if (message.isRecalled) {
+      throw new AppError(
+        CHAT_ERRORS.MESSAGE_ALREADY_RECALLED.message,
+        HttpStatusCode.BAD_REQUEST,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.MESSAGE_ALREADY_RECALLED.code,
+      )
+    }
+
+    const normalizedContent = content.trim()
+    if (!normalizedContent) {
+      throw new AppError(
+        CHAT_ERRORS.MESSAGE_CONTENT_REQUIRED.message,
+        HttpStatusCode.BAD_REQUEST,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.MESSAGE_CONTENT_REQUIRED.code,
+      )
+    }
+
+    const updated = await this.chatRepo.editMessage(
+      messageId,
+      employeeId,
+      normalizedContent.slice(0, CHAT_CONFIG.MAX_MESSAGE_LENGTH),
+    )
+    if (!updated) return this.throwMessageNotFound()
+
+    const conversation = await this.getConversationDetail(updated.conversationId, employeeId)
+    this.publishMessageEvent(conversation.participants, {
+      type: "message.updated",
+      message: updated,
+    })
+    return updated
+  }
+
+  /** Globally recall an active message owned by the caller and publish the redacted tombstone. */
+  async recallMessage(messageId: string, employeeId: string): Promise<ChatMessageDto> {
+    const message = await this.getAccessibleMessage(messageId, employeeId)
+    if (message.senderId !== employeeId) {
+      throw new AppError(
+        CHAT_ERRORS.MESSAGE_OWNER_REQUIRED.message,
+        HttpStatusCode.FORBIDDEN,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.MESSAGE_OWNER_REQUIRED.code,
+      )
+    }
+    if (message.isRecalled) {
+      throw new AppError(
+        CHAT_ERRORS.MESSAGE_ALREADY_RECALLED.message,
+        HttpStatusCode.BAD_REQUEST,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.MESSAGE_ALREADY_RECALLED.code,
+      )
+    }
+
+    const recalled = await this.chatRepo.recallMessage(messageId, employeeId)
+    if (!recalled) return this.throwMessageNotFound()
+
+    const conversation = await this.getConversationDetail(recalled.conversationId, employeeId)
+    this.publishMessageEvent(conversation.participants, {
+      type: "message.recalled",
+      message: recalled,
+    })
+    return recalled
+  }
+
+  /** Pin or unpin an active message globally for its conversation participants. */
+  async setMessagePinned(
+    messageId: string,
+    employeeId: string,
+    isPinned: boolean,
+  ): Promise<ChatMessageDto> {
+    const message = await this.getAccessibleMessage(messageId, employeeId)
+    if (message.isRecalled) return this.throwMessageNotFound()
+
+    const updated = await this.chatRepo.setMessagePinned(messageId, employeeId, isPinned)
+    if (!updated) return this.throwMessageNotFound()
+
+    const conversation = await this.getConversationDetail(updated.conversationId, employeeId)
+    this.publishMessageEvent(conversation.participants, {
+      type: "message.updated",
+      message: updated,
+    })
+    return updated
+  }
+
+  /** Validate all target conversations before atomically forwarding and publishing new messages. */
+  async forwardMessage(
+    messageId: string,
+    employeeId: string,
+    conversationIds: string[],
+  ): Promise<ChatMessageDto[]> {
+    const message = await this.getAccessibleMessage(messageId, employeeId)
+    if (message.isRecalled) return this.throwMessageNotFound()
+
+    const uniqueConversationIds = Array.from(new Set(conversationIds))
+    if (
+      !uniqueConversationIds.length ||
+      uniqueConversationIds.length > CHAT_CONFIG.MAX_FORWARD_CONVERSATIONS
+    ) {
+      throw new AppError(
+        CHAT_ERRORS.INVALID_FORWARD_DESTINATIONS.message,
+        HttpStatusCode.BAD_REQUEST,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.INVALID_FORWARD_DESTINATIONS.code,
+      )
+    }
+
+    const forwarded = await this.chatRepo.forwardMessage(
+      messageId,
+      employeeId,
+      uniqueConversationIds,
+    )
+    if (!forwarded) {
+      throw new AppError(
+        CHAT_ERRORS.INVALID_FORWARD_DESTINATIONS.message,
+        HttpStatusCode.FORBIDDEN,
+        ErrorLayer.SERVICE,
+        CHAT_ERRORS.INVALID_FORWARD_DESTINATIONS.code,
+      )
+    }
+
+    for (const forwardedMessage of forwarded) {
+      const conversation = await this.chatRepo.findConversationById(
+        forwardedMessage.conversationId,
+        employeeId,
+      )
+      if (conversation) {
+        this.publishMessageEvent(conversation.participants, {
+          type: "message.created",
+          message: forwardedMessage,
+        })
+      }
+    }
+    return forwarded
   }
 
   /**
@@ -343,11 +494,38 @@ export class ChatService implements IChatService {
    */
   subscribeToChatStream(
     employeeId: string,
-    onMessage: (message: ChatMessageDto) => void,
+    onMessage: (event: ChatStreamEvent) => void,
   ): () => void {
     this.bus.onChatMessage(employeeId, onMessage)
     return () => {
       this.bus.offChatMessage(employeeId, onMessage)
+    }
+  }
+
+  private async getAccessibleMessage(
+    messageId: string,
+    employeeId: string,
+  ): Promise<ChatMessageDto> {
+    const message = await this.chatRepo.findMessageById(messageId, employeeId)
+    if (!message) return this.throwMessageNotFound()
+    return message
+  }
+
+  private throwMessageNotFound(): never {
+    throw new AppError(
+      CHAT_ERRORS.MESSAGE_NOT_FOUND.message,
+      HttpStatusCode.NOT_FOUND,
+      ErrorLayer.SERVICE,
+      CHAT_ERRORS.MESSAGE_NOT_FOUND.code,
+    )
+  }
+
+  private publishMessageEvent(
+    participants: ConversationSummaryDto["participants"],
+    event: ChatStreamEvent,
+  ): void {
+    for (const participant of participants) {
+      this.bus.emitChatMessage(participant.employeeId, event)
     }
   }
 

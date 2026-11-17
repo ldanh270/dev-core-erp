@@ -31,6 +31,10 @@ const ChatPage: React.FC = () => {
     data: messages = [],
     isLoading: isLoadingMessages,
     sendMessage,
+    editMessage,
+    recallMessage,
+    setMessagePinned,
+    forwardMessage,
     markAsRead,
   } = useChatMessages(conversationId)
 
@@ -88,9 +92,14 @@ const ChatPage: React.FC = () => {
         <ChatWindow
           conversation={activeConversation}
           messages={messages}
+          conversations={conversations}
           onSendMessage={async (data) => {
             await sendMessage(data)
           }}
+          onEditMessage={editMessage}
+          onRecallMessage={recallMessage}
+          onSetMessagePinned={setMessagePinned}
+          onForwardMessage={forwardMessage}
           isLoading={isLoadingMessages}
         />
       </div>

@@ -5,6 +5,7 @@ import type {
   ConversationSummaryDto,
   CreateDirectConversationDto,
   CreateGroupConversationDto,
+  ForwardMessageDto,
   MentionEmployeeItem,
   MentionProjectItem,
   MentionTaskItem,
@@ -95,6 +96,41 @@ export const chatApi = {
   async sendMessage(conversationId: string, dto: SendMessageDto): Promise<ChatMessageDto> {
     const res = await apiClient.post<{ data: ChatMessageDto }>(
       `/chat/conversations/${conversationId}/messages`,
+      dto,
+    )
+    return res.data.data
+  },
+
+  /** Edit the signed-in employee's own message text. */
+  async editMessage(messageId: string, content: string): Promise<ChatMessageDto> {
+    const res = await apiClient.patch<{ data: ChatMessageDto }>(
+      `/chat/messages/${encodeURIComponent(messageId)}`,
+      { content },
+    )
+    return res.data.data
+  },
+
+  /** Recall the signed-in employee's own message for all conversation participants. */
+  async recallMessage(messageId: string): Promise<ChatMessageDto> {
+    const res = await apiClient.delete<{ data: ChatMessageDto }>(
+      `/chat/messages/${encodeURIComponent(messageId)}`,
+    )
+    return res.data.data
+  },
+
+  /** Set the shared pin state of an active message. */
+  async setMessagePinned(messageId: string, isPinned: boolean): Promise<ChatMessageDto> {
+    const res = await apiClient.patch<{ data: ChatMessageDto }>(
+      `/chat/messages/${encodeURIComponent(messageId)}/pin`,
+      { isPinned },
+    )
+    return res.data.data
+  },
+
+  /** Forward a message to multiple existing conversations. */
+  async forwardMessage(messageId: string, dto: ForwardMessageDto): Promise<ChatMessageDto[]> {
+    const res = await apiClient.post<{ data: ChatMessageDto[] }>(
+      `/chat/messages/${encodeURIComponent(messageId)}/forward`,
       dto,
     )
     return res.data.data

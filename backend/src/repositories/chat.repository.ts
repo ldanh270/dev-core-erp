@@ -27,7 +27,7 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
 
   /**
    * Retrieves all conversations an employee is participating in,
-   * including unread message count and the latest non-deleted message.
+   * including unread counts and the latest message; recalled payloads are redacted during mapping.
    * Hidden memberships and globally deleted conversations are excluded; pinning is applied before
    * activity-time ordering because pin state belongs to this employee's membership.
    */
@@ -57,7 +57,6 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
               },
             },
             messages: {
-              where: { deletedAt: null },
               orderBy: { createdAt: "desc" },
               take: 1,
               include: {
@@ -141,7 +140,6 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
           },
         },
         messages: {
-          where: { deletedAt: null },
           orderBy: { createdAt: "desc" },
           take: 1,
           include: {
@@ -206,7 +204,6 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
           },
         },
         messages: {
-          where: { deletedAt: null },
           orderBy: { createdAt: "desc" },
           take: 1,
           include: {
@@ -316,7 +313,7 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
   }
 
   /**
-   * Retrieves a page of visible messages and returns it in chronological display order.
+   * Retrieves message history, including recalled placeholders, and returns it chronologically.
    * The cursor is resolved to a timestamp boundary; optional text search is applied in the same query.
    */
   async findMessages(
@@ -325,7 +322,6 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
   ): Promise<ChatMessageDto[]> {
     const where: Prisma.ChatMessageWhereInput = {
       conversationId,
-      deletedAt: null,
     }
 
     if (options.beforeCursor) {
@@ -340,6 +336,7 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
     }
 
     if (options.searchQuery) {
+      where.deletedAt = null
       where.content = { contains: options.searchQuery, mode: "insensitive" }
     }
 
@@ -412,6 +409,160 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
     })
 
     return this.mapToChatMessageDto(result)
+  }
+
+  /** Find a message through an active conversation membership, including recalled tombstones. */
+  async findMessageById(messageId: string, employeeId: string): Promise<ChatMessageDto | null> {
+    const message = await this.prisma.chatMessage.findFirst({
+      where: {
+        id: messageId,
+        conversation: {
+          deletedAt: null,
+          participants: { some: { employeeId, isDeleted: false } },
+        },
+      },
+      include: {
+        sender: {
+          select: { id: true, fullName: true, username: true, avatarUrl: true },
+        },
+      },
+    })
+
+    return message ? this.mapToChatMessageDto(message) : null
+  }
+
+  /** Update text only when the caller owns a visible, non-recalled message. */
+  async editMessage(
+    messageId: string,
+    senderId: string,
+    content: string,
+  ): Promise<ChatMessageDto | null> {
+    const result = await this.prisma.chatMessage.updateMany({
+      where: {
+        id: messageId,
+        senderId,
+        deletedAt: null,
+        conversation: {
+          deletedAt: null,
+          participants: { some: { employeeId: senderId, isDeleted: false } },
+        },
+      },
+      data: { content },
+    })
+    if (!result.count) return null
+
+    return this.findMessageById(messageId, senderId)
+  }
+
+  /** Soft-recall a sender-owned message for every participant. */
+  async recallMessage(messageId: string, senderId: string): Promise<ChatMessageDto | null> {
+    const result = await this.prisma.chatMessage.updateMany({
+      where: {
+        id: messageId,
+        senderId,
+        deletedAt: null,
+        conversation: {
+          deletedAt: null,
+          participants: { some: { employeeId: senderId, isDeleted: false } },
+        },
+      },
+      data: { deletedAt: new Date() },
+    })
+    if (!result.count) return null
+
+    return this.findMessageById(messageId, senderId)
+  }
+
+  /** Change the shared pin state for an active message in an accessible conversation. */
+  async setMessagePinned(
+    messageId: string,
+    employeeId: string,
+    isPinned: boolean,
+  ): Promise<ChatMessageDto | null> {
+    const result = await this.prisma.chatMessage.updateMany({
+      where: {
+        id: messageId,
+        deletedAt: null,
+        conversation: {
+          deletedAt: null,
+          participants: { some: { employeeId, isDeleted: false } },
+        },
+      },
+      data: { isPinned, pinnedAt: isPinned ? new Date() : null },
+    })
+    if (!result.count) return null
+
+    return this.findMessageById(messageId, employeeId)
+  }
+
+  /**
+   * Copy one active source message into all requested destinations in a single transaction.
+   * Source visibility and destination memberships are rechecked before any copies are committed.
+   */
+  async forwardMessage(
+    messageId: string,
+    senderId: string,
+    conversationIds: string[],
+  ): Promise<ChatMessageDto[] | null> {
+    return this.prisma.$transaction(async (tx) => {
+      const source = await tx.chatMessage.findFirst({
+        where: {
+          id: messageId,
+          deletedAt: null,
+          conversation: {
+            deletedAt: null,
+            participants: { some: { employeeId: senderId, isDeleted: false } },
+          },
+        },
+      })
+      if (!source) return null
+
+      const accessibleTargets = await tx.conversation.findMany({
+        where: {
+          id: { in: conversationIds },
+          deletedAt: null,
+          participants: { some: { employeeId: senderId, isDeleted: false } },
+        },
+        select: { id: true },
+      })
+      if (accessibleTargets.length !== conversationIds.length) return null
+
+      const forwardedMessages: ChatMessageDto[] = []
+      for (const conversationId of conversationIds) {
+        const message = await tx.chatMessage.create({
+          data: {
+            conversationId,
+            senderId,
+            content: source.content,
+            type: source.type,
+            fileUrl: source.fileUrl,
+            fileName: source.fileName,
+            fileSize: source.fileSize,
+            mentions:
+              source.mentions === null
+                ? Prisma.JsonNull
+                : (source.mentions as Prisma.InputJsonValue),
+          },
+          include: {
+            sender: {
+              select: { id: true, fullName: true, username: true, avatarUrl: true },
+            },
+          },
+        })
+
+        await tx.conversation.update({
+          where: { id: conversationId },
+          data: { updatedAt: new Date() },
+        })
+        await tx.conversationParticipant.updateMany({
+          where: { conversationId, employeeId: senderId, isDeleted: false },
+          data: { lastReadAt: new Date() },
+        })
+        forwardedMessages.push(this.mapToChatMessageDto(message))
+      }
+
+      return forwardedMessages
+    })
   }
 
   /**
@@ -541,6 +692,9 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
     fileName: string | null
     fileSize: number | null
     mentions: unknown
+    deletedAt: Date | null
+    isPinned: boolean
+    pinnedAt: Date | null
     createdAt: Date
     updatedAt: Date
     sender: {
@@ -550,18 +704,23 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
       avatarUrl: string | null
     }
   }): ChatMessageDto {
+    const isRecalled = raw.deletedAt !== null
+
     return {
       id: raw.id,
       conversationId: raw.conversationId,
       senderId: raw.senderId,
       senderName: raw.sender.fullName,
       senderAvatar: raw.sender.avatarUrl,
-      content: raw.content,
+      content: isRecalled ? "" : raw.content,
       type: raw.type as ChatMessageDto["type"],
-      fileUrl: raw.fileUrl,
-      fileName: raw.fileName,
-      fileSize: raw.fileSize,
-      mentions: (raw.mentions as ChatMessageMention[] | null) ?? null,
+      fileUrl: isRecalled ? null : raw.fileUrl,
+      fileName: isRecalled ? null : raw.fileName,
+      fileSize: isRecalled ? null : raw.fileSize,
+      mentions: isRecalled ? null : ((raw.mentions as ChatMessageMention[] | null) ?? null),
+      isRecalled,
+      isPinned: isRecalled ? false : raw.isPinned,
+      pinnedAt: isRecalled ? null : raw.pinnedAt,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     }
@@ -609,6 +768,9 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
       fileName: string | null
       fileSize: number | null
       mentions: unknown
+      deletedAt: Date | null
+      isPinned: boolean
+      pinnedAt: Date | null
       createdAt: Date
       updatedAt: Date
       sender: {

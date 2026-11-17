@@ -46,8 +46,21 @@ export interface ChatMessageDto {
   fileName?: string | null
   fileSize?: number | null
   mentions?: ChatMessageMention[] | null
+  /** Recalled messages are rendered as a placeholder with their original payload redacted. */
+  isRecalled: boolean
+  /** Message pin state is shared with every member of the conversation. */
+  isPinned: boolean
+  pinnedAt?: string | null
   createdAt: string
   updatedAt: string
+}
+
+export type ChatStreamEventType = "message.created" | "message.updated" | "message.recalled"
+
+/** Event envelope used by the authenticated chat SSE stream. */
+export interface ChatStreamEvent {
+  type: ChatStreamEventType
+  message: ChatMessageDto
 }
 
 /**
@@ -102,6 +115,11 @@ export interface SendMessageDto {
   fileName?: string
   fileSize?: number
   mentions?: ChatMessageMention[]
+}
+
+/** Existing conversation IDs that should receive a new copy of the source message. */
+export interface ForwardMessageDto {
+  conversationIds: string[]
 }
 
 /** Lightweight employee option returned by `@` autocomplete. */

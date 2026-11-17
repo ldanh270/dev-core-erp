@@ -49,8 +49,21 @@ export interface ChatMessageDto {
   fileName?: string | null
   fileSize?: number | null
   mentions?: ChatMessageMention[] | null
+  /** True when the sender recalled the message; content and attachment fields are then redacted. */
+  isRecalled: boolean
+  /** Pin state is shared by all participants in the conversation. */
+  isPinned: boolean
+  pinnedAt?: Date | null
   createdAt: Date
   updatedAt: Date
+}
+
+export type ChatStreamEventType = "message.created" | "message.updated" | "message.recalled"
+
+/** Event envelope sent over the per-employee SSE stream. */
+export interface ChatStreamEvent {
+  type: ChatStreamEventType
+  message: ChatMessageDto
 }
 
 /**
@@ -108,6 +121,11 @@ export interface SendMessageDto {
   fileSize?: number
   /** Optional references corresponding to mention tokens embedded in `content`. */
   mentions?: ChatMessageMention[]
+}
+
+/** Target conversations for a single source message being forwarded as new messages. */
+export interface ForwardMessageDto {
+  conversationIds: string[]
 }
 
 /** Lightweight employee result used by mention autocomplete and member pickers. */
@@ -177,6 +195,24 @@ export interface IChatRepository {
     senderId: string,
     data: SendMessageDto,
   ): Promise<ChatMessageDto>
+  /** Find a message only through an active membership in its conversation. */
+  findMessageById(messageId: string, employeeId: string): Promise<ChatMessageDto | null>
+  /** Update message text only while it is active and owned by the sender. */
+  editMessage(messageId: string, senderId: string, content: string): Promise<ChatMessageDto | null>
+  /** Soft-recall an active message only while it is owned by the sender. */
+  recallMessage(messageId: string, senderId: string): Promise<ChatMessageDto | null>
+  /** Set the shared pin state for an active message in a conversation the employee can access. */
+  setMessagePinned(
+    messageId: string,
+    employeeId: string,
+    isPinned: boolean,
+  ): Promise<ChatMessageDto | null>
+  /** Create forwarded copies in all targets atomically; null means the source or a target is inaccessible. */
+  forwardMessage(
+    messageId: string,
+    senderId: string,
+    conversationIds: string[],
+  ): Promise<ChatMessageDto[] | null>
   /** Advance the employee's read watermark for the conversation. */
   updateLastRead(conversationId: string, employeeId: string): Promise<void>
   /** Search active employees by display name or username for `@` autocomplete. */
@@ -243,6 +279,22 @@ export interface IChatService {
     senderId: string,
     data: SendMessageDto,
   ): Promise<ChatMessageDto>
+  /** Edit text only when the caller is the sender of an active message. */
+  editMessage(messageId: string, employeeId: string, content: string): Promise<ChatMessageDto>
+  /** Soft-recall one of the caller's messages for every conversation participant. */
+  recallMessage(messageId: string, employeeId: string): Promise<ChatMessageDto>
+  /** Pin or unpin a message for the whole conversation. */
+  setMessagePinned(
+    messageId: string,
+    employeeId: string,
+    isPinned: boolean,
+  ): Promise<ChatMessageDto>
+  /** Forward an active message as new messages to one or more accessible conversations. */
+  forwardMessage(
+    messageId: string,
+    employeeId: string,
+    conversationIds: string[],
+  ): Promise<ChatMessageDto[]>
   /** Explicitly advance the caller's read watermark. */
   markAsRead(conversationId: string, employeeId: string): Promise<void>
   /** Search active employee records for `@` mention selection. */
@@ -252,10 +304,7 @@ export interface IChatService {
   /** Search task records for `!` mention selection, optionally by project. */
   searchMentionTasks(query: string, limit?: number, projectId?: string): Promise<MentionTaskItem[]>
   /** Subscribe to one employee's stream; the returned callback removes that listener. */
-  subscribeToChatStream(
-    employeeId: string,
-    onMessage: (message: ChatMessageDto) => void,
-  ): () => void
+  subscribeToChatStream(employeeId: string, onMessage: (event: ChatStreamEvent) => void): () => void
   /** Update per-employee pin, mute, or restriction flags after access validation. */
   updateParticipantSettings(
     conversationId: string,
