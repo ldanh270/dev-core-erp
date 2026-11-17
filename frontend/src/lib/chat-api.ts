@@ -12,26 +12,25 @@ import type {
   UpdateParticipantSettingsDto,
 } from "@/types/chat.types"
 
+/**
+ * Typed REST boundary for chat.
+ * The server wraps successful payloads in `{ data, error }`; date fields arrive as ISO strings
+ * and are described by the browser-facing DTOs.
+ */
 export const chatApi = {
-  /**
-   * Fetch all conversations for current user
-   */
+  /** Fetch the signed-in employee's visible conversation summaries. */
   async getConversations(): Promise<ConversationSummaryDto[]> {
     const res = await apiClient.get<{ data: ConversationSummaryDto[] }>("/chat/conversations")
     return res.data.data || []
   },
 
-  /**
-   * Fetch a single conversation detail
-   */
+  /** Fetch a conversation only if the signed-in employee is an active participant. */
   async getConversationDetail(id: string): Promise<ConversationSummaryDto> {
     const res = await apiClient.get<{ data: ConversationSummaryDto }>(`/chat/conversations/${id}`)
     return res.data.data
   },
 
-  /**
-   * Create or find a direct 1-1 conversation
-   */
+  /** Return the existing direct conversation for this pair or create it if absent. */
   async createDirectConversation(
     dto: CreateDirectConversationDto,
   ): Promise<ConversationSummaryDto> {
@@ -42,9 +41,7 @@ export const chatApi = {
     return res.data.data
   },
 
-  /**
-   * Create a group conversation
-   */
+  /** Create a group; the server adds the signed-in employee to the supplied member IDs. */
   async createGroupConversation(dto: CreateGroupConversationDto): Promise<ConversationSummaryDto> {
     const res = await apiClient.post<{ data: ConversationSummaryDto }>(
       "/chat/conversations/group",
@@ -53,9 +50,7 @@ export const chatApi = {
     return res.data.data
   },
 
-  /**
-   * Add employees to an existing group conversation
-   */
+  /** Add employees to a group the signed-in employee can access. */
   async addParticipants(
     conversationId: string,
     dto: AddChatParticipantsDto,
@@ -68,7 +63,9 @@ export const chatApi = {
   },
 
   /**
-   * Fetch messages for a conversation
+   * Fetch one chronological message page.
+   * `beforeCursor` is the ID of the newest message already loaded; the server returns earlier
+   * messages while keeping the result ordered oldest-to-newest for rendering.
    */
   async getMessages(
     conversationId: string,
@@ -85,9 +82,7 @@ export const chatApi = {
     return res.data.data || []
   },
 
-  /**
-   * Search messages across a conversation's history
-   */
+  /** Search the authenticated member's conversation history by message text. */
   async searchMessages(conversationId: string, query: string): Promise<ChatMessageDto[]> {
     const res = await apiClient.get<{ data: ChatMessageDto[] }>(
       `/chat/conversations/${conversationId}/messages/search`,
@@ -96,9 +91,7 @@ export const chatApi = {
     return res.data.data || []
   },
 
-  /**
-   * Send a chat message
-   */
+  /** Persist a text, attachment, or mention-token message and return its enriched DTO. */
   async sendMessage(conversationId: string, dto: SendMessageDto): Promise<ChatMessageDto> {
     const res = await apiClient.post<{ data: ChatMessageDto }>(
       `/chat/conversations/${conversationId}/messages`,
@@ -107,16 +100,12 @@ export const chatApi = {
     return res.data.data
   },
 
-  /**
-   * Mark conversation as read
-   */
+  /** Advance the signed-in member's read watermark to the current time. */
   async markAsRead(conversationId: string): Promise<void> {
     await apiClient.post(`/chat/conversations/${conversationId}/read`)
   },
 
-  /**
-   * Update participant settings (Pin, Mute, Restrict)
-   */
+  /** Update pin, mute, or restriction preferences for this member only. */
   async updateSettings(
     conversationId: string,
     settings: UpdateParticipantSettingsDto,
@@ -125,14 +114,16 @@ export const chatApi = {
   },
 
   /**
-   * Delete / leave / hide conversation
+   * Hide the conversation for the current employee.
+   * This is a per-membership soft delete and does not erase the other participants' history.
    */
   async deleteConversation(conversationId: string): Promise<void> {
     await apiClient.delete(`/chat/conversations/${conversationId}`)
   },
 
   /**
-   * Upload file or image attachment
+   * Upload a file before sending its returned URL in a message.
+   * The multipart field name must remain `file` to match the backend Multer route.
    */
   async uploadAttachment(file: File): Promise<{
     fileUrl: string
@@ -151,10 +142,11 @@ export const chatApi = {
   },
 
   /**
-   * Autocomplete queries for mention syntax:
+   * Autocomplete queries for the three mention triggers:
    * @ -> Employee
    * # -> Project
    * ! -> Task
+   * Results are lightweight lookup DTOs, not full entity records.
    */
   async searchMentionEmployees(q: string, limit = 8): Promise<MentionEmployeeItem[]> {
     const res = await apiClient.get<{ data: MentionEmployeeItem[] }>("/chat/mentions/employees", {
@@ -163,6 +155,7 @@ export const chatApi = {
     return res.data.data || []
   },
 
+  /** Search projects for `#` autocomplete. */
   async searchMentionProjects(q: string, limit = 8): Promise<MentionProjectItem[]> {
     const res = await apiClient.get<{ data: MentionProjectItem[] }>("/chat/mentions/projects", {
       params: { q, limit },
@@ -170,6 +163,7 @@ export const chatApi = {
     return res.data.data || []
   },
 
+  /** Search tasks for `!` autocomplete, optionally limiting results to a project. */
   async searchMentionTasks(q: string, limit = 8, projectId?: string): Promise<MentionTaskItem[]> {
     const params: Record<string, string | number> = { q, limit }
     if (projectId) params["projectId"] = projectId

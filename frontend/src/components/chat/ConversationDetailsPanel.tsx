@@ -13,10 +13,13 @@ import { format } from "date-fns"
 import { Search, UserPlus, Users, X } from "lucide-react"
 
 interface ConversationDetailsPanelProps {
+  /** The conversation whose messages and membership are being inspected. */
   conversation: ConversationSummaryDto
+  /** Close the overlay without changing the active conversation. */
   onClose: () => void
 }
 
+/** Convert structured mention tokens into readable labels for compact search-result previews. */
 const getMessagePreview = (message: ChatMessageDto) => {
   if (message.content) {
     return message.content.replace(/[@#!]\[(.+?)\]\((?:emp|proj|task):[^)]+\)/g, "$1")
@@ -26,6 +29,11 @@ const getMessagePreview = (message: ChatMessageDto) => {
   return ""
 }
 
+/**
+ * Conversation-scoped tools for searching history, filtering members, and adding group members.
+ * Search queries are debounced and keyed by conversation so cached or late results cannot leak
+ * into another conversation's panel.
+ */
 export const ConversationDetailsPanel: React.FC<ConversationDetailsPanelProps> = ({
   conversation,
   onClose,
@@ -112,6 +120,7 @@ export const ConversationDetailsPanel: React.FC<ConversationDetailsPanelProps> =
     (employee) => !existingEmployeeIds.has(employee.id),
   )
 
+  /** Toggle one employee without mutating the existing selection array. */
   const toggleEmployee = (employeeId: string) => {
     setSelectedEmployeeIds((current) =>
       current.includes(employeeId)
@@ -120,6 +129,7 @@ export const ConversationDetailsPanel: React.FC<ConversationDetailsPanelProps> =
     )
   }
 
+  /** Submit only selected IDs; the mutation closes the picker after a successful server response. */
   const addSelectedEmployees = () => {
     if (!selectedEmployeeIds.length) return
     addParticipantsMutation.mutate(

@@ -13,12 +13,20 @@ import { MentionInput } from "./MentionInput"
 import { MentionMessageRenderer } from "./MentionMessageRenderer"
 
 interface ChatWindowProps {
+  /** Omitted while the route has no matching conversation or the list is still loading. */
   conversation?: ConversationSummaryDto
+  /** Chronological messages for the selected conversation. */
   messages: ChatMessageDto[]
+  /** Parent mutation handler; rejection is surfaced by the chat mutation hook. */
   onSendMessage: (data: SendMessageDto) => Promise<void>
   isLoading?: boolean
 }
 
+/**
+ * Renders the selected conversation, message history, and composer.
+ * The selected conversation controls the header/details panel, while image previews stay local to
+ * this window and are discarded when the component unmounts.
+ */
 export const ChatWindow: React.FC<ChatWindowProps> = ({
   conversation,
   messages,
@@ -30,7 +38,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
-  // Auto-scroll to bottom on new message
+  // Keep the newest message in view whenever the rendered message list changes.
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])

@@ -13,6 +13,7 @@ const createDirectSchema = z.object({
   partnerId: z.string().min(1, "Partner ID is required"),
 })
 
+// Group member IDs identify the other employees; the authenticated creator is added by the service.
 const createGroupSchema = z.object({
   title: z.string().min(1, "Group title is required").max(100),
   participantIds: z.array(z.string()).min(2, "At least 2 members are required"),
@@ -36,6 +37,7 @@ const mentionItemSchema = z.object({
     .optional(),
 })
 
+// Empty text is allowed here so attachment-only messages can be sent; the service requires text or a file URL.
 const sendMessageSchema = z.object({
   content: z.string().max(CHAT_CONFIG.MAX_MESSAGE_LENGTH).optional().default(""),
   type: z.enum(CHAT_MESSAGE_TYPES).optional().default("text"),
@@ -53,9 +55,11 @@ const updateSettingsSchema = z.object({
 
 /**
  * Controller handling chat endpoints and SSE streams.
- * Adheres strictly to the standard ApiResponse<T> envelope format.
+ * Authenticated identity always comes from `req.user`; request bodies cannot choose the acting employee.
+ * Successful handlers return the standard `{ data, error }` response envelope.
  */
 export class ChatController {
+  /** Inject the business layer so HTTP parsing remains separate from chat rules and persistence. */
   constructor(private readonly service: IChatService) {}
 
   /**
@@ -155,6 +159,7 @@ export class ChatController {
   /**
    * GET /api/chat/conversations/:id/messages/search?q=...
    * Searches message history for the authenticated conversation participant.
+   * The service trims the query and returns an empty list for a blank search.
    */
   searchMessages = async (req: AuthRequest, res: Response): Promise<void> => {
     const employeeId = req.user?.empId
@@ -233,6 +238,7 @@ export class ChatController {
   /**
    * POST /api/chat/upload
    * Uploads an image or file attachment to Cloudinary for chat message inclusion.
+   * Multer supplies the in-memory file buffer; only the URL and metadata are returned to the client.
    */
   uploadAttachment = async (req: AuthRequest, res: Response): Promise<void> => {
     const employeeId = req.user?.empId
@@ -265,7 +271,9 @@ export class ChatController {
 
   /**
    * GET /api/chat/stream
-   * Real-time Server-Sent Events (SSE) stream delivering instant incoming chat messages.
+   * Open a long-lived SSE response for the authenticated employee.
+   * A connected event confirms setup, message events carry persisted DTOs, and the heartbeat keeps
+   * idle proxies from closing the connection; the listener and timer are disposed on request close.
    */
   streamMessages = (req: AuthRequest, res: Response): void => {
     const employeeId = req.user?.empId
@@ -283,15 +291,15 @@ export class ChatController {
     res.setHeader("X-Accel-Buffering", "no")
     res.flushHeaders()
 
-    // Send connection established handshake
+    // Let the client distinguish a successful stream setup from an idle connection.
     res.write(`data: ${JSON.stringify({ type: "connected" })}\n\n`)
 
-    // Subscribe to employee channel on EventBus
+    // Subscribe only to this employee's channel; the disposer is called when the stream closes.
     const unsubscribe = this.service.subscribeToChatStream(employeeId, (message) => {
       res.write(`data: ${JSON.stringify({ type: "message", payload: message })}\n\n`)
     })
 
-    // Keep-alive heartbeat
+    // Comment frames are ignored by EventSource but keep intermediaries from timing out the stream.
     const keepAliveTimer = setInterval(() => {
       res.write(": keep-alive\n\n")
     }, CHAT_CONFIG.KEEP_ALIVE_INTERVAL_MS)

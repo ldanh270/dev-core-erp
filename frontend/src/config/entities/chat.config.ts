@@ -52,8 +52,9 @@ export const MENTION_PREFIX = {
   TASK: "!",
 } as const
 
+/** Frontend limits shared by chat controls; backend validation remains authoritative. */
 export const CHAT_CONFIG = {
-  MAX_MESSAGE_LENGTH: 4000,
-  DEFAULT_PAGE_SIZE: 30,
-  MAX_PAGE_SIZE: 100,
+  MAX_MESSAGE_LENGTH: 4000, // Mirror the backend text limit for client-side controls.
+  DEFAULT_PAGE_SIZE: 30, // Default initial history page size; server-side values remain authoritative.
+  MAX_PAGE_SIZE: 100, // Mirror the backend cap to avoid requesting an oversized page.
 } as const

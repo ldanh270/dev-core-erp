@@ -6,12 +6,20 @@ import React, { useEffect, useState } from "react"
 import { Check, Search, User, Users, X } from "lucide-react"
 
 interface NewChatModalProps {
+  /** Controls whether the dialog is mounted; closed dialogs do not run employee searches. */
   isOpen: boolean
   onClose: () => void
+  /** Resolves after the parent has created or located the direct conversation. */
   onCreateDirect: (partnerId: string) => Promise<void>
+  /** Resolves after the parent has created a group with the selected other members. */
   onCreateGroup: (data: { title: string; participantIds: string[] }) => Promise<void>
 }
 
+/**
+ * Dialog for starting a direct chat or creating a group.
+ * It keeps itself open when a parent creation promise rejects so the user can retry; the backend
+ * adds the signed-in employee to groups, so selection requires at least two other employees.
+ */
 export const NewChatModal: React.FC<NewChatModalProps> = ({
   isOpen,
   onClose,
@@ -62,6 +70,7 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
     onClose()
   }
 
+  /** Keep selection by employee ID so refreshed search results do not lose selected members. */
   const toggleMember = (emp: MentionEmployeeItem) => {
     if (selectedMembers.some((m) => m.id === emp.id)) {
       setSelectedMembers((prev) => prev.filter((m) => m.id !== emp.id))

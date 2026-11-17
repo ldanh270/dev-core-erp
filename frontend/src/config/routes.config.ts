@@ -95,7 +95,7 @@ export const ROUTES = {
     PROJECTS: "/project/my-projects",
     APPLICATIONS: "/application/my-applications",
   },
-  // [CHAT MODULE INTEGRATION] Independent Chat Subsystem Routes
+  // [CHAT MODULE] The optional route ID selects a conversation while both paths share ChatPage.
   CHAT: {
     BASE: "/chat",
     CONVERSATION: "/chat/:id",

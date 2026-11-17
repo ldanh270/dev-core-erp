@@ -22,13 +22,22 @@ import {
 } from "lucide-react"
 
 interface ConversationListProps {
+  /** Conversation summaries already scoped to the signed-in employee. */
   conversations: ConversationSummaryDto[]
+  /** Route-selected conversation, used only for the active-row appearance. */
   activeConversationId?: string
+  /** Parent callback owns navigation so the URL remains the source of selection state. */
   onSelectConversation: (id: string) => void
+  /** Opens the parent-managed new conversation dialog. */
   onOpenNewChatModal: () => void
   isLoading?: boolean
 }
 
+/**
+ * Searchable conversation list with direct/group filters and per-member actions.
+ * Pin, mute, restriction, and hide operations are delegated to mutations; selection is delegated
+ * to the parent so this component does not maintain a second active-conversation state.
+ */
 export const ConversationList: React.FC<ConversationListProps> = ({
   conversations,
   activeConversationId,
@@ -59,6 +68,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
     }
   }, [menuOpenId])
 
+  // Apply the title search before the optional direct/group filter; source data remains untouched.
   const filteredConversations = conversations.filter((c) => {
     const matchesSearch = c.title.toLowerCase().includes(searchTerm.toLowerCase())
     if (filterType === "all") return matchesSearch
@@ -93,6 +103,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
     })
   }
 
+  /** Confirm before hiding this member's conversation; other members' copies are unaffected. */
   const handleDeleteConversation = (e: React.MouseEvent, c: ConversationSummaryDto) => {
     e.stopPropagation()
     setMenuOpenId(null)
@@ -322,7 +333,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                       className="absolute right-0 top-full mt-1 w-44 bg-popover text-popover-foreground border border-border rounded-xl shadow-lg z-50 p-1 divide-y divide-border/50 animate-in fade-in zoom-in-95 duration-150"
                     >
                       <div className="py-0.5">
-                        {/* Ghim / Bỏ ghim */}
+                        {/* Pin or unpin */}
                         <button
                           type="button"
                           onClick={(e) => {
@@ -343,7 +354,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                           )}
                         </button>
 
-                        {/* Tắt / Bật thông báo */}
+                        {/* Mute or unmute */}
                         <button
                           type="button"
                           onClick={(e) => {
@@ -364,7 +375,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                           )}
                         </button>
 
-                        {/* Hạn chế / Bỏ hạn chế */}
+                        {/* Restrict or unrestrict */}
                         <button
                           type="button"
                           onClick={(e) => {
@@ -386,7 +397,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                         </button>
                       </div>
 
-                      {/* Xoá */}
+                      {/* Hide this conversation for the current employee */}
                       <div className="pt-0.5">
                         <button
                           type="button"

@@ -5,8 +5,8 @@ import type {
 } from "@/configs/entities/chat.config.ts"
 
 /**
- * Parsed mention structure stored alongside chat messages.
- * Supports employees (@), projects (#), and tasks (!).
+ * Structured entity reference associated with a message.
+ * The UI also embeds a token in `content`; this optional object carries a typed ID and display metadata.
  */
 export interface ChatMessageMention {
   type: IMentionType
@@ -19,21 +19,22 @@ export interface ChatMessageMention {
   }
 }
 
-/**
- * Participant details within a conversation
- */
+/** Participant profile and per-conversation read position returned by the backend. */
 export interface ConversationParticipantDto {
+  /** Membership-row ID; differs from `employeeId`, which identifies the person. */
   id: string
   employeeId: string
   fullName: string
   username: string
   avatarUrl?: string | null
   joinedAt: Date
+  /** Read watermark used to calculate this member's unread count. */
   lastReadAt: Date
 }
 
 /**
- * Chat message payload returned to the client
+ * Message shape shared by REST responses and real-time events.
+ * Dates are `Date` values in the service layer and are serialized by Express at the HTTP boundary.
  */
 export interface ChatMessageDto {
   id: string
@@ -43,6 +44,7 @@ export interface ChatMessageDto {
   senderAvatar?: string | null
   content: string
   type: IChatMessageType
+  /** Attachment fields are null/omitted for text-only messages. */
   fileUrl?: string | null
   fileName?: string | null
   fileSize?: number | null
@@ -52,7 +54,8 @@ export interface ChatMessageDto {
 }
 
 /**
- * Conversation summary with last message and unread count
+ * Conversation list/detail shape, including only the requesting member's unread and preference state.
+ * Direct-chat title/avatar values are resolved to the other participant by the repository.
  */
 export interface ConversationSummaryDto {
   id: string
@@ -60,6 +63,7 @@ export interface ConversationSummaryDto {
   title: string
   avatarUrl?: string | null
   unreadCount: number
+  /** These preference flags belong to the requesting employee, not the whole conversation. */
   isPinned: boolean
   isMuted: boolean
   isRestricted: boolean
@@ -69,33 +73,32 @@ export interface ConversationSummaryDto {
   updatedAt: Date
 }
 
-/**
- * DTO for updating participant preferences (Pin, Mute, Restrict)
- */
+/** Partial update of preferences stored on the current employee's participant record. */
 export interface UpdateParticipantSettingsDto {
   isPinned?: boolean
   isMuted?: boolean
   isRestricted?: boolean
 }
 
-/**
- * DTO for creating a 1-1 direct conversation
- */
+/** Input for opening a direct conversation; the authenticated employee is supplied separately. */
 export interface CreateDirectConversationDto {
+  /** Employee other than the authenticated caller. */
   partnerId: string
 }
 
 /**
- * DTO for creating a group conversation
+ * Input for creating a group. `participantIds` names the other members; the service adds the creator.
  */
 export interface CreateGroupConversationDto {
   title: string
+  /** Other members to add; the service adds the authenticated creator. */
   participantIds: string[]
   avatarUrl?: string
 }
 
 /**
- * DTO for sending a chat message
+ * Message creation input. At least text or an attachment URL must be present.
+ * Mention metadata is optional because the renderer can also read tokens from `content`.
  */
 export interface SendMessageDto {
   content: string
@@ -103,12 +106,11 @@ export interface SendMessageDto {
   fileUrl?: string
   fileName?: string
   fileSize?: number
+  /** Optional references corresponding to mention tokens embedded in `content`. */
   mentions?: ChatMessageMention[]
 }
 
-/**
- * Query DTO for searching mentionable entities (@, #, !)
- */
+/** Lightweight employee result used by mention autocomplete and member pickers. */
 export interface MentionEmployeeItem {
   id: string
   fullName: string
@@ -117,6 +119,7 @@ export interface MentionEmployeeItem {
   position?: string | null
 }
 
+/** Lightweight project result used to render `#` autocomplete choices. */
 export interface MentionProjectItem {
   id: string
   name: string
@@ -124,6 +127,7 @@ export interface MentionProjectItem {
   techStack: string[]
 }
 
+/** Lightweight task result used to render `!` autocomplete choices. */
 export interface MentionTaskItem {
   id: string
   title: string
@@ -134,18 +138,23 @@ export interface MentionTaskItem {
 }
 
 /**
- * Chat Repository Interface (DIP - Dependency Inversion Principle)
+ * Persistence contract for chat operations.
+ * Methods that accept an employee ID scope reads or mutations to that employee's membership.
  */
 export interface IChatRepository {
+  /** List visible memberships with per-member unread counts and the latest visible message. */
   findConversationsByEmployeeId(employeeId: string): Promise<ConversationSummaryDto[]>
+  /** Return null for missing, globally deleted, or non-member conversations. */
   findConversationById(
     conversationId: string,
     employeeId: string,
   ): Promise<ConversationSummaryDto | null>
+  /** Find a visible direct conversation containing both employees, if one exists. */
   findDirectConversationBetween(
     employeeId1: string,
     employeeId2: string,
   ): Promise<ConversationSummaryDto | null>
+  /** Persist the conversation and its initial memberships as one atomic operation. */
   createConversation(data: {
     type: IConversationType
     title?: string
@@ -153,80 +162,106 @@ export interface IChatRepository {
     creatorId: string
     participantIds: string[]
   }): Promise<ConversationSummaryDto>
+  /** Add memberships or reactivate existing soft-deleted membership rows. */
   addParticipants(conversationId: string, participantIds: string[]): Promise<void>
+  /** Check for an active membership; hidden memberships do not grant access. */
   isParticipant(conversationId: string, employeeId: string): Promise<boolean>
+  /** Fetch a page oldest-to-newest; cursor message time is the exclusive upper boundary. */
   findMessages(
     conversationId: string,
     options: { limit: number; beforeCursor?: string; searchQuery?: string },
   ): Promise<ChatMessageDto[]>
+  /** Create a message and return the enriched DTO including sender display data. */
   createMessage(
     conversationId: string,
     senderId: string,
     data: SendMessageDto,
   ): Promise<ChatMessageDto>
+  /** Advance the employee's read watermark for the conversation. */
   updateLastRead(conversationId: string, employeeId: string): Promise<void>
+  /** Search active employees by display name or username for `@` autocomplete. */
   searchEmployeesForMention(query: string, limit?: number): Promise<MentionEmployeeItem[]>
+  /** Search projects by name for `#` autocomplete. */
   searchProjectsForMention(query: string, limit?: number): Promise<MentionProjectItem[]>
+  /** Search tasks by title for `!` autocomplete, optionally restricted to one project. */
   searchTasksForMention(
     query: string,
     limit?: number,
     projectId?: string,
   ): Promise<MentionTaskItem[]>
+  /** Update only the current participant's personal conversation preferences. */
   updateParticipantSettings(
     conversationId: string,
     employeeId: string,
     settings: UpdateParticipantSettingsDto,
   ): Promise<void>
+  /** Hide the conversation for one employee without deleting shared messages. */
   deleteConversationForEmployee(conversationId: string, employeeId: string): Promise<void>
 }
 
 /**
- * Chat Service Interface (DIP)
+ * Business-logic contract for chat.
+ * The service validates participant access and domain rules before calling the repository.
  */
 export interface IChatService {
+  /** List the authenticated employee's visible conversations. */
   getMyConversations(employeeId: string): Promise<ConversationSummaryDto[]>
+  /** Resolve a conversation only when the employee is an active participant. */
   getConversationDetail(conversationId: string, employeeId: string): Promise<ConversationSummaryDto>
+  /** Return an existing direct conversation or create one after validating the partner. */
   getOrCreateDirectConversation(
     currentUserId: string,
     partnerId: string,
   ): Promise<ConversationSummaryDto>
+  /** Create a group; `participantIds` excludes the caller and must satisfy group rules. */
   createGroupConversation(
     currentUserId: string,
     data: CreateGroupConversationDto,
   ): Promise<ConversationSummaryDto>
+  /** Add validated active employees to a group the caller can access. */
   addParticipants(
     conversationId: string,
     employeeId: string,
     participantIds: string[],
   ): Promise<ConversationSummaryDto>
+  /** Fetch a bounded message page and advance the caller's read watermark. */
   getMessages(
     conversationId: string,
     employeeId: string,
     limit?: number,
     beforeCursor?: string,
   ): Promise<ChatMessageDto[]>
+  /** Search message text after verifying conversation membership. */
   searchMessages(
     conversationId: string,
     employeeId: string,
     query: string,
   ): Promise<ChatMessageDto[]>
+  /** Persist a message and publish it to the other participants' real-time channels. */
   sendMessage(
     conversationId: string,
     senderId: string,
     data: SendMessageDto,
   ): Promise<ChatMessageDto>
+  /** Explicitly advance the caller's read watermark. */
   markAsRead(conversationId: string, employeeId: string): Promise<void>
+  /** Search active employee records for `@` mention selection. */
   searchMentionEmployees(query: string, limit?: number): Promise<MentionEmployeeItem[]>
+  /** Search project records for `#` mention selection. */
   searchMentionProjects(query: string, limit?: number): Promise<MentionProjectItem[]>
+  /** Search task records for `!` mention selection, optionally by project. */
   searchMentionTasks(query: string, limit?: number, projectId?: string): Promise<MentionTaskItem[]>
+  /** Subscribe to one employee's stream; the returned callback removes that listener. */
   subscribeToChatStream(
     employeeId: string,
     onMessage: (message: ChatMessageDto) => void,
   ): () => void
+  /** Update per-employee pin, mute, or restriction flags after access validation. */
   updateParticipantSettings(
     conversationId: string,
     employeeId: string,
     settings: UpdateParticipantSettingsDto,
   ): Promise<void>
+  /** Hide a conversation from the caller's list while preserving other members' history. */
   deleteConversationForEmployee(conversationId: string, employeeId: string): Promise<void>
 }

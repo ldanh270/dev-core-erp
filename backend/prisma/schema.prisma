@@ -2179,8 +2179,8 @@ model NotificationRecipientState {
 }
 
 // =========================================================================
-// [CHAT MODULE] Phân hệ Chat độc lập (Peer-to-Peer & Group Chat)
-// Hỗ trợ mention đa thực thể: @employee, #project, !task
+// [CHAT MODULE] Independent chat module (peer-to-peer and group chat)
+// Supports mentions of multiple entity types: @employee, #project, !task
 // =========================================================================
 
 enum ConversationType {
@@ -2194,13 +2194,14 @@ enum ChatMessageType {
   file
 }
 
-/// Bảng hội thoại Chat: Hỗ trợ 1-1 (direct) và Nhóm (group)
+/// Shared container for direct and group chats. `deletedAt` hides the conversation globally;
+/// direct-chat titles and avatars are resolved per viewer from the other participant.
 model Conversation {
   id        String           @id @default(uuid())
   type      ConversationType @default(direct)
-  title     String?          // Tên nhóm (đối với group chat); null đối với direct
-  avatarUrl String?          // Avatar của nhóm chat (nếu có)
-  creatorId String?          // Người tạo cuộc trò chuyện
+  title     String?          // Group display name; direct conversations derive their title from the partner.
+  avatarUrl String?          // Optional group image; direct conversations use the partner's avatar.
+  creatorId String?          // Creator is nullable so deleting an employee does not delete the conversation.
   creator   Employee?        @relation("ConversationCreator", fields: [creatorId], references: [id], onDelete: SetNull)
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
@@ -2213,18 +2214,19 @@ model Conversation {
   @@index([updatedAt])
 }
 
-/// Bảng thành viên tham gia hội thoại và trạng thái đã đọc
+/// Per-employee membership state, including read position and personal conversation preferences.
+/// A deleted membership is hidden for that employee and can be reactivated when they rejoin.
 model ConversationParticipant {
   id             String       @id @default(uuid())
   conversationId String
   employeeId     String
   joinedAt       DateTime     @default(now())
-  lastReadAt     DateTime     @default(now())
+  lastReadAt     DateTime     @default(now()) // Messages newer than this timestamp contribute to the unread count.
   nickname       String?
-  isPinned       Boolean      @default(false)
-  isMuted        Boolean      @default(false)
-  isRestricted   Boolean      @default(false)
-  isDeleted      Boolean      @default(false)
+  isPinned       Boolean      @default(false) // Affects ordering only for this employee's conversation list.
+  isMuted        Boolean      @default(false) // Per-employee notification preference.
+  isRestricted   Boolean      @default(false) // Per-employee restriction state.
+  isDeleted      Boolean      @default(false) // Soft-hide this membership without removing shared history.
 
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   employee       Employee     @relation("ConversationMember", fields: [employeeId], references: [id], onDelete: Cascade)
@@ -2234,7 +2236,8 @@ model ConversationParticipant {
   @@index([conversationId])
 }
 
-/// Bảng tin nhắn chat: Lưu nội dung, đính kèm file/ảnh và metadata mentions
+/// A message may contain text, an attachment, or both. `deletedAt` preserves history while hiding
+/// the message from normal queries; mention metadata is stored as JSON for typed entity references.
 model ChatMessage {
   id             String          @id @default(uuid())
   conversationId String
@@ -2244,7 +2247,7 @@ model ChatMessage {
   fileUrl        String?
   fileName       String?
   fileSize       Int?
-  /// Metadata mentions được parse tự động: [{ type: "employee"|"project"|"task", id: string, label: string }]
+  /// Automatically parsed mention metadata: [{ type: "employee"|"project"|"task", id: string, label: string }]
   mentions       Json?           @db.JsonB
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt

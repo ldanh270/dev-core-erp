@@ -7,15 +7,18 @@ import React from "react"
 import { Briefcase, CheckSquare, User } from "lucide-react"
 
 interface MentionMessageRendererProps {
+  /** Message text containing the bracketed mention-token syntax emitted by MentionInput. */
   content: string
+  /** Optional structured metadata; token rendering is currently driven by `content`. */
   mentions?: ChatMessageMention[] | null
+  /** Applies outgoing-message contrast styles to rendered mention pills. */
   isOutgoing?: boolean
 }
 
 /**
- * Renders message content with interactive mention pills for @ (Employee), # (Project), and ! (Task).
- * Adheres to The Pill Rule: rounded-full for badges/pills.
- * Semantic token colors only: no hardcoded hex.
+ * Renders message content with interactive pills for employee (@), project (#), and task (!) tokens.
+ * Plain text surrounding tokens is preserved; project and task pills navigate to their details.
+ * Pills use semantic theme classes and rounded-full styling rather than hard-coded colors.
  */
 export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
   content,
@@ -24,7 +27,7 @@ export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
   if (!content) return null
 
   // Match the token syntax emitted by MentionInput: @[Name](emp:id), #[Name](proj:id),
-  // or ![Name](task:id). The loop below preserves ordinary text between tokens.
+  // or ![Name](task:id). Matching against message content preserves ordinary text between tokens.
   const mentionRegex = /([@#!])\[(.+?)\]\((emp|proj|task):([^)]+)\)/g
 
   const elements: React.ReactNode[] = []

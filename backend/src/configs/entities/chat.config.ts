@@ -8,10 +8,12 @@ export const CONVERSATION_TYPE = {
   GROUP: "group",
 } as const
 
+/** Runtime values accepted for a conversation type; kept in sync with Prisma's ConversationType. */
 export const CONVERSATION_TYPES = [CONVERSATION_TYPE.DIRECT, CONVERSATION_TYPE.GROUP] as const
 
 export type IConversationType = (typeof CONVERSATION_TYPES)[number]
 
+/** Message payload kinds. Attachments use file metadata while text remains in `content`. */
 export const CHAT_MESSAGE_TYPE = {
   TEXT: "text",
   IMAGE: "image",
@@ -27,10 +29,8 @@ export const CHAT_MESSAGE_TYPES = [
 export type IChatMessageType = (typeof CHAT_MESSAGE_TYPES)[number]
 
 /**
- * Multi-entity Mention types and prefixes according to Leader specification:
- * - @ for Employee mention
- * - # for Project mention
- * - ! for Task mention
+ * Entity categories that can be referenced from a message.
+ * The matching trigger characters are defined separately in `MENTION_PREFIX`.
  */
 export const MENTION_TYPE = {
   EMPLOYEE: "employee",
@@ -52,15 +52,20 @@ export const MENTION_PREFIX = {
   TASK: "!",
 } as const
 
+/**
+ * Shared backend limits and timing values for chat requests.
+ * Pagination and message limits are enforced by the service; the SSE interval is in milliseconds.
+ */
 export const CHAT_CONFIG = {
-  MAX_MESSAGE_LENGTH: 4000,
-  DEFAULT_PAGE_SIZE: 30,
-  MAX_PAGE_SIZE: 100,
-  MAX_GROUP_MEMBERS: 100,
-  KEEP_ALIVE_INTERVAL_MS: 15000,
-  SEARCH_PAGE_SIZE: 50,
+  MAX_MESSAGE_LENGTH: 4000, // Maximum text length accepted for one message.
+  DEFAULT_PAGE_SIZE: 30, // Number of messages returned when the client omits a page size.
+  MAX_PAGE_SIZE: 100, // Service-side ceiling applied even when a caller requests more.
+  MAX_GROUP_MEMBERS: 100, // Maximum current group size allowed when adding members.
+  KEEP_ALIVE_INTERVAL_MS: 15000, // SSE heartbeat interval; measured in milliseconds.
+  SEARCH_PAGE_SIZE: 50, // Maximum number of messages returned by a history search.
 } as const
 
+/** Stable application error codes paired with user-facing messages for chat failures. */
 export const CHAT_ERRORS = {
   CONVERSATION_NOT_FOUND: {
     message: "Cuộc trò chuyện không tồn tại hoặc bạn không có quyền truy cập.",

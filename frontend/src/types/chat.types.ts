@@ -4,8 +4,12 @@ import type {
   IMentionType,
 } from "@/config/entities/chat.config"
 
-// Browser-facing chat DTOs use serialized ISO date strings, unlike backend service DTOs.
+/**
+ * Browser-facing chat DTOs use serialized ISO date strings, unlike backend service DTOs.
+ * Keep these shapes aligned with `backend/src/types/chat.types.ts`.
+ */
 export interface ChatMessageMention {
+  /** Entity category associated with the `@`, `#`, or `!` token in message content. */
   type: IMentionType
   id: string
   label: string
@@ -16,7 +20,9 @@ export interface ChatMessageMention {
   }
 }
 
+/** Participant profile and read watermark returned with a conversation summary. */
 export interface ConversationParticipantDto {
+  /** Membership-row ID, not the employee ID. */
   id: string
   employeeId: string
   fullName: string
@@ -26,6 +32,7 @@ export interface ConversationParticipantDto {
   lastReadAt: string
 }
 
+/** Serialized chat message returned by REST endpoints and SSE events. */
 export interface ChatMessageDto {
   id: string
   conversationId: string
@@ -34,6 +41,7 @@ export interface ChatMessageDto {
   senderAvatar?: string | null
   content: string
   type: IChatMessageType
+  /** Serialized attachment metadata; absent for text-only messages. */
   fileUrl?: string | null
   fileName?: string | null
   fileSize?: number | null
@@ -42,12 +50,17 @@ export interface ChatMessageDto {
   updatedAt: string
 }
 
+/**
+ * Conversation list/detail DTO.
+ * Preference and unread fields are calculated for the signed-in employee's membership.
+ */
 export interface ConversationSummaryDto {
   id: string
   type: IConversationType
   title: string
   avatarUrl?: string | null
   unreadCount: number
+  /** Preferences are specific to the current employee's membership. */
   isPinned?: boolean
   isMuted?: boolean
   isRestricted?: boolean
@@ -57,6 +70,7 @@ export interface ConversationSummaryDto {
   updatedAt: string
 }
 
+/** Partial update to the signed-in employee's preferences for one conversation. */
 export interface UpdateParticipantSettingsDto {
   isPinned?: boolean
   isMuted?: boolean
@@ -64,9 +78,11 @@ export interface UpdateParticipantSettingsDto {
 }
 
 export interface CreateDirectConversationDto {
+  /** Employee to chat with; the signed-in employee is inferred by the backend. */
   partnerId: string
 }
 
+/** Group creation payload; the backend adds the creator as a participant. */
 export interface CreateGroupConversationDto {
   title: string
   participantIds: string[]
@@ -74,9 +90,11 @@ export interface CreateGroupConversationDto {
 }
 
 export interface AddChatParticipantsDto {
+  /** Employee IDs to add to an existing group. */
   participantIds: string[]
 }
 
+/** Message payload accepted by the chat API; the backend validates content and membership. */
 export interface SendMessageDto {
   content: string
   type?: IChatMessageType
@@ -86,6 +104,7 @@ export interface SendMessageDto {
   mentions?: ChatMessageMention[]
 }
 
+/** Lightweight employee option returned by `@` autocomplete. */
 export interface MentionEmployeeItem {
   id: string
   fullName: string
@@ -94,6 +113,7 @@ export interface MentionEmployeeItem {
   position?: string | null
 }
 
+/** Lightweight project option returned by `#` autocomplete. */
 export interface MentionProjectItem {
   id: string
   name: string
@@ -101,6 +121,7 @@ export interface MentionProjectItem {
   techStack: string[]
 }
 
+/** Lightweight task option returned by `!` autocomplete. */
 export interface MentionTaskItem {
   id: string
   title: string

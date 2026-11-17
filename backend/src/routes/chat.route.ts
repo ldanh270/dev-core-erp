@@ -10,11 +10,13 @@ import multer from "multer"
 
 /**
  * Route definitions for the independent Chat subsystem.
- * Wire concrete dependencies strictly inside this route module.
+ * This router is mounted at `/api/chat`; all endpoints require the JWT authentication middleware.
+ * Concrete repository, service, and controller dependencies are wired locally to keep the route
+ * module as the composition root for this feature.
  */
 const chatRoutes = express.Router()
 
-// Multer in-memory storage for attachment uploads
+// Buffer attachments in memory for the Cloudinary upload; reject oversized files before the controller.
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 25 * 1024 * 1024 }, // 25MB max
@@ -26,10 +28,10 @@ const employeeRepository = new PrismaEmployeeRepository(prisma)
 const chatService = new ChatService(chatRepository, employeeRepository)
 const chatController = new ChatController(chatService)
 
-// Guard all chat routes with JWT authentication
+// Apply authentication before every endpoint, including the long-lived SSE stream.
 chatRoutes.use(authenticate)
 
-// Real-time SSE stream endpoint
+// Real-time stream is registered before parameterized conversation routes.
 chatRoutes.get("/stream", chatController.streamMessages)
 
 // Conversations management
@@ -47,7 +49,7 @@ chatRoutes.post("/conversations/:id/read", chatController.markAsRead)
 chatRoutes.patch("/conversations/:id/settings", chatController.updateSettings)
 chatRoutes.delete("/conversations/:id", chatController.deleteConversation)
 
-// Attachments upload
+// Multer exposes the uploaded file as `req.file` for the Cloudinary controller.
 chatRoutes.post("/upload", upload.single("file"), chatController.uploadAttachment)
 
 // Mentions autocomplete queries for @ (Employee), # (Project), ! (Task)

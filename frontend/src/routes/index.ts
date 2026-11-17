@@ -352,7 +352,7 @@ const privateRoutes: RouteConfig[] = [
     component: lazy(() => import("@/pages/project/TaskDetail.tsx")),
     layout: MainLayout,
   },
-  // [CHAT MODULE INTEGRATION] Independent Chat Subsystem Routes
+  // Both entry points render the same page; ChatPage reads the optional route ID as active state.
   {
     path: ROUTES.CHAT.BASE,
     component: lazy(() => import("@/pages/chat/ChatPage.tsx")),

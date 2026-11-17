@@ -15,8 +15,9 @@ import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
 /**
- * Chat Subsystem Main Operational Page.
- * Independent messaging page featuring direct chat, group chat, and multi-entity mentions.
+ * Main chat page coordinating the conversation list, active message window, and creation dialog.
+ * The optional conversation ID in the route is the single source of truth for selection and
+ * determines which message query is enabled.
  */
 const ChatPage: React.FC = () => {
   const { id: conversationId } = useParams<{ id?: string }>()

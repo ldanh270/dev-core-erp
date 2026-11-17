@@ -10,7 +10,7 @@ import { EventEmitter } from "events"
 export interface DomainEvents {
   "notification:create": CreateNotificationDto
   "notification:broadcast": Notification
-  // [CHAT MODULE INTEGRATION] Chat message domain event
+  // Shared chat-message event payload; recipient-specific delivery uses `chat:<employeeId>` channels below.
   "chat:message": ChatMessageDto
 }
 
@@ -92,7 +92,8 @@ class AppEventBus extends EventEmitter {
   // =========================================================================
 
   /**
-   * Publishes a real-time chat message to a specific recipient employee channel.
+   * Publishes a persisted chat message only to one recipient's process-local channel.
+   * Callers should emit once per participant; this event bus is not a cross-process broker.
    */
   emitChatMessage(recipientEmployeeId: string, message: ChatMessageDto): boolean {
     return this.emit(`chat:${recipientEmployeeId}`, message)

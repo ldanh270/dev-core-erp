@@ -11,6 +11,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { Briefcase, CheckSquare, Image as ImageIcon, Paperclip, Send, User, X } from "lucide-react"
 
 interface MentionInputProps {
+  /** Sends the encoded message text and any uploaded attachment to the active conversation. */
   onSendMessage: (data: {
     content: string
     fileUrl?: string
@@ -22,8 +23,14 @@ interface MentionInputProps {
   disabled?: boolean
 }
 
+/** Trigger symbols map to distinct autocomplete endpoints and token entity prefixes. */
 type TriggerType = "@" | "#" | "!"
 
+/**
+ * Message composer with debounced employee/project/task autocomplete and attachment upload.
+ * Selecting a result replaces the current trigger query with a stable token containing its ID;
+ * sending is disabled while uploading so attachment metadata cannot be submitted prematurely.
+ */
 export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disabled }) => {
   const [text, setText] = useState("")
   const [isUploading, setIsUploading] = useState(false)
@@ -54,7 +61,7 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
     const cursorPos = e.target.selectionStart || 0
     const textBeforeCursor = val.slice(0, cursorPos)
 
-    // Check if the word before cursor starts with @, #, or !
+    // Match a trigger at the start of the message or after whitespace, using only text before the cursor.
     const match = /(?:^|\s)([@#!])([^\s]*)$/.exec(textBeforeCursor)
     if (match) {
       setActiveTrigger(match[1] as TriggerType)
@@ -102,7 +109,7 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
     }
   }, [activeTrigger, mentionQuery])
 
-  // Insert structured mention token into text
+  // Replace only the active trigger/query span; keep both the preceding and following draft text intact.
   const insertMention = (item: {
     id: string
     label: string
@@ -113,7 +120,7 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
     const textBeforeCursor = text.slice(0, cursorPos)
     const textAfterCursor = text.slice(cursorPos)
 
-    // Replace the trigger and query with structured token: @[Label](emp:id)
+    // Stable entity IDs in the token let navigation/rendering work even if display labels later change.
     const newBeforeCursor = textBeforeCursor.replace(
       /(?:^|\s)[@#!][^\s]*$/,
       (m) =>
@@ -133,7 +140,7 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
     }, 10)
   }
 
-  // Keyboard navigation inside mention dropdown
+  // While autocomplete is open, consume navigation/selection keys before the normal send shortcut.
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (activeTrigger) {
       const itemsCount =
@@ -190,6 +197,10 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
     }
   }
 
+  /**
+   * Snapshot and clear the draft before awaiting the mutation.
+   * The caller owns user-facing error feedback for failed sends.
+   */
   const handleSend = async () => {
     if ((!text.trim() && !attachedFile) || disabled || isUploading) return
 

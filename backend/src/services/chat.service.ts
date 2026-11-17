@@ -19,8 +19,9 @@ import type { IEmployeeRepository } from "@/types/employee.types.ts"
 import { AppError } from "@/utils/error.util.ts"
 
 /**
- * Service orchestrating chat operations, access control, and real-time message distribution.
- * Adheres to Clean Architecture and S.O.L.I.D. principles.
+ * Chat business layer: validates membership and domain rules, delegates persistence, and publishes
+ * new messages to each other participant's in-process event channel.
+ * Authorization is intentionally checked here before repository reads or mutations.
  */
 export class ChatService implements IChatService {
   constructor(
@@ -56,7 +57,9 @@ export class ChatService implements IChatService {
   }
 
   /**
-   * Finds existing 1-1 conversation or creates a new one between two employees.
+   * Return the visible direct conversation for this pair, or create one if absent.
+   * The partner must be active and cannot be the caller; an existing conversation is reused rather
+   * than creating duplicate history.
    */
   async getOrCreateDirectConversation(
     currentUserId: string,
@@ -97,7 +100,8 @@ export class ChatService implements IChatService {
   }
 
   /**
-   * Creates a new group conversation with multiple employees.
+   * Create a group after removing the caller from the requested member list.
+   * At least two other members are required; the caller is then added exactly once by the service.
    */
   async createGroupConversation(
     currentUserId: string,
@@ -123,7 +127,9 @@ export class ChatService implements IChatService {
   }
 
   /**
-   * Adds active employees to a group after validating membership, uniqueness, and the group limit.
+   * Add active employees to a group the caller can access.
+   * Duplicate IDs and the caller's own ID are removed before capacity checks; only genuinely new
+   * memberships count against the group limit.
    */
   async addParticipants(
     conversationId: string,
@@ -203,7 +209,8 @@ export class ChatService implements IChatService {
   }
 
   /**
-   * Retrieves messages for a conversation, marks as read, and validates participant membership.
+   * Fetch a bounded page for an active participant and advance that participant's read watermark.
+   * The limit is clamped here even if a caller bypasses the controller's query parsing.
    */
   async getMessages(
     conversationId: string,
@@ -256,7 +263,8 @@ export class ChatService implements IChatService {
   }
 
   /**
-   * Sends a message in a conversation and emits real-time events to all participants.
+   * Validate, persist, then publish a message to every other active conversation participant.
+   * The sender receives the normal HTTP response; recipient delivery is asynchronous via EventBus.
    */
   async sendMessage(
     conversationId: string,
@@ -330,7 +338,8 @@ export class ChatService implements IChatService {
   }
 
   /**
-   * Registers a real-time SSE listener for an employee.
+   * Register the callback used by the employee's SSE response.
+   * The returned disposer must be called when the HTTP stream closes to prevent leaked listeners.
    */
   subscribeToChatStream(
     employeeId: string,
@@ -364,7 +373,7 @@ export class ChatService implements IChatService {
   }
 
   /**
-   * Deletes / leaves / hides conversation for this employee
+   * Soft-hide a conversation for one member only; shared messages remain available to others.
    */
   async deleteConversationForEmployee(conversationId: string, employeeId: string): Promise<void> {
     const isMember = await this.chatRepo.isParticipant(conversationId, employeeId)

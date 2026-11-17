@@ -29,6 +29,7 @@ const getApiErrorMessage = (error: unknown, fallback: string): string => {
   return error.response?.data.error?.message ?? fallback
 }
 
+/** Centralized cache keys keep list, detail, history, and search results isolated. */
 export const CHAT_QUERY_KEYS = {
   ALL: ["chat"] as const,
   CONVERSATIONS: ["chat", "conversations"] as const,
@@ -38,7 +39,9 @@ export const CHAT_QUERY_KEYS = {
 }
 
 /**
- * Hook to retrieve user conversations and subscribe to real-time message stream.
+ * Loads the signed-in employee's conversation list and maintains its React Query cache from SSE.
+ * Incoming messages are deduplicated by ID before being appended, and the stream is closed when
+ * authentication or the hook lifecycle ends.
  */
 export function useChatConversations() {
   const queryClient = useQueryClient()
@@ -51,7 +54,7 @@ export function useChatConversations() {
     staleTime: 1000 * 30, // 30 seconds
   })
 
-  // Real-time SSE listener
+  // EventSource uses cookies when available; the query token supports servers that authenticate SSE via URL.
   useEffect(() => {
     if (!isAuthenticated) return
 
@@ -129,7 +132,9 @@ export function useChatConversations() {
 }
 
 /**
- * Hook to retrieve conversation details and messages.
+ * Loads one conversation's message page and exposes send/read mutations.
+ * Successful mutations update local caches after the server responds; server errors remain visible
+ * through the mutation's toast handling.
  */
 export function useChatMessages(conversationId?: string) {
   const queryClient = useQueryClient()
@@ -206,8 +211,9 @@ export function useChatMessages(conversationId?: string) {
 }
 
 /**
- * Mutation hooks for creating conversations
- * Mutations that invalidate the conversation list await the refresh before resolving.
+ * Mutations for creating direct and group conversations.
+ * Awaiting list invalidation ensures callers navigate only after the refreshed list can resolve
+ * the newly created conversation.
  */
 export function useCreateDirectChat() {
   const queryClient = useQueryClient()
@@ -224,6 +230,7 @@ export function useCreateDirectChat() {
   })
 }
 
+/** Create a group and wait for its refreshed list entry before resolving. */
 export function useCreateGroupChat() {
   const queryClient = useQueryClient()
 
@@ -239,6 +246,7 @@ export function useCreateGroupChat() {
   })
 }
 
+/** Adds members and replaces the cached conversation summary with the server's updated DTO. */
 export function useAddChatParticipants() {
   const queryClient = useQueryClient()
 
@@ -260,7 +268,8 @@ export function useAddChatParticipants() {
 }
 
 /**
- * Mutation to update participant settings (isPinned, isMuted, isRestricted)
+ * Persists the current employee's pin, mute, and restriction preferences, then refreshes summaries
+ * because those fields and the pinned ordering are computed per participant.
  */
 export function useUpdateChatSettings() {
   const queryClient = useQueryClient()
@@ -283,7 +292,7 @@ export function useUpdateChatSettings() {
 }
 
 /**
- * Mutation to delete or leave a conversation
+ * Hides a conversation for the current employee and refreshes the list so the row disappears.
  */
 export function useDeleteConversation() {
   const queryClient = useQueryClient()

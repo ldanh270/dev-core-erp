@@ -357,7 +357,7 @@ export const SUBSYSTEMS: SubsystemConfig[] = [
     ],
   },
   // =========================================================================
-  // [CHAT MODULE INTEGRATION] Phân hệ Chat độc lập
+  // [CHAT MODULE] Available to authenticated employees; conversation access is enforced by the API.
   // =========================================================================
   {
     id: "chat",

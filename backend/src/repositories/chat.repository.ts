@@ -27,7 +27,9 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
 
   /**
    * Retrieves all conversations an employee is participating in,
-   * including unread message count and the latest message.
+   * including unread message count and the latest non-deleted message.
+   * Hidden memberships and globally deleted conversations are excluded; pinning is applied before
+   * activity-time ordering because pin state belongs to this employee's membership.
    */
   async findConversationsByEmployeeId(employeeId: string): Promise<ConversationSummaryDto[]> {
     const participations = await this.prisma.conversationParticipant.findMany({
@@ -109,6 +111,8 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
 
   /**
    * Finds a conversation by ID if the employee is an authorized participant.
+   * Including the employee ID in the query makes the membership check part of the database read,
+   * rather than relying on callers to filter a conversation after loading it.
    */
   async findConversationById(
     conversationId: string,
@@ -225,7 +229,8 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
   }
 
   /**
-   * Creates a new conversation and adds its participants atomically.
+   * Creates a new conversation and its initial memberships in one database transaction.
+   * Duplicate participant IDs are collapsed before writing to satisfy the unique membership key.
    */
   async createConversation(data: {
     type: IConversationType
@@ -285,6 +290,9 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
     return count > 0
   }
 
+  /**
+   * Add members in a transaction, reactivating a prior hidden membership when the unique pair exists.
+   */
   async addParticipants(conversationId: string, participantIds: string[]): Promise<void> {
     // Upsert reactivates a soft-deleted membership row instead of creating a duplicate unique key.
     await this.prisma.$transaction(async (tx) => {
@@ -308,7 +316,8 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
   }
 
   /**
-   * Retrieves messages for a conversation, ordered chronologically.
+   * Retrieves a page of visible messages and returns it in chronological display order.
+   * The cursor is resolved to a timestamp boundary; optional text search is applied in the same query.
    */
   async findMessages(
     conversationId: string,
@@ -355,7 +364,8 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
   }
 
   /**
-   * Creates a new chat message and updates the conversation timestamp.
+   * Persist the message and update conversation activity plus the sender's read watermark atomically.
+   * Keeping these writes together prevents the list preview and unread count from diverging.
    */
   async createMessage(
     conversationId: string,
@@ -520,6 +530,7 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
   // Private Helper Mappings
   // =========================================================================
 
+  /** Convert a Prisma message record and its selected sender fields into the service DTO. */
   private mapToChatMessageDto(raw: {
     id: string
     conversationId: string
@@ -556,6 +567,11 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
     }
   }
 
+  /**
+   * Build a viewer-specific conversation DTO.
+   * Direct conversations derive their title/avatar from the other participant; preference flags
+   * are copied only from the current employee's membership.
+   */
   private mapToConversationSummary(
     conv: {
       id: string
