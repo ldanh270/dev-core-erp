@@ -124,7 +124,6 @@ app.use("/api", auditRoutes)
 app.use("/api/spent-times", spentTimeRoutes)
 app.use("/api/custom-queries", customQueryRoutes)
 app.use("/api/notifications", notificationRoutes)
-// Expose chat HTTP endpoints; Socket.IO is attached to the same HTTP server below.
 app.use("/api/chat", chatRoutes)
 app.use("/api/debug", debugRoutes)
 
