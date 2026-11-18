@@ -13,7 +13,6 @@ import attendanceRoutes from "@/routes/attendance.route.ts"
 import auditRoutes from "@/routes/audit.route.ts"
 import authRoutes from "@/routes/auth.route.ts"
 import capacityCopilotRoutes from "@/routes/capacity-copilot.route.ts"
-// [CHAT MODULE] The router applies JWT authentication to every endpoint and owns its route wiring.
 import chatRoutes, { chatService } from "@/routes/chat.route.ts"
 import customQueryRoutes from "@/routes/custom-query.route.ts"
 import debugRoutes from "@/routes/debug.route.ts"
