@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button"
 import type { ConversationSummaryDto } from "@/types/chat.types"
 
 import { Users, X } from "lucide-react"
@@ -20,14 +21,16 @@ export function ConversationDetailsPanel({ conversation, onClose }: Conversation
     <aside className="absolute inset-y-0 right-0 z-20 flex w-full max-w-sm flex-col border-l border-border bg-card shadow-xl">
       <div className="flex items-center justify-between border-b border-border p-4">
         <h3 className="font-semibold text-sm text-foreground">Thông tin cuộc trò chuyện</h3>
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon-sm"
           onClick={onClose}
           aria-label="Đóng thông tin cuộc trò chuyện"
-          className="rounded-full p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+          className="text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <X className="h-4 w-4" />
-        </button>
+        </Button>
       </div>
 
       <div className="flex items-center gap-3 border-b border-border p-4">

@@ -1,8 +1,7 @@
-import { useAddChatParticipants } from "@/hooks/chat/use-add-chat-participants"
-import { chatApi } from "@/lib/chat-api"
-import type { ConversationSummaryDto, MentionEmployeeItem } from "@/types/chat.types"
-
-import { useEffect, useMemo, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useConversationMemberManager } from "@/hooks/chat/use-conversation-member-manager"
+import type { ConversationSummaryDto } from "@/types/chat.types"
 
 import { Search, UserPlus } from "lucide-react"
 
@@ -11,94 +10,27 @@ interface ConversationMemberManagerProps {
 }
 
 /**
- * Filters current members and lets group admins add employees to a conversation.
+ * Renders current members and controls for adding employees to a group conversation.
  */
 export function ConversationMemberManager({ conversation }: ConversationMemberManagerProps) {
-  const [memberQuery, setMemberQuery] = useState("")
-  const [isAddingMembers, setIsAddingMembers] = useState(false)
-  const [employeeQuery, setEmployeeQuery] = useState("")
-  const [employeeResults, setEmployeeResults] = useState<MentionEmployeeItem[]>([])
-  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([])
-  const [isSearchingEmployees, setIsSearchingEmployees] = useState(false)
-  const [employeeSearchError, setEmployeeSearchError] = useState(false)
-  const addParticipantsMutation = useAddChatParticipants()
-
-  const existingEmployeeIds = useMemo(
-    () => new Set(conversation.participants.map((participant) => participant.employeeId)),
-    [conversation.participants],
-  )
-  const filteredParticipants = useMemo(() => {
-    const query = memberQuery.trim().toLocaleLowerCase()
-    if (!query) return conversation.participants
-    return conversation.participants.filter(
-      (participant) =>
-        participant.fullName.toLocaleLowerCase().includes(query) ||
-        participant.username.toLocaleLowerCase().includes(query),
-    )
-  }, [conversation.participants, memberQuery])
-
-  useEffect(() => {
-    const query = employeeQuery.trim()
-    if (!isAddingMembers || query.length < 2) {
-      setEmployeeResults([])
-      return
-    }
-
-    let active = true
-    const timer = setTimeout(() => {
-      setIsSearchingEmployees(true)
-      setEmployeeSearchError(false)
-      chatApi
-        .searchMentionEmployees(query, 20)
-        .then((employees) => {
-          if (active) setEmployeeResults(employees)
-        })
-        .catch((error: unknown) => {
-          console.error("Failed to search employees for group chat:", error)
-          if (active) {
-            setEmployeeResults([])
-            setEmployeeSearchError(true)
-          }
-        })
-        .finally(() => {
-          if (active) setIsSearchingEmployees(false)
-        })
-    }, 200)
-
-    return () => {
-      active = false
-      clearTimeout(timer)
-    }
-  }, [employeeQuery, isAddingMembers])
-
-  const availableEmployees = employeeResults.filter(
-    (employee) => !existingEmployeeIds.has(employee.id),
-  )
-
-  const toggleEmployee = (employeeId: string) => {
-    setSelectedEmployeeIds((current) =>
-      current.includes(employeeId)
-        ? current.filter((id) => id !== employeeId)
-        : [...current, employeeId],
-    )
-  }
-
-  const addSelectedEmployees = () => {
-    if (!selectedEmployeeIds.length) return
-    addParticipantsMutation.mutate(
-      {
-        conversationId: conversation.id,
-        participantIds: selectedEmployeeIds,
-      },
-      {
-        onSuccess: () => {
-          setSelectedEmployeeIds([])
-          setEmployeeQuery("")
-          setIsAddingMembers(false)
-        },
-      },
-    )
-  }
+  const {
+    memberQuery,
+    setMemberQuery,
+    isAddingMembers,
+    setIsAddingMembers,
+    employeeQuery,
+    setEmployeeQuery,
+    selectedEmployeeIds,
+    isSearchingEmployees,
+    employeeSearchError,
+    isAddingSelectedEmployees,
+    filteredParticipants,
+    availableEmployees,
+    toggleEmployee,
+    clearSelectedEmployees,
+    addSelectedEmployees,
+    isGroupConversation,
+  } = useConversationMemberManager(conversation)
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto p-3">
@@ -106,17 +38,19 @@ export function ConversationMemberManager({ conversation }: ConversationMemberMa
         <h4 className="text-xs font-semibold text-foreground">
           Thành viên ({conversation.participants.length})
         </h4>
-        {conversation.type === "group" && !isAddingMembers && (
-          <button
+        {isGroupConversation && !isAddingMembers && (
+          <Button
             type="button"
+            variant="ghost"
+            size="xs"
             onClick={() => {
               setIsAddingMembers(true)
             }}
-            className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium text-primary hover:bg-primary/10"
+            className="gap-1 px-2 py-1 text-primary hover:bg-primary/10"
           >
             <UserPlus className="h-3.5 w-3.5" />
             Thêm người
-          </button>
+          </Button>
         )}
       </div>
 
@@ -124,14 +58,14 @@ export function ConversationMemberManager({ conversation }: ConversationMemberMa
         <div className="mb-3 space-y-2 rounded-lg border border-border p-2">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
+            <Input
               autoFocus
               value={employeeQuery}
               onChange={(event) => {
                 setEmployeeQuery(event.target.value)
               }}
               placeholder="Tìm người để thêm..."
-              className="w-full rounded-full border border-border bg-muted/50 py-2 pl-9 pr-3 text-xs text-foreground outline-none focus:border-primary"
+              className="rounded-full border-border bg-muted/50 py-2 pl-9 pr-3 text-xs"
             />
           </div>
           {employeeQuery.trim().length < 2 ? (
@@ -180,39 +114,41 @@ export function ConversationMemberManager({ conversation }: ConversationMemberMa
             <p className="p-2 text-xs text-muted-foreground">Không tìm thấy nhân viên phù hợp.</p>
           )}
           <div className="flex justify-end gap-2">
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => {
                 setIsAddingMembers(false)
-                setSelectedEmployeeIds([])
+                clearSelectedEmployees()
               }}
-              className="rounded-full px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted"
+              className="text-muted-foreground"
             >
               Hủy
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              size="sm"
               onClick={addSelectedEmployees}
-              disabled={!selectedEmployeeIds.length || addParticipantsMutation.isPending}
-              className="rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={!selectedEmployeeIds.length || isAddingSelectedEmployees}
             >
-              {addParticipantsMutation.isPending
+              {isAddingSelectedEmployees
                 ? "Đang thêm..."
                 : `Thêm${selectedEmployeeIds.length ? ` (${selectedEmployeeIds.length})` : ""}`}
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
       <div className="relative mb-2">
         <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-        <input
+        <Input
           value={memberQuery}
           onChange={(event) => {
             setMemberQuery(event.target.value)
           }}
           placeholder="Tìm thành viên..."
-          className="w-full rounded-full border border-border bg-muted/50 py-1.5 pl-8 pr-3 text-xs text-foreground outline-none focus:border-primary"
+          className="rounded-full border-border bg-muted/50 py-1.5 pl-8 pr-3 text-xs"
         />
       </div>
 
