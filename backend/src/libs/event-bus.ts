@@ -10,8 +10,8 @@ import { EventEmitter } from "events"
 export interface DomainEvents {
   "notification:create": CreateNotificationDto
   "notification:broadcast": Notification
-  // Shared chat-message event payload; recipient-specific delivery uses `chat:<employeeId>` channels below.
-  "chat:message": ChatStreamEvent
+  /** Recipient-targeted chat event forwarded by the WebSocket gateway. */
+  "chat:message": { recipientEmployeeId: string; event: ChatStreamEvent }
 }
 
 /**
@@ -20,14 +20,11 @@ export interface DomainEvents {
  */
 class AppEventBus extends EventEmitter {
   /**
-   * Initializes the event emitter and configures its listener warning threshold.
+   * Initializes the event emitter with a warning threshold of 200 listeners.
+   * The threshold warns about unusually high fan-out but does not limit subscriptions.
    */
   constructor() {
-    // Initialize the Node.js event subscription and delivery mechanism.
     super()
-
-    // Warn when an event has more than 200 listeners.
-    // This threshold does not impose a hard limit on subscriptions.
     this.setMaxListeners(200)
   }
 
@@ -35,8 +32,6 @@ class AppEventBus extends EventEmitter {
    * Publishes a domain event with its corresponding payload type.
    */
   emitTyped<K extends keyof DomainEvents>(event: K, payload: DomainEvents[K]): boolean {
-    // Deliver the payload to registered listeners.
-    // Return whether the event had any listeners.
     return this.emit(event, payload)
   }
 
@@ -47,7 +42,6 @@ class AppEventBus extends EventEmitter {
     event: K,
     listener: (payload: DomainEvents[K]) => void,
   ): this {
-    // Register a domain event callback with its payload type inferred from the event name.
     return this.on(event, listener)
   }
 
@@ -58,7 +52,6 @@ class AppEventBus extends EventEmitter {
     event: K,
     listener: (payload: DomainEvents[K]) => void,
   ): this {
-    // Remove the same callback reference that was passed to onTyped.
     return this.off(event, listener)
   }
 
@@ -66,8 +59,6 @@ class AppEventBus extends EventEmitter {
    * Publishes a notification to the channel of a specific employee.
    */
   emitNotification(employeeId: string, notification: Notification): boolean {
-    // Publish on the employee-specific channel.
-    // Only listeners registered on this channel receive the notification.
     return this.emit(`notification:${employeeId}`, notification)
   }
 
@@ -75,7 +66,6 @@ class AppEventBus extends EventEmitter {
    * Registers a notification listener on an employee-specific channel.
    */
   onNotification(employeeId: string, listener: (notification: Notification) => void): this {
-    // Subscribe to the employee-specific channel for delivery through consumers such as SSE.
     return this.on(`notification:${employeeId}`, listener)
   }
 
@@ -83,34 +73,15 @@ class AppEventBus extends EventEmitter {
    * Removes a notification listener from an employee-specific channel.
    */
   offNotification(employeeId: string, listener: (notification: Notification) => void): this {
-    // Remove the exact callback when no longer needed, such as after an SSE connection closes.
     return this.off(`notification:${employeeId}`, listener)
   }
 
-  // =========================================================================
-  // [CHAT MODULE INTEGRATION] Chat real-time messaging event bus methods
-  // =========================================================================
-
   /**
-   * Publishes a persisted chat message only to one recipient's process-local channel.
-   * Callers should emit once per participant; this event bus is not a cross-process broker.
+   * Publishes one recipient-targeted chat event to the Socket.IO gateway.
+   * Callers emit once per participant; this bus is not a cross-process broker.
    */
   emitChatMessage(recipientEmployeeId: string, event: ChatStreamEvent): boolean {
-    return this.emit(`chat:${recipientEmployeeId}`, event)
-  }
-
-  /**
-   * Registers a real-time chat message listener on an employee-specific channel.
-   */
-  onChatMessage(recipientEmployeeId: string, listener: (event: ChatStreamEvent) => void): this {
-    return this.on(`chat:${recipientEmployeeId}`, listener)
-  }
-
-  /**
-   * Removes a real-time chat message listener from an employee-specific channel.
-   */
-  offChatMessage(recipientEmployeeId: string, listener: (event: ChatStreamEvent) => void): this {
-    return this.off(`chat:${recipientEmployeeId}`, listener)
+    return this.emitTyped("chat:message", { recipientEmployeeId, event })
   }
 }
 

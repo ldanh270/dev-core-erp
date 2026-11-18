@@ -1,8 +1,9 @@
 /// <reference types="jest" />
+import { eventBus } from "../../libs/event-bus"
+import type { DomainEvents } from "../../libs/event-bus"
 import { ChatService } from "../../services/chat.service"
 import type {
   ChatMessageDto,
-  ChatStreamEvent,
   ConversationSummaryDto,
   IChatRepository,
 } from "../../types/chat.types"
@@ -69,10 +70,11 @@ describe("ChatService message actions", () => {
       findConversationById: jest.fn().mockResolvedValue(createConversation()),
     } as unknown as IChatRepository
     const service = new ChatService(repository, {} as IEmployeeRepository)
-    const received: ChatStreamEvent[] = []
-    const unsubscribe = service.subscribeToChatStream("employee-2", (event) => {
-      received.push(event)
-    })
+    const received: DomainEvents["chat:message"][] = []
+    const listener = (payload: DomainEvents["chat:message"]) => {
+      received.push(payload)
+    }
+    eventBus.onTyped("chat:message", listener)
 
     try {
       await expect(service.editMessage("message-1", "employee-2", "Unauthorized")).rejects.toThrow(
@@ -84,9 +86,18 @@ describe("ChatService message actions", () => {
 
       expect(result.content).toBe("Updated text")
       expect(editMessage).toHaveBeenCalledWith("message-1", "employee-1", "Updated text")
-      expect(received).toEqual([{ type: "message.updated", message: updatedMessage }])
+      expect(received).toEqual([
+        {
+          recipientEmployeeId: "employee-1",
+          event: { type: "message.updated", message: updatedMessage },
+        },
+        {
+          recipientEmployeeId: "employee-2",
+          event: { type: "message.updated", message: updatedMessage },
+        },
+      ])
     } finally {
-      unsubscribe()
+      eventBus.offTyped("chat:message", listener)
     }
   })
 
@@ -103,10 +114,11 @@ describe("ChatService message actions", () => {
       findConversationById: jest.fn().mockResolvedValue(createConversation("conversation-2")),
     } as unknown as IChatRepository
     const service = new ChatService(repository, {} as IEmployeeRepository)
-    const received: ChatStreamEvent[] = []
-    const unsubscribe = service.subscribeToChatStream("employee-2", (event) => {
-      received.push(event)
-    })
+    const received: DomainEvents["chat:message"][] = []
+    const listener = (payload: DomainEvents["chat:message"]) => {
+      received.push(payload)
+    }
+    eventBus.onTyped("chat:message", listener)
 
     try {
       const result = await service.forwardMessage("message-1", "employee-1", [
@@ -116,9 +128,18 @@ describe("ChatService message actions", () => {
 
       expect(result).toEqual([forwardedMessage])
       expect(forwardMessage).toHaveBeenCalledWith("message-1", "employee-1", ["conversation-2"])
-      expect(received).toEqual([{ type: "message.created", message: forwardedMessage }])
+      expect(received).toEqual([
+        {
+          recipientEmployeeId: "employee-1",
+          event: { type: "message.created", message: forwardedMessage },
+        },
+        {
+          recipientEmployeeId: "employee-2",
+          event: { type: "message.created", message: forwardedMessage },
+        },
+      ])
     } finally {
-      unsubscribe()
+      eventBus.offTyped("chat:message", listener)
     }
   })
 })

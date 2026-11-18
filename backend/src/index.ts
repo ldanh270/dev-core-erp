@@ -1,6 +1,7 @@
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { PORT } from "@/configs/system/server.config.ts"
 import { initCapacityCopilotCron } from "@/libs/capacity-copilot-cron.ts"
+import { attachChatSocket } from "@/libs/chat-socket.ts"
 import { connectDB } from "@/libs/database.ts"
 import { initCronJobs } from "@/libs/payroll-cron.ts"
 import { initWeeklyScheduleCron } from "@/libs/weekly-schedule-cron.ts"
@@ -13,7 +14,7 @@ import auditRoutes from "@/routes/audit.route.ts"
 import authRoutes from "@/routes/auth.route.ts"
 import capacityCopilotRoutes from "@/routes/capacity-copilot.route.ts"
 // [CHAT MODULE] The router applies JWT authentication to every endpoint and owns its route wiring.
-import chatRoutes from "@/routes/chat.route.ts"
+import chatRoutes, { chatService } from "@/routes/chat.route.ts"
 import customQueryRoutes from "@/routes/custom-query.route.ts"
 import debugRoutes from "@/routes/debug.route.ts"
 import employeeContractRoutes from "@/routes/employee-contract.route.ts"
@@ -49,12 +50,14 @@ import {
 import cookieParser from "cookie-parser"
 import dotenv from "dotenv"
 import express from "express"
+import { createServer } from "node:http"
 
 /**
  * Server configurations
  */
 dotenv.config() // Create config for using .env variables
 const app = express()
+const httpServer = createServer(app)
 
 // Production traffic reaches Express through the single Caddy reverse-proxy hop.
 // This lets express-rate-limit derive the client IP from X-Forwarded-For safely.
@@ -122,7 +125,7 @@ app.use("/api", auditRoutes)
 app.use("/api/spent-times", spentTimeRoutes)
 app.use("/api/custom-queries", customQueryRoutes)
 app.use("/api/notifications", notificationRoutes)
-// Expose chat conversations, messages, uploads, mentions, and the authenticated SSE stream.
+// Expose chat HTTP endpoints; Socket.IO is attached to the same HTTP server below.
 app.use("/api/chat", chatRoutes)
 app.use("/api/debug", debugRoutes)
 
@@ -148,7 +151,8 @@ void connectDB()
     // Ensure fail-safe administrator exists
     await bootstrapAdmin()
 
-    app.listen(PORT, () => {
+    attachChatSocket(httpServer, chatService)
+    httpServer.listen(PORT, () => {
       console.log("Server start on port " + PORT)
       initCronJobs()
       initWeeklyScheduleCron()

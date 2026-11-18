@@ -20,6 +20,7 @@ interface MentionInputProps {
     type?: "text" | "image" | "file"
     mentions?: ChatMessageMention[]
   }) => Promise<void>
+  onTypingChange: (isTyping: boolean) => void
   disabled?: boolean
 }
 
@@ -31,7 +32,11 @@ type TriggerType = "@" | "#" | "!"
  * Selecting a result replaces the current trigger query with a stable token containing its ID;
  * sending is disabled while uploading so attachment metadata cannot be submitted prematurely.
  */
-export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disabled }) => {
+export const MentionInput: React.FC<MentionInputProps> = ({
+  onSendMessage,
+  onTypingChange,
+  disabled,
+}) => {
   const [text, setText] = useState("")
   const [isUploading, setIsUploading] = useState(false)
   const [attachedFile, setAttachedFile] = useState<{
@@ -52,11 +57,18 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Detect trigger symbol when typing
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value
     setText(val)
+    onTypingChange(true)
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current)
+    typingTimerRef.current = setTimeout(() => {
+      onTypingChange(false)
+      typingTimerRef.current = null
+    }, 1500)
 
     const cursorPos = e.target.selectionStart || 0
     const textBeforeCursor = val.slice(0, cursorPos)
@@ -210,6 +222,9 @@ export const MentionInput: React.FC<MentionInputProps> = ({ onSendMessage, disab
     setText("")
     setAttachedFile(null)
     setActiveTrigger(null)
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current)
+    typingTimerRef.current = null
+    onTypingChange(false)
 
     await onSendMessage({
       content: trimmedContent,

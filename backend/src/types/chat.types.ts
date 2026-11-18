@@ -60,7 +60,7 @@ export interface ChatMessageDto {
 
 export type ChatStreamEventType = "message.created" | "message.updated" | "message.recalled"
 
-/** Event envelope sent over the per-employee SSE stream. */
+/** Event envelope sent to chat participants over Socket.IO. */
 export interface ChatStreamEvent {
   type: ChatStreamEventType
   message: ChatMessageDto
@@ -303,8 +303,6 @@ export interface IChatService {
   searchMentionProjects(query: string, limit?: number): Promise<MentionProjectItem[]>
   /** Search task records for `!` mention selection, optionally by project. */
   searchMentionTasks(query: string, limit?: number, projectId?: string): Promise<MentionTaskItem[]>
-  /** Subscribe to one employee's stream; the returned callback removes that listener. */
-  subscribeToChatStream(employeeId: string, onMessage: (event: ChatStreamEvent) => void): () => void
   /** Update per-employee pin, mute, or restriction flags after access validation. */
   updateParticipantSettings(
     conversationId: string,

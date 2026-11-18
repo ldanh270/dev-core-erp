@@ -91,9 +91,7 @@ model Employee {
   targetedNotifications Notification[]               @relation("NotificationTarget")
   notificationStates    NotificationRecipientState[]
 
-  // =========================================================================
-  // [CHAT MODULE INTEGRATION] Relations for independent Chat subsystem
-  // =========================================================================
+  // Chat relations
   createdConversations Conversation[]            @relation("ConversationCreator")
   chatParticipations   ConversationParticipant[] @relation("ConversationMember")
   sentChatMessages     ChatMessage[]             @relation("ChatMessageSender")
@@ -2178,10 +2176,8 @@ model NotificationRecipientState {
   @@index([employeeId, deleted, read])
 }
 
-// =========================================================================
-// [CHAT MODULE] Independent chat module (peer-to-peer and group chat)
-// Supports mentions of multiple entity types: @employee, #project, !task
-// =========================================================================
+// Module: Chat
+// Direct and group conversations with employee, project, and task mentions.
 
 enum ConversationType {
   direct
@@ -2199,9 +2195,9 @@ enum ChatMessageType {
 model Conversation {
   id        String           @id @default(uuid())
   type      ConversationType @default(direct)
-  title     String?          // Group display name; direct conversations derive their title from the partner.
-  avatarUrl String?          // Optional group image; direct conversations use the partner's avatar.
-  creatorId String?          // Creator is nullable so deleting an employee does not delete the conversation.
+  title     String? // Group display name; direct conversations derive their title from the partner.
+  avatarUrl String? // Optional group image; direct conversations use the partner's avatar.
+  creatorId String? // Creator is nullable so deleting an employee does not delete the conversation.
   creator   Employee?        @relation("ConversationCreator", fields: [creatorId], references: [id], onDelete: SetNull)
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
@@ -2217,19 +2213,19 @@ model Conversation {
 /// Per-employee membership state, including read position and personal conversation preferences.
 /// A deleted membership is hidden for that employee and can be reactivated when they rejoin.
 model ConversationParticipant {
-  id             String       @id @default(uuid())
+  id             String   @id @default(uuid())
   conversationId String
   employeeId     String
-  joinedAt       DateTime     @default(now())
-  lastReadAt     DateTime     @default(now()) // Messages newer than this timestamp contribute to the unread count.
+  joinedAt       DateTime @default(now())
+  lastReadAt     DateTime @default(now()) // Messages newer than this timestamp contribute to the unread count.
   nickname       String?
-  isPinned       Boolean      @default(false) // Affects ordering only for this employee's conversation list.
-  isMuted        Boolean      @default(false) // Per-employee notification preference.
-  isRestricted   Boolean      @default(false) // Per-employee restriction state.
-  isDeleted      Boolean      @default(false) // Soft-hide this membership without removing shared history.
+  isPinned       Boolean  @default(false) // Affects ordering only for this employee's conversation list.
+  isMuted        Boolean  @default(false) // Per-employee notification preference.
+  isRestricted   Boolean  @default(false) // Per-employee restriction state.
+  isDeleted      Boolean  @default(false) // Soft-hide this membership without removing shared history.
 
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  employee       Employee     @relation("ConversationMember", fields: [employeeId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  employee     Employee     @relation("ConversationMember", fields: [employeeId], references: [id], onDelete: Cascade)
 
   @@unique([conversationId, employeeId])
   @@index([employeeId])
@@ -2255,8 +2251,8 @@ model ChatMessage {
   updatedAt      DateTime        @updatedAt
   deletedAt      DateTime?
 
-  conversation   Conversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  sender         Employee        @relation("ChatMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       Employee     @relation("ChatMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
 
   @@index([conversationId, createdAt])
   @@index([senderId])

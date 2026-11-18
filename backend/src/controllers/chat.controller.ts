@@ -1,5 +1,5 @@
 import { CHAT_CONFIG, CHAT_MESSAGE_TYPES, MENTION_TYPES } from "@/configs/entities/chat.config.ts"
-import { ErrorCode, ErrorLayer } from "@/configs/system/error-code.config.ts"
+import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import type { AuthRequest } from "@/middlewares/auth.middleware.ts"
 import type { IChatService } from "@/types/chat.types.ts"
@@ -66,7 +66,7 @@ const updateSettingsSchema = z.object({
 })
 
 /**
- * Controller handling chat endpoints and SSE streams.
+ * Controller handling chat HTTP endpoints.
  * Authenticated identity always comes from `req.user`; request bodies cannot choose the acting employee.
  * Successful handlers return the standard `{ data, error }` response envelope.
  */
@@ -345,47 +345,6 @@ export class ChatController {
         type: isImage ? "image" : "file",
       },
       error: null,
-    })
-  }
-
-  /**
-   * GET /api/chat/stream
-   * Open a long-lived SSE response for the authenticated employee.
-   * A connected event confirms setup, message events carry persisted DTOs, and the heartbeat keeps
-   * idle proxies from closing the connection; the listener and timer are disposed on request close.
-   */
-  streamMessages = (req: AuthRequest, res: Response): void => {
-    const employeeId = req.user?.empId
-    if (!employeeId) {
-      res.status(HttpStatusCode.UNAUTHORIZED).json({
-        data: null,
-        error: { message: "Unauthorized", code: ErrorCode.UNAUTHORIZED },
-      })
-      return
-    }
-
-    res.setHeader("Content-Type", "text/event-stream")
-    res.setHeader("Cache-Control", "no-cache, no-transform")
-    res.setHeader("Connection", "keep-alive")
-    res.setHeader("X-Accel-Buffering", "no")
-    res.flushHeaders()
-
-    // Let the client distinguish a successful stream setup from an idle connection.
-    res.write(`data: ${JSON.stringify({ type: "connected" })}\n\n`)
-
-    // Subscribe only to this employee's channel; the disposer is called when the stream closes.
-    const unsubscribe = this.service.subscribeToChatStream(employeeId, (event) => {
-      res.write(`data: ${JSON.stringify(event)}\n\n`)
-    })
-
-    // Comment frames are ignored by EventSource but keep intermediaries from timing out the stream.
-    const keepAliveTimer = setInterval(() => {
-      res.write(": keep-alive\n\n")
-    }, CHAT_CONFIG.KEEP_ALIVE_INTERVAL_MS)
-
-    req.on("close", () => {
-      clearInterval(keepAliveTimer)
-      unsubscribe()
     })
   }
 

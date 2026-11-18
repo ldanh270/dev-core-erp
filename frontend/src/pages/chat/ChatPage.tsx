@@ -5,6 +5,7 @@ import { ROUTES } from "@/config/routes.config"
 import {
   useChatConversations,
   useChatMessages,
+  useChatRealtime,
   useCreateDirectChat,
   useCreateGroupChat,
 } from "@/hooks/chat/use-chat"
@@ -23,7 +24,7 @@ const ChatPage: React.FC = () => {
   const { id: conversationId } = useParams<{ id?: string }>()
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false)
 
-  // Retrieve user conversations & active real-time SSE stream
+  // Retrieve conversations and maintain the active chat WebSocket.
   const { data: conversations = [], isLoading: isLoadingConversations } = useChatConversations()
 
   // Active conversation messages & send mutation
@@ -36,7 +37,17 @@ const ChatPage: React.FC = () => {
     setMessagePinned,
     forwardMessage,
     markAsRead,
+    fetchPreviousPage,
+    hasPreviousPage,
+    isFetchingPreviousPage,
   } = useChatMessages(conversationId)
+  const {
+    onlineEmployeeIds,
+    typingEmployeeIds,
+    readAtByEmployeeId,
+    deliveredMessageIds,
+    sendTyping,
+  } = useChatRealtime(conversationId)
 
   // Creation mutations
   const createDirectMutation = useCreateDirectChat()
@@ -100,6 +111,14 @@ const ChatPage: React.FC = () => {
           onRecallMessage={recallMessage}
           onSetMessagePinned={setMessagePinned}
           onForwardMessage={forwardMessage}
+          onlineEmployeeIds={onlineEmployeeIds}
+          typingEmployeeIds={typingEmployeeIds}
+          readAtByEmployeeId={readAtByEmployeeId}
+          deliveredMessageIds={deliveredMessageIds}
+          onTypingChange={sendTyping}
+          onLoadPreviousPage={fetchPreviousPage}
+          hasPreviousPage={hasPreviousPage}
+          isLoadingPreviousPage={isFetchingPreviousPage}
           isLoading={isLoadingMessages}
         />
       </div>

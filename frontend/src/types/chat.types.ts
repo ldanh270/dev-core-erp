@@ -32,7 +32,7 @@ export interface ConversationParticipantDto {
   lastReadAt: string
 }
 
-/** Serialized chat message returned by REST endpoints and SSE events. */
+/** Serialized chat message returned by REST endpoints and Socket.IO events. */
 export interface ChatMessageDto {
   id: string
   conversationId: string
@@ -57,7 +57,7 @@ export interface ChatMessageDto {
 
 export type ChatStreamEventType = "message.created" | "message.updated" | "message.recalled"
 
-/** Event envelope used by the authenticated chat SSE stream. */
+/** Event envelope used by the authenticated chat Socket.IO channel. */
 export interface ChatStreamEvent {
   type: ChatStreamEventType
   message: ChatMessageDto

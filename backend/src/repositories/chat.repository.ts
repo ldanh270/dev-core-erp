@@ -80,24 +80,32 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
       },
     })
 
-    const summaries: ConversationSummaryDto[] = []
+    if (participations.length === 0) return []
 
-    for (const item of participations) {
+    const unreadCounts = await this.prisma.$queryRaw<
+      Array<{ conversationId: string; unreadCount: bigint }>
+    >(Prisma.sql`
+      SELECT participant."conversationId", COUNT(message."id") AS "unreadCount"
+      FROM "ConversationParticipant" AS participant
+      LEFT JOIN "ChatMessage" AS message
+        ON message."conversationId" = participant."conversationId"
+        AND message."createdAt" > participant."lastReadAt"
+        AND message."senderId" <> ${employeeId}
+        AND message."deletedAt" IS NULL
+      WHERE participant."employeeId" = ${employeeId}
+        AND participant."isDeleted" = false
+      GROUP BY participant."conversationId"
+    `)
+    const unreadCountByConversation = new Map(
+      unreadCounts.map(({ conversationId, unreadCount }) => [conversationId, Number(unreadCount)]),
+    )
+
+    const summaries = participations.map((item) => {
       const conv = item.conversation
       const lastMsg = conv.messages[0]
-
-      // Count unread messages created after participant's lastReadAt
-      const unreadCount = await this.prisma.chatMessage.count({
-        where: {
-          conversationId: conv.id,
-          createdAt: { gt: item.lastReadAt },
-          senderId: { not: employeeId },
-          deletedAt: null,
-        },
-      })
-
-      summaries.push(this.mapToConversationSummary(conv, employeeId, unreadCount, lastMsg))
-    }
+      const unreadCount = unreadCountByConversation.get(conv.id) ?? 0
+      return this.mapToConversationSummary(conv, employeeId, unreadCount, lastMsg)
+    })
 
     // Pinned conversations stay at the very top, followed by most recent activity
     summaries.sort((a, b) => {
@@ -325,13 +333,16 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
     }
 
     if (options.beforeCursor) {
-      // The API accepts a message ID; use its timestamp as the boundary for descending pagination.
+      // Use a composite timestamp/ID boundary so messages sharing a timestamp are not skipped.
       const cursorMessage = await this.prisma.chatMessage.findUnique({
         where: { id: options.beforeCursor },
-        select: { createdAt: true },
+        select: { id: true, createdAt: true },
       })
       if (cursorMessage) {
-        where.createdAt = { lt: cursorMessage.createdAt }
+        where.OR = [
+          { createdAt: { lt: cursorMessage.createdAt } },
+          { createdAt: cursorMessage.createdAt, id: { lt: cursorMessage.id } },
+        ]
       }
     }
 
@@ -342,7 +353,7 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
 
     const messages = await this.prisma.chatMessage.findMany({
       where,
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       take: options.limit,
       include: {
         sender: {
@@ -676,10 +687,6 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
       projectName: t.project?.name,
     }))
   }
-
-  // =========================================================================
-  // Private Helper Mappings
-  // =========================================================================
 
   /** Convert a Prisma message record and its selected sender fields into the service DTO. */
   private mapToChatMessageDto(raw: {

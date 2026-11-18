@@ -28,11 +28,8 @@ const employeeRepository = new PrismaEmployeeRepository(prisma)
 const chatService = new ChatService(chatRepository, employeeRepository)
 const chatController = new ChatController(chatService)
 
-// Apply authentication before every endpoint, including the long-lived SSE stream.
+// Apply authentication before every REST endpoint; Socket.IO authenticates its own handshake.
 chatRoutes.use(authenticate)
-
-// Real-time stream is registered before parameterized conversation routes.
-chatRoutes.get("/stream", chatController.streamMessages)
 
 // Conversations management
 chatRoutes.get("/conversations", chatController.getMyConversations)
@@ -62,3 +59,4 @@ chatRoutes.get("/mentions/projects", chatController.searchMentionProjects)
 chatRoutes.get("/mentions/tasks", chatController.searchMentionTasks)
 
 export default chatRoutes
+export { chatService }

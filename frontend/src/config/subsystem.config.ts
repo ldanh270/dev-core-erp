@@ -356,9 +356,7 @@ export const SUBSYSTEMS: SubsystemConfig[] = [
       },
     ],
   },
-  // =========================================================================
-  // [CHAT MODULE] Available to authenticated employees; conversation access is enforced by the API.
-  // =========================================================================
+  /** Available to authenticated employees; conversation access is enforced by the API. */
   {
     id: "chat",
     name: "Tin nhắn",

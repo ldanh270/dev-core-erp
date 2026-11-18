@@ -21,7 +21,7 @@ import { AppError } from "@/utils/error.util.ts"
 
 /**
  * Chat business layer: validates membership and domain rules, delegates persistence, and publishes
- * new messages to each other participant's in-process event channel.
+ * new messages to each other participant's in-process event channel for WebSocket delivery.
  * Authorization is intentionally checked here before repository reads or mutations.
  */
 export class ChatService implements IChatService {
@@ -486,20 +486,6 @@ export class ChatService implements IChatService {
     projectId?: string,
   ): Promise<MentionTaskItem[]> {
     return this.chatRepo.searchTasksForMention(query.trim(), limit, projectId)
-  }
-
-  /**
-   * Register the callback used by the employee's SSE response.
-   * The returned disposer must be called when the HTTP stream closes to prevent leaked listeners.
-   */
-  subscribeToChatStream(
-    employeeId: string,
-    onMessage: (event: ChatStreamEvent) => void,
-  ): () => void {
-    this.bus.onChatMessage(employeeId, onMessage)
-    return () => {
-      this.bus.offChatMessage(employeeId, onMessage)
-    }
   }
 
   private async getAccessibleMessage(

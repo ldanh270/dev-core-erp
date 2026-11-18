@@ -16,6 +16,7 @@ export default defineConfig(({ mode }) => {
         "/api": {
           target: apiTarget.replace(/\/api$/, ""),
           changeOrigin: true,
+          ws: true,
         },
       },
     },

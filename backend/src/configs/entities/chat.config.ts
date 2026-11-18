@@ -54,7 +54,7 @@ export const MENTION_PREFIX = {
 
 /**
  * Shared backend limits and timing values for chat requests.
- * Pagination and message limits are enforced by the service; the SSE interval is in milliseconds.
+ * Pagination and message limits are enforced by the service.
  */
 export const CHAT_CONFIG = {
   MAX_MESSAGE_LENGTH: 4000, // Maximum text length accepted for one message.
@@ -62,7 +62,6 @@ export const CHAT_CONFIG = {
   MAX_PAGE_SIZE: 100, // Service-side ceiling applied even when a caller requests more.
   MAX_GROUP_MEMBERS: 100, // Maximum current group size allowed when adding members.
   MAX_FORWARD_CONVERSATIONS: 20, // Bound one forward operation to a manageable number of destinations.
-  KEEP_ALIVE_INTERVAL_MS: 15000, // SSE heartbeat interval; measured in milliseconds.
   SEARCH_PAGE_SIZE: 50, // Maximum number of messages returned by a history search.
 } as const
 

@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/common/empty-state"
 import {
   Dialog,
   DialogContent,
@@ -52,6 +53,14 @@ interface ChatWindowProps {
   onRecallMessage: (messageId: string) => void
   onSetMessagePinned: (messageId: string, isPinned: boolean) => void
   onForwardMessage: (messageId: string, conversationIds: string[]) => void
+  onlineEmployeeIds: string[]
+  typingEmployeeIds: string[]
+  readAtByEmployeeId: Record<string, string>
+  deliveredMessageIds: string[]
+  onTypingChange: (isTyping: boolean) => void
+  onLoadPreviousPage: () => Promise<unknown>
+  hasPreviousPage: boolean
+  isLoadingPreviousPage: boolean
   isLoading?: boolean
 }
 
@@ -69,47 +78,78 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   onRecallMessage,
   onSetMessagePinned,
   onForwardMessage,
+  onlineEmployeeIds,
+  typingEmployeeIds,
+  readAtByEmployeeId,
+  deliveredMessageIds,
+  onTypingChange,
+  onLoadPreviousPage,
+  hasPreviousPage,
+  isLoadingPreviousPage,
   isLoading,
 }) => {
   const { user } = useAuthStore()
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const latestMessageIdRef = useRef<string | null>(null)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState("")
   const [forwardingMessageId, setForwardingMessageId] = useState<string | null>(null)
   const [forwardConversationIds, setForwardConversationIds] = useState<string[]>([])
+  const otherParticipants =
+    conversation?.participants.filter((participant) => participant.employeeId !== user?.id) ?? []
+  const typingNames = otherParticipants
+    .filter((participant) => typingEmployeeIds.includes(participant.employeeId))
+    .map((participant) => participant.fullName)
+  const onlineCount = otherParticipants.filter((participant) =>
+    onlineEmployeeIds.includes(participant.employeeId),
+  ).length
 
-  // Keep the newest message in view whenever the rendered message list changes.
+  // Keep the newest message in view when the latest message changes, not when older pages prepend.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    const latestMessageId = messages.at(-1)?.id ?? null
+    if (latestMessageId !== latestMessageIdRef.current) {
+      latestMessageIdRef.current = latestMessageId
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
   }, [messages])
 
   // The details panel is scoped to one conversation; don't leave it open against a newly selected chat.
   useEffect(() => {
     setIsDetailsOpen(false)
+    latestMessageIdRef.current = null
   }, [conversation?.id])
+
+  const handleMessagesScroll = () => {
+    const container = messagesContainerRef.current
+    if (!container || container.scrollTop > 80 || !hasPreviousPage || isLoadingPreviousPage) return
+
+    const previousHeight = container.scrollHeight
+    void onLoadPreviousPage().then(() => {
+      requestAnimationFrame(() => {
+        if (messagesContainerRef.current) {
+          messagesContainerRef.current.scrollTop =
+            messagesContainerRef.current.scrollHeight - previousHeight
+        }
+      })
+    })
+  }
 
   if (!conversation) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-muted/10 h-full">
-        <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4">
-          <MessageSquare className="w-8 h-8" />
-        </div>
-        <h3 className="font-semibold text-lg text-foreground mb-1">
-          Chào mừng đến với phân hệ Tin nhắn
-        </h3>
-        <p className="text-xs text-muted-foreground max-w-sm mb-4">
-          Trò chuyện trực tiếp 1-1 hoặc theo nhóm. Gõ @ để nhắc nhân viên, # để gắn thẻ dự án, ! để
-          gắn thẻ công việc.
-        </p>
-      </div>
+      <EmptyState
+        icon={MessageSquare}
+        title="Chào mừng đến với phân hệ Tin nhắn"
+        description="Trò chuyện trực tiếp 1-1 hoặc theo nhóm. Gõ @ để nhắc nhân viên, # để gắn thẻ dự án, ! để gắn thẻ công việc."
+        className="flex-1 bg-muted/10 h-full"
+      />
     )
   }
 
   return (
     <div className="flex-1 flex flex-col h-full bg-background relative overflow-hidden">
-      {/* Header */}
       <div className="p-3.5 border-b border-border bg-card flex items-center justify-between gap-3 shrink-0 shadow-xs">
         <button
           type="button"
@@ -144,23 +184,35 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             <h3 className="font-semibold text-sm text-foreground truncate">{conversation.title}</h3>
             <span className="text-[11px] text-muted-foreground truncate">
               {conversation.type === CONVERSATION_TYPE.GROUP
-                ? `${conversation.participants.length} thành viên`
-                : "Trò chuyện 1-1"}
+                ? `${conversation.participants.length} thành viên · ${onlineCount} đang hoạt động`
+                : onlineCount > 0
+                  ? "Đang hoạt động"
+                  : "Ngoại tuyến"}
             </span>
           </div>
         </button>
       </div>
 
-      {/* Message history */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3.5">
+      <div
+        ref={messagesContainerRef}
+        onScroll={handleMessagesScroll}
+        className="flex-1 overflow-y-auto p-4 space-y-3.5"
+      >
+        {isLoadingPreviousPage && (
+          <div className="text-center py-2 text-xs text-muted-foreground">
+            Đang tải tin nhắn cũ hơn...
+          </div>
+        )}
         {isLoading ? (
           <div className="text-center py-6 text-xs text-muted-foreground">Đang tải tin nhắn...</div>
         ) : messages.length === 0 ? (
-          <div className="text-center py-12 flex flex-col items-center gap-2 text-muted-foreground">
-            <MessageSquare className="w-8 h-8 opacity-30" />
-            <p className="text-xs">Chưa có tin nhắn nào trong cuộc trò chuyện này.</p>
-            <p className="text-[11px]">Hãy gửi lời chào hoặc gõ @ để nhắc đến ai đó!</p>
-          </div>
+          <EmptyState
+            icon={MessageSquare}
+            title="Chưa có tin nhắn nào trong cuộc trò chuyện này."
+            description="Hãy gửi lời chào hoặc gõ @ để nhắc đến ai đó!"
+            compact
+            className="py-12"
+          />
         ) : (
           messages.map((msg) => {
             const isMe = msg.senderId === user?.id
@@ -171,7 +223,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 key={msg.id}
                 className={`group flex gap-2.5 items-end ${isMe ? "justify-end" : "justify-start"}`}
               >
-                {/* Partner avatar if not me */}
                 {!isMe && (
                   <div className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold shrink-0 mb-1">
                     {msg.senderAvatar ? (
@@ -186,7 +237,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                   </div>
                 )}
 
-                {/* Message Bubble */}
                 <div className={`max-w-[70%] flex flex-col ${isMe ? "items-end" : "items-start"}`}>
                   {!isMe && conversation.type === CONVERSATION_TYPE.GROUP && (
                     <span className="text-[10px] text-muted-foreground mb-1 ml-1">
@@ -247,7 +297,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                             </div>
                           )}
 
-                          {/* Image Attachment */}
                           {msg.type === "image" && msg.fileUrl && (
                             <div className="mb-1.5 overflow-hidden rounded-lg">
                               <img
@@ -261,7 +310,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                             </div>
                           )}
 
-                          {/* File Attachment */}
                           {msg.type === "file" && msg.fileUrl && (
                             <a
                               href={msg.fileUrl}
@@ -281,7 +329,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                             </a>
                           )}
 
-                          {/* Text content with mentions */}
                           {msg.content && (
                             <MentionMessageRenderer
                               content={msg.content}
@@ -351,19 +398,37 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                     )}
                   </div>
 
-                  <span className="text-[9px] text-muted-foreground mt-0.5 px-1">{timeStr}</span>
+                  <span className="text-[9px] text-muted-foreground mt-0.5 px-1">
+                    {timeStr}
+                    {isMe && (
+                      <>
+                        {" · "}
+                        {otherParticipants.some((participant) => {
+                          const lastReadAt = readAtByEmployeeId[participant.employeeId]
+                          return lastReadAt && new Date(lastReadAt) >= new Date(msg.createdAt)
+                        })
+                          ? "Đã xem"
+                          : deliveredMessageIds.includes(msg.id)
+                            ? "Đã nhận"
+                            : "Đã gửi"}
+                      </>
+                    )}
+                  </span>
                 </div>
               </div>
             )
           })
         )}
+        {typingNames.length > 0 && (
+          <div className="text-xs text-muted-foreground" aria-live="polite">
+            {typingNames.join(", ")} đang nhập...
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input area */}
-      <MentionInput onSendMessage={onSendMessage} />
+      <MentionInput onSendMessage={onSendMessage} onTypingChange={onTypingChange} />
 
-      {/* Keep conversation tools in this pane so the message context remains visible. */}
       {isDetailsOpen && (
         <ConversationDetailsPanel
           conversation={conversation}
@@ -430,7 +495,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         </DialogContent>
       </Dialog>
 
-      {/* Image Preview Modal */}
       {previewImage && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
