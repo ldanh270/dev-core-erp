@@ -30,7 +30,6 @@
     "db:seed:fresh": "cd backend && nr seed:fresh",
     "db:seed:incremental": "cd backend && nr seed:incremental",
     "db:seed:admin": "cd backend && nr seed:admin",
-    "db:reset:admin-password": "cd backend && nr reset:admin-password",
     "db:clear": "cd backend && nr clear",
     "schema:generate": "node scripts/generate-db-schema-data.cjs",
     "hash-password": "cd backend && nr hash-password",
