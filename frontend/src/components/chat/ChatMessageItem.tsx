@@ -93,7 +93,9 @@ export function ChatMessageItem({
                 <textarea
                   autoFocus
                   value={editContent}
-                  onChange={(event) => onEditContentChange(event.target.value)}
+                  onChange={(event) => {
+                    onEditContentChange(event.target.value)
+                  }}
                   maxLength={4000}
                   aria-label="Chỉnh sửa nội dung tin nhắn"
                   className="w-full min-h-20 resize-y rounded-md border border-border bg-background p-2 text-foreground outline-none focus:ring-2 focus:ring-ring"
@@ -112,7 +114,9 @@ export function ChatMessageItem({
                     type="button"
                     variant="ghost"
                     size="xs"
-                    onClick={() => onSaveEdit(message.id)}
+                    onClick={() => {
+                      onSaveEdit(message.id)
+                    }}
                     className="bg-background/20 text-[11px] hover:bg-background/30"
                   >
                     Lưu
@@ -135,7 +139,9 @@ export function ChatMessageItem({
                     <img
                       src={message.fileUrl}
                       alt={message.fileName || "Ảnh đính kèm"}
-                      onClick={() => onPreviewImage(message.fileUrl || null)}
+                      onClick={() => {
+                        onPreviewImage(message.fileUrl || null)
+                      }}
                       className="max-h-60 max-w-full rounded-lg object-cover cursor-pointer hover:opacity-95 transition-opacity"
                     />
                   </div>
@@ -186,21 +192,38 @@ export function ChatMessageItem({
               </DropdownMenuTrigger>
               <DropdownMenuContent align={isMe ? "end" : "start"} className="w-44">
                 {isMe && (
-                  <DropdownMenuItem onSelect={() => onStartEdit(message)}>
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      onStartEdit(message)
+                    }}
+                  >
                     <Pencil />
                     Chỉnh sửa
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onSelect={() => onForward(message.id)}>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    onForward(message.id)
+                  }}
+                >
                   <Forward />
                   Chuyển tiếp
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => onTogglePin(message.id, !message.isPinned)}>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    onTogglePin(message.id, !message.isPinned)
+                  }}
+                >
                   {message.isPinned ? <PinOff /> : <Pin />}
                   {message.isPinned ? "Bỏ ghim" : "Ghim"}
                 </DropdownMenuItem>
                 {isMe && (
-                  <DropdownMenuItem variant="destructive" onSelect={() => onRecall(message.id)}>
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onSelect={() => {
+                      onRecall(message.id)
+                    }}
+                  >
                     <Trash2 />
                     Thu hồi
                   </DropdownMenuItem>

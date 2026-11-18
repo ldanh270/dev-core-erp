@@ -56,7 +56,9 @@ export function ChatWindowDialogs({
                     !selectedConversationIds.includes(conversation.id) &&
                     selectedConversationIds.length >= CHAT_CONFIG.MAX_FORWARD_CONVERSATIONS
                   }
-                  onChange={(event) => onToggleConversation(conversation.id, event.target.checked)}
+                  onChange={(event) => {
+                    onToggleConversation(conversation.id, event.target.checked)
+                  }}
                 />
                 <span className="truncate text-sm">{conversation.title}</span>
               </label>

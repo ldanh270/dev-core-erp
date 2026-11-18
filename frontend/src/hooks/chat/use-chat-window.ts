@@ -104,9 +104,15 @@ export function useChatWindow(options: UseChatWindowOptions) {
     setEditingMessageId(null)
   }
 
-  const cancelEditing = () => setEditingMessageId(null)
-  const toggleDetails = () => setIsDetailsOpen((open) => !open)
-  const closeDetails = () => setIsDetailsOpen(false)
+  const cancelEditing = () => {
+    setEditingMessageId(null)
+  }
+  const toggleDetails = () => {
+    setIsDetailsOpen((open) => !open)
+  }
+  const closeDetails = () => {
+    setIsDetailsOpen(false)
+  }
 
   const recallMessage = (messageId: string) => {
     if (window.confirm("Bạn có chắc muốn thu hồi tin nhắn này?")) onRecallMessage(messageId)
