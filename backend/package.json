@@ -16,7 +16,6 @@
     "seed:incremental": "tsx src/scripts/seed-all.ts --incremental",
     "seed:admin": "tsx src/scripts/repair-admin.ts",
     "clear": "tsx src/scripts/clear-db.ts",
-    "repair:admin": "tsx src/scripts/repair-admin.ts",
     "hash-password": "tsx src/scripts/hash-password.ts"
   },
   "type": "module",
