@@ -1,8 +1,10 @@
-import { CONVERSATION_TYPE, type IConversationType } from "@/config/entities/chat.config"
-import { useDeleteConversation, useUpdateChatSettings } from "@/hooks/chat/use-chat"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { CONVERSATION_TYPE } from "@/config/entities/chat.config"
+import { useConversationList } from "@/hooks/chat/use-conversation-list"
 import type { ConversationSummaryDto } from "@/types/chat.types"
 
-import React, { useEffect, useRef, useState } from "react"
+import React from "react"
 
 import { formatDistanceToNow } from "date-fns"
 import { vi } from "date-fns/locale"
@@ -45,72 +47,20 @@ export const ConversationList: React.FC<ConversationListProps> = ({
   onOpenNewChatModal,
   isLoading,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterType, setFilterType] = useState<"all" | IConversationType>("all")
-  const [menuOpenId, setMenuOpenId] = useState<string | null>(null)
-
-  const updateSettingsMutation = useUpdateChatSettings()
-  const deleteConversationMutation = useDeleteConversation()
-  const menuRef = useRef<HTMLDivElement>(null)
-
-  // Close 3-dots menu on outside click
-  useEffect(() => {
-    const handleOutsideClick = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpenId(null)
-      }
-    }
-    if (menuOpenId) {
-      document.addEventListener("mousedown", handleOutsideClick)
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick)
-    }
-  }, [menuOpenId])
-
-  // Apply the title search before the optional direct/group filter; source data remains untouched.
-  const filteredConversations = conversations.filter((c) => {
-    const matchesSearch = c.title.toLowerCase().includes(searchTerm.toLowerCase())
-    if (filterType === "all") return matchesSearch
-    return matchesSearch && c.type === filterType
-  })
-
-  // These controls sit inside a clickable conversation row, so stop the click before applying menu actions.
-  const handleTogglePin = (e: React.MouseEvent, c: ConversationSummaryDto) => {
-    e.stopPropagation()
-    setMenuOpenId(null)
-    updateSettingsMutation.mutate({
-      conversationId: c.id,
-      settings: { isPinned: !c.isPinned },
-    })
-  }
-
-  const handleToggleMute = (e: React.MouseEvent, c: ConversationSummaryDto) => {
-    e.stopPropagation()
-    setMenuOpenId(null)
-    updateSettingsMutation.mutate({
-      conversationId: c.id,
-      settings: { isMuted: !c.isMuted },
-    })
-  }
-
-  const handleToggleRestrict = (e: React.MouseEvent, c: ConversationSummaryDto) => {
-    e.stopPropagation()
-    setMenuOpenId(null)
-    updateSettingsMutation.mutate({
-      conversationId: c.id,
-      settings: { isRestricted: !c.isRestricted },
-    })
-  }
-
-  /** Confirm before hiding this member's conversation; other members' copies are unaffected. */
-  const handleDeleteConversation = (e: React.MouseEvent, c: ConversationSummaryDto) => {
-    e.stopPropagation()
-    setMenuOpenId(null)
-    if (window.confirm(`Bạn có chắc muốn xoá cuộc trò chuyện với "${c.title}"?`)) {
-      deleteConversationMutation.mutate(c.id)
-    }
-  }
+  const {
+    searchTerm,
+    setSearchTerm,
+    filterType,
+    setFilterType,
+    menuOpenId,
+    menuRef,
+    filteredConversations,
+    toggleMenu,
+    togglePin,
+    toggleMute,
+    toggleRestricted,
+    deleteConversation,
+  } = useConversationList(conversations)
 
   return (
     <div className="flex flex-col h-full bg-card border-r border-border">
@@ -122,22 +72,23 @@ export const ConversationList: React.FC<ConversationListProps> = ({
           </div>
           <h2 className="font-semibold text-base text-foreground">Tin nhắn</h2>
         </div>
-        <button
+        <Button
           type="button"
+          size="sm"
           onClick={onOpenNewChatModal}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-medium cursor-pointer transition-colors shadow-sm"
+          className="gap-1.5"
           title="Tạo cuộc trò chuyện mới"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Tạo mới</span>
-        </button>
+        </Button>
       </div>
 
       {/* Search Input */}
       <div className="p-3 border-b border-border">
         <div className="relative">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input
+          <Input
             type="text"
             value={searchTerm}
             onChange={(e) => {
@@ -150,45 +101,43 @@ export const ConversationList: React.FC<ConversationListProps> = ({
 
         {/* Filter Pills */}
         <div className="flex items-center gap-1 mt-2.5">
-          <button
+          <Button
             type="button"
+            variant={filterType === "all" ? "default" : "ghost"}
+            size="xs"
             onClick={() => {
               setFilterType("all")
             }}
-            className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition-colors ${
-              filterType === "all"
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
-            }`}
+            className={filterType === "all" ? "" : "bg-muted text-muted-foreground"}
           >
             Tất cả
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant={filterType === CONVERSATION_TYPE.DIRECT ? "default" : "ghost"}
+            size="xs"
             onClick={() => {
               setFilterType(CONVERSATION_TYPE.DIRECT)
             }}
-            className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition-colors ${
-              filterType === CONVERSATION_TYPE.DIRECT
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
-            }`}
+            className={
+              filterType === CONVERSATION_TYPE.DIRECT ? "" : "bg-muted text-muted-foreground"
+            }
           >
             1-1
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant={filterType === CONVERSATION_TYPE.GROUP ? "default" : "ghost"}
+            size="xs"
             onClick={() => {
               setFilterType(CONVERSATION_TYPE.GROUP)
             }}
-            className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition-colors ${
-              filterType === CONVERSATION_TYPE.GROUP
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
-            }`}
+            className={
+              filterType === CONVERSATION_TYPE.GROUP ? "" : "bg-muted text-muted-foreground"
+            }
           >
             Nhóm
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -313,9 +262,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                 <div className="absolute right-2 top-3">
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setMenuOpenId((prev) => (prev === c.id ? null : c.id))
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      toggleMenu(c.id)
                     }}
                     className={`p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer transition-colors ${
                       isMenuOpen ? "bg-muted text-foreground" : "opacity-0 group-hover:opacity-100"
@@ -338,8 +287,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                         {/* Pin or unpin */}
                         <button
                           type="button"
-                          onClick={(e) => {
-                            handleTogglePin(e, c)
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            togglePin(c)
                           }}
                           className="w-full px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-2 hover:bg-muted cursor-pointer transition-colors text-foreground"
                         >
@@ -359,8 +309,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                         {/* Mute or unmute */}
                         <button
                           type="button"
-                          onClick={(e) => {
-                            handleToggleMute(e, c)
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            toggleMute(c)
                           }}
                           className="w-full px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-2 hover:bg-muted cursor-pointer transition-colors text-foreground"
                         >
@@ -380,8 +331,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                         {/* Restrict or unrestrict */}
                         <button
                           type="button"
-                          onClick={(e) => {
-                            handleToggleRestrict(e, c)
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            toggleRestricted(c)
                           }}
                           className="w-full px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-2 hover:bg-muted cursor-pointer transition-colors text-foreground"
                         >
@@ -403,8 +355,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                       <div className="pt-0.5">
                         <button
                           type="button"
-                          onClick={(e) => {
-                            handleDeleteConversation(e, c)
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            deleteConversation(c)
                           }}
                           className="w-full px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-2 hover:bg-destructive/10 text-destructive cursor-pointer transition-colors"
                         >

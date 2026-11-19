@@ -5,11 +5,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { CONVERSATION_TYPE } from "@/config/entities/chat.config"
+import { useChatMessageItem } from "@/hooks/chat/use-chat-message-item"
 import type { ChatMessageDto } from "@/types/chat.types"
 
-import { format } from "date-fns"
-import { vi } from "date-fns/locale"
 import {
   Download,
   FileText,
@@ -56,8 +54,28 @@ export function ChatMessageItem({
   onRecall,
   onPreviewImage,
 }: ChatMessageItemProps) {
-  const isMe = message.senderId === currentEmployeeId
-  const timeStr = format(new Date(message.createdAt), "HH:mm", { locale: vi })
+  const {
+    isMe,
+    timeText,
+    isGroupConversation,
+    saveEdit,
+    previewImage,
+    startEdit,
+    forward,
+    togglePin,
+    recall,
+  } = useChatMessageItem({
+    message,
+    conversationType,
+    currentEmployeeId,
+    onEditContentChange,
+    onSaveEdit,
+    onStartEdit,
+    onForward,
+    onTogglePin,
+    onRecall,
+    onPreviewImage,
+  })
 
   return (
     <div className={`group flex gap-2.5 items-end ${isMe ? "justify-end" : "justify-start"}`}>
@@ -76,7 +94,7 @@ export function ChatMessageItem({
       )}
 
       <div className={`max-w-[70%] flex flex-col ${isMe ? "items-end" : "items-start"}`}>
-        {!isMe && conversationType === CONVERSATION_TYPE.GROUP && (
+        {!isMe && isGroupConversation && (
           <span className="text-[10px] text-muted-foreground mb-1 ml-1">{message.senderName}</span>
         )}
 
@@ -114,9 +132,7 @@ export function ChatMessageItem({
                     type="button"
                     variant="ghost"
                     size="xs"
-                    onClick={() => {
-                      onSaveEdit(message.id)
-                    }}
+                    onClick={saveEdit}
                     className="bg-background/20 text-[11px] hover:bg-background/30"
                   >
                     Lưu
@@ -139,9 +155,7 @@ export function ChatMessageItem({
                     <img
                       src={message.fileUrl}
                       alt={message.fileName || "Ảnh đính kèm"}
-                      onClick={() => {
-                        onPreviewImage(message.fileUrl || null)
-                      }}
+                      onClick={previewImage}
                       className="max-h-60 max-w-full rounded-lg object-cover cursor-pointer hover:opacity-95 transition-opacity"
                     />
                   </div>
@@ -192,38 +206,21 @@ export function ChatMessageItem({
               </DropdownMenuTrigger>
               <DropdownMenuContent align={isMe ? "end" : "start"} className="w-44">
                 {isMe && (
-                  <DropdownMenuItem
-                    onSelect={() => {
-                      onStartEdit(message)
-                    }}
-                  >
+                  <DropdownMenuItem onSelect={startEdit}>
                     <Pencil />
                     Chỉnh sửa
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem
-                  onSelect={() => {
-                    onForward(message.id)
-                  }}
-                >
+                <DropdownMenuItem onSelect={forward}>
                   <Forward />
                   Chuyển tiếp
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={() => {
-                    onTogglePin(message.id, !message.isPinned)
-                  }}
-                >
+                <DropdownMenuItem onSelect={togglePin}>
                   {message.isPinned ? <PinOff /> : <Pin />}
                   {message.isPinned ? "Bỏ ghim" : "Ghim"}
                 </DropdownMenuItem>
                 {isMe && (
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onSelect={() => {
-                      onRecall(message.id)
-                    }}
-                  >
+                  <DropdownMenuItem variant="destructive" onSelect={recall}>
                     <Trash2 />
                     Thu hồi
                   </DropdownMenuItem>
@@ -234,7 +231,7 @@ export function ChatMessageItem({
         </div>
 
         <span className="text-[9px] text-muted-foreground mt-0.5 px-1">
-          {timeStr}
+          {timeText}
           {isMe && (
             <>
               {" · "}

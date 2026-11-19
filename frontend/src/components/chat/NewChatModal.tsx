@@ -1,185 +1,106 @@
-import { chatApi } from "@/lib/chat-api"
-import type { MentionEmployeeItem } from "@/types/chat.types"
-
-import React, { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useNewChatModal } from "@/hooks/chat/use-new-chat-modal"
 
 import { Check, Search, User, Users, X } from "lucide-react"
 
 interface NewChatModalProps {
-  /** Controls whether the dialog is mounted; closed dialogs do not run employee searches. */
   isOpen: boolean
   onClose: () => void
-  /** Resolves after the parent has created or located the direct conversation. */
   onCreateDirect: (partnerId: string) => Promise<void>
-  /** Resolves after the parent has created a group with the selected other members. */
   onCreateGroup: (data: { title: string; participantIds: string[] }) => Promise<void>
 }
 
-/**
- * Dialog for starting a direct chat or creating a group.
- * It keeps itself open when a parent creation promise rejects so the user can retry; the backend
- * adds the signed-in employee to groups, so selection requires at least two other employees.
- */
-export const NewChatModal: React.FC<NewChatModalProps> = ({
+export function NewChatModal({
   isOpen,
   onClose,
   onCreateDirect,
   onCreateGroup,
-}) => {
-  const [tab, setTab] = useState<"direct" | "group">("direct")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [employees, setEmployees] = useState<MentionEmployeeItem[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-
-  // Group state
-  const [groupTitle, setGroupTitle] = useState("")
-  const [selectedMembers, setSelectedMembers] = useState<MentionEmployeeItem[]>([])
-
-  // Debounce employee search and discard results when the query changes or the modal closes.
-  useEffect(() => {
-    if (!isOpen) return
-
-    let isMounted = true
-    setIsLoading(true)
-
-    const fetchEmps = async () => {
-      try {
-        const res = await chatApi.searchMentionEmployees(searchQuery, 15)
-        if (isMounted) setEmployees(res)
-      } catch (err) {
-        console.error("Failed to search employees:", err)
-      } finally {
-        if (isMounted) setIsLoading(false)
-      }
-    }
-
-    const timer = setTimeout(() => {
-      void fetchEmps()
-    }, 150)
-    return () => {
-      isMounted = false
-      clearTimeout(timer)
-    }
-  }, [isOpen, searchQuery])
+}: NewChatModalProps) {
+  const {
+    tab,
+    setTab,
+    searchQuery,
+    setSearchQuery,
+    employees,
+    isLoading,
+    groupTitle,
+    setGroupTitle,
+    selectedMembers,
+    toggleMember,
+    selectDirectFromClick,
+    createGroupFromClick,
+  } = useNewChatModal({ isOpen, onClose, onCreateDirect, onCreateGroup })
 
   if (!isOpen) return null
 
-  const handleSelectDirect = async (empId: string) => {
-    // Close only after creation succeeds so a failed request leaves the dialog available for retry.
-    await onCreateDirect(empId)
-    onClose()
-  }
-
-  /** Keep selection by employee ID so refreshed search results do not lose selected members. */
-  const toggleMember = (emp: MentionEmployeeItem) => {
-    if (selectedMembers.some((m) => m.id === emp.id)) {
-      setSelectedMembers((prev) => prev.filter((m) => m.id !== emp.id))
-    } else {
-      setSelectedMembers((prev) => [...prev, emp])
-    }
-  }
-
-  const handleCreateGroup = async () => {
-    // The creator is added by the backend, so the picker requires two other members plus a title.
-    if (!groupTitle.trim() || selectedMembers.length < 2) return
-    await onCreateGroup({
-      title: groupTitle.trim(),
-      participantIds: selectedMembers.map((m) => m.id),
-    })
-    onClose()
-  }
-
-  // Parent mutations show user-facing errors; these wrappers also prevent unhandled rejections from click events.
-  const handleSelectDirectFromClick = (empId: string) => {
-    void handleSelectDirect(empId).catch((error: unknown) => {
-      console.error("Failed to create direct conversation:", error)
-    })
-  }
-
-  const handleCreateGroupFromClick = () => {
-    void handleCreateGroup().catch((error: unknown) => {
-      console.error("Failed to create group conversation:", error)
-    })
-  }
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-      <div className="w-full max-w-md bg-card text-card-foreground border border-border rounded-xl shadow-xl flex flex-col max-h-[85vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        {/* Header */}
-        <div className="p-4 border-b border-border flex items-center justify-between">
-          <h3 className="font-semibold text-base">Tạo cuộc trò chuyện mới</h3>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+      <div className="flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-xl">
+        <div className="flex items-center justify-between border-b border-border p-4">
+          <h3 className="text-base font-semibold">Tạo cuộc trò chuyện mới</h3>
+          <Button type="button" variant="ghost" size="icon-sm" onClick={onClose} aria-label="Đóng">
+            <X className="h-4 w-4" />
+          </Button>
         </div>
 
-        {/* Tab switch */}
-        <div className="flex border-b border-border p-1 bg-muted/40">
-          <button
+        <div className="flex border-b border-border bg-muted/40 p-1">
+          <Button
             type="button"
+            variant={tab === "direct" ? "secondary" : "ghost"}
+            size="sm"
             onClick={() => {
               setTab("direct")
             }}
-            className={`flex-1 py-1.5 text-xs font-medium rounded-full cursor-pointer transition-colors flex items-center justify-center gap-1.5 ${
-              tab === "direct"
-                ? "bg-background text-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className="flex-1"
           >
-            <User className="w-3.5 h-3.5" />
-            <span>Nhắn tin 1-1</span>
-          </button>
-          <button
+            <User className="h-3.5 w-3.5" />
+            Nhắn tin 1-1
+          </Button>
+          <Button
             type="button"
+            variant={tab === "group" ? "secondary" : "ghost"}
+            size="sm"
             onClick={() => {
               setTab("group")
             }}
-            className={`flex-1 py-1.5 text-xs font-medium rounded-full cursor-pointer transition-colors flex items-center justify-center gap-1.5 ${
-              tab === "group"
-                ? "bg-background text-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className="flex-1"
           >
-            <Users className="w-3.5 h-3.5" />
-            <span>Tạo nhóm chat</span>
-          </button>
+            <Users className="h-3.5 w-3.5" />
+            Tạo nhóm chat
+          </Button>
         </div>
 
-        {/* Group title input if group tab */}
         {tab === "group" && (
-          <div className="p-3 border-b border-border space-y-2">
-            <input
+          <div className="space-y-2 border-b border-border p-3">
+            <Input
               type="text"
               value={groupTitle}
-              onChange={(e) => {
-                setGroupTitle(e.target.value)
+              onChange={(event) => {
+                setGroupTitle(event.target.value)
               }}
               placeholder="Đặt tên nhóm chat..."
-              className="w-full px-3 py-1.5 rounded-full bg-muted/60 text-xs text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors"
+              className="rounded-full border-border bg-muted/60 text-xs"
             />
-
-            {/* Selected chips */}
             {selectedMembers.length > 0 && (
-              <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto pt-1">
-                {selectedMembers.map((m) => (
+              <div className="flex max-h-20 flex-wrap gap-1 overflow-y-auto pt-1">
+                {selectedMembers.map((member) => (
                   <span
-                    key={m.id}
-                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium border border-primary/20"
+                    key={member.id}
+                    className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
                   >
-                    <span>{m.fullName}</span>
-                    <button
+                    {member.fullName}
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon-xs"
                       onClick={() => {
-                        toggleMember(m)
+                        toggleMember(member)
                       }}
-                      className="p-0.5 hover:text-destructive cursor-pointer"
+                      aria-label={`Bỏ ${member.fullName}`}
                     >
-                      <X className="w-3 h-3" />
-                    </button>
+                      <X className="h-3 w-3" />
+                    </Button>
                   </span>
                 ))}
               </div>
@@ -187,23 +108,21 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
           </div>
         )}
 
-        {/* Search member */}
-        <div className="p-3 border-b border-border">
+        <div className="border-b border-border p-3">
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
               type="text"
               value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value)
+              onChange={(event) => {
+                setSearchQuery(event.target.value)
               }}
               placeholder="Tìm theo tên hoặc tên đăng nhập..."
-              className="w-full pl-9 pr-3 py-1.5 rounded-full bg-muted/60 text-xs text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary transition-colors"
+              className="rounded-full border-border bg-muted/60 pl-9 text-xs"
             />
           </div>
         </div>
 
-        {/* Member List */}
         <div className="flex-1 overflow-y-auto divide-y divide-border/40 p-1">
           {isLoading ? (
             <div className="p-4 text-center text-xs text-muted-foreground">Đang tìm...</div>
@@ -212,67 +131,65 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
               Không tìm thấy nhân viên phù hợp
             </div>
           ) : (
-            employees.map((emp) => {
-              const isSelected = selectedMembers.some((m) => m.id === emp.id)
-
+            employees.map((employee) => {
+              const isSelected = selectedMembers.some((member) => member.id === employee.id)
               return (
-                <button
-                  key={emp.id}
+                <Button
+                  key={employee.id}
                   type="button"
+                  variant="ghost"
                   onClick={() => {
                     if (tab === "direct") {
-                      handleSelectDirectFromClick(emp.id)
+                      selectDirectFromClick(employee.id)
                     } else {
-                      toggleMember(emp)
+                      toggleMember(employee)
                     }
                   }}
-                  className="w-full px-3 py-2.5 rounded-lg flex items-center justify-between text-left hover:bg-muted/50 cursor-pointer transition-colors"
+                  className="h-auto w-full justify-between rounded-lg px-3 py-2.5 text-left"
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
-                      {emp.fullName.charAt(0)}
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-medium text-foreground truncate">
-                        {emp.fullName}
+                  <span className="flex min-w-0 items-center gap-2.5">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                      {employee.fullName.charAt(0)}
+                    </span>
+                    <span className="flex min-w-0 flex-col">
+                      <span className="truncate text-xs font-medium text-foreground">
+                        {employee.fullName}
                       </span>
-                      <span className="text-[10px] text-muted-foreground truncate">
-                        @{emp.username} {emp.position ? `• ${emp.position}` : ""}
+                      <span className="truncate text-[10px] text-muted-foreground">
+                        @{employee.username} {employee.position ? `• ${employee.position}` : ""}
                       </span>
-                    </div>
-                  </div>
-
+                    </span>
+                  </span>
                   {tab === "group" && (
-                    <div
-                      className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${
+                    <span
+                      className={`flex h-5 w-5 items-center justify-center rounded-full border ${
                         isSelected
-                          ? "bg-primary text-primary-foreground border-primary"
+                          ? "border-primary bg-primary text-primary-foreground"
                           : "border-border bg-background"
                       }`}
                     >
-                      {isSelected && <Check className="w-3 h-3" />}
-                    </div>
+                      {isSelected && <Check className="h-3 w-3" />}
+                    </span>
                   )}
-                </button>
+                </Button>
               )
             })
           )}
         </div>
 
-        {/* Footer for group creation */}
         {tab === "group" && (
-          <div className="p-3 border-t border-border flex items-center justify-between bg-muted/20">
+          <div className="flex items-center justify-between border-t border-border bg-muted/20 p-3">
             <span className="text-xs text-muted-foreground">
               Đã chọn: {selectedMembers.length} thành viên
             </span>
-            <button
+            <Button
               type="button"
-              onClick={handleCreateGroupFromClick}
+              size="sm"
+              onClick={createGroupFromClick}
               disabled={!groupTitle.trim() || selectedMembers.length < 2}
-              className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-medium cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-xs"
             >
               Tạo nhóm
-            </button>
+            </Button>
           </div>
         )}
       </div>
