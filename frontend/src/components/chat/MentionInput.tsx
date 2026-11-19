@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { MENTION_PREFIX } from "@/config/entities/chat.config"
 import { useMentionInput } from "@/hooks/chat/use-mention-input"
 import type { SendMessageDto } from "@/types/chat.types"
 
@@ -21,7 +20,6 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
     text,
     isUploading,
     attachedFile,
-    setAttachedFile,
     activeTrigger,
     mentionIndex,
     employees,
@@ -33,9 +31,14 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
     handleTextChange,
     handleKeyDown,
     handleSendFromInput,
-    handleFileUpload,
-    insertMention,
-    triggerMentionPrompt,
+    handleFileInputChange,
+    handleRemoveAttachment,
+    handleSelectEmployee,
+    handleSelectProject,
+    handleSelectTask,
+    handleTriggerEmployeeMention,
+    handleTriggerProjectMention,
+    handleTriggerTaskMention,
   } = useMentionInput({ onSendMessage, onTypingChange, disabled })
 
   return (
@@ -48,39 +51,16 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
           projects={projects}
           tasks={tasks}
           isLoading={isLoadingMentions}
-          onSelectEmployee={(employee) => {
-            insertMention({
-              id: employee.id,
-              label: employee.fullName,
-              prefix: MENTION_PREFIX.EMPLOYEE,
-              type: "emp",
-            })
-          }}
-          onSelectProject={(project) => {
-            insertMention({
-              id: project.id,
-              label: project.name,
-              prefix: MENTION_PREFIX.PROJECT,
-              type: "proj",
-            })
-          }}
-          onSelectTask={(task) => {
-            insertMention({
-              id: task.id,
-              label: task.title,
-              prefix: MENTION_PREFIX.TASK,
-              type: "task",
-            })
-          }}
+          onSelectEmployee={handleSelectEmployee}
+          onSelectProject={handleSelectProject}
+          onSelectTask={handleSelectTask}
         />
       )}
 
       {attachedFile && (
         <MentionAttachmentChip
           attachedFile={attachedFile}
-          onRemove={() => {
-            setAttachedFile(null)
-          }}
+          onRemove={handleRemoveAttachment}
         />
       )}
 
@@ -90,9 +70,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
           type="button"
           variant="ghost"
           size="xs"
-          onClick={() => {
-            triggerMentionPrompt(MENTION_PREFIX.EMPLOYEE)
-          }}
+          onClick={handleTriggerEmployeeMention}
           className="border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20"
         >
           <User className="h-3 w-3" />@ Người
@@ -101,9 +79,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
           type="button"
           variant="ghost"
           size="xs"
-          onClick={() => {
-            triggerMentionPrompt(MENTION_PREFIX.PROJECT)
-          }}
+          onClick={handleTriggerProjectMention}
           className="border border-blue-500/20 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20"
         >
           <Briefcase className="h-3 w-3" /># Dự án
@@ -112,9 +88,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
           type="button"
           variant="ghost"
           size="xs"
-          onClick={() => {
-            triggerMentionPrompt(MENTION_PREFIX.TASK)
-          }}
+          onClick={handleTriggerTaskMention}
           className="border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20"
         >
           <CheckSquare className="h-3 w-3" />! Task
@@ -137,9 +111,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
           <input
             ref={fileInputRef}
             type="file"
-            onChange={(event) => {
-              void handleFileUpload(event)
-            }}
+            onChange={handleFileInputChange}
             className="hidden"
             disabled={disabled || isUploading}
           />

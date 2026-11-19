@@ -153,6 +153,37 @@ export function useMentionInput({
     }, 10)
   }
 
+  const handleSelectEmployee = (employee: MentionEmployeeItem) => {
+    insertMention({
+      id: employee.id,
+      label: employee.fullName,
+      prefix: MENTION_PREFIX.EMPLOYEE,
+      type: "emp",
+    })
+  }
+
+  const handleSelectProject = (project: MentionProjectItem) => {
+    insertMention({
+      id: project.id,
+      label: project.name,
+      prefix: MENTION_PREFIX.PROJECT,
+      type: "proj",
+    })
+  }
+
+  const handleSelectTask = (task: MentionTaskItem) => {
+    insertMention({
+      id: task.id,
+      label: task.title,
+      prefix: MENTION_PREFIX.TASK,
+      type: "task",
+    })
+  }
+
+  const handleRemoveAttachment = () => {
+    setAttachedFile(null)
+  }
+
   const send = async () => {
     if ((!text.trim() && !attachedFile) || disabled || isUploading) return
 
@@ -273,6 +304,10 @@ export function useMentionInput({
     }
   }
 
+  const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    void handleFileUpload(event)
+  }
+
   const triggerMentionPrompt = (prefix: MentionTrigger) => {
     setText((current) => current + (current.endsWith(" ") || current === "" ? "" : " ") + prefix)
     setActiveTrigger(prefix)
@@ -280,11 +315,22 @@ export function useMentionInput({
     textareaRef.current?.focus()
   }
 
+  const handleTriggerEmployeeMention = () => {
+    triggerMentionPrompt(MENTION_PREFIX.EMPLOYEE)
+  }
+
+  const handleTriggerProjectMention = () => {
+    triggerMentionPrompt(MENTION_PREFIX.PROJECT)
+  }
+
+  const handleTriggerTaskMention = () => {
+    triggerMentionPrompt(MENTION_PREFIX.TASK)
+  }
+
   return {
     text,
     isUploading,
     attachedFile,
-    setAttachedFile,
     activeTrigger,
     mentionIndex,
     employees,
@@ -296,8 +342,13 @@ export function useMentionInput({
     handleTextChange,
     handleKeyDown,
     handleSendFromInput,
-    handleFileUpload,
-    insertMention,
-    triggerMentionPrompt,
+    handleFileInputChange,
+    handleRemoveAttachment,
+    handleSelectEmployee,
+    handleSelectProject,
+    handleSelectTask,
+    handleTriggerEmployeeMention,
+    handleTriggerProjectMention,
+    handleTriggerTaskMention,
   }
 }
