@@ -33,19 +33,16 @@ export function NewChatModal({
     setGroupTitle,
     selectedMembers,
     toggleMember,
-    selectDirectFromClick,
+    handleEmployeeClick,
+    handleDialogOpenChange,
     createGroupFromClick,
+    canCreateGroup,
   } = useNewChatModal({ isOpen, onClose, onCreateDirect, onCreateGroup })
 
   if (!isOpen) return null
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        if (!open) onClose()
-      }}
-    >
+    <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       <DialogContent showCloseButton className="max-h-[85vh] max-w-md gap-0 overflow-hidden p-0">
         <DialogHeader className="border-b border-border p-4">
           <DialogTitle>Tạo cuộc trò chuyện mới</DialogTitle>
@@ -83,13 +80,7 @@ export function NewChatModal({
             selectedMembers={selectedMembers}
             isLoading={isLoading}
             isGroup={tab === "group"}
-            onEmployeeClick={(employee) => {
-              if (tab === "direct") {
-                selectDirectFromClick(employee.id)
-              } else {
-                toggleMember(employee)
-              }
-            }}
+            onEmployeeClick={handleEmployeeClick}
           />
         </div>
 
@@ -102,7 +93,7 @@ export function NewChatModal({
               type="button"
               size="sm"
               onClick={createGroupFromClick}
-              disabled={!groupTitle.trim() || selectedMembers.length < 2}
+              disabled={!canCreateGroup}
             >
               Tạo nhóm
             </Button>

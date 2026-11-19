@@ -87,6 +87,18 @@ export function useNewChatModal({
     })
   }
 
+  const handleEmployeeClick = (employee: MentionEmployeeItem) => {
+    if (tab === "direct") {
+      selectDirectFromClick(employee.id)
+      return
+    }
+    toggleMember(employee)
+  }
+
+  const handleDialogOpenChange = (open: boolean) => {
+    if (!open) onClose()
+  }
+
   return {
     tab,
     setTab,
@@ -98,7 +110,9 @@ export function useNewChatModal({
     setGroupTitle,
     selectedMembers,
     toggleMember,
-    selectDirectFromClick,
+    handleEmployeeClick,
+    handleDialogOpenChange,
     createGroupFromClick,
+    canCreateGroup: Boolean(groupTitle.trim()) && selectedMembers.length >= 2,
   }
 }
