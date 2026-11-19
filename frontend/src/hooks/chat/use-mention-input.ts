@@ -9,6 +9,8 @@ import type {
 
 import { useEffect, useRef, useState } from "react"
 
+import { toast } from "sonner"
+
 export type MentionTrigger = (typeof MENTION_PREFIX)[keyof typeof MENTION_PREFIX]
 
 export interface AttachedFile {
@@ -179,6 +181,7 @@ export function useMentionInput({
   const handleSendFromInput = () => {
     void send().catch((error: unknown) => {
       console.error("Failed to send chat message:", error)
+      toast.error("Không thể gửi tin nhắn")
     })
   }
 
@@ -262,6 +265,8 @@ export function useMentionInput({
       setAttachedFile(await chatApi.uploadAttachment(file))
     } catch (error) {
       console.error("Attachment upload failed:", error)
+      // Surface upload failures through the app toast system instead of a blocking alert.
+      toast.error("Không thể tải tệp đính kèm")
     } finally {
       setIsUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ""
