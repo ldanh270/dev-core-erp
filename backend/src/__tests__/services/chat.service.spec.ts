@@ -142,4 +142,31 @@ describe("ChatService message actions", () => {
       eventBus.offTyped("chat:message", listener)
     }
   })
+
+  it("reactivates both members before returning an existing direct conversation", async () => {
+    const existing = createConversation()
+    const partner = {
+      id: "employee-2",
+      status: "active",
+      fullName: "Employee Two",
+      username: "employee-two",
+    }
+    const addParticipants = jest.fn().mockResolvedValue(undefined)
+    const findConversationById = jest.fn().mockResolvedValue(existing)
+    const repository = {
+      findById: undefined,
+      findDirectConversationBetween: jest.fn().mockResolvedValue(existing),
+      addParticipants,
+      findConversationById,
+    } as unknown as IChatRepository
+    const employeeRepository = {
+      findById: jest.fn().mockResolvedValue(partner),
+    } as unknown as IEmployeeRepository
+    const service = new ChatService(repository, employeeRepository)
+
+    const result = await service.getOrCreateDirectConversation("employee-1", "employee-2")
+
+    expect(result).toEqual(existing)
+    expect(addParticipants).toHaveBeenCalledWith("conversation-1", ["employee-1", "employee-2"])
+  })
 })

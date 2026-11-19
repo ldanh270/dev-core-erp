@@ -89,6 +89,9 @@ export class ChatService implements IChatService {
     // Check if direct conversation already exists
     const existing = await this.chatRepo.findDirectConversationBetween(currentUserId, partnerId)
     if (existing) {
+      await this.chatRepo.addParticipants(existing.id, [currentUserId, partnerId])
+      const reactivated = await this.chatRepo.findConversationById(existing.id, currentUserId)
+      if (reactivated) return reactivated
       return existing
     }
 

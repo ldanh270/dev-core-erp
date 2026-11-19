@@ -87,6 +87,9 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
     >(Prisma.sql`
       SELECT participant."conversationId", COUNT(message."id") AS "unreadCount"
       FROM "ConversationParticipant" AS participant
+      INNER JOIN "Conversation" AS conversation
+        ON conversation."id" = participant."conversationId"
+        AND conversation."deletedAt" IS NULL
       LEFT JOIN "ChatMessage" AS message
         ON message."conversationId" = participant."conversationId"
         AND message."createdAt" > participant."lastReadAt"
@@ -193,13 +196,12 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
         type: CONVERSATION_TYPE.DIRECT,
         deletedAt: null,
         AND: [
-          { participants: { some: { employeeId: employeeId1, isDeleted: false } } },
-          { participants: { some: { employeeId: employeeId2, isDeleted: false } } },
+          { participants: { some: { employeeId: employeeId1 } } },
+          { participants: { some: { employeeId: employeeId2 } } },
         ],
       },
       include: {
         participants: {
-          where: { isDeleted: false },
           include: {
             employee: {
               select: {
@@ -247,6 +249,44 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
     const uniqueParticipantIds = Array.from(new Set(data.participantIds))
 
     const created = await this.prisma.$transaction(async (tx) => {
+      if (data.type === CONVERSATION_TYPE.DIRECT && uniqueParticipantIds.length === 2) {
+        const sortedIds = [...uniqueParticipantIds].sort()
+        const lockKey = sortedIds.join(":")
+        await tx.$queryRaw(Prisma.sql`
+          SELECT pg_advisory_xact_lock(hashtext(${lockKey}))
+        `)
+
+        const existing = await tx.conversation.findFirst({
+          where: {
+            type: CONVERSATION_TYPE.DIRECT,
+            deletedAt: null,
+            AND: [
+              { participants: { some: { employeeId: sortedIds[0] } } },
+              { participants: { some: { employeeId: sortedIds[1] } } },
+            ],
+          },
+          include: {
+            participants: {
+              include: {
+                employee: {
+                  select: { id: true, fullName: true, username: true, avatarUrl: true },
+                },
+              },
+            },
+          },
+        })
+
+        if (existing) {
+          for (const employeeId of uniqueParticipantIds) {
+            await tx.conversationParticipant.updateMany({
+              where: { conversationId: existing.id, employeeId },
+              data: { isDeleted: false, joinedAt: new Date(), lastReadAt: new Date() },
+            })
+          }
+          return existing
+        }
+      }
+
       const conv = await tx.conversation.create({
         data: {
           type: data.type,
@@ -413,7 +453,7 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
       // Update sender's last read timestamp automatically
       await tx.conversationParticipant.updateMany({
         where: { conversationId, employeeId: senderId },
-        data: { lastReadAt: new Date() },
+        data: { lastReadAt: new Date(), isDeleted: false },
       })
 
       return message
@@ -584,6 +624,7 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
       where: {
         conversationId,
         employeeId,
+        isDeleted: false,
       },
       data: {
         lastReadAt: new Date(),
