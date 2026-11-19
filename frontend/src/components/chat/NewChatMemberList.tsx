@@ -39,7 +39,9 @@ export function NewChatMemberList({
             key={employee.id}
             type="button"
             variant="ghost"
-            onClick={() => onEmployeeClick(employee)}
+            onClick={() => {
+              onEmployeeClick(employee)
+            }}
             className="h-auto w-full justify-between rounded-lg px-3 py-2.5 text-left"
           >
             <span className="flex min-w-0 items-center gap-2.5">

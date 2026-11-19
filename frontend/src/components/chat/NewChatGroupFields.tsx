@@ -23,7 +23,9 @@ export function NewChatGroupFields({
       <Input
         type="text"
         value={groupTitle}
-        onChange={(event) => onGroupTitleChange(event.target.value)}
+        onChange={(event) => {
+          onGroupTitleChange(event.target.value)
+        }}
         placeholder="Đặt tên nhóm chat..."
         className="rounded-full border-border bg-muted/60 text-xs"
       />
@@ -39,7 +41,9 @@ export function NewChatGroupFields({
                 type="button"
                 variant="ghost"
                 size="icon-xs"
-                onClick={() => onRemoveMember(member)}
+                onClick={() => {
+                  onRemoveMember(member)
+                }}
                 aria-label={`Bỏ ${member.fullName}`}
               >
                 <X className="h-3 w-3" />

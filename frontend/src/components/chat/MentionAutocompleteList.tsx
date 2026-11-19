@@ -64,7 +64,9 @@ export function MentionAutocompleteList({
                 type="button"
                 variant={index === mentionIndex ? "secondary" : "ghost"}
                 size="sm"
-                onClick={() => onSelectEmployee(employee)}
+                onClick={() => {
+                  onSelectEmployee(employee)
+                }}
                 className="w-full justify-start gap-2 text-xs"
               >
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">
@@ -92,7 +94,9 @@ export function MentionAutocompleteList({
                 type="button"
                 variant={index === mentionIndex ? "secondary" : "ghost"}
                 size="sm"
-                onClick={() => onSelectProject(project)}
+                onClick={() => {
+                  onSelectProject(project)
+                }}
                 className="w-full justify-start gap-2 text-xs"
               >
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-blue-500">
@@ -120,7 +124,9 @@ export function MentionAutocompleteList({
                 type="button"
                 variant={index === mentionIndex ? "secondary" : "ghost"}
                 size="sm"
-                onClick={() => onSelectTask(task)}
+                onClick={() => {
+                  onSelectTask(task)
+                }}
                 className="w-full justify-start gap-2 text-xs"
               >
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-500">

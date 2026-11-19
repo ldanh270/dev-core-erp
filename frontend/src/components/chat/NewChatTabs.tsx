@@ -16,7 +16,9 @@ export function NewChatTabs({ tab, onTabChange }: NewChatTabsProps) {
         type="button"
         variant={tab === "direct" ? "secondary" : "ghost"}
         size="sm"
-        onClick={() => onTabChange("direct")}
+        onClick={() => {
+          onTabChange("direct")
+        }}
         className="flex-1"
       >
         <User className="h-3.5 w-3.5" />
@@ -26,7 +28,9 @@ export function NewChatTabs({ tab, onTabChange }: NewChatTabsProps) {
         type="button"
         variant={tab === "group" ? "secondary" : "ghost"}
         size="sm"
-        onClick={() => onTabChange("group")}
+        onClick={() => {
+          onTabChange("group")
+        }}
         className="flex-1"
       >
         <Users className="h-3.5 w-3.5" />

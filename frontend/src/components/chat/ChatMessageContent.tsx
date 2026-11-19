@@ -40,7 +40,9 @@ export function ChatMessageContent({
           <textarea
             autoFocus
             value={editContent}
-            onChange={(event) => onEditContentChange(event.target.value)}
+            onChange={(event) => {
+              onEditContentChange(event.target.value)
+            }}
             maxLength={4000}
             aria-label="Chỉnh sửa nội dung tin nhắn"
             className="w-full min-h-20 resize-y rounded-md border border-border bg-background p-2 text-foreground outline-none focus:ring-2 focus:ring-ring"
