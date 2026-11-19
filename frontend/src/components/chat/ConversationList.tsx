@@ -12,8 +12,6 @@ import type { ConversationSummaryDto } from "@/types/chat.types"
 
 import React from "react"
 
-import { formatDistanceToNow } from "date-fns"
-import { vi } from "date-fns/locale"
 import {
   Bell,
   BellOff,
@@ -58,8 +56,6 @@ export const ConversationList: React.FC<ConversationListProps> = ({
     setSearchTerm,
     filterType,
     setFilterType,
-    menuOpenId,
-    menuRef,
     filteredConversations,
     togglePin,
     toggleMute,
@@ -158,13 +154,6 @@ export const ConversationList: React.FC<ConversationListProps> = ({
         ) : (
           filteredConversations.map((c) => {
             const isActive = c.id === activeConversationId
-            const isMenuOpen = menuOpenId === c.id
-            const timeAgo = c.lastMessage?.createdAt
-              ? formatDistanceToNow(new Date(c.lastMessage.createdAt), {
-                  addSuffix: true,
-                  locale: vi,
-                })
-              : ""
 
             return (
               <div
@@ -240,7 +229,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                         />
                       )}
                     </div>
-                    <span className="text-[10px] text-muted-foreground shrink-0">{timeAgo}</span>
+                    <span className="text-[10px] text-muted-foreground shrink-0">{c.timeAgo}</span>
                   </div>
 
                   <p
@@ -248,18 +237,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                       c.unreadCount > 0 ? "text-foreground font-medium" : "text-muted-foreground"
                     }`}
                   >
-                    {c.lastMessage
-                      ? c.lastMessage.isRecalled
-                        ? "Tin nhắn đã được thu hồi"
-                        : c.lastMessage.type === "image"
-                          ? "Đã gửi một hình ảnh"
-                          : c.lastMessage.type === "file"
-                            ? "Đã gửi một tệp đính kèm"
-                            : c.lastMessage.content.replace(
-                                /[@#!]\[(.+?)\]\((?:emp|proj|task):[^)]+\)/g,
-                                "$1",
-                              )
-                      : "Bắt đầu trò chuyện"}
+                    {c.lastMessagePreview}
                   </p>
                 </div>
 
@@ -271,13 +249,13 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                         type="button"
                         variant="ghost"
                         size="icon-sm"
-                        className={isMenuOpen ? "bg-muted" : "opacity-0 group-hover:opacity-100"}
+                        className="opacity-0 group-hover:opacity-100"
                         title="Tuỳ chọn cuộc trò chuyện"
                       >
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent ref={menuRef} align="end" className="w-44">
+                    <DropdownMenuContent align="end" className="w-44">
                       <DropdownMenuItem
                         onSelect={() => {
                           togglePin(c)

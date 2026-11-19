@@ -3,49 +3,43 @@ import { CONVERSATION_TYPE, type IConversationType } from "@/config/entities/cha
 import { useDeleteConversation, useUpdateChatSettings } from "@/hooks/chat/use-chat"
 import type { ConversationSummaryDto } from "@/types/chat.types"
 
-import { useEffect, useRef, useState } from "react"
+import { useMemo, useState } from "react"
 
-/** Owns conversation filtering, menu state, and per-member conversation actions. */
+import { formatDistanceToNow } from "date-fns"
+import { vi } from "date-fns/locale"
+
+/** Owns conversation filtering, display data, and per-member conversation actions. */
 export function useConversationList(conversations: ConversationSummaryDto[]) {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterType, setFilterType] = useState<"all" | IConversationType>("all")
-  const [menuOpenId, setMenuOpenId] = useState<string | null>(null)
-  const menuRef = useRef<HTMLDivElement>(null)
   const updateSettingsMutation = useUpdateChatSettings()
   const deleteConversationMutation = useDeleteConversation()
   const confirm = useConfirm()
 
-  useEffect(() => {
-    // The menu is a popover, so a document-level outside click closes only the active menu.
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setMenuOpenId(null)
-      }
-    }
-    if (menuOpenId) document.addEventListener("mousedown", handleOutsideClick)
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick)
-    }
-  }, [menuOpenId])
-
-  const filteredConversations = conversations.filter((conversation) => {
-    const matchesSearch = conversation.title
-      .toLocaleLowerCase()
-      .includes(searchTerm.trim().toLocaleLowerCase())
-    if (filterType === "all") return matchesSearch
-    return matchesSearch && conversation.type === filterType
-  })
-
-  const closeMenu = () => {
-    setMenuOpenId(null)
-  }
-
-  const toggleMenu = (conversationId: string) => {
-    setMenuOpenId((current) => (current === conversationId ? null : conversationId))
-  }
+  const filteredConversations = useMemo(
+    () =>
+      conversations
+        .filter((conversation) => {
+          const matchesSearch = conversation.title
+            .toLocaleLowerCase()
+            .includes(searchTerm.trim().toLocaleLowerCase())
+          if (filterType === "all") return matchesSearch
+          return matchesSearch && conversation.type === filterType
+        })
+        .map((conversation) => ({
+          ...conversation,
+          timeAgo: conversation.lastMessage?.createdAt
+            ? formatDistanceToNow(new Date(conversation.lastMessage.createdAt), {
+                addSuffix: true,
+                locale: vi,
+              })
+            : "",
+          lastMessagePreview: getLastMessagePreview(conversation),
+        })),
+    [conversations, filterType, searchTerm],
+  )
 
   const togglePin = (conversation: ConversationSummaryDto) => {
-    closeMenu()
     updateSettingsMutation.mutate({
       conversationId: conversation.id,
       settings: { isPinned: !conversation.isPinned },
@@ -53,7 +47,6 @@ export function useConversationList(conversations: ConversationSummaryDto[]) {
   }
 
   const toggleMute = (conversation: ConversationSummaryDto) => {
-    closeMenu()
     updateSettingsMutation.mutate({
       conversationId: conversation.id,
       settings: { isMuted: !conversation.isMuted },
@@ -61,7 +54,6 @@ export function useConversationList(conversations: ConversationSummaryDto[]) {
   }
 
   const toggleRestricted = (conversation: ConversationSummaryDto) => {
-    closeMenu()
     updateSettingsMutation.mutate({
       conversationId: conversation.id,
       settings: { isRestricted: !conversation.isRestricted },
@@ -69,7 +61,6 @@ export function useConversationList(conversations: ConversationSummaryDto[]) {
   }
 
   const deleteConversation = async (conversation: ConversationSummaryDto) => {
-    closeMenu()
     const confirmed = await confirm({
       title: "Xoá cuộc trò chuyện?",
       description: `Cuộc trò chuyện với "${conversation.title}" sẽ bị ẩn khỏi tài khoản của bạn.`,
@@ -85,14 +76,20 @@ export function useConversationList(conversations: ConversationSummaryDto[]) {
     setSearchTerm,
     filterType,
     setFilterType,
-    menuOpenId,
-    menuRef,
     filteredConversations,
-    toggleMenu,
     togglePin,
     toggleMute,
     toggleRestricted,
     deleteConversation,
     isDirectFilter: filterType === CONVERSATION_TYPE.DIRECT,
   }
+}
+
+function getLastMessagePreview(conversation: ConversationSummaryDto): string {
+  const lastMessage = conversation.lastMessage
+  if (!lastMessage) return "Bắt đầu trò chuyện"
+  if (lastMessage.isRecalled) return "Tin nhắn đã được thu hồi"
+  if (lastMessage.type === "image") return "Đã gửi một hình ảnh"
+  if (lastMessage.type === "file") return "Đã gửi một tệp đính kèm"
+  return lastMessage.content.replace(/[@#!]\[(.+?)\]\((?:emp|proj|task):[^)]+\)/g, "$1")
 }
