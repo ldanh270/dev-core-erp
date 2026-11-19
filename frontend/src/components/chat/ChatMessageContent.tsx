@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button"
 import type { ChatMessageDto } from "@/types/chat.types"
 
-import { Download, FileText, Pin } from "lucide-react"
+import { Pin } from "lucide-react"
 
+import { ChatMessageAttachment } from "./ChatMessageAttachment"
 import { MentionMessageRenderer } from "./MentionMessageRenderer"
 
 interface ChatMessageContentProps {
@@ -72,34 +73,11 @@ export function ChatMessageContent({
               Đã ghim
             </div>
           )}
-          {message.type === "image" && message.fileUrl && (
-            <div className="mb-1.5 overflow-hidden rounded-lg">
-              <img
-                src={message.fileUrl}
-                alt={message.fileName || "Ảnh đính kèm"}
-                onClick={onPreviewImage}
-                className="max-h-60 max-w-full cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-95"
-              />
-            </div>
-          )}
-          {message.type === "file" && message.fileUrl && (
-            <a
-              href={message.fileUrl}
-              target="_blank"
-              rel="noreferrer"
-              className={`mb-1 flex items-center gap-2 rounded-lg p-2 transition-colors ${
-                isMe
-                  ? "bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20"
-                  : "border border-border bg-background text-foreground hover:bg-background/80"
-              }`}
-            >
-              <FileText className="h-4 w-4 shrink-0" />
-              <span className="max-w-[180px] truncate font-medium">
-                {message.fileName || "Tệp đính kèm"}
-              </span>
-              <Download className="h-3.5 w-3.5 shrink-0 opacity-70" />
-            </a>
-          )}
+          <ChatMessageAttachment
+            message={message}
+            isMe={isMe}
+            onPreviewImage={onPreviewImage}
+          />
           {message.content && (
             <MentionMessageRenderer
               content={message.content}
