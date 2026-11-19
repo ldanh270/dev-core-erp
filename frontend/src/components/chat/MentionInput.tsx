@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { MENTION_PREFIX } from "@/config/entities/chat.config"
 import { useMentionInput } from "@/hooks/chat/use-mention-input"
 import type { SendMessageDto } from "@/types/chat.types"
 
@@ -39,18 +40,24 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
         <div className="absolute bottom-full left-4 z-50 mb-2 max-h-64 w-80 overflow-y-auto rounded-xl border border-border bg-popover p-1 text-popover-foreground shadow-lg">
           <div className="flex items-center justify-between border-b border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              {activeTrigger === "@" && <User className="h-3.5 w-3.5 text-primary" />}
-              {activeTrigger === "#" && <Briefcase className="h-3.5 w-3.5 text-blue-500" />}
-              {activeTrigger === "!" && <CheckSquare className="h-3.5 w-3.5 text-emerald-500" />}
-              {activeTrigger === "@" && "Nhắc đến Nhân viên (@)"}
-              {activeTrigger === "#" && "Gắn thẻ Dự án (#)"}
-              {activeTrigger === "!" && "Gắn thẻ Công việc (!)"}
+              {activeTrigger === MENTION_PREFIX.EMPLOYEE && (
+                <User className="h-3.5 w-3.5 text-primary" />
+              )}
+              {activeTrigger === MENTION_PREFIX.PROJECT && (
+                <Briefcase className="h-3.5 w-3.5 text-blue-500" />
+              )}
+              {activeTrigger === MENTION_PREFIX.TASK && (
+                <CheckSquare className="h-3.5 w-3.5 text-emerald-500" />
+              )}
+              {activeTrigger === MENTION_PREFIX.EMPLOYEE && "Nhắc đến Nhân viên (@)"}
+              {activeTrigger === MENTION_PREFIX.PROJECT && "Gắn thẻ Dự án (#)"}
+              {activeTrigger === MENTION_PREFIX.TASK && "Gắn thẻ Công việc (!)"}
             </span>
             {isLoadingMentions && <span className="animate-spin text-xs">...</span>}
           </div>
 
           <div className="py-1">
-            {activeTrigger === "@" &&
+            {activeTrigger === MENTION_PREFIX.EMPLOYEE &&
               (employees.length === 0 && !isLoadingMentions ? (
                 <p className="px-3 py-2 text-center text-xs text-muted-foreground">
                   Không tìm thấy nhân viên
@@ -66,7 +73,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
                       insertMention({
                         id: employee.id,
                         label: employee.fullName,
-                        prefix: "@",
+                        prefix: MENTION_PREFIX.EMPLOYEE,
                         type: "emp",
                       })
                     }}
@@ -85,7 +92,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
                 ))
               ))}
 
-            {activeTrigger === "#" &&
+            {activeTrigger === MENTION_PREFIX.PROJECT &&
               (projects.length === 0 && !isLoadingMentions ? (
                 <p className="px-3 py-2 text-center text-xs text-muted-foreground">
                   Không tìm thấy dự án
@@ -101,7 +108,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
                       insertMention({
                         id: project.id,
                         label: project.name,
-                        prefix: "#",
+                        prefix: MENTION_PREFIX.PROJECT,
                         type: "proj",
                       })
                     }}
@@ -120,7 +127,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
                 ))
               ))}
 
-            {activeTrigger === "!" &&
+            {activeTrigger === MENTION_PREFIX.TASK &&
               (tasks.length === 0 && !isLoadingMentions ? (
                 <p className="px-3 py-2 text-center text-xs text-muted-foreground">
                   Không tìm thấy công việc
@@ -136,7 +143,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
                       insertMention({
                         id: task.id,
                         label: task.title,
-                        prefix: "!",
+                        prefix: MENTION_PREFIX.TASK,
                         type: "task",
                       })
                     }}
@@ -188,7 +195,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
           variant="ghost"
           size="xs"
           onClick={() => {
-            triggerMentionPrompt("@")
+            triggerMentionPrompt(MENTION_PREFIX.EMPLOYEE)
           }}
           className="border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20"
         >
@@ -199,7 +206,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
           variant="ghost"
           size="xs"
           onClick={() => {
-            triggerMentionPrompt("#")
+            triggerMentionPrompt(MENTION_PREFIX.PROJECT)
           }}
           className="border border-blue-500/20 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20"
         >
@@ -210,7 +217,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
           variant="ghost"
           size="xs"
           onClick={() => {
-            triggerMentionPrompt("!")
+            triggerMentionPrompt(MENTION_PREFIX.TASK)
           }}
           className="border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20"
         >
