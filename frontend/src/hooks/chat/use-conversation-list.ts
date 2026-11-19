@@ -1,3 +1,4 @@
+import { useConfirm } from "@/components/common"
 import { CONVERSATION_TYPE, type IConversationType } from "@/config/entities/chat.config"
 import { useDeleteConversation, useUpdateChatSettings } from "@/hooks/chat/use-chat"
 import type { ConversationSummaryDto } from "@/types/chat.types"
@@ -12,6 +13,7 @@ export function useConversationList(conversations: ConversationSummaryDto[]) {
   const menuRef = useRef<HTMLDivElement>(null)
   const updateSettingsMutation = useUpdateChatSettings()
   const deleteConversationMutation = useDeleteConversation()
+  const confirm = useConfirm()
 
   useEffect(() => {
     // The menu is a popover, so a document-level outside click closes only the active menu.
@@ -66,11 +68,16 @@ export function useConversationList(conversations: ConversationSummaryDto[]) {
     })
   }
 
-  const deleteConversation = (conversation: ConversationSummaryDto) => {
+  const deleteConversation = async (conversation: ConversationSummaryDto) => {
     closeMenu()
-    if (window.confirm(`Bạn có chắc muốn xoá cuộc trò chuyện với "${conversation.title}"?`)) {
-      deleteConversationMutation.mutate(conversation.id)
-    }
+    const confirmed = await confirm({
+      title: "Xoá cuộc trò chuyện?",
+      description: `Cuộc trò chuyện với "${conversation.title}" sẽ bị ẩn khỏi tài khoản của bạn.`,
+      confirmText: "Xoá",
+      cancelText: "Hủy",
+      variant: "destructive",
+    })
+    if (confirmed) deleteConversationMutation.mutate(conversation.id)
   }
 
   return {

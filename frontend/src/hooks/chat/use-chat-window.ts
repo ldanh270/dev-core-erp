@@ -1,4 +1,5 @@
 import type { ChatWindowProps } from "@/components/chat/chat-window.types"
+import { useConfirm } from "@/components/common"
 import type { ChatMessageDto } from "@/types/chat.types"
 
 import { useEffect, useRef, useState } from "react"
@@ -37,6 +38,7 @@ export function useChatWindow(options: UseChatWindowOptions) {
     onForwardMessage,
     currentEmployeeId,
   } = options
+  const confirm = useConfirm()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const latestMessageIdRef = useRef<string | null>(null)
@@ -114,8 +116,15 @@ export function useChatWindow(options: UseChatWindowOptions) {
     setIsDetailsOpen(false)
   }
 
-  const recallMessage = (messageId: string) => {
-    if (window.confirm("Bạn có chắc muốn thu hồi tin nhắn này?")) onRecallMessage(messageId)
+  const recallMessage = async (messageId: string) => {
+    const confirmed = await confirm({
+      title: "Thu hồi tin nhắn?",
+      description: "Tin nhắn sẽ được thay bằng thông báo đã thu hồi với mọi thành viên.",
+      confirmText: "Thu hồi",
+      cancelText: "Hủy",
+      variant: "destructive",
+    })
+    if (confirmed) onRecallMessage(messageId)
   }
 
   const startForwardingMessage = (messageId: string) => {

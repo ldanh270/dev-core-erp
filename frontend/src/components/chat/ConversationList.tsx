@@ -1,4 +1,10 @@
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { CONVERSATION_TYPE } from "@/config/entities/chat.config"
 import { useConversationList } from "@/hooks/chat/use-conversation-list"
@@ -55,7 +61,6 @@ export const ConversationList: React.FC<ConversationListProps> = ({
     menuOpenId,
     menuRef,
     filteredConversations,
-    toggleMenu,
     togglePin,
     toggleMute,
     toggleRestricted,
@@ -260,113 +265,54 @@ export const ConversationList: React.FC<ConversationListProps> = ({
 
                 {/* 3-dots Menu Button */}
                 <div className="absolute right-2 top-3">
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      toggleMenu(c.id)
-                    }}
-                    className={`p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer transition-colors ${
-                      isMenuOpen ? "bg-muted text-foreground" : "opacity-0 group-hover:opacity-100"
-                    }`}
-                    title="Tuỳ chọn cuộc trò chuyện"
-                  >
-                    <MoreVertical className="w-4 h-4" />
-                  </button>
-
-                  {/* 3-dots Dropdown Menu Popover */}
-                  {isMenuOpen && (
-                    <div
-                      ref={menuRef}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                      }}
-                      className="absolute right-0 top-full mt-1 w-44 bg-popover text-popover-foreground border border-border rounded-xl shadow-lg z-50 p-1 divide-y divide-border/50 animate-in fade-in zoom-in-95 duration-150"
-                    >
-                      <div className="py-0.5">
-                        {/* Pin or unpin */}
-                        <button
-                          type="button"
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            togglePin(c)
-                          }}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-2 hover:bg-muted cursor-pointer transition-colors text-foreground"
-                        >
-                          {c.isPinned ? (
-                            <>
-                              <PinOff className="w-3.5 h-3.5 text-muted-foreground" />
-                              <span>Bỏ ghim</span>
-                            </>
-                          ) : (
-                            <>
-                              <Pin className="w-3.5 h-3.5 text-amber-500" />
-                              <span>Ghim lên đầu</span>
-                            </>
-                          )}
-                        </button>
-
-                        {/* Mute or unmute */}
-                        <button
-                          type="button"
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            toggleMute(c)
-                          }}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-2 hover:bg-muted cursor-pointer transition-colors text-foreground"
-                        >
-                          {c.isMuted ? (
-                            <>
-                              <Bell className="w-3.5 h-3.5 text-primary" />
-                              <span>Bật thông báo</span>
-                            </>
-                          ) : (
-                            <>
-                              <BellOff className="w-3.5 h-3.5 text-muted-foreground" />
-                              <span>Tắt thông báo</span>
-                            </>
-                          )}
-                        </button>
-
-                        {/* Restrict or unrestrict */}
-                        <button
-                          type="button"
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            toggleRestricted(c)
-                          }}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-2 hover:bg-muted cursor-pointer transition-colors text-foreground"
-                        >
-                          {c.isRestricted ? (
-                            <>
-                              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                              <span>Bỏ hạn chế</span>
-                            </>
-                          ) : (
-                            <>
-                              <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
-                              <span>Hạn chế</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-
-                      {/* Hide this conversation for the current employee */}
-                      <div className="pt-0.5">
-                        <button
-                          type="button"
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            deleteConversation(c)
-                          }}
-                          className="w-full px-2.5 py-1.5 text-xs rounded-lg flex items-center gap-2 hover:bg-destructive/10 text-destructive cursor-pointer transition-colors"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          <span>Xoá cuộc trò chuyện</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        className={isMenuOpen ? "bg-muted" : "opacity-0 group-hover:opacity-100"}
+                        title="Tuỳ chọn cuộc trò chuyện"
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent ref={menuRef} align="end" className="w-44">
+                      <DropdownMenuItem
+                        onSelect={() => {
+                          togglePin(c)
+                        }}
+                      >
+                        {c.isPinned ? <PinOff /> : <Pin />}
+                        {c.isPinned ? "Bỏ ghim" : "Ghim lên đầu"}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onSelect={() => {
+                          toggleMute(c)
+                        }}
+                      >
+                        {c.isMuted ? <Bell /> : <BellOff />}
+                        {c.isMuted ? "Bật thông báo" : "Tắt thông báo"}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onSelect={() => {
+                          toggleRestricted(c)
+                        }}
+                      >
+                        {c.isRestricted ? <ShieldCheck /> : <ShieldAlert />}
+                        {c.isRestricted ? "Bỏ hạn chế" : "Hạn chế"}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onSelect={() => {
+                          deleteConversation(c)
+                        }}
+                      >
+                        <Trash2 />
+                        Xoá cuộc trò chuyện
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
             )
