@@ -1,3 +1,4 @@
+import { MENTION_PREFIX } from "@/config/entities/chat.config"
 import { chatApi } from "@/lib/chat-api"
 import type {
   MentionEmployeeItem,
@@ -8,7 +9,7 @@ import type {
 
 import { useEffect, useRef, useState } from "react"
 
-export type MentionTrigger = "@" | "#" | "!"
+export type MentionTrigger = (typeof MENTION_PREFIX)[keyof typeof MENTION_PREFIX]
 
 export interface AttachedFile {
   fileUrl: string
@@ -59,15 +60,24 @@ export function useMentionInput({
 
     const fetchMentions = async () => {
       try {
-        if (activeTrigger === "@") {
+        if (activeTrigger === MENTION_PREFIX.EMPLOYEE) {
           const results = await chatApi.searchMentionEmployees(mentionQuery)
-          if (isMounted) setEmployees(results)
-        } else if (activeTrigger === "#") {
+          if (isMounted) {
+            setEmployees(results)
+            setMentionIndex(0)
+          }
+        } else if (activeTrigger === MENTION_PREFIX.PROJECT) {
           const results = await chatApi.searchMentionProjects(mentionQuery)
-          if (isMounted) setProjects(results)
+          if (isMounted) {
+            setProjects(results)
+            setMentionIndex(0)
+          }
         } else {
           const results = await chatApi.searchMentionTasks(mentionQuery)
-          if (isMounted) setTasks(results)
+          if (isMounted) {
+            setTasks(results)
+            setMentionIndex(0)
+          }
         }
       } catch (error) {
         console.error("Failed to query mentions:", error)
@@ -172,9 +182,15 @@ export function useMentionInput({
     })
   }
 
+  const getMentionItems = () => {
+    if (activeTrigger === MENTION_PREFIX.EMPLOYEE) return employees
+    if (activeTrigger === MENTION_PREFIX.PROJECT) return projects
+    return tasks
+  }
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (activeTrigger) {
-      const items = activeTrigger === "@" ? employees : activeTrigger === "#" ? projects : tasks
+      const items = getMentionItems()
       const itemCount = items.length
 
       if (event.key === "ArrowDown") {
@@ -190,20 +206,35 @@ export function useMentionInput({
       if (event.key === "Enter" || event.key === "Tab") {
         if (itemCount > 0) {
           event.preventDefault()
-          if (activeTrigger === "@") {
+          if (activeTrigger === MENTION_PREFIX.EMPLOYEE) {
             const employee = employees.find((_, index) => index === mentionIndex)
             if (employee) {
-              insertMention({ id: employee.id, label: employee.fullName, prefix: "@", type: "emp" })
+              insertMention({
+                id: employee.id,
+                label: employee.fullName,
+                prefix: MENTION_PREFIX.EMPLOYEE,
+                type: "emp",
+              })
             }
-          } else if (activeTrigger === "#") {
+          } else if (activeTrigger === MENTION_PREFIX.PROJECT) {
             const project = projects.find((_, index) => index === mentionIndex)
             if (project) {
-              insertMention({ id: project.id, label: project.name, prefix: "#", type: "proj" })
+              insertMention({
+                id: project.id,
+                label: project.name,
+                prefix: MENTION_PREFIX.PROJECT,
+                type: "proj",
+              })
             }
           } else {
             const task = tasks.find((_, index) => index === mentionIndex)
             if (task) {
-              insertMention({ id: task.id, label: task.title, prefix: "!", type: "task" })
+              insertMention({
+                id: task.id,
+                label: task.title,
+                prefix: MENTION_PREFIX.TASK,
+                type: "task",
+              })
             }
           }
           return
