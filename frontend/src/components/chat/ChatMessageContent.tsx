@@ -73,11 +73,7 @@ export function ChatMessageContent({
               Đã ghim
             </div>
           )}
-          <ChatMessageAttachment
-            message={message}
-            isMe={isMe}
-            onPreviewImage={onPreviewImage}
-          />
+          <ChatMessageAttachment message={message} isMe={isMe} onPreviewImage={onPreviewImage} />
           {message.content && (
             <MentionMessageRenderer
               content={message.content}

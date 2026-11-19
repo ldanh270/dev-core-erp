@@ -58,10 +58,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
       )}
 
       {attachedFile && (
-        <MentionAttachmentChip
-          attachedFile={attachedFile}
-          onRemove={handleRemoveAttachment}
-        />
+        <MentionAttachmentChip attachedFile={attachedFile} onRemove={handleRemoveAttachment} />
       )}
 
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
