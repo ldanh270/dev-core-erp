@@ -102,10 +102,7 @@ export function useNewChatModal({
    * Persists a new group conversation with the draft title and selected participants.
    */
   const createGroup = useCallback(async () => {
-    if (
-      !groupTitle.trim() ||
-      selectedMembers.length < CHAT_CONFIG.MIN_GROUP_PARTICIPANTS
-    ) {
+    if (!groupTitle.trim() || selectedMembers.length < CHAT_CONFIG.MIN_GROUP_PARTICIPANTS) {
       return
     }
     await onCreateGroup({
@@ -175,7 +172,6 @@ export function useNewChatModal({
     handleDialogOpenChange,
     createGroupFromClick,
     canCreateGroup:
-      Boolean(groupTitle.trim()) &&
-      selectedMembers.length >= CHAT_CONFIG.MIN_GROUP_PARTICIPANTS,
+      Boolean(groupTitle.trim()) && selectedMembers.length >= CHAT_CONFIG.MIN_GROUP_PARTICIPANTS,
   }
 }

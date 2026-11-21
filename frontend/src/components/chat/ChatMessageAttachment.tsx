@@ -1,8 +1,9 @@
 import { CHAT_MESSAGE_TYPE } from "@/config/entities/chat.config"
 import type { ChatMessageDto } from "@/types/chat.types"
 
-import { Download, FileText } from "lucide-react"
 import React from "react"
+
+import { Download, FileText } from "lucide-react"
 
 /**
  * Props for the ChatMessageAttachment component.

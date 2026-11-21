@@ -27,7 +27,9 @@ import { vi } from "date-fns/locale"
  */
 export function useConversationList(conversations: ConversationSummaryDto[]) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [filterType, setFilterType] = useState<IChatConversationFilter>(CHAT_CONVERSATION_FILTER.ALL)
+  const [filterType, setFilterType] = useState<IChatConversationFilter>(
+    CHAT_CONVERSATION_FILTER.ALL,
+  )
   const updateSettingsMutation = useUpdateChatSettings()
   const deleteConversationMutation = useDeleteConversation()
   const confirm = useConfirm()

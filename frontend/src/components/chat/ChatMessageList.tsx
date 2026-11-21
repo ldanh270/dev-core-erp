@@ -2,6 +2,7 @@ import { EmptyState } from "@/components/common/empty-state"
 import type { ChatMessageDto } from "@/types/chat.types"
 
 import React, { type RefObject } from "react"
+
 import { MessageSquare } from "lucide-react"
 
 import { ChatMessageItem } from "./ChatMessageItem"

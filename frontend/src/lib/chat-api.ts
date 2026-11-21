@@ -226,12 +226,9 @@ export const chatApi = {
     const params: Record<string, string | number> = { q, limit }
     if (projectId) params["projectId"] = projectId
 
-    const res = await apiClient.get<{ data: MentionTaskItem[] }>(
-      API_ENDPOINTS.CHAT.MENTION_TASKS,
-      {
-        params,
-      },
-    )
+    const res = await apiClient.get<{ data: MentionTaskItem[] }>(API_ENDPOINTS.CHAT.MENTION_TASKS, {
+      params,
+    })
     return res.data.data || []
   },
 }

@@ -83,9 +83,8 @@ export function useChatWindow(options: UseChatWindowOptions) {
 
   const onlineCount = useMemo(
     () =>
-      otherParticipants.filter((participant) =>
-        onlineEmployeeIds.includes(participant.employeeId),
-      ).length,
+      otherParticipants.filter((participant) => onlineEmployeeIds.includes(participant.employeeId))
+        .length,
     [otherParticipants, onlineEmployeeIds],
   )
 

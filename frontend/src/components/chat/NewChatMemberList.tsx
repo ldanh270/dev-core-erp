@@ -3,6 +3,7 @@ import { CHAT_BUTTON_VARIANT } from "@/config/entities/chat.config"
 import type { MentionEmployeeItem } from "@/types/chat.types"
 
 import React from "react"
+
 import { Check } from "lucide-react"
 
 /**
