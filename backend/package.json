@@ -14,8 +14,8 @@
     "seed": "tsx src/scripts/seed-all.ts --incremental",
     "seed:fresh": "tsx src/scripts/seed-all.ts --force-clear",
     "seed:incremental": "tsx src/scripts/seed-all.ts --incremental",
+    "seed:admin": "tsx src/scripts/repair-admin.ts",
     "clear": "tsx src/scripts/clear-db.ts",
-    "repair:admin": "tsx src/scripts/repair-admin.ts",
     "hash-password": "tsx src/scripts/hash-password.ts"
   },
   "type": "module",
@@ -41,6 +41,7 @@
     "prisma": "^7.8.0",
     "resend": "^6.12.4",
     "send": "^1.2.1",
+    "socket.io": "^4.8.4",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0",
     "zod": "^4.4.3"

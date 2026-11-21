@@ -18,6 +18,7 @@ import {
   CircleDollarSign,
   FilePlus2,
   FileText,
+  MessageSquare,
   Settings,
   Settings2,
   ShieldCheck,
@@ -38,6 +39,7 @@ export type SubsystemId =
   | "security"
   | "settings"
   | "project"
+  | "chat"
 
 export interface NavItem {
   name: string
@@ -351,6 +353,21 @@ export const SUBSYSTEMS: SubsystemConfig[] = [
         path: ROUTES.SETTINGS.PERMISSIONS,
         icon: ShieldCheck,
         permissions: ["role.read"],
+      },
+    ],
+  },
+  /** Available to authenticated employees; conversation access is enforced by the API. */
+  {
+    id: "chat",
+    name: "Tin nhắn",
+    description: "Trò chuyện nội bộ và trao đổi công việc",
+    icon: MessageSquare,
+    routePrefix: ROUTES.CHAT.BASE,
+    sidebarItems: [
+      {
+        name: "Hộp thoại",
+        path: ROUTES.CHAT.BASE,
+        icon: MessageSquare,
       },
     ],
   },

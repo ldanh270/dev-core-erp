@@ -76,7 +76,8 @@ export class AuthService implements IAuthService {
   constructor(private repo: IAuthRepository) {}
 
   /**
-   * Helper to generate tokens and save refresh token to DB
+   * Issue a new access/refresh token pair and persist only the refresh token's SHA-256 hash.
+   * Rotation may pass the previous expiration time to preserve the original session lifetime.
    */
   private async generateTokens(
     employee: AuthEmployeeDocument,
@@ -240,7 +241,9 @@ export class AuthService implements IAuthService {
   }
 
   /**
-   * Refreshes an authenticated session using a valid refresh token.
+   * Refreshes an authenticated session using a valid, persisted refresh token.
+   * A short grace period permits concurrent refreshes from multiple tabs; reuse outside that
+   * window revokes all of the employee's refresh tokens and records a security event.
    */
   async refresh(
     rawRefreshToken: string,
@@ -286,7 +289,9 @@ export class AuthService implements IAuthService {
         category: ACTIVITY_CATEGORY.SECURITY,
         actionType: ACTIVITY_ACTION.TOKEN_REUSE_DETECTED,
         timestamp: new Date(),
-        details: "A revoked refresh token was used. All sessions terminated.",
+        details: JSON.stringify({
+          message: "A revoked refresh token was used. All sessions terminated.",
+        }),
       })
       throw new AppError(
         "Phiên đăng nhập bất thường",

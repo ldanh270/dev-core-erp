@@ -95,4 +95,9 @@ export const ROUTES = {
     PROJECTS: "/project/my-projects",
     APPLICATIONS: "/application/my-applications",
   },
+  // [CHAT MODULE] The optional route ID selects a conversation while both paths share ChatPage.
+  CHAT: {
+    BASE: "/chat",
+    CONVERSATION: "/chat/:id",
+  },
 } as const

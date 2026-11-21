@@ -92,13 +92,14 @@ export class AuthController {
   }
 
   /**
-   * Refreshes the access token using a refresh token from cookies
+   * Rotates the session tokens using the refresh-token cookie and sets replacement cookies.
+   * The raw refresh token is never included in the JSON response.
    */
   refresh = async (req: Request, res: Response) => {
     try {
       const rawRefreshToken = req.cookies["refresh_token"]
 
-      // DEBUG — xóa sau khi fix xong
+      // Temporary diagnostics for checking refresh-cookie delivery.
       console.log("[REFRESH DEBUG] cookies received:", Object.keys(req.cookies))
       console.log("[REFRESH DEBUG] refresh_token present:", !!rawRefreshToken)
       console.log(
@@ -106,6 +107,7 @@ export class AuthController {
         rawRefreshToken?.slice(0, 20),
       )
       if (!rawRefreshToken) {
+        CookieUtil.clearTokens(res)
         return res.status(HttpStatusCode.UNAUTHORIZED).json({
           data: null,
           error: {
@@ -130,6 +132,7 @@ export class AuthController {
       })
     } catch (error) {
       console.log("[REFRESH DEBUG] error:", (error as Error).message)
+      CookieUtil.clearTokens(res)
       throw error
     }
   }
