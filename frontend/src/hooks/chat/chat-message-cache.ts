@@ -1,3 +1,4 @@
+import { CHAT_STREAM_EVENT } from "@/config/entities/chat.config"
 import type { ChatMessageDto, ChatStreamEvent, ConversationSummaryDto } from "@/types/chat.types"
 
 import type { InfiniteData, QueryClient } from "@tanstack/react-query"
@@ -13,7 +14,7 @@ export const applyMessageEvent = (
   currentEmployeeId?: string,
 ) => {
   const { message, type } = event
-  const isCreated = type === "message.created"
+  const isCreated = type === CHAT_STREAM_EVENT.CREATED
 
   queryClient.setQueryData<InfiniteData<ChatMessageDto[]>>(
     CHAT_QUERY_KEYS.MESSAGES(message.conversationId),

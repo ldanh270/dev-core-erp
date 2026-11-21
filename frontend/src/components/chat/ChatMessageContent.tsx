@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { CHAT_BUTTON_SIZE, CHAT_BUTTON_VARIANT, CHAT_CONFIG } from "@/config/entities/chat.config"
 import type { ChatMessageDto } from "@/types/chat.types"
 
 import { Pin } from "lucide-react"
@@ -6,18 +7,35 @@ import { Pin } from "lucide-react"
 import { ChatMessageAttachment } from "./ChatMessageAttachment"
 import { MentionMessageRenderer } from "./MentionMessageRenderer"
 
+/**
+ * Properties for rendering message content payloads (text, attachments, tombstones, and inline edit mode).
+ */
 interface ChatMessageContentProps {
+  /** The message entity to render. */
   message: ChatMessageDto
+  /** Whether the message was authored by the authenticated employee. */
   isMe: boolean
+  /** Whether the message is currently in inline editing mode. */
   isEditing: boolean
+  /** Current draft text entered inside the editing textarea. */
   editContent: string
+  /** Callback fired as the editing textarea text changes. */
   onEditContentChange: (content: string) => void
+  /** Callback to cancel editing and discard unsaved draft changes. */
   onCancelEdit: () => void
+  /** Callback to submit and save the edited message text. */
   onSaveEdit: () => void
+  /** Callback to open full-screen preview for an attached image. */
   onPreviewImage: () => void
 }
 
-/** Renders message payload variants and keeps each variant in a single presentational component. */
+/**
+ * Renders the body content of a chat message bubble, including inline editor,
+ * recalled tombstone notices, pinned indicators, media attachments, and interactive mentions.
+ *
+ * @param props - Properties conforming to {@link ChatMessageContentProps}.
+ * @returns Rendered message bubble container.
+ */
 export function ChatMessageContent({
   message,
   isMe,
@@ -44,18 +62,23 @@ export function ChatMessageContent({
             onChange={(event) => {
               onEditContentChange(event.target.value)
             }}
-            maxLength={4000}
+            maxLength={CHAT_CONFIG.MAX_MESSAGE_LENGTH}
             aria-label="Chỉnh sửa nội dung tin nhắn"
             className="w-full min-h-20 resize-y rounded-md border border-border bg-background p-2 text-foreground outline-none focus:ring-2 focus:ring-ring"
           />
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="ghost" size="xs" onClick={onCancelEdit}>
+            <Button
+              type="button"
+              variant={CHAT_BUTTON_VARIANT.GHOST}
+              size={CHAT_BUTTON_SIZE.XS}
+              onClick={onCancelEdit}
+            >
               Hủy
             </Button>
             <Button
               type="button"
-              variant="ghost"
-              size="xs"
+              variant={CHAT_BUTTON_VARIANT.GHOST}
+              size={CHAT_BUTTON_SIZE.XS}
               onClick={onSaveEdit}
               className="bg-background/20 text-[11px] hover:bg-background/30"
             >

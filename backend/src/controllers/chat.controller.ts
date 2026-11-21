@@ -1,4 +1,9 @@
-import { CHAT_CONFIG, CHAT_MESSAGE_TYPES, MENTION_TYPES } from "@/configs/entities/chat.config.ts"
+import {
+  CHAT_CONFIG,
+  CHAT_MESSAGE_TYPE,
+  CHAT_MESSAGE_TYPES,
+  MENTION_TYPES,
+} from "@/configs/entities/chat.config.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import type { AuthRequest } from "@/middlewares/auth.middleware.ts"
@@ -15,8 +20,10 @@ const createDirectSchema = z.object({
 
 // Group member IDs identify the other employees; the authenticated creator is added by the service.
 const createGroupSchema = z.object({
-  title: z.string().min(1, "Group title is required").max(100),
-  participantIds: z.array(z.string()).min(2, "At least 2 members are required"),
+  title: z.string().min(1, "Group title is required").max(CHAT_CONFIG.MAX_GROUP_TITLE_LENGTH),
+  participantIds: z
+    .array(z.string())
+    .min(CHAT_CONFIG.MIN_GROUP_PARTICIPANTS, "At least 2 members are required"),
   avatarUrl: z.string().optional(),
 })
 
@@ -40,7 +47,7 @@ const mentionItemSchema = z.object({
 // Empty text is allowed here so attachment-only messages can be sent; the service requires text or a file URL.
 const sendMessageSchema = z.object({
   content: z.string().max(CHAT_CONFIG.MAX_MESSAGE_LENGTH).optional().default(""),
-  type: z.enum(CHAT_MESSAGE_TYPES).optional().default("text"),
+  type: z.enum(CHAT_MESSAGE_TYPES).optional().default(CHAT_MESSAGE_TYPE.TEXT),
   fileUrl: z.string().optional(),
   fileName: z.string().optional(),
   fileSize: z.number().optional(),
@@ -342,7 +349,7 @@ export class ChatController {
         fileUrl: url,
         fileName: req.file.originalname,
         fileSize: req.file.size,
-        type: isImage ? "image" : "file",
+        type: isImage ? CHAT_MESSAGE_TYPE.IMAGE : CHAT_MESSAGE_TYPE.FILE,
       },
       error: null,
     })
@@ -354,7 +361,7 @@ export class ChatController {
    */
   searchMentionEmployees = async (req: AuthRequest, res: Response): Promise<void> => {
     const q = typeof req.query.q === "string" ? req.query.q : ""
-    const limit = req.query.limit ? Number(req.query.limit) : 10
+    const limit = req.query.limit ? Number(req.query.limit) : CHAT_CONFIG.MENTION_SUGGESTION_LIMIT
     const data = await this.service.searchMentionEmployees(q, limit)
     res.status(HttpStatusCode.OK).json({ data, error: null })
   }
@@ -365,7 +372,7 @@ export class ChatController {
    */
   searchMentionProjects = async (req: AuthRequest, res: Response): Promise<void> => {
     const q = typeof req.query.q === "string" ? req.query.q : ""
-    const limit = req.query.limit ? Number(req.query.limit) : 10
+    const limit = req.query.limit ? Number(req.query.limit) : CHAT_CONFIG.MENTION_SUGGESTION_LIMIT
     const data = await this.service.searchMentionProjects(q, limit)
     res.status(HttpStatusCode.OK).json({ data, error: null })
   }
@@ -376,7 +383,7 @@ export class ChatController {
    */
   searchMentionTasks = async (req: AuthRequest, res: Response): Promise<void> => {
     const q = typeof req.query.q === "string" ? req.query.q : ""
-    const limit = req.query.limit ? Number(req.query.limit) : 10
+    const limit = req.query.limit ? Number(req.query.limit) : CHAT_CONFIG.MENTION_SUGGESTION_LIMIT
     const projectId = typeof req.query.projectId === "string" ? req.query.projectId : undefined
     const data = await this.service.searchMentionTasks(q, limit, projectId)
     res.status(HttpStatusCode.OK).json({ data, error: null })

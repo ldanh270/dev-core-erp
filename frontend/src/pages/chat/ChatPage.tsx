@@ -10,9 +10,9 @@ import {
   useCreateGroupChat,
 } from "@/hooks/chat/use-chat"
 import { routerNavigate } from "@/lib/router-navigator"
+import type { SendMessageDto } from "@/types/chat.types"
 
-import React, { useEffect, useState } from "react"
-
+import React, { useCallback, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
 /**
@@ -41,6 +41,7 @@ const ChatPage: React.FC = () => {
     hasPreviousPage,
     isFetchingPreviousPage,
   } = useChatMessages(conversationId)
+
   const {
     onlineEmployeeIds,
     typingEmployeeIds,
@@ -64,24 +65,45 @@ const ChatPage: React.FC = () => {
   }, [conversationId, markAsRead])
 
   // The route ID is the source of truth for the active chat and drives the message query above.
-  const handleSelectConversation = (id: string) => {
+  const handleSelectConversation = useCallback((id: string) => {
     routerNavigate(`${ROUTES.CHAT.BASE}/${id}`)
-  }
+  }, [])
+
+  const handleOpenNewChatModal = useCallback(() => {
+    setIsNewChatModalOpen(true)
+  }, [])
+
+  const handleCloseNewChatModal = useCallback(() => {
+    setIsNewChatModalOpen(false)
+  }, [])
 
   // Navigate only after creation returns an ID; failed mutations leave error handling to the modal flow.
-  const handleCreateDirect = async (partnerId: string) => {
-    const conv = await createDirectMutation.mutateAsync({ partnerId })
-    if (conv?.id) {
-      routerNavigate(`${ROUTES.CHAT.BASE}/${conv.id}`)
-    }
-  }
+  const handleCreateDirect = useCallback(
+    async (partnerId: string) => {
+      const conv = await createDirectMutation.mutateAsync({ partnerId })
+      if (conv?.id) {
+        routerNavigate(`${ROUTES.CHAT.BASE}/${conv.id}`)
+      }
+    },
+    [createDirectMutation],
+  )
 
-  const handleCreateGroup = async (data: { title: string; participantIds: string[] }) => {
-    const conv = await createGroupMutation.mutateAsync(data)
-    if (conv?.id) {
-      routerNavigate(`${ROUTES.CHAT.BASE}/${conv.id}`)
-    }
-  }
+  const handleCreateGroup = useCallback(
+    async (data: { title: string; participantIds: string[] }) => {
+      const conv = await createGroupMutation.mutateAsync(data)
+      if (conv?.id) {
+        routerNavigate(`${ROUTES.CHAT.BASE}/${conv.id}`)
+      }
+    },
+    [createGroupMutation],
+  )
+
+  const handleSendMessage = useCallback(
+    async (data: SendMessageDto) => {
+      await sendMessage(data)
+    },
+    [sendMessage],
+  )
 
   return (
     <div className="flex h-[calc(100vh-4.5rem)] rounded-xl border border-border overflow-hidden bg-card shadow-sm m-4">
@@ -91,9 +113,7 @@ const ChatPage: React.FC = () => {
           conversations={conversations}
           activeConversationId={conversationId}
           onSelectConversation={handleSelectConversation}
-          onOpenNewChatModal={() => {
-            setIsNewChatModalOpen(true)
-          }}
+          onOpenNewChatModal={handleOpenNewChatModal}
           isLoading={isLoadingConversations}
         />
       </div>
@@ -104,9 +124,7 @@ const ChatPage: React.FC = () => {
           conversation={activeConversation}
           messages={messages}
           conversations={conversations}
-          onSendMessage={async (data) => {
-            await sendMessage(data)
-          }}
+          onSendMessage={handleSendMessage}
           onEditMessage={editMessage}
           onRecallMessage={recallMessage}
           onSetMessagePinned={setMessagePinned}
@@ -126,9 +144,7 @@ const ChatPage: React.FC = () => {
       {/* New Chat Modal */}
       <NewChatModal
         isOpen={isNewChatModalOpen}
-        onClose={() => {
-          setIsNewChatModalOpen(false)
-        }}
+        onClose={handleCloseNewChatModal}
         onCreateDirect={handleCreateDirect}
         onCreateGroup={handleCreateGroup}
       />

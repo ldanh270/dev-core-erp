@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "@/config/api.config"
+import { CHAT_CONFIG, CHAT_SOCKET_EVENT } from "@/config/entities/chat.config"
 import { useAuthStore } from "@/store/auth-store"
 import type {
   ChatSocketClientToServerEvents,
@@ -6,7 +7,7 @@ import type {
 } from "@/types/chat-socket.types"
 import type { ChatStreamEvent } from "@/types/chat.types"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import { useQueryClient } from "@tanstack/react-query"
 import { type Socket, io } from "socket.io-client"
@@ -15,7 +16,11 @@ import { toast } from "sonner"
 import { applyMessageEvent } from "./chat-message-cache"
 
 /**
- * Maintains an authenticated chat socket and exposes active-conversation presence and typing.
+ * Maintains an authenticated WebSocket connection for chat, tracking online presence,
+ * typing indicators, read receipts, and message delivery status for an active conversation.
+ *
+ * @param conversationId Unique identifier of the currently focused conversation, if any
+ * @returns Realtime status vectors and a memoized sendTyping notification callback
  */
 export function useChatRealtime(conversationId?: string) {
   const queryClient = useQueryClient()
@@ -59,7 +64,9 @@ export function useChatRealtime(conversationId?: string) {
       applyMessageEvent(queryClient, event, user?.id)
       acknowledge?.()
       if (event.message.conversationId === conversationIdRef.current) {
-        socket.emit("conversation:read", { conversationId: event.message.conversationId })
+        socket.emit(CHAT_SOCKET_EVENT.CONVERSATION_READ, {
+          conversationId: event.message.conversationId,
+        })
       }
     }
     const handlePresenceSnapshot = ({
@@ -114,7 +121,7 @@ export function useChatRealtime(conversationId?: string) {
           setTimeout(() => {
             setTypingEmployeeIds((current) => current.filter((id) => id !== employeeId))
             typingTimers.current.delete(employeeId)
-          }, 3000),
+          }, CHAT_CONFIG.TYPING_TIMEOUT_MS),
         )
       } else {
         setTypingEmployeeIds((current) => current.filter((id) => id !== employeeId))
@@ -145,24 +152,24 @@ export function useChatRealtime(conversationId?: string) {
     const handleDisconnect = () => {
       setActiveRealtimeConversationId(null)
     }
-    socket.on("connect", handleConnect)
-    socket.on("disconnect", handleDisconnect)
-    socket.on("chat:message", handleMessage)
-    socket.on("presence:snapshot", handlePresenceSnapshot)
-    socket.on("presence:changed", handlePresenceChange)
-    socket.on("typing:changed", handleTypingChange)
-    socket.on("conversation:read", handleReadReceipt)
-    socket.on("message:status", handleMessageStatus)
-    socket.on("chat:error", ({ message }) => {
+    socket.on(CHAT_SOCKET_EVENT.CONNECT, handleConnect)
+    socket.on(CHAT_SOCKET_EVENT.DISCONNECT, handleDisconnect)
+    socket.on(CHAT_SOCKET_EVENT.MESSAGE, handleMessage)
+    socket.on(CHAT_SOCKET_EVENT.PRESENCE_SNAPSHOT, handlePresenceSnapshot)
+    socket.on(CHAT_SOCKET_EVENT.PRESENCE_CHANGED, handlePresenceChange)
+    socket.on(CHAT_SOCKET_EVENT.TYPING_CHANGED, handleTypingChange)
+    socket.on(CHAT_SOCKET_EVENT.CONVERSATION_READ, handleReadReceipt)
+    socket.on(CHAT_SOCKET_EVENT.MESSAGE_STATUS, handleMessageStatus)
+    socket.on(CHAT_SOCKET_EVENT.ERROR, ({ message }) => {
       toast.error(message)
     })
-    socket.on("connect_error", (error) => {
+    socket.on(CHAT_SOCKET_EVENT.CONNECT_ERROR, (error) => {
       console.error("Chat WebSocket connection failed:", error)
     })
 
     return () => {
-      socket.off("connect", handleConnect)
-      socket.off("disconnect", handleDisconnect)
+      socket.off(CHAT_SOCKET_EVENT.CONNECT, handleConnect)
+      socket.off(CHAT_SOCKET_EVENT.DISCONNECT, handleDisconnect)
       socket.disconnect()
       socketRef.current = null
       activeTypingTimers.forEach(clearTimeout)
@@ -175,22 +182,28 @@ export function useChatRealtime(conversationId?: string) {
     if (!socket || !isAuthenticated || !accessToken || !conversationId) return
 
     const joinConversation = () => {
-      socket.emit("conversation:join", conversationId)
+      socket.emit(CHAT_SOCKET_EVENT.CONVERSATION_JOIN, conversationId)
     }
-    socket.on("connect", joinConversation)
+    socket.on(CHAT_SOCKET_EVENT.CONNECT, joinConversation)
     if (socket.connected) joinConversation()
 
     return () => {
-      socket.off("connect", joinConversation)
-      socket.emit("typing:changed", { conversationId, isTyping: false })
-      socket.emit("conversation:leave", conversationId)
+      socket.off(CHAT_SOCKET_EVENT.CONNECT, joinConversation)
+      socket.emit(CHAT_SOCKET_EVENT.TYPING_CHANGED, { conversationId, isTyping: false })
+      socket.emit(CHAT_SOCKET_EVENT.CONVERSATION_LEAVE, conversationId)
     }
   }, [accessToken, conversationId, isAuthenticated])
 
-  const sendTyping = (isTyping: boolean) => {
-    if (!conversationId) return
-    socketRef.current?.emit("typing:changed", { conversationId, isTyping })
-  }
+  /**
+   * Emits typing indicator event for the active conversation.
+   */
+  const sendTyping = useCallback(
+    (isTyping: boolean) => {
+      if (!conversationId) return
+      socketRef.current?.emit(CHAT_SOCKET_EVENT.TYPING_CHANGED, { conversationId, isTyping })
+    },
+    [conversationId],
+  )
 
   return {
     onlineEmployeeIds: activeRealtimeConversationId === conversationId ? onlineEmployeeIds : [],

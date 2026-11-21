@@ -1,27 +1,54 @@
 import { useChatMessageItem } from "@/hooks/chat/use-chat-message-item"
 import type { ChatMessageDto } from "@/types/chat.types"
 
+import { memo } from "react"
+
 import { ChatMessageActions } from "./ChatMessageActions"
 import { ChatMessageContent } from "./ChatMessageContent"
 
+/**
+ * Properties for rendering an individual chat message row.
+ */
 interface ChatMessageItemProps {
+  /** The chat message entity to render. */
   message: ChatMessageDto
+  /** Category of the current conversation (e.g. direct or group). */
   conversationType: string
+  /** The authenticated employee ID used to determine message ownership and alignment. */
   currentEmployeeId?: string
+  /** Whether this specific message is currently undergoing inline editing. */
   isEditing: boolean
+  /** Draft text currently entered in the inline edit field. */
   editContent: string
+  /** Read receipt label (e.g. "Đã gửi", "Đã nhận", "Đã xem") for outgoing messages. */
   receiptStatus: string
+  /** Callback fired when the draft edit content changes. */
   onEditContentChange: (content: string) => void
+  /** Callback to cancel inline editing and discard changes. */
   onCancelEdit: () => void
+  /** Callback to persist updated message content. */
   onSaveEdit: (messageId: string) => void
+  /** Callback to start editing mode for this message. */
   onStartEdit: (message: ChatMessageDto) => void
+  /** Callback to open the message forwarding dialog. */
   onForward: (messageId: string) => void
+  /** Callback to toggle the pinned status of this message. */
   onTogglePin: (messageId: string, isPinned: boolean) => void
+  /** Callback to recall / unsend this message. */
   onRecall: (messageId: string) => void
+  /** Callback to preview an attached image in full screen. */
   onPreviewImage: (fileUrl: string | null) => void
 }
 
-export function ChatMessageItem({
+/**
+ * Renders an individual chat message with sender metadata, text/attachment payload,
+ * action menu, and delivery timestamp.
+ * Wrapped in React.memo to prevent unnecessary re-rendering across long message lists.
+ *
+ * @param props - Properties conforming to {@link ChatMessageItemProps}.
+ * @returns Memoized chat message element.
+ */
+export const ChatMessageItem = memo(function ChatMessageItem({
   message,
   conversationType,
   currentEmployeeId,
@@ -115,4 +142,4 @@ export function ChatMessageItem({
       </div>
     </div>
   )
-}
+})

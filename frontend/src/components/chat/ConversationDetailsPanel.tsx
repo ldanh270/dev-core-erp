@@ -1,30 +1,39 @@
 import { Button } from "@/components/ui/button"
+import { CHAT_BUTTON_SIZE, CHAT_BUTTON_VARIANT } from "@/config/entities/chat.config"
 import type { ConversationSummaryDto } from "@/types/chat.types"
+
+import React from "react"
 
 import { Users, X } from "lucide-react"
 
 import { ConversationMemberManager } from "./ConversationMemberManager"
 import { ConversationMessageSearch } from "./ConversationMessageSearch"
 
-interface ConversationDetailsPanelProps {
+/**
+ * Props for the ConversationDetailsPanel component.
+ */
+export interface ConversationDetailsPanelProps {
   /** Conversation whose metadata and membership are displayed. */
   conversation: ConversationSummaryDto
-  /** Closes the panel without changing the selected conversation. */
+  /** Callback closing the details panel. */
   onClose: () => void
 }
 
 /**
- * Displays conversation metadata, message search, and participant management.
+ * Displays conversation metadata, message search, and participant management in a sidebar panel.
  */
-export function ConversationDetailsPanel({ conversation, onClose }: ConversationDetailsPanelProps) {
+export const ConversationDetailsPanel = React.memo(function ConversationDetailsPanel({
+  conversation,
+  onClose,
+}: ConversationDetailsPanelProps) {
   return (
     <aside className="absolute inset-y-0 right-0 z-20 flex w-full max-w-sm flex-col border-l border-border bg-card shadow-xl">
       <div className="flex items-center justify-between border-b border-border p-4">
         <h3 className="font-semibold text-sm text-foreground">Thông tin cuộc trò chuyện</h3>
         <Button
           type="button"
-          variant="ghost"
-          size="icon-sm"
+          variant={CHAT_BUTTON_VARIANT.GHOST}
+          size={CHAT_BUTTON_SIZE.ICON_SM}
           onClick={onClose}
           aria-label="Đóng thông tin cuộc trò chuyện"
           className="text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -49,4 +58,4 @@ export function ConversationDetailsPanel({ conversation, onClose }: Conversation
       <ConversationMemberManager conversation={conversation} />
     </aside>
   )
-}
+})

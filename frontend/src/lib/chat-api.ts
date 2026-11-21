@@ -1,3 +1,5 @@
+import { API_ENDPOINTS } from "@/config/api.config"
+import { CHAT_CONFIG, type IChatMessageType } from "@/config/entities/chat.config"
 import apiClient from "@/lib/api-client"
 import type {
   AddChatParticipantsDto,
@@ -21,13 +23,17 @@ import type {
 export const chatApi = {
   /** Fetch the signed-in employee's visible conversation summaries. */
   async getConversations(): Promise<ConversationSummaryDto[]> {
-    const res = await apiClient.get<{ data: ConversationSummaryDto[] }>("/chat/conversations")
+    const res = await apiClient.get<{ data: ConversationSummaryDto[] }>(
+      API_ENDPOINTS.CHAT.CONVERSATIONS,
+    )
     return res.data.data || []
   },
 
   /** Fetch a conversation only if the signed-in employee is an active participant. */
   async getConversationDetail(id: string): Promise<ConversationSummaryDto> {
-    const res = await apiClient.get<{ data: ConversationSummaryDto }>(`/chat/conversations/${id}`)
+    const res = await apiClient.get<{ data: ConversationSummaryDto }>(
+      API_ENDPOINTS.CHAT.CONVERSATION_DETAIL(id),
+    )
     return res.data.data
   },
 
@@ -36,7 +42,7 @@ export const chatApi = {
     dto: CreateDirectConversationDto,
   ): Promise<ConversationSummaryDto> {
     const res = await apiClient.post<{ data: ConversationSummaryDto }>(
-      "/chat/conversations/direct",
+      API_ENDPOINTS.CHAT.DIRECT,
       dto,
     )
     return res.data.data
@@ -45,7 +51,7 @@ export const chatApi = {
   /** Create a group; the server adds the signed-in employee to the supplied member IDs. */
   async createGroupConversation(dto: CreateGroupConversationDto): Promise<ConversationSummaryDto> {
     const res = await apiClient.post<{ data: ConversationSummaryDto }>(
-      "/chat/conversations/group",
+      API_ENDPOINTS.CHAT.GROUP,
       dto,
     )
     return res.data.data
@@ -57,7 +63,7 @@ export const chatApi = {
     dto: AddChatParticipantsDto,
   ): Promise<ConversationSummaryDto> {
     const res = await apiClient.post<{ data: ConversationSummaryDto }>(
-      `/chat/conversations/${conversationId}/participants`,
+      API_ENDPOINTS.CHAT.PARTICIPANTS(conversationId),
       dto,
     )
     return res.data.data
@@ -70,14 +76,14 @@ export const chatApi = {
    */
   async getMessages(
     conversationId: string,
-    limit = 30,
+    limit: number = CHAT_CONFIG.DEFAULT_PAGE_SIZE,
     beforeCursor?: string,
   ): Promise<ChatMessageDto[]> {
     const params: Record<string, string | number> = { limit }
     if (beforeCursor) params["beforeCursor"] = beforeCursor
 
     const res = await apiClient.get<{ data: ChatMessageDto[] }>(
-      `/chat/conversations/${conversationId}/messages`,
+      API_ENDPOINTS.CHAT.MESSAGES(conversationId),
       { params },
     )
     return res.data.data || []
@@ -86,7 +92,7 @@ export const chatApi = {
   /** Search the authenticated member's conversation history by message text. */
   async searchMessages(conversationId: string, query: string): Promise<ChatMessageDto[]> {
     const res = await apiClient.get<{ data: ChatMessageDto[] }>(
-      `/chat/conversations/${conversationId}/messages/search`,
+      API_ENDPOINTS.CHAT.SEARCH_MESSAGES(conversationId),
       { params: { q: query } },
     )
     return res.data.data || []
@@ -95,7 +101,7 @@ export const chatApi = {
   /** Persist a text, attachment, or mention-token message and return its enriched DTO. */
   async sendMessage(conversationId: string, dto: SendMessageDto): Promise<ChatMessageDto> {
     const res = await apiClient.post<{ data: ChatMessageDto }>(
-      `/chat/conversations/${conversationId}/messages`,
+      API_ENDPOINTS.CHAT.MESSAGES(conversationId),
       dto,
     )
     return res.data.data
@@ -104,7 +110,7 @@ export const chatApi = {
   /** Edit the signed-in employee's own message text. */
   async editMessage(messageId: string, content: string): Promise<ChatMessageDto> {
     const res = await apiClient.patch<{ data: ChatMessageDto }>(
-      `/chat/messages/${encodeURIComponent(messageId)}`,
+      API_ENDPOINTS.CHAT.MESSAGE_DETAIL(encodeURIComponent(messageId)),
       { content },
     )
     return res.data.data
@@ -113,7 +119,7 @@ export const chatApi = {
   /** Recall the signed-in employee's own message for all conversation participants. */
   async recallMessage(messageId: string): Promise<ChatMessageDto> {
     const res = await apiClient.delete<{ data: ChatMessageDto }>(
-      `/chat/messages/${encodeURIComponent(messageId)}`,
+      API_ENDPOINTS.CHAT.MESSAGE_DETAIL(encodeURIComponent(messageId)),
     )
     return res.data.data
   },
@@ -121,7 +127,7 @@ export const chatApi = {
   /** Set the shared pin state of an active message. */
   async setMessagePinned(messageId: string, isPinned: boolean): Promise<ChatMessageDto> {
     const res = await apiClient.patch<{ data: ChatMessageDto }>(
-      `/chat/messages/${encodeURIComponent(messageId)}/pin`,
+      API_ENDPOINTS.CHAT.PIN_MESSAGE(encodeURIComponent(messageId)),
       { isPinned },
     )
     return res.data.data
@@ -130,7 +136,7 @@ export const chatApi = {
   /** Forward a message to multiple existing conversations. */
   async forwardMessage(messageId: string, dto: ForwardMessageDto): Promise<ChatMessageDto[]> {
     const res = await apiClient.post<{ data: ChatMessageDto[] }>(
-      `/chat/messages/${encodeURIComponent(messageId)}/forward`,
+      API_ENDPOINTS.CHAT.FORWARD_MESSAGE(encodeURIComponent(messageId)),
       dto,
     )
     return res.data.data
@@ -138,7 +144,7 @@ export const chatApi = {
 
   /** Advance the signed-in member's read watermark to the current time. */
   async markAsRead(conversationId: string): Promise<void> {
-    await apiClient.post(`/chat/conversations/${conversationId}/read`)
+    await apiClient.post(API_ENDPOINTS.CHAT.MARK_READ(conversationId))
   },
 
   /** Update pin, mute, or restriction preferences for this member only. */
@@ -146,7 +152,7 @@ export const chatApi = {
     conversationId: string,
     settings: UpdateParticipantSettingsDto,
   ): Promise<void> {
-    await apiClient.patch(`/chat/conversations/${conversationId}/settings`, settings)
+    await apiClient.patch(API_ENDPOINTS.CHAT.SETTINGS(conversationId), settings)
   },
 
   /**
@@ -154,7 +160,7 @@ export const chatApi = {
    * This is a per-membership soft delete and does not erase the other participants' history.
    */
   async deleteConversation(conversationId: string): Promise<void> {
-    await apiClient.delete(`/chat/conversations/${conversationId}`)
+    await apiClient.delete(API_ENDPOINTS.CHAT.CONVERSATION_DETAIL(conversationId))
   },
 
   /**
@@ -165,13 +171,13 @@ export const chatApi = {
     fileUrl: string
     fileName: string
     fileSize: number
-    type: "image" | "file"
+    type: IChatMessageType
   }> {
     const formData = new FormData()
     formData.append("file", file)
     const res = await apiClient.post<{
-      data: { fileUrl: string; fileName: string; fileSize: number; type: "image" | "file" }
-    }>("/chat/upload", formData, {
+      data: { fileUrl: string; fileName: string; fileSize: number; type: IChatMessageType }
+    }>(API_ENDPOINTS.CHAT.UPLOAD, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     })
     return res.data.data
@@ -184,29 +190,48 @@ export const chatApi = {
    * ! -> Task
    * Results are lightweight lookup DTOs, not full entity records.
    */
-  async searchMentionEmployees(q: string, limit = 8): Promise<MentionEmployeeItem[]> {
-    const res = await apiClient.get<{ data: MentionEmployeeItem[] }>("/chat/mentions/employees", {
-      params: { q, limit },
-    })
+  async searchMentionEmployees(
+    q: string,
+    limit: number = CHAT_CONFIG.MENTION_SUGGESTION_LIMIT,
+  ): Promise<MentionEmployeeItem[]> {
+    const res = await apiClient.get<{ data: MentionEmployeeItem[] }>(
+      API_ENDPOINTS.CHAT.MENTION_EMPLOYEES,
+      {
+        params: { q, limit },
+      },
+    )
     return res.data.data || []
   },
 
   /** Search projects for `#` autocomplete. */
-  async searchMentionProjects(q: string, limit = 8): Promise<MentionProjectItem[]> {
-    const res = await apiClient.get<{ data: MentionProjectItem[] }>("/chat/mentions/projects", {
-      params: { q, limit },
-    })
+  async searchMentionProjects(
+    q: string,
+    limit: number = CHAT_CONFIG.MENTION_SUGGESTION_LIMIT,
+  ): Promise<MentionProjectItem[]> {
+    const res = await apiClient.get<{ data: MentionProjectItem[] }>(
+      API_ENDPOINTS.CHAT.MENTION_PROJECTS,
+      {
+        params: { q, limit },
+      },
+    )
     return res.data.data || []
   },
 
   /** Search tasks for `!` autocomplete, optionally limiting results to a project. */
-  async searchMentionTasks(q: string, limit = 8, projectId?: string): Promise<MentionTaskItem[]> {
+  async searchMentionTasks(
+    q: string,
+    limit: number = CHAT_CONFIG.MENTION_SUGGESTION_LIMIT,
+    projectId?: string,
+  ): Promise<MentionTaskItem[]> {
     const params: Record<string, string | number> = { q, limit }
     if (projectId) params["projectId"] = projectId
 
-    const res = await apiClient.get<{ data: MentionTaskItem[] }>("/chat/mentions/tasks", {
-      params,
-    })
+    const res = await apiClient.get<{ data: MentionTaskItem[] }>(
+      API_ENDPOINTS.CHAT.MENTION_TASKS,
+      {
+        params,
+      },
+    )
     return res.data.data || []
   },
 }

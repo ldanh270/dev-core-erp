@@ -7,23 +7,39 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { CHAT_CONFIG } from "@/config/entities/chat.config"
+import { CHAT_BUTTON_SIZE, CHAT_BUTTON_VARIANT, CHAT_CONFIG } from "@/config/entities/chat.config"
 import type { ConversationSummaryDto } from "@/types/chat.types"
+
+import React from "react"
 
 import { Check, X } from "lucide-react"
 
-interface ChatWindowDialogsProps {
+/**
+ * Props for the ChatWindowDialogs component.
+ */
+export interface ChatWindowDialogsProps {
+  /** Available conversations eligible for message forwarding. */
   conversations: ConversationSummaryDto[]
+  /** Controls open visibility state of the message forwarding dialog. */
   isForwardDialogOpen: boolean
+  /** List of selected conversation IDs for forwarding target. */
   selectedConversationIds: string[]
+  /** URL of image currently being viewed in full-screen overlay, or null. */
   previewImage: string | null
+  /** Callback fired when forward dialog open state changes. */
   onForwardDialogChange: (isOpen: boolean) => void
+  /** Callback fired when a conversation is toggled in the forward selection. */
   onToggleConversation: (conversationId: string, isSelected: boolean) => void
+  /** Callback submitting the forward request. */
   onSubmitForward: () => void
+  /** Callback closing the full-screen image preview overlay. */
   onClosePreview: () => void
 }
 
-export function ChatWindowDialogs({
+/**
+ * Renders modal overlays for the chat module including message forwarding and full-screen image preview.
+ */
+export const ChatWindowDialogs = React.memo(function ChatWindowDialogs({
   conversations,
   isForwardDialogOpen,
   selectedConversationIds,
@@ -91,8 +107,8 @@ export function ChatWindowDialogs({
             />
             <Button
               type="button"
-              variant="secondary"
-              size="icon-sm"
+              variant={CHAT_BUTTON_VARIANT.SECONDARY}
+              size={CHAT_BUTTON_SIZE.ICON_SM}
               aria-label="Đóng ảnh xem trước"
               onClick={onClosePreview}
               className="absolute -top-3 -right-3 shadow-md"
@@ -104,4 +120,4 @@ export function ChatWindowDialogs({
       )}
     </>
   )
-}
+})

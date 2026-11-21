@@ -1,20 +1,29 @@
 import { Input } from "@/components/ui/input"
+import { CHAT_CONFIG } from "@/config/entities/chat.config"
 import { useConversationMessageSearch } from "@/hooks/chat/use-conversation-message-search"
+
+import React from "react"
 
 import { format } from "date-fns"
 import { Search } from "lucide-react"
 
-interface ConversationMessageSearchProps {
+/**
+ * Props for the ConversationMessageSearch component.
+ */
+export interface ConversationMessageSearchProps {
+  /** Unique identifier of the conversation to search messages within. */
   conversationId: string
 }
 
 /**
- * Renders search controls and previews for messages in a conversation.
+ * Renders debounced search controls and previews for messages in an active conversation.
  */
-export function ConversationMessageSearch({ conversationId }: ConversationMessageSearchProps) {
+export const ConversationMessageSearch = React.memo(function ConversationMessageSearch({
+  conversationId,
+}: ConversationMessageSearchProps) {
   const { messageQuery, setMessageQuery, debouncedMessageQuery, isFetching, isError, messages } =
     useConversationMessageSearch(conversationId)
-  const hasValidQuery = debouncedMessageQuery.length >= 2
+  const hasValidQuery = debouncedMessageQuery.length >= CHAT_CONFIG.MIN_SEARCH_QUERY_LENGTH
 
   return (
     <div className="space-y-2 border-b border-border p-3">
@@ -34,9 +43,12 @@ export function ConversationMessageSearch({ conversationId }: ConversationMessag
         />
       </div>
 
-      {messageQuery.trim().length > 0 && messageQuery.trim().length < 2 && (
-        <p className="text-xs text-muted-foreground">Nhập ít nhất 2 ký tự để tìm.</p>
-      )}
+      {messageQuery.trim().length > 0 &&
+        messageQuery.trim().length < CHAT_CONFIG.MIN_SEARCH_QUERY_LENGTH && (
+          <p className="text-xs text-muted-foreground">
+            Nhập ít nhất {CHAT_CONFIG.MIN_SEARCH_QUERY_LENGTH} ký tự để tìm.
+          </p>
+        )}
       {hasValidQuery && (
         <div className="max-h-48 space-y-1 overflow-y-auto">
           {isFetching ? (
@@ -66,4 +78,4 @@ export function ConversationMessageSearch({ conversationId }: ConversationMessag
       )}
     </div>
   )
-}
+})

@@ -1,3 +1,4 @@
+import { CHAT_CONFIG, CHAT_SOCKET_EVENT } from "@/configs/entities/chat.config.ts"
 import { EMPLOYEE_STATUS } from "@/configs/entities/employee.config.ts"
 import { prisma } from "@/libs/database.ts"
 import { eventBus } from "@/libs/event-bus.ts"
@@ -83,55 +84,55 @@ export function attachChatSocket(
     onlineSocketIds.set(employeeId, socketIds)
     socket.join(employeeRoom(employeeId))
 
-    socket.on("conversation:join", async (conversationId) => {
+    socket.on(CHAT_SOCKET_EVENT.CONVERSATION_JOIN, async (conversationId) => {
       try {
         const conversation = await chatService.getConversationDetail(conversationId, employeeId)
         const room = conversationRoom(conversationId)
         await socket.join(room)
-        socket.to(room).emit("presence:changed", { employeeId, isOnline: true })
-        socket.emit("presence:snapshot", {
+        socket.to(room).emit(CHAT_SOCKET_EVENT.PRESENCE_CHANGED, { employeeId, isOnline: true })
+        socket.emit(CHAT_SOCKET_EVENT.PRESENCE_SNAPSHOT, {
           conversationId,
           onlineEmployeeIds: conversation.participants
             .map((participant) => participant.employeeId)
             .filter((id) => onlineSocketIds.has(id)),
         })
         await chatService.markAsRead(conversationId, employeeId)
-        io.to(room).emit("conversation:read", {
+        io.to(room).emit(CHAT_SOCKET_EVENT.CONVERSATION_READ, {
           conversationId,
           employeeId,
           lastReadAt: new Date().toISOString(),
         })
       } catch (error) {
         console.error("Chat socket conversation join failed:", error)
-        socket.emit("chat:error", { message: "Không thể tham gia cuộc trò chuyện." })
+        socket.emit(CHAT_SOCKET_EVENT.ERROR, { message: "Không thể tham gia cuộc trò chuyện." })
       }
     })
 
-    socket.on("conversation:leave", (conversationId) => {
+    socket.on(CHAT_SOCKET_EVENT.CONVERSATION_LEAVE, (conversationId) => {
       void socket.leave(conversationRoom(conversationId))
     })
 
-    socket.on("typing:changed", ({ conversationId, isTyping }) => {
+    socket.on(CHAT_SOCKET_EVENT.TYPING_CHANGED, ({ conversationId, isTyping }) => {
       if (!socket.rooms.has(conversationRoom(conversationId))) return
-      socket.to(conversationRoom(conversationId)).emit("typing:changed", {
+      socket.to(conversationRoom(conversationId)).emit(CHAT_SOCKET_EVENT.TYPING_CHANGED, {
         conversationId,
         employeeId,
         isTyping,
       })
     })
 
-    socket.on("conversation:read", async ({ conversationId }) => {
+    socket.on(CHAT_SOCKET_EVENT.CONVERSATION_READ, async ({ conversationId }) => {
       if (!socket.rooms.has(conversationRoom(conversationId))) return
       try {
         await chatService.markAsRead(conversationId, employeeId)
-        io.to(conversationRoom(conversationId)).emit("conversation:read", {
+        io.to(conversationRoom(conversationId)).emit(CHAT_SOCKET_EVENT.CONVERSATION_READ, {
           conversationId,
           employeeId,
           lastReadAt: new Date().toISOString(),
         })
       } catch (error) {
         console.error("Chat socket read receipt failed:", error)
-        socket.emit("chat:error", { message: "Không thể cập nhật trạng thái đã xem." })
+        socket.emit(CHAT_SOCKET_EVENT.ERROR, { message: "Không thể cập nhật trạng thái đã xem." })
       }
     })
 
@@ -142,7 +143,9 @@ export function attachChatSocket(
         onlineSocketIds.delete(employeeId)
         for (const room of socket.rooms) {
           if (room.startsWith("conversation:")) {
-            socket.to(room).emit("presence:changed", { employeeId, isOnline: false })
+            socket
+              .to(room)
+              .emit(CHAT_SOCKET_EVENT.PRESENCE_CHANGED, { employeeId, isOnline: false })
           }
         }
       }
@@ -151,10 +154,10 @@ export function attachChatSocket(
 
   const publishChatMessage = ({ recipientEmployeeId, event }: DomainEvents["chat:message"]) => {
     io.to(employeeRoom(recipientEmployeeId))
-      .timeout(5000)
-      .emit("chat:message", event, (error) => {
+      .timeout(CHAT_CONFIG.SOCKET_ACK_TIMEOUT_MS)
+      .emit(CHAT_SOCKET_EVENT.MESSAGE, event, (error) => {
         if (!error && recipientEmployeeId !== event.message.senderId) {
-          io.to(employeeRoom(event.message.senderId)).emit("message:status", {
+          io.to(employeeRoom(event.message.senderId)).emit(CHAT_SOCKET_EVENT.MESSAGE_STATUS, {
             messageId: event.message.id,
             status: "delivered",
             recipientEmployeeId,

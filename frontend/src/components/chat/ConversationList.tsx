@@ -6,7 +6,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { CONVERSATION_TYPE } from "@/config/entities/chat.config"
+import {
+  CHAT_BUTTON_SIZE,
+  CHAT_BUTTON_VARIANT,
+  CHAT_CONFIG,
+  CHAT_CONVERSATION_FILTER,
+  CONVERSATION_TYPE,
+} from "@/config/entities/chat.config"
 import { useConversationList } from "@/hooks/chat/use-conversation-list"
 import type { ConversationSummaryDto } from "@/types/chat.types"
 
@@ -27,6 +33,9 @@ import {
   Users,
 } from "lucide-react"
 
+/**
+ * Properties for rendering the searchable conversation sidebar list.
+ */
 interface ConversationListProps {
   /** Conversation summaries already scoped to the signed-in employee. */
   conversations: ConversationSummaryDto[]
@@ -36,6 +45,7 @@ interface ConversationListProps {
   onSelectConversation: (id: string) => void
   /** Opens the parent-managed new conversation dialog. */
   onOpenNewChatModal: () => void
+  /** Loading state indicator while initial conversation list is being fetched. */
   isLoading?: boolean
 }
 
@@ -75,7 +85,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
         </div>
         <Button
           type="button"
-          size="sm"
+          size={CHAT_BUTTON_SIZE.SM}
           onClick={onOpenNewChatModal}
           className="gap-1.5"
           title="Tạo cuộc trò chuyện mới"
@@ -104,37 +114,51 @@ export const ConversationList: React.FC<ConversationListProps> = ({
         <div className="flex items-center gap-1 mt-2.5">
           <Button
             type="button"
-            variant={filterType === "all" ? "default" : "ghost"}
-            size="xs"
+            variant={
+              filterType === CHAT_CONVERSATION_FILTER.ALL
+                ? CHAT_BUTTON_VARIANT.DEFAULT
+                : CHAT_BUTTON_VARIANT.GHOST
+            }
+            size={CHAT_BUTTON_SIZE.XS}
             onClick={() => {
-              setFilterType("all")
+              setFilterType(CHAT_CONVERSATION_FILTER.ALL)
             }}
-            className={filterType === "all" ? "" : "bg-muted text-muted-foreground"}
+            className={
+              filterType === CHAT_CONVERSATION_FILTER.ALL ? "" : "bg-muted text-muted-foreground"
+            }
           >
             Tất cả
           </Button>
           <Button
             type="button"
-            variant={filterType === CONVERSATION_TYPE.DIRECT ? "default" : "ghost"}
-            size="xs"
+            variant={
+              filterType === CHAT_CONVERSATION_FILTER.DIRECT
+                ? CHAT_BUTTON_VARIANT.DEFAULT
+                : CHAT_BUTTON_VARIANT.GHOST
+            }
+            size={CHAT_BUTTON_SIZE.XS}
             onClick={() => {
-              setFilterType(CONVERSATION_TYPE.DIRECT)
+              setFilterType(CHAT_CONVERSATION_FILTER.DIRECT)
             }}
             className={
-              filterType === CONVERSATION_TYPE.DIRECT ? "" : "bg-muted text-muted-foreground"
+              filterType === CHAT_CONVERSATION_FILTER.DIRECT ? "" : "bg-muted text-muted-foreground"
             }
           >
             1-1
           </Button>
           <Button
             type="button"
-            variant={filterType === CONVERSATION_TYPE.GROUP ? "default" : "ghost"}
-            size="xs"
+            variant={
+              filterType === CHAT_CONVERSATION_FILTER.GROUP
+                ? CHAT_BUTTON_VARIANT.DEFAULT
+                : CHAT_BUTTON_VARIANT.GHOST
+            }
+            size={CHAT_BUTTON_SIZE.XS}
             onClick={() => {
-              setFilterType(CONVERSATION_TYPE.GROUP)
+              setFilterType(CHAT_CONVERSATION_FILTER.GROUP)
             }}
             className={
-              filterType === CONVERSATION_TYPE.GROUP ? "" : "bg-muted text-muted-foreground"
+              filterType === CHAT_CONVERSATION_FILTER.GROUP ? "" : "bg-muted text-muted-foreground"
             }
           >
             Nhóm
@@ -198,7 +222,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                   {/* Unread badge */}
                   {c.unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold shadow-sm">
-                      {c.unreadCount > 99 ? "99+" : c.unreadCount}
+                      {c.unreadCount > CHAT_CONFIG.MAX_UNREAD_BADGE_COUNT
+                        ? `${CHAT_CONFIG.MAX_UNREAD_BADGE_COUNT}+`
+                        : c.unreadCount}
                     </span>
                   )}
                 </div>
@@ -247,8 +273,8 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                     <DropdownMenuTrigger asChild>
                       <Button
                         type="button"
-                        variant="ghost"
-                        size="icon-sm"
+                        variant={CHAT_BUTTON_VARIANT.GHOST}
+                        size={CHAT_BUTTON_SIZE.ICON_SM}
                         className="opacity-0 group-hover:opacity-100"
                         title="Tuỳ chọn cuộc trò chuyện"
                       >
@@ -281,7 +307,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                         {c.isRestricted ? "Bỏ hạn chế" : "Hạn chế"}
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        variant="destructive"
+                        variant={CHAT_BUTTON_VARIANT.DESTRUCTIVE}
                         onSelect={() => {
                           deleteConversation(c)
                         }}

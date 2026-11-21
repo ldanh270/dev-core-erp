@@ -5,21 +5,38 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { CHAT_BUTTON_SIZE, CHAT_BUTTON_VARIANT } from "@/config/entities/chat.config"
 import type { ChatMessageDto } from "@/types/chat.types"
 
 import { Forward, MoreVertical, Pencil, Pin, PinOff, Trash2 } from "lucide-react"
 
+/**
+ * Properties for rendering message-specific action dropdown menu.
+ */
 interface ChatMessageActionsProps {
+  /** The message entity associated with these actions. */
   message: ChatMessageDto
+  /** Whether the message was authored by the authenticated employee. */
   isMe: boolean
+  /** Whether this message is currently being edited in inline mode. */
   isEditing: boolean
+  /** Callback to trigger inline editing mode for the message. */
   onStartEdit: () => void
+  /** Callback to open the message forwarding destination picker. */
   onForward: () => void
+  /** Callback to toggle the pinned state of the message. */
   onTogglePin: () => void
+  /** Callback to recall / unsend the message for all participants. */
   onRecall: () => void
 }
 
-/** Renders message action menu separately from payload and editing UI. */
+/**
+ * Renders an action menu dropdown for a message row, providing options for editing,
+ * forwarding, pinning, and recalling messages based on ownership permissions.
+ *
+ * @param props - Properties conforming to {@link ChatMessageActionsProps}.
+ * @returns Rendered dropdown menu trigger and contents, or null if recalled/editing.
+ */
 export function ChatMessageActions({
   message,
   isMe,
@@ -36,8 +53,8 @@ export function ChatMessageActions({
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
-          variant="ghost"
-          size="icon-xs"
+          variant={CHAT_BUTTON_VARIANT.GHOST}
+          size={CHAT_BUTTON_SIZE.ICON_XS}
           aria-label="Thao tác tin nhắn"
           className="mt-1 text-muted-foreground opacity-100 transition-opacity hover:text-foreground sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100"
         >
@@ -60,7 +77,7 @@ export function ChatMessageActions({
           {message.isPinned ? "Bỏ ghim" : "Ghim"}
         </DropdownMenuItem>
         {isMe && (
-          <DropdownMenuItem variant="destructive" onSelect={onRecall}>
+          <DropdownMenuItem variant={CHAT_BUTTON_VARIANT.DESTRUCTIVE} onSelect={onRecall}>
             <Trash2 />
             Thu hồi
           </DropdownMenuItem>

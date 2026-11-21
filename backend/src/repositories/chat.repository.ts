@@ -1,4 +1,9 @@
-import { CONVERSATION_TYPE, type IConversationType } from "@/configs/entities/chat.config.ts"
+import {
+  CHAT_CONFIG,
+  CHAT_MESSAGE_TYPE,
+  CONVERSATION_TYPE,
+  type IConversationType,
+} from "@/configs/entities/chat.config.ts"
 import { EMPLOYEE_STATUS } from "@/configs/entities/employee.config.ts"
 import { BaseRepository } from "@/repositories/base.repository.ts"
 import type {
@@ -431,7 +436,7 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
           conversationId,
           senderId,
           content: data.content,
-          type: data.type ?? "text",
+          type: data.type ?? CHAT_MESSAGE_TYPE.TEXT,
           fileUrl: data.fileUrl,
           fileName: data.fileName,
           fileSize: data.fileSize,
@@ -455,10 +460,16 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
         data: { updatedAt: new Date() },
       })
 
+      // Restore conversation visibility for all room participants so previously hidden/deleted members see incoming activity
+      await tx.conversationParticipant.updateMany({
+        where: { conversationId },
+        data: { isDeleted: false },
+      })
+
       // Update sender's last read timestamp automatically
       await tx.conversationParticipant.updateMany({
         where: { conversationId, employeeId: senderId },
-        data: { lastReadAt: new Date(), isDeleted: false },
+        data: { lastReadAt: new Date() },
       })
 
       return message
@@ -640,7 +651,10 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
   /**
    * Mentions Autocomplete: Search employees (@)
    */
-  async searchEmployeesForMention(query: string, limit = 10): Promise<MentionEmployeeItem[]> {
+  async searchEmployeesForMention(
+    query: string,
+    limit = CHAT_CONFIG.MENTION_SUGGESTION_LIMIT,
+  ): Promise<MentionEmployeeItem[]> {
     const employees = await this.prisma.employee.findMany({
       where: {
         status: EMPLOYEE_STATUS.ACTIVE,
@@ -667,7 +681,10 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
   /**
    * Mentions Autocomplete: Search projects (#)
    */
-  async searchProjectsForMention(query: string, limit = 10): Promise<MentionProjectItem[]> {
+  async searchProjectsForMention(
+    query: string,
+    limit = CHAT_CONFIG.MENTION_SUGGESTION_LIMIT,
+  ): Promise<MentionProjectItem[]> {
     const projects = await this.prisma.project.findMany({
       where: {
         name: { contains: query, mode: "insensitive" },
@@ -695,7 +712,7 @@ export class PrismaChatRepository extends BaseRepository implements IChatReposit
    */
   async searchTasksForMention(
     query: string,
-    limit = 10,
+    limit = CHAT_CONFIG.MENTION_SUGGESTION_LIMIT,
     projectId?: string,
   ): Promise<MentionTaskItem[]> {
     const where: Prisma.TaskWhereInput = {

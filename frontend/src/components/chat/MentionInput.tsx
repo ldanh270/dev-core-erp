@@ -1,21 +1,36 @@
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { CHAT_BUTTON_SIZE, CHAT_BUTTON_VARIANT } from "@/config/entities/chat.config"
 import { useMentionInput } from "@/hooks/chat/use-mention-input"
 import type { SendMessageDto } from "@/types/chat.types"
+
+import React from "react"
 
 import { Briefcase, CheckSquare, Paperclip, Send, User } from "lucide-react"
 
 import { MentionAttachmentChip } from "./MentionAttachmentChip"
 import { MentionAutocompleteList } from "./MentionAutocompleteList"
 
-interface MentionInputProps {
+/**
+ * Props for the MentionInput component.
+ */
+export interface MentionInputProps {
+  /** Callback fired when sending a message payload. */
   onSendMessage: (data: SendMessageDto) => Promise<void>
+  /** Callback fired when the typing state changes. */
   onTypingChange: (isTyping: boolean) => void
+  /** Whether composer input is disabled. */
   disabled?: boolean
 }
 
-/** Coordinates the composer hook with popup, attachment, and action subcomponents. */
-export function MentionInput({ onSendMessage, onTypingChange, disabled }: MentionInputProps) {
+/**
+ * Coordinates the composer hook with popup autocomplete, attachment chip, and message send actions.
+ */
+export const MentionInput = React.memo(function MentionInput({
+  onSendMessage,
+  onTypingChange,
+  disabled,
+}: MentionInputProps) {
   const {
     text,
     isUploading,
@@ -65,8 +80,8 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
         <span className="mr-1 text-[11px] font-medium">Gõ hoặc bấm:</span>
         <Button
           type="button"
-          variant="ghost"
-          size="xs"
+          variant={CHAT_BUTTON_VARIANT.GHOST}
+          size={CHAT_BUTTON_SIZE.XS}
           onClick={handleTriggerEmployeeMention}
           className="border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20"
         >
@@ -74,8 +89,8 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
         </Button>
         <Button
           type="button"
-          variant="ghost"
-          size="xs"
+          variant={CHAT_BUTTON_VARIANT.GHOST}
+          size={CHAT_BUTTON_SIZE.XS}
           onClick={handleTriggerProjectMention}
           className="border border-blue-500/20 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20"
         >
@@ -83,8 +98,8 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
         </Button>
         <Button
           type="button"
-          variant="ghost"
-          size="xs"
+          variant={CHAT_BUTTON_VARIANT.GHOST}
+          size={CHAT_BUTTON_SIZE.XS}
           onClick={handleTriggerTaskMention}
           className="border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20"
         >
@@ -114,8 +129,8 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
           />
           <Button
             type="button"
-            variant="ghost"
-            size="icon-sm"
+            variant={CHAT_BUTTON_VARIANT.GHOST}
+            size={CHAT_BUTTON_SIZE.ICON_SM}
             onClick={() => {
               fileInputRef.current?.click()
             }}
@@ -126,7 +141,7 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
           </Button>
           <Button
             type="button"
-            size="icon-sm"
+            size={CHAT_BUTTON_SIZE.ICON_SM}
             onClick={handleSendFromInput}
             disabled={(!text.trim() && !attachedFile) || Boolean(disabled) || isUploading}
             title="Gửi tin nhắn (Enter)"
@@ -137,4 +152,4 @@ export function MentionInput({ onSendMessage, onTypingChange, disabled }: Mentio
       </div>
     </div>
   )
-}
+})

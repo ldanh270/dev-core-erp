@@ -1,3 +1,4 @@
+import { CHAT_CONFIG } from "@/configs/entities/chat.config.ts"
 import { ChatController } from "@/controllers/chat.controller.ts"
 import { prisma } from "@/libs/database.ts"
 import { authenticate } from "@/middlewares/auth.middleware.ts"
@@ -19,7 +20,7 @@ const chatRoutes = express.Router()
 // Buffer attachments in memory for the Cloudinary upload; reject oversized files before the controller.
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB max
+  limits: { fileSize: CHAT_CONFIG.MAX_ATTACHMENT_SIZE_BYTES },
 })
 
 // Dependency Injection wiring

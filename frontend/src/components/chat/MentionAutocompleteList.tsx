@@ -1,22 +1,44 @@
 import { Button } from "@/components/ui/button"
-import { MENTION_PREFIX } from "@/config/entities/chat.config"
+import {
+  CHAT_BUTTON_SIZE,
+  CHAT_BUTTON_VARIANT,
+  MENTION_PREFIX,
+} from "@/config/entities/chat.config"
 import type { MentionEmployeeItem, MentionProjectItem, MentionTaskItem } from "@/types/chat.types"
 
 import { Briefcase, CheckSquare, User } from "lucide-react"
 
+/**
+ * Properties for rendering the multi-entity mention autocomplete suggestions popup.
+ */
 interface MentionAutocompleteListProps {
+  /** The currently active trigger symbol (@ for employee, # for project, ! for task). */
   activeTrigger: (typeof MENTION_PREFIX)[keyof typeof MENTION_PREFIX]
+  /** Zero-based index of the currently highlighted suggestion item for keyboard navigation. */
   mentionIndex: number
+  /** List of matching employee suggestions when activeTrigger is '@'. */
   employees: MentionEmployeeItem[]
+  /** List of matching project suggestions when activeTrigger is '#'. */
   projects: MentionProjectItem[]
+  /** List of matching task suggestions when activeTrigger is '!'. */
   tasks: MentionTaskItem[]
+  /** Whether autocomplete query search is actively fetching suggestions from the server. */
   isLoading: boolean
+  /** Callback fired when an employee suggestion is selected by click or Enter key. */
   onSelectEmployee: (employee: MentionEmployeeItem) => void
+  /** Callback fired when a project suggestion is selected by click or Enter key. */
   onSelectProject: (project: MentionProjectItem) => void
+  /** Callback fired when a task suggestion is selected by click or Enter key. */
   onSelectTask: (task: MentionTaskItem) => void
 }
 
-/** Renders the three mention result variants and keeps selection state prop-driven. */
+/**
+ * Renders an autocomplete popup list for mentions, dynamically displaying
+ * matching employees (@), projects (#), or tasks (!) with keyboard navigation support.
+ *
+ * @param props - Properties conforming to {@link MentionAutocompleteListProps}.
+ * @returns Rendered mention suggestion popover element.
+ */
 export function MentionAutocompleteList({
   activeTrigger,
   mentionIndex,
@@ -62,8 +84,10 @@ export function MentionAutocompleteList({
               <Button
                 key={employee.id}
                 type="button"
-                variant={index === mentionIndex ? "secondary" : "ghost"}
-                size="sm"
+                variant={
+                  index === mentionIndex ? CHAT_BUTTON_VARIANT.SECONDARY : CHAT_BUTTON_VARIANT.GHOST
+                }
+                size={CHAT_BUTTON_SIZE.SM}
                 onClick={() => {
                   onSelectEmployee(employee)
                 }}
@@ -92,8 +116,10 @@ export function MentionAutocompleteList({
               <Button
                 key={project.id}
                 type="button"
-                variant={index === mentionIndex ? "secondary" : "ghost"}
-                size="sm"
+                variant={
+                  index === mentionIndex ? CHAT_BUTTON_VARIANT.SECONDARY : CHAT_BUTTON_VARIANT.GHOST
+                }
+                size={CHAT_BUTTON_SIZE.SM}
                 onClick={() => {
                   onSelectProject(project)
                 }}
@@ -122,8 +148,10 @@ export function MentionAutocompleteList({
               <Button
                 key={task.id}
                 type="button"
-                variant={index === mentionIndex ? "secondary" : "ghost"}
-                size="sm"
+                variant={
+                  index === mentionIndex ? CHAT_BUTTON_VARIANT.SECONDARY : CHAT_BUTTON_VARIANT.GHOST
+                }
+                size={CHAT_BUTTON_SIZE.SM}
                 onClick={() => {
                   onSelectTask(task)
                 }}

@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { CHAT_BUTTON_SIZE, CONVERSATION_TYPE } from "@/config/entities/chat.config"
 import { useNewChatModal } from "@/hooks/chat/use-new-chat-modal"
+
+import React from "react"
 
 import { Search } from "lucide-react"
 
@@ -9,14 +12,24 @@ import { NewChatGroupFields } from "./NewChatGroupFields"
 import { NewChatMemberList } from "./NewChatMemberList"
 import { NewChatTabs } from "./NewChatTabs"
 
-interface NewChatModalProps {
+/**
+ * Props for the NewChatModal component.
+ */
+export interface NewChatModalProps {
+  /** Controls open visibility state of the modal dialog. */
   isOpen: boolean
+  /** Callback fired to close the modal. */
   onClose: () => void
+  /** Mutation handler initiating a direct 1-on-1 conversation with a partner. */
   onCreateDirect: (partnerId: string) => Promise<void>
+  /** Mutation handler initiating a group conversation with title and participants. */
   onCreateGroup: (data: { title: string; participantIds: string[] }) => Promise<void>
 }
 
-export function NewChatModal({
+/**
+ * Modal dialog for discovering colleagues and initiating new 1-on-1 or group chats.
+ */
+export const NewChatModal = React.memo(function NewChatModal({
   isOpen,
   onClose,
   onCreateDirect,
@@ -50,7 +63,7 @@ export function NewChatModal({
 
         <NewChatTabs tab={tab} onTabChange={setTab} />
 
-        {tab === "group" && (
+        {tab === CONVERSATION_TYPE.GROUP && (
           <NewChatGroupFields
             groupTitle={groupTitle}
             selectedMembers={selectedMembers}
@@ -79,19 +92,19 @@ export function NewChatModal({
             employees={employees}
             selectedMembers={selectedMembers}
             isLoading={isLoading}
-            isGroup={tab === "group"}
+            isGroup={tab === CONVERSATION_TYPE.GROUP}
             onEmployeeClick={handleEmployeeClick}
           />
         </div>
 
-        {tab === "group" && (
+        {tab === CONVERSATION_TYPE.GROUP && (
           <div className="flex items-center justify-between border-t border-border bg-muted/20 p-3">
             <span className="text-xs text-muted-foreground">
               Đã chọn: {selectedMembers.length} thành viên
             </span>
             <Button
               type="button"
-              size="sm"
+              size={CHAT_BUTTON_SIZE.SM}
               onClick={createGroupFromClick}
               disabled={!canCreateGroup}
             >
@@ -102,4 +115,4 @@ export function NewChatModal({
       </DialogContent>
     </Dialog>
   )
-}
+})

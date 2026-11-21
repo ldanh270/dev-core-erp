@@ -1,21 +1,32 @@
+import { CHAT_MESSAGE_TYPE } from "@/config/entities/chat.config"
 import type { ChatMessageDto } from "@/types/chat.types"
 
 import { Download, FileText } from "lucide-react"
+import React from "react"
 
-interface ChatMessageAttachmentProps {
+/**
+ * Props for the ChatMessageAttachment component.
+ */
+export interface ChatMessageAttachmentProps {
+  /** The chat message entity containing attachment details. */
   message: ChatMessageDto
+  /** Indicates whether the message belongs to the current logged-in employee. */
   isMe: boolean
+  /** Callback triggered when the user clicks an image attachment to view its full preview. */
   onPreviewImage: () => void
 }
 
-export function ChatMessageAttachment({
+/**
+ * Renders attachment preview (image or downloadable file) for a chat message.
+ */
+export const ChatMessageAttachment = React.memo(function ChatMessageAttachment({
   message,
   isMe,
   onPreviewImage,
 }: ChatMessageAttachmentProps) {
   if (!message.fileUrl) return null
 
-  if (message.type === "image") {
+  if (message.type === CHAT_MESSAGE_TYPE.IMAGE) {
     return (
       <div className="mb-1.5 overflow-hidden rounded-lg">
         <img
@@ -28,7 +39,7 @@ export function ChatMessageAttachment({
     )
   }
 
-  if (message.type === "file") {
+  if (message.type === CHAT_MESSAGE_TYPE.FILE) {
     return (
       <a
         href={message.fileUrl}
@@ -50,4 +61,4 @@ export function ChatMessageAttachment({
   }
 
   return null
-}
+})

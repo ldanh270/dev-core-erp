@@ -1,3 +1,4 @@
+import { MENTION_PREFIX, MENTION_TOKEN_ENTITY } from "@/config/entities/chat.config"
 import { ROUTES } from "@/config/routes.config"
 import { routerNavigate } from "@/lib/router-navigator"
 import type { ChatMessageMention } from "@/types/chat.types"
@@ -6,10 +7,13 @@ import React from "react"
 
 import { Briefcase, CheckSquare, User } from "lucide-react"
 
-interface MentionMessageRendererProps {
+/**
+ * Props for the MentionMessageRenderer component.
+ */
+export interface MentionMessageRendererProps {
   /** Message text containing the bracketed mention-token syntax emitted by MentionInput. */
   content: string
-  /** Optional structured metadata; token rendering is currently driven by `content`. */
+  /** Optional structured metadata; token rendering is currently driven by content syntax. */
   mentions?: ChatMessageMention[] | null
   /** Applies outgoing-message contrast styles to rendered mention pills. */
   isOutgoing?: boolean
@@ -17,17 +21,16 @@ interface MentionMessageRendererProps {
 
 /**
  * Renders message content with interactive pills for employee (@), project (#), and task (!) tokens.
- * Plain text surrounding tokens is preserved; project and task pills navigate to their details.
- * Pills use semantic theme classes and rounded-full styling rather than hard-coded colors.
+ * Plain text surrounding tokens is preserved; project and task pills navigate to their respective details.
+ * Wrapped in React.memo to avoid re-rendering static message content.
  */
-export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
+export const MentionMessageRenderer = React.memo(function MentionMessageRenderer({
   content,
   isOutgoing = false,
-}) => {
+}: MentionMessageRendererProps) {
   if (!content) return null
 
-  // Match the token syntax emitted by MentionInput: @[Name](emp:id), #[Name](proj:id),
-  // or ![Name](task:id). Matching against message content preserves ordinary text between tokens.
+  // Match the token syntax emitted by MentionInput: @[Name](emp:id), #[Name](proj:id), or ![Name](task:id).
   const mentionRegex = /([@#!])\[(.+?)\]\((emp|proj|task):([^)]+)\)/g
 
   const elements: React.ReactNode[] = []
@@ -35,7 +38,6 @@ export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
   let match: RegExpExecArray | null
 
   while ((match = mentionRegex.exec(content)) !== null) {
-    // Push regular text before this mention
     if (match.index > lastIndex) {
       elements.push(content.substring(lastIndex, match.index))
     }
@@ -46,7 +48,7 @@ export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
     const entityId = match[4]
     const key = `mention-${match.index}-${entityId}`
 
-    if (prefix === "@" || type === "emp") {
+    if (prefix === MENTION_PREFIX.EMPLOYEE || type === MENTION_TOKEN_ENTITY.EMPLOYEE) {
       // Employee Mention
       elements.push(
         <span
@@ -62,7 +64,7 @@ export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
           <span>@{label}</span>
         </span>,
       )
-    } else if (prefix === "#" || type === "proj") {
+    } else if (prefix === MENTION_PREFIX.PROJECT || type === MENTION_TOKEN_ENTITY.PROJECT) {
       // Project Mention (Clickable to open Project details)
       elements.push(
         <button
@@ -85,7 +87,7 @@ export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
           <span>#{label}</span>
         </button>,
       )
-    } else if (prefix === "!" || type === "task") {
+    } else if (prefix === MENTION_PREFIX.TASK || type === MENTION_TOKEN_ENTITY.TASK) {
       // Task Mention (Clickable to open Task details)
       elements.push(
         <button
@@ -113,10 +115,9 @@ export const MentionMessageRenderer: React.FC<MentionMessageRendererProps> = ({
     lastIndex = match.index + match[0].length
   }
 
-  // Push remaining text
   if (lastIndex < content.length) {
     elements.push(content.substring(lastIndex))
   }
 
   return <span className="whitespace-pre-wrap break-words">{elements}</span>
-}
+})

@@ -1,18 +1,27 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { CHAT_BUTTON_SIZE, CHAT_BUTTON_VARIANT, CHAT_CONFIG } from "@/config/entities/chat.config"
 import { useConversationMemberManager } from "@/hooks/chat/use-conversation-member-manager"
 import type { ConversationSummaryDto } from "@/types/chat.types"
 
+import React from "react"
+
 import { Search, UserPlus } from "lucide-react"
 
-interface ConversationMemberManagerProps {
+/**
+ * Props for the ConversationMemberManager component.
+ */
+export interface ConversationMemberManagerProps {
+  /** Target conversation whose membership is being managed. */
   conversation: ConversationSummaryDto
 }
 
 /**
  * Renders current members and controls for adding employees to a group conversation.
  */
-export function ConversationMemberManager({ conversation }: ConversationMemberManagerProps) {
+export const ConversationMemberManager = React.memo(function ConversationMemberManager({
+  conversation,
+}: ConversationMemberManagerProps) {
   const {
     memberQuery,
     setMemberQuery,
@@ -41,8 +50,8 @@ export function ConversationMemberManager({ conversation }: ConversationMemberMa
         {isGroupConversation && !isAddingMembers && (
           <Button
             type="button"
-            variant="ghost"
-            size="xs"
+            variant={CHAT_BUTTON_VARIANT.GHOST}
+            size={CHAT_BUTTON_SIZE.XS}
             onClick={() => {
               setIsAddingMembers(true)
             }}
@@ -68,7 +77,7 @@ export function ConversationMemberManager({ conversation }: ConversationMemberMa
               className="rounded-full border-border bg-muted/50 py-2 pl-9 pr-3 text-xs"
             />
           </div>
-          {employeeQuery.trim().length < 2 ? (
+          {employeeQuery.trim().length < CHAT_CONFIG.MIN_SEARCH_QUERY_LENGTH ? (
             <p className="p-2 text-xs text-muted-foreground">
               Nhập ít nhất 2 ký tự để tìm nhân viên.
             </p>
@@ -116,8 +125,8 @@ export function ConversationMemberManager({ conversation }: ConversationMemberMa
           <div className="flex justify-end gap-2">
             <Button
               type="button"
-              variant="ghost"
-              size="sm"
+              variant={CHAT_BUTTON_VARIANT.GHOST}
+              size={CHAT_BUTTON_SIZE.SM}
               onClick={() => {
                 setIsAddingMembers(false)
                 clearSelectedEmployees()
@@ -128,7 +137,7 @@ export function ConversationMemberManager({ conversation }: ConversationMemberMa
             </Button>
             <Button
               type="button"
-              size="sm"
+              size={CHAT_BUTTON_SIZE.SM}
               onClick={addSelectedEmployees}
               disabled={!selectedEmployeeIds.length || isAddingSelectedEmployees}
             >
@@ -178,4 +187,4 @@ export function ConversationMemberManager({ conversation }: ConversationMemberMa
       </div>
     </div>
   )
-}
+})

@@ -1,10 +1,16 @@
-import { CONVERSATION_TYPE } from "@/config/entities/chat.config"
+import { CHAT_CONFIG, CONVERSATION_TYPE } from "@/config/entities/chat.config"
 import { useAddChatParticipants } from "@/hooks/chat/use-add-chat-participants"
 import { chatApi } from "@/lib/chat-api"
 import type { ConversationSummaryDto, MentionEmployeeItem } from "@/types/chat.types"
 
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
+/**
+ * Manages participant filtering, asynchronous employee searching, and membership addition.
+ *
+ * @param conversation Target conversation whose participants are being managed
+ * @returns State and event handlers for participant administration
+ */
 export function useConversationMemberManager(conversation: ConversationSummaryDto) {
   const [memberQuery, setMemberQuery] = useState("")
   const [isAddingMembers, setIsAddingMembers] = useState(false)
@@ -32,7 +38,7 @@ export function useConversationMemberManager(conversation: ConversationSummaryDt
 
   useEffect(() => {
     const query = employeeQuery.trim()
-    if (!isAddingMembers || query.length < 2) {
+    if (!isAddingMembers || query.length < CHAT_CONFIG.MIN_SEARCH_QUERY_LENGTH) {
       setEmployeeResults([])
       setIsSearchingEmployees(false)
       setEmployeeSearchError(false)
@@ -44,7 +50,7 @@ export function useConversationMemberManager(conversation: ConversationSummaryDt
       setIsSearchingEmployees(true)
       setEmployeeSearchError(false)
       chatApi
-        .searchMentionEmployees(query, 20)
+        .searchMentionEmployees(query, CHAT_CONFIG.GROUP_MEMBER_SEARCH_LIMIT)
         .then((employees) => {
           if (active) setEmployeeResults(employees)
         })
@@ -58,7 +64,7 @@ export function useConversationMemberManager(conversation: ConversationSummaryDt
         .finally(() => {
           if (active) setIsSearchingEmployees(false)
         })
-    }, 200)
+    }, CHAT_CONFIG.GROUP_MEMBER_SEARCH_DEBOUNCE_MS)
 
     return () => {
       active = false
@@ -66,23 +72,33 @@ export function useConversationMemberManager(conversation: ConversationSummaryDt
     }
   }, [employeeQuery, isAddingMembers])
 
-  const availableEmployees = employeeResults.filter(
-    (employee) => !existingEmployeeIds.has(employee.id),
+  const availableEmployees = useMemo(
+    () => employeeResults.filter((employee) => !existingEmployeeIds.has(employee.id)),
+    [employeeResults, existingEmployeeIds],
   )
 
-  const toggleEmployee = (employeeId: string) => {
+  /**
+   * Toggles selection state for an employee candidate to add.
+   */
+  const toggleEmployee = useCallback((employeeId: string) => {
     setSelectedEmployeeIds((current) =>
       current.includes(employeeId)
         ? current.filter((id) => id !== employeeId)
         : [...current, employeeId],
     )
-  }
+  }, [])
 
-  const clearSelectedEmployees = () => {
+  /**
+   * Clears the current list of selected employee candidates.
+   */
+  const clearSelectedEmployees = useCallback(() => {
     setSelectedEmployeeIds([])
-  }
+  }, [])
 
-  const addSelectedEmployees = () => {
+  /**
+   * Triggers the mutation to add selected employees to the active conversation.
+   */
+  const addSelectedEmployees = useCallback(() => {
     if (!selectedEmployeeIds.length) return
 
     addParticipantsMutation.mutate(
@@ -98,7 +114,7 @@ export function useConversationMemberManager(conversation: ConversationSummaryDt
         },
       },
     )
-  }
+  }, [addParticipantsMutation, conversation.id, selectedEmployeeIds])
 
   return {
     memberQuery,

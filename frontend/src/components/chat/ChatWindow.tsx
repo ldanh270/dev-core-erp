@@ -1,11 +1,11 @@
 import type { ChatWindowProps } from "@/components/chat/chat-window.types"
 import { EmptyState } from "@/components/common/empty-state"
 import { Button } from "@/components/ui/button"
-import { CONVERSATION_TYPE } from "@/config/entities/chat.config"
+import { CHAT_BUTTON_VARIANT, CONVERSATION_TYPE } from "@/config/entities/chat.config"
 import { useChatWindow } from "@/hooks/chat/use-chat-window"
 import { useAuthStore } from "@/store/auth-store"
 
-import React from "react"
+import React, { useCallback } from "react"
 
 import { MessageSquare, Users } from "lucide-react"
 
@@ -14,6 +14,10 @@ import { ChatWindowDialogs } from "./ChatWindowDialogs"
 import { ConversationDetailsPanel } from "./ConversationDetailsPanel"
 import { MentionInput } from "./MentionInput"
 
+/**
+ * Main chat presentation component managing active conversation view,
+ * message streaming, input mentions, side details panel, and interaction dialogs.
+ */
 export const ChatWindow: React.FC<ChatWindowProps> = ({
   conversation,
   messages,
@@ -77,6 +81,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     currentEmployeeId: user?.id,
   })
 
+  const handleClosePreview = useCallback(() => {
+    setPreviewImage(null)
+  }, [setPreviewImage])
+
   return (
     <>
       {!conversation && (
@@ -93,7 +101,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             <div className="p-3.5 border-b border-border bg-card flex items-center justify-between gap-3 shrink-0 shadow-xs">
               <Button
                 type="button"
-                variant="ghost"
+                variant={CHAT_BUTTON_VARIANT.GHOST}
                 onClick={toggleDetails}
                 aria-expanded={isDetailsOpen}
                 aria-label="Mở thông tin cuộc trò chuyện"
@@ -170,7 +178,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             onForwardDialogChange={handleForwardDialogChange}
             onToggleConversation={toggleForwardConversation}
             onSubmitForward={submitForward}
-            onClosePreview={() => setPreviewImage(null)}
+            onClosePreview={handleClosePreview}
           />
         </>
       )}

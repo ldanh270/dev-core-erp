@@ -1,5 +1,6 @@
 import type {
   IChatMessageType,
+  IChatStreamEventType,
   IConversationType,
   IMentionType,
 } from "@/config/entities/chat.config"
@@ -56,7 +57,7 @@ export interface ChatMessageDto {
 }
 
 /** Chat message lifecycle events received from the Socket.IO server. */
-export type ChatStreamEventType = "message.created" | "message.updated" | "message.recalled"
+export type ChatStreamEventType = IChatStreamEventType
 
 /** Event envelope used by the authenticated chat Socket.IO channel. */
 export interface ChatStreamEvent {

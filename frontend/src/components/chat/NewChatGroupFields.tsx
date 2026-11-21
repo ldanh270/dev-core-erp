@@ -1,18 +1,30 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { CHAT_BUTTON_SIZE, CHAT_BUTTON_VARIANT, CHAT_CONFIG } from "@/config/entities/chat.config"
 import type { MentionEmployeeItem } from "@/types/chat.types"
+
+import React from "react"
 
 import { X } from "lucide-react"
 
-interface NewChatGroupFieldsProps {
+/**
+ * Props for the NewChatGroupFields component.
+ */
+export interface NewChatGroupFieldsProps {
+  /** Current text value entered for the group conversation title. */
   groupTitle: string
+  /** List of employee members selected for inclusion in the group. */
   selectedMembers: MentionEmployeeItem[]
+  /** Callback fired when the group title input text changes. */
   onGroupTitleChange: (title: string) => void
+  /** Callback fired to remove an employee from the selected group membership. */
   onRemoveMember: (member: MentionEmployeeItem) => void
 }
 
-/** Renders group title and selected-member chips for the create-group tab. */
-export function NewChatGroupFields({
+/**
+ * Renders group title input and removable selected-member chips for the create-group tab.
+ */
+export const NewChatGroupFields = React.memo(function NewChatGroupFields({
   groupTitle,
   selectedMembers,
   onGroupTitleChange,
@@ -23,6 +35,7 @@ export function NewChatGroupFields({
       <Input
         type="text"
         value={groupTitle}
+        maxLength={CHAT_CONFIG.MAX_GROUP_TITLE_LENGTH}
         onChange={(event) => {
           onGroupTitleChange(event.target.value)
         }}
@@ -39,8 +52,8 @@ export function NewChatGroupFields({
               {member.fullName}
               <Button
                 type="button"
-                variant="ghost"
-                size="icon-xs"
+                variant={CHAT_BUTTON_VARIANT.GHOST}
+                size={CHAT_BUTTON_SIZE.ICON_XS}
                 onClick={() => {
                   onRemoveMember(member)
                 }}
@@ -54,4 +67,4 @@ export function NewChatGroupFields({
       )}
     </div>
   )
-}
+})

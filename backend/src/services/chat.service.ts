@@ -1,4 +1,9 @@
-import { CHAT_CONFIG, CHAT_ERRORS, CONVERSATION_TYPE } from "@/configs/entities/chat.config.ts"
+import {
+  CHAT_CONFIG,
+  CHAT_ERRORS,
+  CHAT_STREAM_EVENT,
+  CONVERSATION_TYPE,
+} from "@/configs/entities/chat.config.ts"
 import { EMPLOYEE_STATUS } from "@/configs/entities/employee.config.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
@@ -119,7 +124,7 @@ export class ChatService implements IChatService {
     data: CreateGroupConversationDto,
   ): Promise<ConversationSummaryDto> {
     const otherMembers = data.participantIds.filter((id) => id !== currentUserId)
-    if (otherMembers.length < 2) {
+    if (otherMembers.length < CHAT_CONFIG.MIN_GROUP_PARTICIPANTS) {
       throw new AppError(
         CHAT_ERRORS.INVALID_GROUP_PARTICIPANTS.message,
         HttpStatusCode.BAD_REQUEST,
@@ -242,7 +247,10 @@ export class ChatService implements IChatService {
     // Auto-mark conversation as read when messages are fetched
     await this.chatRepo.updateLastRead(conversationId, employeeId)
 
-    const clampedLimit = Math.min(Math.max(limit, 1), CHAT_CONFIG.MAX_PAGE_SIZE)
+    const clampedLimit = Math.min(
+      Math.max(limit, CHAT_CONFIG.MIN_PAGE_SIZE),
+      CHAT_CONFIG.MAX_PAGE_SIZE,
+    )
     return this.chatRepo.findMessages(conversationId, { limit: clampedLimit, beforeCursor })
   }
 
@@ -306,9 +314,13 @@ export class ChatService implements IChatService {
       content: data.content?.slice(0, CHAT_CONFIG.MAX_MESSAGE_LENGTH) ?? "",
     })
 
+    // Reload conversation to ensure all participants (including those un-deleted by createMessage) receive the socket event
+    const activeConversation = await this.chatRepo.findConversationById(conversationId, senderId)
+    const targetParticipants = activeConversation?.participants ?? conversation.participants
+
     // Broadcast the typed creation event to every active member, including the sender's other sessions.
-    this.publishMessageEvent(conversation.participants, {
-      type: "message.created",
+    this.publishMessageEvent(targetParticipants, {
+      type: CHAT_STREAM_EVENT.CREATED,
       message: createdMessage,
     })
 
@@ -358,7 +370,7 @@ export class ChatService implements IChatService {
 
     const conversation = await this.getConversationDetail(updated.conversationId, employeeId)
     this.publishMessageEvent(conversation.participants, {
-      type: "message.updated",
+      type: CHAT_STREAM_EVENT.UPDATED,
       message: updated,
     })
     return updated
@@ -389,7 +401,7 @@ export class ChatService implements IChatService {
 
     const conversation = await this.getConversationDetail(recalled.conversationId, employeeId)
     this.publishMessageEvent(conversation.participants, {
-      type: "message.recalled",
+      type: CHAT_STREAM_EVENT.RECALLED,
       message: recalled,
     })
     return recalled
@@ -409,7 +421,7 @@ export class ChatService implements IChatService {
 
     const conversation = await this.getConversationDetail(updated.conversationId, employeeId)
     this.publishMessageEvent(conversation.participants, {
-      type: "message.updated",
+      type: CHAT_STREAM_EVENT.UPDATED,
       message: updated,
     })
     return updated
@@ -458,7 +470,7 @@ export class ChatService implements IChatService {
       )
       if (conversation) {
         this.publishMessageEvent(conversation.participants, {
-          type: "message.created",
+          type: CHAT_STREAM_EVENT.CREATED,
           message: forwardedMessage,
         })
       }
@@ -476,14 +488,20 @@ export class ChatService implements IChatService {
   /**
    * Mentions Autocomplete: Search employees (@)
    */
-  async searchMentionEmployees(query: string, limit = 10): Promise<MentionEmployeeItem[]> {
+  async searchMentionEmployees(
+    query: string,
+    limit = CHAT_CONFIG.MENTION_SUGGESTION_LIMIT,
+  ): Promise<MentionEmployeeItem[]> {
     return this.chatRepo.searchEmployeesForMention(query.trim(), limit)
   }
 
   /**
    * Mentions Autocomplete: Search projects (#)
    */
-  async searchMentionProjects(query: string, limit = 10): Promise<MentionProjectItem[]> {
+  async searchMentionProjects(
+    query: string,
+    limit = CHAT_CONFIG.MENTION_SUGGESTION_LIMIT,
+  ): Promise<MentionProjectItem[]> {
     return this.chatRepo.searchProjectsForMention(query.trim(), limit)
   }
 
@@ -492,7 +510,7 @@ export class ChatService implements IChatService {
    */
   async searchMentionTasks(
     query: string,
-    limit = 10,
+    limit = CHAT_CONFIG.MENTION_SUGGESTION_LIMIT,
     projectId?: string,
   ): Promise<MentionTaskItem[]> {
     return this.chatRepo.searchTasksForMention(query.trim(), limit, projectId)

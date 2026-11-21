@@ -1,18 +1,30 @@
 import { Button } from "@/components/ui/button"
+import { CHAT_BUTTON_VARIANT } from "@/config/entities/chat.config"
 import type { MentionEmployeeItem } from "@/types/chat.types"
 
+import React from "react"
 import { Check } from "lucide-react"
 
-interface NewChatMemberListProps {
+/**
+ * Props for the NewChatMemberList component.
+ */
+export interface NewChatMemberListProps {
+  /** Filtered or searched employee candidates eligible for chat. */
   employees: MentionEmployeeItem[]
+  /** Members currently selected in group creation mode. */
   selectedMembers: MentionEmployeeItem[]
+  /** Whether employee search is currently fetching results. */
   isLoading: boolean
+  /** Whether the modal is currently in group conversation mode. */
   isGroup: boolean
+  /** Callback fired when an employee candidate row is clicked. */
   onEmployeeClick: (employee: MentionEmployeeItem) => void
 }
 
-/** Renders employee search results and group selection indicators. */
-export function NewChatMemberList({
+/**
+ * Renders employee search results and group selection check indicators.
+ */
+export const NewChatMemberList = React.memo(function NewChatMemberList({
   employees,
   selectedMembers,
   isLoading,
@@ -38,7 +50,7 @@ export function NewChatMemberList({
           <Button
             key={employee.id}
             type="button"
-            variant="ghost"
+            variant={CHAT_BUTTON_VARIANT.GHOST}
             onClick={() => {
               onEmployeeClick(employee)
             }}
@@ -73,4 +85,4 @@ export function NewChatMemberList({
       })}
     </>
   )
-}
+})

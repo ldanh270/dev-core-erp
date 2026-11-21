@@ -1,34 +1,38 @@
+import { CHAT_SOCKET_EVENT } from "@/configs/entities/chat.config.ts"
 import type { ChatStreamEvent } from "@/types/chat.types.ts"
 
 /** Event signatures emitted by the chat server to authenticated sockets. */
 export interface ChatSocketServerToClientEvents {
-  "chat:message": (event: ChatStreamEvent, acknowledge: () => void) => void
-  "presence:changed": (event: { employeeId: string; isOnline: boolean }) => void
-  "presence:snapshot": (event: { conversationId: string; onlineEmployeeIds: string[] }) => void
-  "typing:changed": (event: {
+  [CHAT_SOCKET_EVENT.MESSAGE]: (event: ChatStreamEvent, acknowledge: () => void) => void
+  [CHAT_SOCKET_EVENT.PRESENCE_CHANGED]: (event: { employeeId: string; isOnline: boolean }) => void
+  [CHAT_SOCKET_EVENT.PRESENCE_SNAPSHOT]: (event: {
+    conversationId: string
+    onlineEmployeeIds: string[]
+  }) => void
+  [CHAT_SOCKET_EVENT.TYPING_CHANGED]: (event: {
     conversationId: string
     employeeId: string
     isTyping: boolean
   }) => void
-  "conversation:read": (event: {
+  [CHAT_SOCKET_EVENT.CONVERSATION_READ]: (event: {
     conversationId: string
     employeeId: string
     lastReadAt: string
   }) => void
-  "message:status": (event: {
+  [CHAT_SOCKET_EVENT.MESSAGE_STATUS]: (event: {
     messageId: string
     status: "delivered"
     recipientEmployeeId: string
   }) => void
-  "chat:error": (event: { message: string }) => void
+  [CHAT_SOCKET_EVENT.ERROR]: (event: { message: string }) => void
 }
 
 /** Event signatures accepted from authenticated chat clients. */
 export interface ChatSocketClientToServerEvents {
-  "conversation:join": (conversationId: string) => void
-  "conversation:leave": (conversationId: string) => void
-  "typing:changed": (event: { conversationId: string; isTyping: boolean }) => void
-  "conversation:read": (event: { conversationId: string }) => void
+  [CHAT_SOCKET_EVENT.CONVERSATION_JOIN]: (conversationId: string) => void
+  [CHAT_SOCKET_EVENT.CONVERSATION_LEAVE]: (conversationId: string) => void
+  [CHAT_SOCKET_EVENT.TYPING_CHANGED]: (event: { conversationId: string; isTyping: boolean }) => void
+  [CHAT_SOCKET_EVENT.CONVERSATION_READ]: (event: { conversationId: string }) => void
 }
 
 /** Authenticated identity attached to a chat socket after handshake validation. */
