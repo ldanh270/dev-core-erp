@@ -3,6 +3,7 @@
  * Strictly adheres to Enum Naming Law: UPPER_SNAKE keys, lower_snake_case values matching Prisma.
  */
 
+/** Supported conversation categories persisted by the chat subsystem. */
 export const CONVERSATION_TYPE = {
   DIRECT: "direct",
   GROUP: "group",
@@ -11,6 +12,7 @@ export const CONVERSATION_TYPE = {
 /** Runtime values accepted for a conversation type; kept in sync with Prisma's ConversationType. */
 export const CONVERSATION_TYPES = [CONVERSATION_TYPE.DIRECT, CONVERSATION_TYPE.GROUP] as const
 
+/** Union of conversation categories accepted by chat APIs and services. */
 export type IConversationType = (typeof CONVERSATION_TYPES)[number]
 
 /** Message payload kinds. Attachments use file metadata while text remains in `content`. */
@@ -20,12 +22,14 @@ export const CHAT_MESSAGE_TYPE = {
   FILE: "file",
 } as const
 
+/** Runtime values accepted for a message payload type. */
 export const CHAT_MESSAGE_TYPES = [
   CHAT_MESSAGE_TYPE.TEXT,
   CHAT_MESSAGE_TYPE.IMAGE,
   CHAT_MESSAGE_TYPE.FILE,
 ] as const
 
+/** Union of message payload types accepted by chat APIs and services. */
 export type IChatMessageType = (typeof CHAT_MESSAGE_TYPES)[number]
 
 /**
@@ -38,14 +42,17 @@ export const MENTION_TYPE = {
   TASK: "task",
 } as const
 
+/** Runtime values accepted for a structured message mention. */
 export const MENTION_TYPES = [
   MENTION_TYPE.EMPLOYEE,
   MENTION_TYPE.PROJECT,
   MENTION_TYPE.TASK,
 ] as const
 
+/** Union of entity categories that can be referenced in a message. */
 export type IMentionType = (typeof MENTION_TYPES)[number]
 
+/** Trigger characters used for employee, project, and task autocomplete. */
 export const MENTION_PREFIX = {
   EMPLOYEE: "@",
   PROJECT: "#",

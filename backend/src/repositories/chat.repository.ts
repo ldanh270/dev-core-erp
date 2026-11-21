@@ -21,6 +21,11 @@ import { Prisma, type PrismaClient } from "@prisma/client"
  * Implements IChatRepository according to Clean Architecture and SOLID standards.
  */
 export class PrismaChatRepository extends BaseRepository implements IChatRepository {
+  /**
+   * Create the repository with its Prisma database client.
+   *
+   * @param prisma - Database client used by repository queries and transactions.
+   */
   constructor(prisma: PrismaClient) {
     super(prisma)
   }

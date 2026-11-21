@@ -3,27 +3,33 @@
  * Strictly adheres to Enum Naming Law: UPPER_SNAKE keys, lower_snake_case values matching backend & Prisma.
  */
 
+/** Supported conversation categories; values mirror the backend and Prisma schema. */
 export const CONVERSATION_TYPE = {
   DIRECT: "direct",
   GROUP: "group",
 } as const
 
+/** Runtime values accepted for a conversation type. */
 export const CONVERSATION_TYPES = [CONVERSATION_TYPE.DIRECT, CONVERSATION_TYPE.GROUP] as const
 
+/** Union of supported conversation categories. */
 export type IConversationType = (typeof CONVERSATION_TYPES)[number]
 
+/** Message payload kinds supported by the chat UI. */
 export const CHAT_MESSAGE_TYPE = {
   TEXT: "text",
   IMAGE: "image",
   FILE: "file",
 } as const
 
+/** Runtime values accepted for a message payload type. */
 export const CHAT_MESSAGE_TYPES = [
   CHAT_MESSAGE_TYPE.TEXT,
   CHAT_MESSAGE_TYPE.IMAGE,
   CHAT_MESSAGE_TYPE.FILE,
 ] as const
 
+/** Union of supported message payload types. */
 export type IChatMessageType = (typeof CHAT_MESSAGE_TYPES)[number]
 
 /**
@@ -38,14 +44,17 @@ export const MENTION_TYPE = {
   TASK: "task",
 } as const
 
+/** Runtime values accepted for structured message mention categories. */
 export const MENTION_TYPES = [
   MENTION_TYPE.EMPLOYEE,
   MENTION_TYPE.PROJECT,
   MENTION_TYPE.TASK,
 ] as const
 
+/** Union of supported mention entity categories. */
 export type IMentionType = (typeof MENTION_TYPES)[number]
 
+/** Trigger characters for employee, project, and task autocomplete. */
 export const MENTION_PREFIX = {
   EMPLOYEE: "@",
   PROJECT: "#",

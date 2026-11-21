@@ -1,5 +1,6 @@
 import type { ChatMessageDto, ConversationSummaryDto, SendMessageDto } from "@/types/chat.types"
 
+/** Data and actions required to render the selected conversation window. */
 export interface ChatWindowProps {
   conversation?: ConversationSummaryDto
   messages: ChatMessageDto[]

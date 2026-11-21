@@ -58,6 +58,7 @@ export interface ChatMessageDto {
   updatedAt: Date
 }
 
+/** Chat message lifecycle events published to connected participants. */
 export type ChatStreamEventType = "message.created" | "message.updated" | "message.recalled"
 
 /** Event envelope sent to chat participants over Socket.IO. */

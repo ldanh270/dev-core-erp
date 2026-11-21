@@ -10,6 +10,7 @@ interface ConversationMessageSearchResult extends ChatMessageDto {
   preview: string
 }
 
+/** Debounces message search and returns matching messages with display-ready previews. */
 export function useConversationMessageSearch(conversationId: string) {
   const [messageQuery, setMessageQuery] = useState("")
   const [debouncedMessageQuery, setDebouncedMessageQuery] = useState("")
@@ -49,6 +50,7 @@ export function useConversationMessageSearch(conversationId: string) {
   }
 }
 
+/** Build a readable search-result preview from text or attachment metadata. */
 function getMessagePreview(message: ChatMessageDto): string {
   if (message.content) {
     return message.content.replace(/[@#!]\[(.+?)\]\((?:emp|proj|task):[^)]+\)/g, "$1")

@@ -25,6 +25,13 @@ import { AppError } from "@/utils/error.util.ts"
  * Authorization is intentionally checked here before repository reads or mutations.
  */
 export class ChatService implements IChatService {
+  /**
+   * Create the service with repositories and the event bus used for chat operations.
+   *
+   * @param chatRepo - Repository for conversation and message persistence.
+   * @param employeeRepo - Repository for validating active employee records.
+   * @param bus - Event bus for publishing chat message events.
+   */
   constructor(
     private readonly chatRepo: IChatRepository,
     private readonly employeeRepo: IEmployeeRepository,

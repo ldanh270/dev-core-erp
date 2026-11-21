@@ -1,5 +1,6 @@
 import type { ChatStreamEvent } from "@/types/chat.types.ts"
 
+/** Event signatures emitted by the chat server to authenticated sockets. */
 export interface ChatSocketServerToClientEvents {
   "chat:message": (event: ChatStreamEvent, acknowledge: () => void) => void
   "presence:changed": (event: { employeeId: string; isOnline: boolean }) => void
@@ -22,6 +23,7 @@ export interface ChatSocketServerToClientEvents {
   "chat:error": (event: { message: string }) => void
 }
 
+/** Event signatures accepted from authenticated chat clients. */
 export interface ChatSocketClientToServerEvents {
   "conversation:join": (conversationId: string) => void
   "conversation:leave": (conversationId: string) => void
@@ -29,6 +31,7 @@ export interface ChatSocketClientToServerEvents {
   "conversation:read": (event: { conversationId: string }) => void
 }
 
+/** Authenticated identity attached to a chat socket after handshake validation. */
 export interface ChatSocketData {
   employeeId: string
 }

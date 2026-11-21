@@ -1,5 +1,6 @@
 import type { ChatStreamEvent } from "@/types/chat.types"
 
+/** Event signatures received by the frontend from the chat server. */
 export interface ChatSocketServerToClientEvents {
   "chat:message": (event: ChatStreamEvent, acknowledge?: () => void) => void
   "presence:changed": (event: { employeeId: string; isOnline: boolean }) => void
@@ -22,6 +23,7 @@ export interface ChatSocketServerToClientEvents {
   "chat:error": (event: { message: string }) => void
 }
 
+/** Event signatures emitted by the frontend to the chat server. */
 export interface ChatSocketClientToServerEvents {
   "conversation:join": (conversationId: string) => void
   "conversation:leave": (conversationId: string) => void

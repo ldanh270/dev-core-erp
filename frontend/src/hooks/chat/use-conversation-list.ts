@@ -85,6 +85,7 @@ export function useConversationList(conversations: ConversationSummaryDto[]) {
   }
 }
 
+/** Build the conversation-row preview from its latest message or empty state. */
 function getLastMessagePreview(conversation: ConversationSummaryDto): string {
   const lastMessage = conversation.lastMessage
   if (!lastMessage) return "Bắt đầu trò chuyện"

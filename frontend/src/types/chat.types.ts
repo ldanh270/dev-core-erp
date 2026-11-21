@@ -55,6 +55,7 @@ export interface ChatMessageDto {
   updatedAt: string
 }
 
+/** Chat message lifecycle events received from the Socket.IO server. */
 export type ChatStreamEventType = "message.created" | "message.updated" | "message.recalled"
 
 /** Event envelope used by the authenticated chat Socket.IO channel. */
@@ -90,6 +91,7 @@ export interface UpdateParticipantSettingsDto {
   isRestricted?: boolean
 }
 
+/** Request payload for creating or opening a direct conversation. */
 export interface CreateDirectConversationDto {
   /** Employee to chat with; the signed-in employee is inferred by the backend. */
   partnerId: string
@@ -102,6 +104,7 @@ export interface CreateGroupConversationDto {
   avatarUrl?: string
 }
 
+/** Request payload for adding employees to an existing group conversation. */
 export interface AddChatParticipantsDto {
   /** Employee IDs to add to an existing group. */
   participantIds: string[]
