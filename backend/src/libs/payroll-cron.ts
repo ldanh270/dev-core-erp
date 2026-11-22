@@ -5,6 +5,7 @@ import { PrismaEmployeeRepository } from "@/repositories/employee.repository.ts"
 import { PrismaPayrollRepository } from "@/repositories/payroll.repository.ts"
 import { PrismaPayslipRepository } from "@/repositories/payslip.repository.ts"
 import { PrismaSpentTimeRepository } from "@/repositories/spent-time.repository.ts"
+import { PayrollNotificationService } from "@/services/payroll-notification.service.ts"
 import { PayrollService } from "@/services/payroll.service.ts"
 
 import cron from "node-cron"
@@ -33,6 +34,7 @@ const settingsRepo = {
   },
 }
 
+/** Uses the same post-commit notification publisher as manual payroll generation. */
 const payrollService = new PayrollService(
   payrollRepo,
   payslipRepo,
@@ -42,6 +44,7 @@ const payrollService = new PayrollService(
   spentTimeRepo,
   settingsRepo,
   prisma,
+  new PayrollNotificationService(payrollRepo),
 )
 
 export const initCronJobs = () => {
@@ -52,8 +55,9 @@ export const initCronJobs = () => {
       const today = new Date()
       const month = today.getMonth() + 1
       const year = today.getFullYear()
-      const { generateDefaultPayrollName, PAYROLL_STATUS } =
-        await import("@/configs/entities/payroll.config.ts")
+      const { generateDefaultPayrollName, PAYROLL_STATUS } = await import(
+        "@/configs/entities/payroll.config.ts"
+      )
       const name = generateDefaultPayrollName(month, year)
 
       if (

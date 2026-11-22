@@ -8,7 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { PAYROLL_STATUS, PAYROLL_STATUS_LABELS } from "@/config/entities/payroll.config"
+import {
+  PAYROLL_DETAIL_SEARCH_PARAM,
+  PAYROLL_STATUS,
+  PAYROLL_STATUS_LABELS,
+} from "@/config/entities/payroll.config"
 import { getTableColWidthPx } from "@/config/table-columns.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
 import { useApprovePayroll, usePayrolls, useRejectPayroll } from "@/hooks/payroll/use-payrolls"
@@ -19,6 +23,7 @@ import { exportPayrollsToCSV } from "@/utils/export.util"
 import { useCallback, useMemo, useState } from "react"
 
 import { CheckCircle2, Download, Inbox, MoreHorizontal, XCircle } from "lucide-react"
+import { useSearchParams } from "react-router-dom"
 
 const getPayrollStatusVariant = (status: string): "info" | "success" | "danger" | "neutral" => {
   switch (status) {
@@ -43,11 +48,23 @@ export default function PayrollManagement() {
   const { data: payrolls, isLoading } = usePayrolls(filters)
   const { mutate: approvePayroll } = useApprovePayroll()
   const { mutate: rejectPayroll } = useRejectPayroll()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const linkedPayrollId = searchParams.get(PAYROLL_DETAIL_SEARCH_PARAM)
 
   const [selectedPayrollId, setSelectedPayrollId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
+
+  /** Closes either a locally selected payroll or a notification deep link. */
+  const handleCloseDetail = () => {
+    setSelectedPayrollId(null)
+    if (linkedPayrollId) {
+      const nextParams = new URLSearchParams(searchParams)
+      nextParams.delete(PAYROLL_DETAIL_SEARCH_PARAM)
+      setSearchParams(nextParams, { replace: true })
+    }
+  }
 
   const handleExport = useCallback(() => {
     if (payrolls && payrolls.length > 0) {
@@ -284,10 +301,8 @@ export default function PayrollManagement() {
       />
 
       <PayrollDetailSheet
-        payrollId={selectedPayrollId}
-        onClose={() => {
-          setSelectedPayrollId(null)
-        }}
+        payrollId={linkedPayrollId ?? selectedPayrollId}
+        onClose={handleCloseDetail}
       />
     </>
   )

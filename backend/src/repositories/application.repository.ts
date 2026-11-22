@@ -76,11 +76,7 @@ export class PrismaApplicationRepository extends BaseRepository implements IAppl
   async submit(data: ISubmitApplicationDTO): Promise<IApplicationEntity> {
     const { employeeId, type, startDate, endDate, reason, note, assignedToId, detail } = data
 
-    // shift_swap starts at partner_pending — the swap partner must confirm first
-    const isShiftSwap = type === ApplicationType.shift_swap
-    const initialStatus = isShiftSwap
-      ? ApplicationStatus.partner_pending
-      : ApplicationStatus.pending
+    const initialStatus = this.getInitialStatus(data)
 
     return this.prisma.application.create({
       data: {
@@ -108,10 +104,7 @@ export class PrismaApplicationRepository extends BaseRepository implements IAppl
     const creates = data.map((item) => {
       const { employeeId, type, startDate, endDate, reason, note, assignedToId } = item
 
-      const isShiftSwap = type === ApplicationType.shift_swap
-      const initialStatus = isShiftSwap
-        ? ApplicationStatus.partner_pending
-        : ApplicationStatus.pending
+      const initialStatus = this.getInitialStatus(item)
 
       return this.prisma.application.create({
         data: {
@@ -130,6 +123,13 @@ export class PrismaApplicationRepository extends BaseRepository implements IAppl
     })
 
     return this.prisma.$transaction(creates)
+  }
+
+  /** Waits for partner confirmation only when a requested shift swap has a partner. */
+  private getInitialStatus(data: ISubmitApplicationDTO): ApplicationStatus {
+    const requiresPartner =
+      data.type === ApplicationType.shift_swap && Boolean(data.detail.swapWithEmployeeId)
+    return requiresPartner ? ApplicationStatus.partner_pending : ApplicationStatus.pending
   }
 
   /**
@@ -450,9 +450,9 @@ export class PrismaApplicationRepository extends BaseRepository implements IAppl
             }
           }
 
-          // 3. Update application status
+          // The pending guard rolls back side effects when another processor decides first.
           return await tx.application.update({
-            where: { id },
+            where: { id, status: ApplicationStatus.pending },
             data: {
               status: ApplicationStatus.approved,
               approvedById: approvedBy,
@@ -481,7 +481,7 @@ export class PrismaApplicationRepository extends BaseRepository implements IAppl
   async reject(
     id: string,
     rejectedBy: string,
-    rejectReason: string,
+    rejectReason?: string,
   ): Promise<IApplicationEntity | null> {
     try {
       return await this.prisma.application.update({

@@ -5,14 +5,17 @@ import {
   PAID_LEAVE_TYPES,
 } from "@/configs/entities/attendance.config.ts"
 import { EMPLOYEE_STATUS } from "@/configs/entities/employee.config.ts"
-import { NOTIFICATION_PRIORITY, NOTIFICATION_TYPE } from "@/configs/entities/notification.config.ts"
 import { PERMISSION_CODE } from "@/configs/entities/permission.config.ts"
 import { PROJECT_STATUS } from "@/configs/entities/project.config.ts"
 import { APPLICATION_ERROR_MESSAGES } from "@/configs/messages/application.message.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { prisma } from "@/libs/database.ts"
-import { eventBus } from "@/libs/event-bus.ts"
+import {
+  notifyApplicationApprover,
+  notifyApplicationDecision,
+  notifyApplicationSubmitted,
+} from "@/services/application-notification.service.ts"
 import { authorizationService } from "@/services/authorization.service.ts"
 import {
   IApplicationListResultDTO,
@@ -125,24 +128,7 @@ export class ApplicationService implements IApplicationService {
   async submitApplication(data: ISubmitApplicationDTO): Promise<unknown> {
     await this._validateApplicationSubmission(data)
     const result = await this.applicationRepo.submit(data)
-    eventBus.emitTyped("notification:create", {
-      employeeId: data.employeeId,
-      title: "Tạo đơn thành công",
-      message: `Đơn (${data.type}) của bạn đã được gửi và đang chờ phê duyệt.`,
-      type: NOTIFICATION_TYPE.APPLICATION,
-      priority: NOTIFICATION_PRIORITY.MEDIUM,
-      link: "/application/my-applications",
-    })
-    if (data.assignedToId) {
-      eventBus.emitTyped("notification:create", {
-        employeeId: data.assignedToId,
-        title: "Có đơn mới cần duyệt",
-        message: `Có đơn mới (${data.type}) cần bạn phê duyệt.`,
-        type: NOTIFICATION_TYPE.APPLICATION,
-        priority: NOTIFICATION_PRIORITY.HIGH,
-        link: "/application/review",
-      })
-    }
+    notifyApplicationSubmitted(result)
     return result
   }
 
@@ -157,7 +143,9 @@ export class ApplicationService implements IApplicationService {
     for (const item of data) {
       await this._validateApplicationSubmission(item)
     }
-    return this.applicationRepo.submitBulk(data)
+    const applications = await this.applicationRepo.submitBulk(data)
+    applications.forEach(notifyApplicationSubmitted)
+    return applications
   }
 
   /**
@@ -230,13 +218,20 @@ export class ApplicationService implements IApplicationService {
       )
     }
 
-    if (requester && app.employeeId !== requester.empId) {
+    const isPendingSwapPartner =
+      app.status === APPLICATION_STATUS.PARTNER_PENDING &&
+      app.shiftSwapDetail?.swapWithEmployeeId === requester?.empId
+
+    if (requester && app.employeeId !== requester.empId && !isPendingSwapPartner) {
       const authContext = await authorizationService.getAuthorizationContext(requester.empId)
       const isGlobalApprover =
         authContext.isDynamicAdmin || authContext.permissions.has(PERMISSION_CODE.APPLICATION_READ)
 
-      if (!isGlobalApprover) {
-        if (!authContext.permissions.has(PERMISSION_CODE.APPLICATION_APPROVE)) {
+      const canApprove = authContext.permissions.has(PERMISSION_CODE.APPLICATION_APPROVE)
+      const isAssignedApprover = canApprove && app.assignedToId === requester.empId
+
+      if (!isGlobalApprover && !isAssignedApprover) {
+        if (!canApprove) {
           throw new AppError(
             APPLICATION_ERROR_MESSAGES.VIEW_FORBIDDEN,
             HttpStatusCode.FORBIDDEN,
@@ -383,14 +378,7 @@ export class ApplicationService implements IApplicationService {
         ErrorLayer.SERVICE,
       )
     }
-    eventBus.emitTyped("notification:create", {
-      employeeId: app.employeeId,
-      title: "Đơn đã được phê duyệt",
-      message: `Đơn (${app.type}) của bạn đã được phê duyệt thành công.`,
-      type: NOTIFICATION_TYPE.SUCCESS,
-      priority: NOTIFICATION_PRIORITY.HIGH,
-      link: "/application/my-applications",
-    })
+    notifyApplicationDecision(app, APPLICATION_STATUS.APPROVED)
     return updated
   }
 
@@ -433,14 +421,7 @@ export class ApplicationService implements IApplicationService {
         ErrorLayer.SERVICE,
       )
     }
-    eventBus.emitTyped("notification:create", {
-      employeeId: app.employeeId,
-      title: "Đơn bị từ chối",
-      message: `Đơn (${app.type}) của bạn đã bị từ chối. Lý do: ${rejectReason}`,
-      type: NOTIFICATION_TYPE.WARNING,
-      priority: NOTIFICATION_PRIORITY.HIGH,
-      link: "/application/my-applications",
-    })
+    notifyApplicationDecision(app, APPLICATION_STATUS.REJECTED)
     return updated
   }
 
@@ -656,6 +637,7 @@ export class ApplicationService implements IApplicationService {
     )
   }
 
+  /** Moves an accepted swap into the assigned approver’s queue. */
   async confirmSwapPartner(id: string, partnerId: string): Promise<unknown> {
     const app = await this.applicationRepo.findById(id)
 
@@ -696,9 +678,11 @@ export class ApplicationService implements IApplicationService {
       )
     }
 
+    notifyApplicationApprover(updated)
     return updated
   }
 
+  /** Closes a declined swap and alerts the requesting employee. */
   async rejectSwapPartner(id: string, partnerId: string, rejectReason: string): Promise<unknown> {
     const app = await this.applicationRepo.findById(id)
 
@@ -739,6 +723,7 @@ export class ApplicationService implements IApplicationService {
       )
     }
 
+    notifyApplicationDecision(app, APPLICATION_STATUS.REJECTED)
     return updated
   }
 }

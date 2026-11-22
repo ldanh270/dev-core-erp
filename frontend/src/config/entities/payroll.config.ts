@@ -7,6 +7,9 @@ export const PAYROLL_STATUS = {
 } as const
 export type PayrollStatus = (typeof PAYROLL_STATUS)[keyof typeof PAYROLL_STATUS]
 
+/** Search parameter used by payroll notification links to open the matching detail. */
+export const PAYROLL_DETAIL_SEARCH_PARAM = "payrollId"
+
 export const PAYROLL_STATUS_LABELS: Record<PayrollStatus, string> = {
   draft: "Bản nháp",
   pending_approval: "Chờ duyệt",

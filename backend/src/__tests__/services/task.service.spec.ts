@@ -1,4 +1,7 @@
 /// <reference types="jest" />
+import { TASK_NOTIFICATION_TITLE } from "@/configs/messages/task-notification.message.ts"
+import { eventBus } from "@/libs/event-bus.ts"
+
 import { TaskService } from "../../services/task.service"
 
 // ==========================================
@@ -18,6 +21,7 @@ jest.mock(
       IN_REVIEW: "in_review",
       DONE: "done",
       CANCELLED: "cancelled",
+      REOPENED: "reopened",
     },
   }),
   { virtual: true },
@@ -142,6 +146,133 @@ describe("TaskService Suite", () => {
       { id: "status-in-review-id", name: "InReviewStatus", isCompleted: false },
       { id: "status-done-id", name: "DoneStatus", isCompleted: true },
     ])
+  })
+
+  /** Covers saved task changes that feed the employee-specific realtime stream. */
+  describe("task notifications", () => {
+    const task = {
+      id: "task-1",
+      projectId: "project-1",
+      title: "Prepare release notes",
+      createdById: "leader-1",
+      assigneeId: "assignee-1",
+      status: "in_progress",
+    } as const
+    const project = {
+      id: task.projectId,
+      teamLeaderId: task.createdById,
+      createdById: task.createdById,
+      taskCreationPolicy: "ANYONE",
+    }
+    let emitTyped: jest.SpiedFunction<typeof eventBus.emitTyped>
+
+    beforeEach(() => {
+      emitTyped = jest.spyOn(eventBus, "emitTyped")
+      mockProjectRepository.findById.mockResolvedValue(project)
+      mockProjectRepository.isMember.mockResolvedValue(true)
+      mockEmployeeRepository.findById.mockResolvedValue({ position: "developer" })
+      mockStatusRepository.findDefaultStatus.mockResolvedValue(null)
+      mockTaskRepository.findById.mockResolvedValue(task)
+      authorizationService.getAuthorizationContext.mockResolvedValue({
+        permissions: new Set(),
+      })
+    })
+
+    afterEach(() => emitTyped.mockRestore())
+
+    it("notifies the employee assigned when a task is created", async () => {
+      mockTaskRepository.createTask.mockResolvedValue(task)
+      await taskService.createTask(
+        { projectId: task.projectId, title: task.title, assigneeId: task.assigneeId },
+        project.teamLeaderId,
+      )
+
+      expect(emitTyped).toHaveBeenCalledWith("notification:create", {
+        employeeId: task.assigneeId,
+        title: TASK_NOTIFICATION_TITLE.ASSIGNED,
+        message: task.title,
+        type: "task",
+        priority: "high",
+        link: "/project/task/task-1",
+      })
+    })
+
+    it("notifies only the new assignee after reassignment and ignores replay", async () => {
+      const newAssignee = "assignee-2"
+      const updated = { ...task, assigneeId: newAssignee }
+      mockTaskRepository.updateTask.mockResolvedValue(updated)
+      await taskService.updateTask(task.id, { assigneeId: newAssignee }, project.teamLeaderId)
+
+      mockTaskRepository.findById.mockResolvedValue(updated)
+      await taskService.updateTask(task.id, { assigneeId: newAssignee }, project.teamLeaderId)
+
+      expect(emitTyped).toHaveBeenCalledTimes(1)
+      expect(emitTyped).toHaveBeenCalledWith(
+        "notification:create",
+        expect.objectContaining({
+          employeeId: newAssignee,
+          title: TASK_NOTIFICATION_TITLE.ASSIGNED,
+        }),
+      )
+    })
+
+    it("notifies the team leader when the assignee submits work for review", async () => {
+      mockTaskRepository.updateTask.mockResolvedValue({ ...task, status: "in_review" })
+      await taskService.updateTask(task.id, { status: "in_review" }, task.assigneeId)
+
+      expect(emitTyped).toHaveBeenCalledWith(
+        "notification:create",
+        expect.objectContaining({
+          employeeId: project.teamLeaderId,
+          title: TASK_NOTIFICATION_TITLE.REVIEW_REQUESTED,
+        }),
+      )
+    })
+
+    it("notifies the assignee when a task in review is returned for changes", async () => {
+      mockTaskRepository.findById.mockResolvedValue({ ...task, status: "in_review" })
+      mockTaskRepository.updateTask.mockResolvedValue({ ...task, status: "reopened" })
+      await taskService.updateTask(
+        task.id,
+        { status: "reopened", rejectionReason: "Update the release checklist" },
+        project.teamLeaderId,
+      )
+
+      expect(emitTyped).toHaveBeenCalledWith(
+        "notification:create",
+        expect.objectContaining({
+          employeeId: task.assigneeId,
+          title: TASK_NOTIFICATION_TITLE.CHANGES_REQUESTED,
+        }),
+      )
+    })
+
+    it("routes review to an authorized project creator when there is no team leader", async () => {
+      mockProjectRepository.findById.mockResolvedValue({ ...project, teamLeaderId: null })
+      authorizationService.getAuthorizationContext.mockResolvedValueOnce({
+        permissions: new Set(),
+      })
+      authorizationService.getAuthorizationContext.mockResolvedValueOnce({
+        permissions: new Set(["project.update"]),
+      })
+      mockTaskRepository.updateTask.mockResolvedValue({ ...task, status: "in_review" })
+      await taskService.updateTask(task.id, { status: "in_review" }, task.assigneeId)
+
+      expect(emitTyped).toHaveBeenCalledWith(
+        "notification:create",
+        expect.objectContaining({ employeeId: project.createdById }),
+      )
+    })
+
+    it("does not notify the employee when the reassignment fails", async () => {
+      const failure = new Error("Task update failed")
+      mockTaskRepository.updateTask.mockRejectedValue(failure)
+      await expect(
+        taskService.updateTask(task.id, { assigneeId: "assignee-2" }, project.teamLeaderId),
+      ).rejects.toThrow(failure)
+
+      expect(emitTyped).not.toHaveBeenCalled()
+    })
   })
 
   // ==========================================

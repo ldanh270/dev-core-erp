@@ -1,3 +1,4 @@
+import { PAYROLL_APPROVAL_PERMISSIONS } from "@/configs/entities/payroll.config.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { PayrollController } from "@/controllers/payroll.controller.ts"
@@ -10,6 +11,7 @@ import { PrismaEmployeeRepository } from "@/repositories/employee.repository.ts"
 import { PrismaPayrollRepository } from "@/repositories/payroll.repository.ts"
 import { PrismaPayslipRepository } from "@/repositories/payslip.repository.ts"
 import { PrismaSpentTimeRepository } from "@/repositories/spent-time.repository.ts"
+import { PayrollNotificationService } from "@/services/payroll-notification.service.ts"
 import { PayrollService } from "@/services/payroll.service.ts"
 import { AppError } from "@/utils/error.util.ts"
 
@@ -40,6 +42,7 @@ const settingsRepo = {
   },
 }
 
+/** Wires payroll generation to the shared real-time notification transport. */
 const service = new PayrollService(
   payrollRepo,
   payslipRepo,
@@ -49,6 +52,7 @@ const service = new PayrollService(
   spentTimeRepo,
   settingsRepo,
   prisma,
+  new PayrollNotificationService(payrollRepo),
 )
 const controller = new PayrollController(service)
 
@@ -59,7 +63,7 @@ payrollRoutes.get("/my/payslips", controller.getMyPayslips)
 payrollRoutes.post("/my/payslips/:payslipId/feedback", controller.submitMyPayslipFeedback)
 
 // HR / GM / Admin routes — require payroll.read as baseline
-payrollRoutes.use(requirePermission("payroll.read"))
+payrollRoutes.use(requirePermission(PAYROLL_APPROVAL_PERMISSIONS.READ))
 
 // Payroll Settings
 payrollRoutes.get("/settings", requirePermission("payroll.update"), async (req, res, next) => {
@@ -157,7 +161,7 @@ payrollRoutes.get("/:id", controller.getPayroll)
 payrollRoutes.get("/:id/payslips/:empId", controller.getPayslip)
 payrollRoutes.get(
   "/employee/:empId/payslips",
-  requirePermission("payroll.read"),
+  requirePermission(PAYROLL_APPROVAL_PERMISSIONS.READ),
   controller.getEmployeePayslips,
 )
 
@@ -165,7 +169,15 @@ payrollRoutes.get(
 payrollRoutes.post("/generate", requirePermission("payroll.create"), controller.generatePayroll)
 
 // Modifying routes for GM / Admin
-payrollRoutes.post("/:id/approve", requirePermission("payroll.approve"), controller.approvePayroll)
-payrollRoutes.post("/:id/reject", requirePermission("payroll.approve"), controller.rejectPayroll)
+payrollRoutes.post(
+  "/:id/approve",
+  requirePermission(PAYROLL_APPROVAL_PERMISSIONS.APPROVE),
+  controller.approvePayroll,
+)
+payrollRoutes.post(
+  "/:id/reject",
+  requirePermission(PAYROLL_APPROVAL_PERMISSIONS.APPROVE),
+  controller.rejectPayroll,
+)
 
 export default payrollRoutes

@@ -15,6 +15,7 @@ import { PAYROLL_MESSAGES } from "@/configs/messages/payroll.message"
 import { ATTENDANCE_TIME_RULES } from "@/configs/rules/attendance.config.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
+import type { PayrollNotificationService } from "@/services/payroll-notification.service.ts"
 import { IAttendanceRecordDTO, IAttendanceRepository } from "@/types/attendance.types.ts"
 import { IEmployeeRepository } from "@/types/employee.types.ts"
 import {
@@ -75,6 +76,7 @@ interface IPayrollSettingsRepository {
 }
 
 export class PayrollService implements IPayrollService {
+  /** Injects payroll data access and the optional post-commit notification publisher. */
   constructor(
     private payrollRepo: IPayrollRepository,
     private payslipRepo: IPayslipRepository,
@@ -84,11 +86,12 @@ export class PayrollService implements IPayrollService {
     private spentTimeRepo: ISpentTimeRepository,
     private settingsRepo: IPayrollSettingsRepository,
     private prisma: PrismaClient,
+    private readonly notifications?: Pick<PayrollNotificationService, "notifyGeneratedPayroll">,
   ) {}
 
   /**
    * Initialize a new payroll for a specific month and year.
-   * Uses transaction to ensure atomicity - all or nothing.
+   * Uses a transaction for atomic writes and notifies recipients after commit.
    *
    * @param month - The month parameter
    * @param year - The year parameter
@@ -220,7 +223,7 @@ export class PayrollService implements IPayrollService {
     }
 
     // Phase 2: Atomic writes inside transaction (no read loops inside tx)
-    return await this.prisma.$transaction(async (tx) => {
+    const payroll = await this.prisma.$transaction(async (tx) => {
       const existingInTx = await tx.payroll.findUnique({
         where: {
           periodYear_periodMonth_name: {
@@ -280,6 +283,12 @@ export class PayrollService implements IPayrollService {
 
       return { ...payroll, totalAmount }
     })
+
+    this.notifications?.notifyGeneratedPayroll(
+      payroll,
+      payslipDrafts.map(({ employeeId }) => employeeId),
+    )
+    return payroll
   }
 
   private async loadActiveSalaryConfigsMap(

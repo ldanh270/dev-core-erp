@@ -1,6 +1,13 @@
+import { NOTIFICATION_PRIORITY, NOTIFICATION_TYPE } from "@/configs/entities/notification.config.ts"
+import { PERMISSION_CODE } from "@/configs/entities/permission.config.ts"
 import { TASK_CREATION_POLICY, TASK_STATUS } from "@/configs/entities/project.config.ts"
+import {
+  TASK_NOTIFICATION_TITLE,
+  buildTaskNotificationLink,
+} from "@/configs/messages/task-notification.message.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
+import { eventBus } from "@/libs/event-bus.ts"
 import { authorizationService } from "@/services/authorization.service.ts"
 import {
   CreateTaskDto,
@@ -24,20 +31,41 @@ const LAYER_NAME = "TaskService"
  * Handles task access control, validation, and status transitions within a project.
  */
 export class TaskService implements ITaskService {
+  /** Injects the task persistence, authorization, and notification dependencies. */
   constructor(
     private repository: ITaskRepository,
     private projectRepository: IProjectRepository,
     private employeeRepository: IEmployeeRepository,
     private statusRepository?: IProjectTaskStatusRepository,
     private positionService?: IPositionService,
+    private readonly bus = eventBus,
   ) {}
+
+  /**
+   * Queues a realtime notification for the employee involved in a saved task change.
+   * The notification service persists it before streaming it to the recipient.
+   */
+  private notifyTaskChange(
+    task: Task,
+    employeeId: string,
+    title: (typeof TASK_NOTIFICATION_TITLE)[keyof typeof TASK_NOTIFICATION_TITLE],
+  ): void {
+    this.bus.emitTyped("notification:create", {
+      employeeId,
+      title,
+      message: task.title,
+      type: NOTIFICATION_TYPE.TASK,
+      priority: NOTIFICATION_PRIORITY.HIGH,
+      link: buildTaskNotificationLink(task.id),
+    })
+  }
 
   /**
    * Performs operations for isAuthorizedAdminOrGM.
    */
   private async isAuthorizedAdminOrGM(userId: string): Promise<boolean> {
     const authContext = await authorizationService.getAuthorizationContext(userId)
-    return authContext.permissions.has("project.update")
+    return authContext.permissions.has(PERMISSION_CODE.PROJECT_UPDATE)
   }
 
   /**
@@ -224,12 +252,16 @@ export class TaskService implements ITaskService {
       }
     }
 
-    return this.repository.createTask({
+    const task = await this.repository.createTask({
       ...data,
       status: statusEnum,
       statusId,
       createdById: userId,
     })
+    if (task.assigneeId) {
+      this.notifyTaskChange(task, task.assigneeId, TASK_NOTIFICATION_TITLE.ASSIGNED)
+    }
+    return task
   }
 
   /**
@@ -409,11 +441,39 @@ export class TaskService implements ITaskService {
       }
     }
 
-    return this.repository.updateTask(id, {
+    const updated = await this.repository.updateTask(id, {
       ...data,
       status: statusEnum,
       statusId,
     })
+    if (!updated) return updated
+
+    if (data.assigneeId && updated.assigneeId && task.assigneeId !== updated.assigneeId) {
+      this.notifyTaskChange(updated, updated.assigneeId, TASK_NOTIFICATION_TITLE.ASSIGNED)
+    }
+    if (statusEnum && task.status !== updated.status) {
+      if (updated.status === TASK_STATUS.IN_REVIEW) {
+        const reviewerId =
+          project.teamLeaderId ??
+          ((await this.isAuthorizedAdminOrGM(project.createdById).catch(() => false))
+            ? project.createdById
+            : null)
+        if (reviewerId) {
+          this.notifyTaskChange(updated, reviewerId, TASK_NOTIFICATION_TITLE.REVIEW_REQUESTED)
+        }
+      } else if (
+        task.status === TASK_STATUS.IN_REVIEW &&
+        updated.status === TASK_STATUS.REOPENED &&
+        updated.assigneeId
+      ) {
+        this.notifyTaskChange(
+          updated,
+          updated.assigneeId,
+          TASK_NOTIFICATION_TITLE.CHANGES_REQUESTED,
+        )
+      }
+    }
+    return updated
   }
 
   /**
