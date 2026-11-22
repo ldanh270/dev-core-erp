@@ -16,6 +16,7 @@ interface EntityFormPageProps {
   onSubmit?: () => void
   submitLabel?: string
   cancelLabel?: string
+  extraActions?: ReactNode
   className?: string
 }
 
@@ -36,6 +37,7 @@ export function EntityFormPage({
   onSubmit,
   submitLabel = "Lưu",
   cancelLabel = "Huỷ bỏ",
+  extraActions,
   className,
 }: EntityFormPageProps) {
   return (
@@ -87,6 +89,7 @@ export function EntityFormPage({
             >
               {cancelLabel}
             </Button>
+            {extraActions}
             <Button
               key="save-btn"
               type={formId ? "submit" : "button"}
