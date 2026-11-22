@@ -1,20 +1,14 @@
 import { AppPagination } from "@/components/common/app-pagination"
-import { EmptyState } from "@/components/common/empty-state"
 import { PageCard } from "@/components/common/page-card"
 import { PageContainer } from "@/components/common/page-container"
 import { PageHeader } from "@/components/common/page-header"
 import { SearchInput } from "@/components/common/search-input"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
-
-import { useMemo } from "react"
-
-import { Inbox } from "lucide-react"
-
-import { computeStickyLayout, getStickyCellProps } from "./data-table-sticky"
-import type { DataTablePageProps } from "./data-table.types"
+import type { LucideIcon } from "lucide-react"
+import type { ReactNode } from "react"
+import { DataTableGrid } from "./data-table/data-table-grid"
+import type { DataTablePageProps, DataTableTabItem } from "./data-table.types"
 
 export type {
   DataTableColumn,
@@ -23,8 +17,91 @@ export type {
   DataTablePageProps,
 } from "./data-table.types"
 
+interface DataTableHeaderCardProps {
+  title?: string
+  description?: string
+  cardIcon?: LucideIcon
+  cardIconClassName?: string
+  headerActions?: ReactNode
+}
+
+function DataTableHeaderCard({
+  title,
+  description,
+  cardIcon: CardIcon,
+  cardIconClassName,
+  headerActions,
+}: DataTableHeaderCardProps) {
+  return (
+    <div className="flex items-center justify-between border-b border-border px-5 py-3.5 bg-card shrink-0">
+      <div className="flex items-center gap-2.5">
+        {CardIcon && (
+          <div className={cn("rounded-full p-2 text-primary bg-primary/10", cardIconClassName)}>
+            <CardIcon className="size-4" />
+          </div>
+        )}
+        <div>
+          <h3 className="font-bold text-sm text-foreground">{title}</h3>
+          {description && <p className="text-xs text-muted-foreground">{description}</p>}
+        </div>
+      </div>
+      {headerActions}
+    </div>
+  )
+}
+
+interface DataTableTabsProps {
+  items: DataTableTabItem[]
+  activeTab: string
+  onTabChange: (id: string) => void
+}
+
+function DataTableTabs({ items, activeTab, onTabChange }: DataTableTabsProps) {
+  return (
+    <nav className="flex items-center gap-1 border-b border-border bg-card px-0 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink-0 relative">
+      {items.map((tab) => {
+        const isActive = activeTab === tab.id
+        const TabIcon = tab.icon
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => {
+              onTabChange(tab.id)
+            }}
+            className={cn(
+              "relative flex min-h-11 items-center gap-2 px-4 py-2.5 text-sm font-medium leading-5 transition-colors whitespace-nowrap cursor-pointer",
+              isActive
+                ? "text-primary font-semibold"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {TabIcon && <TabIcon className="size-4 shrink-0" />}
+            <span>{tab.label}</span>
+            {tab.count !== undefined && (
+              <span
+                className={cn(
+                  "rounded-full h-5 min-w-5 px-2 flex items-center justify-center text-xs font-semibold border leading-none",
+                  isActive
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-muted text-muted-foreground border-border",
+                )}
+              >
+                {tab.count}
+              </span>
+            )}
+            {isActive && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+            )}
+          </button>
+        )
+      })}
+    </nav>
+  )
+}
+
 /**
- * Data Table Page component with viewport scrolling and pagination.
+ * Data Table Page component with viewport scrolling, tabs, and pagination.
  */
 export function DataTablePage<T>({
   title,
@@ -37,7 +114,7 @@ export function DataTablePage<T>({
   headerActions,
   subHeader,
   variant = "viewport",
-  cardIcon: CardIcon,
+  cardIcon,
   cardIconClassName,
   className,
   containerClassName,
@@ -59,34 +136,6 @@ export function DataTablePage<T>({
   pagination,
   extraContent,
 }: DataTablePageProps<T>) {
-  const isCompact = density === "compact"
-  // Row height tokens: 40px/60px (normal), 40px/48px (compact)
-  const thClass = isCompact
-    ? "h-10 px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider align-middle"
-    : "h-10 px-4 py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider align-middle"
-
-  const tdClass = isCompact
-    ? "h-12 px-3 py-2 text-sm align-middle"
-    : "h-[60px] px-4 py-2.5 text-sm align-middle"
-
-  // Responsive breakpoint hooks for progressive column visibility
-  const isMd = useMediaQuery("(min-width: 768px)")
-  const isLg = useMediaQuery("(min-width: 1024px)")
-  const isXl = useMediaQuery("(min-width: 1280px)")
-
-  // Filter out columns hidden by current breakpoint before computing layout
-  const visibleColumns = useMemo(() => {
-    return columns.filter((col) => {
-      if (col.hideBelow === "md" && !isMd) return false
-      if (col.hideBelow === "lg" && !isLg) return false
-      if (col.hideBelow === "xl" && !isXl) return false
-      return true
-    })
-  }, [columns, isMd, isLg, isXl])
-
-  // Compute sticky offsets and table minWidth using pure utility on visibleColumns
-  const stickyLayout = useMemo(() => computeStickyLayout(visibleColumns), [visibleColumns])
-
   const hasActiveSearch = Boolean(search?.value && search.value.trim().length > 0)
 
   const renderPrimaryAction = () => {
@@ -124,63 +173,22 @@ export function DataTablePage<T>({
     >
       {/* Header section when rendered as an embedded card */}
       {variant === "card" && (title || headerActions) && (
-        <div className="flex items-center justify-between border-b border-border px-5 py-3.5 bg-card shrink-0">
-          <div className="flex items-center gap-2.5">
-            {CardIcon && (
-              <div className={cn("rounded-full p-2 text-primary bg-primary/10", cardIconClassName)}>
-                <CardIcon className="size-4" />
-              </div>
-            )}
-            <div>
-              <h3 className="font-bold text-sm text-foreground">{title}</h3>
-              {description && <p className="text-xs text-muted-foreground">{description}</p>}
-            </div>
-          </div>
-          {headerActions}
-        </div>
+        <DataTableHeaderCard
+          title={title}
+          description={description}
+          cardIcon={cardIcon}
+          cardIconClassName={cardIconClassName}
+          headerActions={headerActions}
+        />
       )}
 
       {/* Tab navigation */}
       {tabs && (
-        <nav className="flex items-center gap-1 border-b border-border bg-card px-0 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink-0 relative">
-          {tabs.items.map((tab) => {
-            const isActive = tabs.activeTab === tab.id
-            const TabIcon = tab.icon
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => {
-                  tabs.onTabChange(tab.id)
-                }}
-                className={cn(
-                  "relative flex min-h-11 items-center gap-2 px-4 py-2.5 text-sm font-medium leading-5 transition-colors whitespace-nowrap cursor-pointer",
-                  isActive
-                    ? "text-primary font-semibold"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {TabIcon && <TabIcon className="size-4 shrink-0" />}
-                <span>{tab.label}</span>
-                {tab.count !== undefined && (
-                  <span
-                    className={cn(
-                      "rounded-full h-5 min-w-5 px-2 flex items-center justify-center text-xs font-semibold border leading-none",
-                      isActive
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-muted text-muted-foreground border-border",
-                    )}
-                  >
-                    {tab.count}
-                  </span>
-                )}
-                {isActive && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
-                )}
-              </button>
-            )
-          })}
-        </nav>
+        <DataTableTabs
+          items={tabs.items}
+          activeTab={tabs.activeTab}
+          onTabChange={tabs.onTabChange}
+        />
       )}
 
       {/* Toolbar & filters */}
@@ -205,184 +213,22 @@ export function DataTablePage<T>({
         </div>
       )}
 
-      {/* Table viewport */}
-      <div className="relative flex-1 min-h-0 overflow-auto">
-        <table
-          className={cn(
-            "w-full border-separate border-spacing-0 text-left",
-            stickyLayout.totalMinWidth && "table-fixed",
-            !isLoading && data.length === 0 && "min-h-full",
-          )}
-          style={
-            stickyLayout.totalMinWidth ? { minWidth: `${stickyLayout.totalMinWidth}px` } : undefined
-          }
-        >
-          {/* Column width synchronization */}
-          {stickyLayout.totalMinWidth && (
-            <colgroup>
-              {visibleColumns.map((col) => (
-                <col key={`col-${col.id}`} style={col.width ? { width: col.width } : undefined} />
-              ))}
-            </colgroup>
-          )}
-          {/* Table header */}
-          <thead className="sticky top-0 z-20 bg-card shadow-xs">
-            <tr>
-              {visibleColumns.map((col) => {
-                const stickyProps = getStickyCellProps(col, stickyLayout, {
-                  isHeader: true,
-                  isDesktop: isLg,
-                })
-                return (
-                  <th
-                    key={col.id}
-                    className={cn(
-                      thClass,
-                      "border-b border-border bg-card whitespace-nowrap select-none",
-                      col.align === "center" && "text-center",
-                      col.align === "right" && "text-right",
-                      stickyProps.className,
-                      col.headerClassName,
-                    )}
-                    style={stickyProps.style}
-                  >
-                    {col.header}
-                  </th>
-                )
-              })}
-            </tr>
-          </thead>
-          {/* Table body */}
-          <tbody
-            className={cn("divide-y divide-border", !isLoading && data.length === 0 && "h-full")}
-          >
-            {isLoading ? (
-              /* Loading skeleton */
-              Array.from({ length: loadingRowsCount }).map((_, rIdx) => (
-                <tr key={`loading-row-${rIdx}`}>
-                  {visibleColumns.map((col) => {
-                    const stickyProps = getStickyCellProps(col, stickyLayout, { isDesktop: isLg })
-                    return (
-                      <td
-                        key={`loading-col-${col.id}`}
-                        className={cn(
-                          tdClass,
-                          "border-b border-border bg-card",
-                          stickyProps.className,
-                        )}
-                        style={stickyProps.style}
-                      >
-                        <Skeleton className="h-4 w-4/5 rounded-md" />
-                      </td>
-                    )
-                  })}
-                </tr>
-              ))
-            ) : data.length === 0 ? (
-              /* Smart Context-Aware Empty State */
-              <tr className="h-full">
-                <td colSpan={visibleColumns.length} className="h-full p-4">
-                  <div className="flex h-full min-h-[360px] items-center justify-center">
-                    {hasActiveSearch ? (
-                      <EmptyState
-                        icon={emptyState?.icon || Inbox}
-                        title="Không tìm thấy kết quả phù hợp"
-                        description={`Không có bản ghi nào khớp với từ khóa "${search?.value}".`}
-                      />
-                    ) : (
-                      <EmptyState
-                        icon={emptyState?.icon || Inbox}
-                        title={emptyState?.title || "Không có dữ liệu"}
-                        description={
-                          emptyState?.description || "Chưa có bản ghi nào được ghi nhận."
-                        }
-                        action={emptyState?.action}
-                      />
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ) : renderRows ? (
-              /* Custom row renderer */
-              renderRows()
-            ) : (
-              /* Data rows */
-              data.map((item, idx) => (
-                <tr
-                  key={keyExtractor ? keyExtractor(item, idx) : idx}
-                  className={cn(
-                    "group hover:bg-muted/25",
-                    onRowClick && "cursor-pointer",
-                    rowClassName ? rowClassName(item, idx) : undefined,
-                  )}
-                  onClick={
-                    onRowClick
-                      ? () => {
-                          onRowClick(item, idx)
-                        }
-                      : undefined
-                  }
-                  onContextMenu={
-                    onRowContextMenu
-                      ? (e) => {
-                          onRowContextMenu(e, item, idx)
-                        }
-                      : undefined
-                  }
-                  tabIndex={onRowClick ? 0 : undefined}
-                  onKeyDown={
-                    onRowClick
-                      ? (e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault()
-                            onRowClick(item, idx)
-                          }
-                        }
-                      : undefined
-                  }
-                >
-                  {visibleColumns.map((col) => {
-                    const stickyProps = getStickyCellProps(col, stickyLayout, { isDesktop: isLg })
-                    return (
-                      <td
-                        key={col.id}
-                        className={cn(
-                          tdClass,
-                          "border-b border-border bg-card group-hover:bg-muted",
-                          col.align === "center" && "text-center",
-                          col.align === "right" && "text-right",
-                          stickyProps.className,
-                          col.className,
-                        )}
-                        style={stickyProps.style}
-                      >
-                        {(() => {
-                          const content = col.cell
-                            ? col.cell(item, idx)
-                            : col.accessor
-                              ? col.accessor(item)
-                              : null
-                          if (col.truncate) {
-                            return (
-                              <div
-                                className="min-w-0 truncate"
-                                title={typeof content === "string" ? content : undefined}
-                              >
-                                {content}
-                              </div>
-                            )
-                          }
-                          return content
-                        })()}
-                      </td>
-                    )
-                  })}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      {/* Table grid viewport */}
+      <DataTableGrid
+        columns={columns}
+        data={data}
+        isLoading={isLoading}
+        loadingRowsCount={loadingRowsCount}
+        density={density}
+        keyExtractor={keyExtractor}
+        renderRows={renderRows}
+        onRowClick={onRowClick}
+        onRowContextMenu={onRowContextMenu}
+        rowClassName={rowClassName}
+        emptyState={emptyState}
+        hasActiveSearch={hasActiveSearch}
+        searchValue={search?.value}
+      />
 
       {/* Pagination */}
       {pagination && (
