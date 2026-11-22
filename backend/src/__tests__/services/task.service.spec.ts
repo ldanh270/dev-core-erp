@@ -178,7 +178,9 @@ describe("TaskService Suite", () => {
       })
     })
 
-    afterEach(() => emitTyped.mockRestore())
+    afterEach(() => {
+      emitTyped.mockRestore()
+    })
 
     it("notifies the employee assigned when a task is created", async () => {
       mockTaskRepository.createTask.mockResolvedValue(task)
