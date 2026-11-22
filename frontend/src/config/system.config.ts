@@ -6,9 +6,15 @@ export const SYSTEM_CONFIG = {
   PAGINATION: {
     DEFAULT_LIMIT: 50,
     SMALL_LIMIT: 10,
+    MEDIUM_LIMIT: 25,
+    MODAL_LIMIT: 50,
     MAX_VISIBLE_PAGES: 5,
     /** Bulk fetch for admin dropdowns and schedule grids. */
     BULK_LIMIT: 1000,
+  },
+  SEARCH: {
+    DEBOUNCE_MS: 400,
+    FAST_DEBOUNCE_MS: 250,
   },
   UPLOAD: {
     MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB

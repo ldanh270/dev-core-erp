@@ -1,15 +1,23 @@
-import { ROLE } from "@/config/entities/employee.config.ts"
-import { ROUTES } from "@/config/routes.config.ts"
-
+import { ROLE } from "@/config/entities/employee.config"
+import { ROUTES } from "@/config/routes.config"
 import { type ComponentType, lazy } from "react"
 
 const MainLayout = lazy(() => import("@/layouts/MainLayout.tsx"))
+
+export interface RouteConfig {
+  path: string
+  component?: ComponentType
+  layout?: ComponentType | null
+  permissions?: string[]
+  roles?: string[]
+  children?: RouteConfig[]
+}
 
 /**
  * Public routes (guest-only: e.g. login, forgot password).
  * Authenticated users are redirected away to their dashboard.
  */
-const publicRoutes = [
+export const publicRoutes: RouteConfig[] = [
   {
     path: ROUTES.AUTH.LOGIN,
     component: lazy(() => import("@/pages/auth/Login.tsx")),
@@ -22,20 +30,10 @@ const publicRoutes = [
   },
 ]
 
-export interface RouteConfig {
-  path: string
-  component?: ComponentType
-  layout?: ComponentType | null
-  permissions?: string[]
-  roles?: string[]
-  children?: RouteConfig[]
-}
-
 /**
- * Open routes (unrestricted: anyone can access with zero authentication,
- * clients/visitors/evaluators can view standalone without login, exactly like an About Us page).
+ * Open routes (unrestricted: anyone can access with zero authentication).
  */
-const openRoutes: RouteConfig[] = [
+export const openRoutes: RouteConfig[] = [
   {
     path: "/database",
     component: lazy(() => import("@/pages/system/DatabaseReference.tsx")),
@@ -48,7 +46,8 @@ const openRoutes: RouteConfig[] = [
   },
 ]
 
-const privateRoutes: RouteConfig[] = [
+export const privateRoutes: RouteConfig[] = [
+  // HRM
   {
     path: ROUTES.HRM.EMPLOYEES,
     component: lazy(() => import("@/pages/EmployeeList.tsx")),
@@ -84,6 +83,8 @@ const privateRoutes: RouteConfig[] = [
     component: lazy(() => import("@/pages/security/LoginHistory.tsx")),
     layout: MainLayout,
   },
+
+  // Attendance
   {
     path: ROUTES.ATTENDANCE.DASHBOARD,
     component: lazy(() => import("@/pages/attendance/AttendanceTimesheet.tsx")),
@@ -139,6 +140,18 @@ const privateRoutes: RouteConfig[] = [
     layout: MainLayout,
   },
   {
+    path: ROUTES.ATTENDANCE.MY_SCHEDULE,
+    component: lazy(() => import("@/pages/attendance/MySchedule.tsx")),
+    layout: MainLayout,
+  },
+  {
+    path: ROUTES.ATTENDANCE.MY_AVAILABILITY,
+    component: lazy(() => import("@/pages/personal/MyPartTimeAvailability.tsx")),
+    layout: MainLayout,
+  },
+
+  // Application
+  {
     path: ROUTES.APPLICATION.ALL,
     component: lazy(() => import("@/pages/application/ApplicationDashboard.tsx")),
     layout: MainLayout,
@@ -155,6 +168,13 @@ const privateRoutes: RouteConfig[] = [
     layout: MainLayout,
   },
   {
+    path: ROUTES.APPLICATION.MY_APPLICATIONS,
+    component: lazy(() => import("@/pages/application/ApplicationDashboard.tsx")),
+    layout: MainLayout,
+  },
+
+  // Payroll
+  {
     path: ROUTES.PAYROLL.SALARY_COMPONENTS,
     component: lazy(() => import("@/pages/payroll/SalaryComponents.tsx")),
     layout: MainLayout,
@@ -167,8 +187,8 @@ const privateRoutes: RouteConfig[] = [
     permissions: ["payroll.read"],
   },
   {
-    path: ROUTES.PAYROLL.CYCLE,
-    component: lazy(() => import("@/pages/payroll/PayrollCycle.tsx")),
+    path: ROUTES.PAYROLL.PAYSLIP_TEMPLATES,
+    component: lazy(() => import("@/pages/payroll/PayslipTemplates.tsx")),
     layout: MainLayout,
     permissions: ["payroll.read"],
   },
@@ -185,11 +205,18 @@ const privateRoutes: RouteConfig[] = [
     permissions: ["payroll.read"],
   },
   {
-    path: ROUTES.PAYROLL.PAYSLIP_TEMPLATES,
-    component: lazy(() => import("@/pages/payroll/PayslipTemplates.tsx")),
+    path: ROUTES.PAYROLL.CYCLE,
+    component: lazy(() => import("@/pages/payroll/PayrollCycle.tsx")),
     layout: MainLayout,
     permissions: ["payroll.read"],
   },
+  {
+    path: ROUTES.PAYROLL.MY_PAYSLIPS,
+    component: lazy(() => import("@/pages/payroll/MyPayslips.tsx")),
+    layout: MainLayout,
+  },
+
+  // Recruitment
   {
     path: ROUTES.RECRUITMENT.DASHBOARD,
     component: lazy(() => import("@/pages/recruitment/RecruitmentDashboard.tsx")),
@@ -238,6 +265,20 @@ const privateRoutes: RouteConfig[] = [
     layout: MainLayout,
   },
   {
+    path: "/recruitment/requisitions/:id/:tab",
+    component: lazy(() => import("@/pages/recruitment/RequisitionDetailPage.tsx")),
+    layout: MainLayout,
+    permissions: ["recruitment.read"],
+  },
+  {
+    path: "/recruitment/requisitions/:id",
+    component: lazy(() => import("@/pages/recruitment/RequisitionDetailPage.tsx")),
+    layout: MainLayout,
+    permissions: ["recruitment.read"],
+  },
+
+  // Security
+  {
     path: ROUTES.HRM.DASHBOARD,
     component: lazy(() => import("@/pages/security/SecurityDashboard.tsx")),
     layout: MainLayout,
@@ -273,42 +314,11 @@ const privateRoutes: RouteConfig[] = [
     layout: MainLayout,
     permissions: ["role.read"],
   },
-  {
-    path: ROUTES.ATTENDANCE.MY_SCHEDULE,
-    component: lazy(() => import("@/pages/attendance/MySchedule.tsx")),
-    layout: MainLayout,
-  },
-  {
-    path: ROUTES.ATTENDANCE.MY_AVAILABILITY,
-    component: lazy(() => import("@/pages/personal/MyPartTimeAvailability.tsx")),
-    layout: MainLayout,
-    // Page-level guard redirects full-time employees to schedule view.
-  },
-  {
-    path: ROUTES.PAYROLL.MY_PAYSLIPS,
-    component: lazy(() => import("@/pages/payroll/MyPayslips.tsx")),
-    layout: MainLayout,
-  },
-  {
-    path: "/recruitment/requisitions/:id/:tab",
-    component: lazy(() => import("@/pages/recruitment/RequisitionDetailPage.tsx")),
-    layout: MainLayout,
-    permissions: ["recruitment.read"],
-  },
-  {
-    path: "/recruitment/requisitions/:id",
-    component: lazy(() => import("@/pages/recruitment/RequisitionDetailPage.tsx")),
-    layout: MainLayout,
-    permissions: ["recruitment.read"],
-  },
+
+  // Project
   {
     path: ROUTES.PROJECT.MY_PROJECTS,
     component: lazy(() => import("@/pages/project/ProjectDashboard.tsx")),
-    layout: MainLayout,
-  },
-  {
-    path: ROUTES.APPLICATION.MY_APPLICATIONS,
-    component: lazy(() => import("@/pages/application/ApplicationDashboard.tsx")),
     layout: MainLayout,
   },
   {
@@ -353,5 +363,3 @@ const privateRoutes: RouteConfig[] = [
     layout: MainLayout,
   },
 ]
-
-export { privateRoutes, publicRoutes, openRoutes }

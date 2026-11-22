@@ -11,6 +11,8 @@ export const TABLE_COL_WIDTH = {
   CODE: 100,
   /** Standard Date column (DD/MM/YYYY) */
   DATE: 130,
+  /** Standard Time column (HH:mm) */
+  TIME: 120,
   /** Currency formatted numbers (VND, right-aligned) */
   CURRENCY: 140,
   /** Status pill badge column */
@@ -23,10 +25,20 @@ export const TABLE_COL_WIDTH = {
   TYPE: 160,
   /** Position / Job role column */
   POSITION: 160,
+  /** Department / Team name */
+  DEPARTMENT: 160,
   /** Contact info (phone, email) */
   CONTACT: 220,
   /** Employee profile summary (Avatar + Full name + Username) */
   EMPLOYEE: 220,
+  /** Schedule shift name / configuration */
+  SCHEDULE: 180,
+  /** Project / Task name */
+  TASK_NAME: 240,
+  /** Priority badge column */
+  PRIORITY: 110,
+  /** Timestamp formatted (DD/MM/YYYY HH:mm:ss) */
+  TIMESTAMP: 160,
 } as const
 
 export type TableColWidthKey = keyof typeof TABLE_COL_WIDTH
@@ -43,6 +55,8 @@ export function getTableColWidthPx(key: TableColWidthKey): string {
       return `${TABLE_COL_WIDTH.CODE}px`
     case "DATE":
       return `${TABLE_COL_WIDTH.DATE}px`
+    case "TIME":
+      return `${TABLE_COL_WIDTH.TIME}px`
     case "CURRENCY":
       return `${TABLE_COL_WIDTH.CURRENCY}px`
     case "STATUS":
@@ -55,9 +69,19 @@ export function getTableColWidthPx(key: TableColWidthKey): string {
       return `${TABLE_COL_WIDTH.TYPE}px`
     case "POSITION":
       return `${TABLE_COL_WIDTH.POSITION}px`
+    case "DEPARTMENT":
+      return `${TABLE_COL_WIDTH.DEPARTMENT}px`
     case "CONTACT":
       return `${TABLE_COL_WIDTH.CONTACT}px`
     case "EMPLOYEE":
       return `${TABLE_COL_WIDTH.EMPLOYEE}px`
+    case "SCHEDULE":
+      return `${TABLE_COL_WIDTH.SCHEDULE}px`
+    case "TASK_NAME":
+      return `${TABLE_COL_WIDTH.TASK_NAME}px`
+    case "PRIORITY":
+      return `${TABLE_COL_WIDTH.PRIORITY}px`
+    case "TIMESTAMP":
+      return `${TABLE_COL_WIDTH.TIMESTAMP}px`
   }
 }
