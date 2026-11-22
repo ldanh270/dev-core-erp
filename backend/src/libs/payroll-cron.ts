@@ -55,9 +55,8 @@ export const initCronJobs = () => {
       const today = new Date()
       const month = today.getMonth() + 1
       const year = today.getFullYear()
-      const { generateDefaultPayrollName, PAYROLL_STATUS } = await import(
-        "@/configs/entities/payroll.config.ts"
-      )
+      const { generateDefaultPayrollName, PAYROLL_STATUS } =
+        await import("@/configs/entities/payroll.config.ts")
       const name = generateDefaultPayrollName(month, year)
 
       if (
