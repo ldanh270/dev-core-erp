@@ -78,10 +78,18 @@ const createSchema = z.object({
     .optional(),
 })
 
-type CreateFormValues = z.infer<typeof createSchema>
+export type CreateEmployeeFormValues = z.infer<typeof createSchema>
+type CreateFormValues = CreateEmployeeFormValues
 
 /**
  * Custom hook to manage employeecreatemodal.
+ */
+/**
+ * Manages form state and validation for the quick employee creation dialog.
+ * Handles automatic username/password generation, role selection, and submission mutation.
+ *
+ * @param onClose - Callback invoked when closing or completing modal workflow
+ * @returns Form controls, submission handler, and loading state
  */
 export function useEmployeeCreateModal(onClose: () => void) {
   const createMutation = useCreateEmployee()
