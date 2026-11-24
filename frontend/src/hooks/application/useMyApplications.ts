@@ -1,4 +1,5 @@
 import { APPLICATION_STATUS } from "@/config/entities/attendance.config"
+import { APPLICATION_MESSAGES } from "@/config/messages/application.message"
 import {
   type IApplicationListItem,
   type IListApplicationsQuery,
@@ -8,6 +9,8 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { toast } from "sonner"
+
+const { ERRORS, SUCCESS } = APPLICATION_MESSAGES
 
 export type StatusFilter = "all" | (typeof APPLICATION_STATUS)[keyof typeof APPLICATION_STATUS]
 
@@ -98,7 +101,7 @@ export function useMyApplications(enabled: boolean = true): UseMyApplicationsRet
         }
       } catch (error) {
         const err = error as { response?: { data?: { error?: { message?: string } } } }
-        toast.error(err.response?.data?.error?.message ?? "Lỗi khi tải danh sách đơn")
+        toast.error(err.response?.data?.error?.message ?? ERRORS.FETCH_LIST_FAILED)
       } finally {
         if (activeRef.current) {
           setIsLoading(false)
@@ -132,11 +135,11 @@ export function useMyApplications(enabled: boolean = true): UseMyApplicationsRet
     setCancellingId(id)
     try {
       await applicationApi.cancel(id)
-      toast.success("Đã hủy đơn thành công")
+      toast.success(SUCCESS.CANCEL)
       refetch()
     } catch (error) {
       const err = error as { response?: { data?: { error?: { message?: string } } } }
-      toast.error(err.response?.data?.error?.message ?? "Lỗi khi hủy đơn")
+      toast.error(err.response?.data?.error?.message ?? ERRORS.CANCEL_FAILED)
     } finally {
       setCancellingId(null)
     }

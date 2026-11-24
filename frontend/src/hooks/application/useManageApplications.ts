@@ -1,4 +1,5 @@
 import { APPLICATION_STATUS } from "@/config/entities/attendance.config"
+import { APPLICATION_MESSAGES } from "@/config/messages/application.message"
 import {
   type IApplicationListItem,
   type IListApplicationsQuery,
@@ -8,6 +9,8 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { toast } from "sonner"
+
+const { ERRORS, SUCCESS } = APPLICATION_MESSAGES
 
 export type StatusFilter = "all" | (typeof APPLICATION_STATUS)[keyof typeof APPLICATION_STATUS]
 
@@ -99,7 +102,7 @@ export function useManageApplications(enabled: boolean = true): UseManageApplica
         }
       } catch (error) {
         const err = error as { response?: { data?: { error?: { message?: string } } } }
-        toast.error(err.response?.data?.error?.message ?? "Lỗi khi tải danh sách đơn cần duyệt")
+        toast.error(err.response?.data?.error?.message ?? ERRORS.FETCH_PENDING_FAILED)
       } finally {
         if (activeRef.current) {
           setIsLoading(false)
@@ -133,11 +136,11 @@ export function useManageApplications(enabled: boolean = true): UseManageApplica
     setProcessingId(id)
     try {
       await applicationApi.approve(id)
-      toast.success("Đã phê duyệt đơn thành công")
+      toast.success(SUCCESS.APPROVE)
       refetch()
     } catch (error) {
       const err = error as { response?: { data?: { error?: { message?: string } } } }
-      toast.error(err.response?.data?.error?.message ?? "Lỗi khi phê duyệt đơn")
+      toast.error(err.response?.data?.error?.message ?? ERRORS.APPROVE_FAILED)
     } finally {
       setProcessingId(null)
     }
@@ -147,11 +150,11 @@ export function useManageApplications(enabled: boolean = true): UseManageApplica
     setProcessingId(id)
     try {
       await applicationApi.reject(id, reason)
-      toast.success("Đã từ chối đơn thành công")
+      toast.success(SUCCESS.REJECT)
       refetch()
     } catch (error) {
       const err = error as { response?: { data?: { error?: { message?: string } } } }
-      toast.error(err.response?.data?.error?.message ?? "Lỗi khi từ chối đơn")
+      toast.error(err.response?.data?.error?.message ?? ERRORS.REJECT_FAILED)
     } finally {
       setProcessingId(null)
     }
@@ -161,11 +164,11 @@ export function useManageApplications(enabled: boolean = true): UseManageApplica
     setProcessingId(id)
     try {
       await applicationApi.swapConfirm(id)
-      toast.success("Đã xác nhận đổi ca. Đơn đang chờ người duyệt phê duyệt.")
+      toast.success(SUCCESS.SWAP_CONFIRM)
       refetch()
     } catch (error) {
       const err = error as { response?: { data?: { error?: { message?: string } } } }
-      toast.error(err.response?.data?.error?.message ?? "Lỗi khi xác nhận đổi ca")
+      toast.error(err.response?.data?.error?.message ?? ERRORS.SWAP_CONFIRM_FAILED)
     } finally {
       setProcessingId(null)
     }
@@ -175,11 +178,11 @@ export function useManageApplications(enabled: boolean = true): UseManageApplica
     setProcessingId(id)
     try {
       await applicationApi.swapReject(id, reason)
-      toast.success("Đã từ chối đổi ca")
+      toast.success(SUCCESS.SWAP_REJECT)
       refetch()
     } catch (error) {
       const err = error as { response?: { data?: { error?: { message?: string } } } }
-      toast.error(err.response?.data?.error?.message ?? "Lỗi khi từ chối đổi ca")
+      toast.error(err.response?.data?.error?.message ?? ERRORS.SWAP_REJECT_FAILED)
     } finally {
       setProcessingId(null)
     }
