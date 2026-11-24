@@ -11,6 +11,10 @@ export const TAB_DEFINITIONS = [
   { id: INTERVIEW_RESULT.NO_SHOW, label: "Vắng mặt" },
 ]
 
+/**
+ * Handles interview round queries, view modes (table vs card grid),
+ * tab-based status filtering, and search filtering without presentation logic.
+ */
 export function useInterviewsManagement() {
   const [viewMode, setViewMode] = useState<"table" | "cards">("table")
   const [keyword, setKeyword] = useState("")

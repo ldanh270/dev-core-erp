@@ -11,6 +11,10 @@ import {
 } from "date-fns"
 import { useCallback, useMemo, useState } from "react"
 
+/**
+ * Manages calendar intervals, upcoming rounds, search filters,
+ * and view mode toggling for interviewer personal scheduling.
+ */
 export function useMyInterviews() {
   const [viewMode, setViewMode] = useState<"calendar" | "list">("calendar")
   const [activeTab, setActiveTab] = useState("all")

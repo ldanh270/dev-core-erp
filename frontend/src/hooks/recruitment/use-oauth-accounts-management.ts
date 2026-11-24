@@ -18,6 +18,10 @@ export const TAB_DEFINITIONS = [
   { id: "other", label: "Kênh khác" },
 ]
 
+/**
+ * Handles third-party OAuth provider connection lifecycles, account synchronization,
+ * search/filter states, and mutation workflows.
+ */
 export function useOAuthAccountsManagement() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { data: accounts = [], isLoading } = useOAuthAccounts()

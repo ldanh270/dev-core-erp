@@ -23,6 +23,10 @@ interface UseRequisitionFormProps {
   requisition?: JobRequisition | null
 }
 
+/**
+ * Encapsulates react-hook-form initialization, custom form field schemas,
+ * approver hierarchy data, and create/update mutations for job requisitions.
+ */
 export function useRequisitionForm({
   open,
   onOpenChange,

@@ -22,6 +22,10 @@ export const REQUISITION_DETAIL_TABS = [
 
 export type RequisitionDetailTabId = (typeof REQUISITION_DETAIL_TABS)[number]["id"]
 
+/**
+ * Manages detailed state, deep link tab routing, workflow actions (close/reopen/delete),
+ * and posting modal visibility for a single job requisition.
+ */
 export function useRequisitionDetail() {
   const { id = "", tab } = useParams<{ id: string; tab?: string }>()
   const navigate = useNavigate()

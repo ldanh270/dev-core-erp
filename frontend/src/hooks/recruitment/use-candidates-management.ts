@@ -5,6 +5,10 @@ import { routerNavigate } from "@/lib/router-navigator"
 import type { Candidate } from "@/types/recruitment.types"
 import { useCallback, useState } from "react"
 
+/**
+ * Manages candidates directory state, query debouncing, pagination,
+ * and view navigation to preserve Tier 1 separation of concerns.
+ */
 export function useCandidatesManagement() {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)

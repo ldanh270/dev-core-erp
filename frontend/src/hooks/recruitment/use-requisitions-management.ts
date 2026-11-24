@@ -27,6 +27,10 @@ export const TAB_DEFINITIONS = [
   { id: REQUISITION_STATUS.FILLED, label: REQUISITION_STATUS_LABELS[REQUISITION_STATUS.FILLED] },
 ]
 
+/**
+ * Orchestrates job requisition filtering, pagination, drawer lifecycle,
+ * and permission guards in compliance with Clean Architecture Tier 1.
+ */
 export function useRequisitionsManagement() {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
