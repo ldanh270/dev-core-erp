@@ -2,15 +2,15 @@ import { DataTablePage } from "@/components/common"
 import { EmployeeCreateModal } from "@/components/features/employees/EmployeeCreateModal"
 import { EmployeeDetailsDrawer } from "@/components/features/employees/EmployeeDetailsDrawer"
 import { EmployeeEditDrawer } from "@/components/features/employees/EmployeeEditDrawer"
-import { useEmployeeListColumns } from "@/components/features/employees/use-employee-list-columns"
-import { Button } from "@/components/ui/button"
+import { EmployeeExportButton } from "@/components/features/employees/EmployeeExportButton"
+import { useEmployeeListColumns } from "@/components/features/employees/employee-list-columns"
 import { ROUTES } from "@/config/routes.config"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useEmployeeMaster } from "@/hooks/employees/useEmployeeMaster"
 import { routerNavigate } from "@/lib/router-navigator"
 
 import { useCallback } from "react"
-import { FileDown, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 
 /**
  * Standardized Employee List view powered by DataTablePage master component.
@@ -72,12 +72,7 @@ export default function EmployeeList() {
             }
           : undefined
       }
-      toolbarActions={
-        <Button type="button" variant="outline" className="rounded-full gap-2 cursor-pointer">
-          <FileDown className="size-4" />
-          Xuất Excel
-        </Button>
-      }
+      toolbarActions={<EmployeeExportButton />}
       tabs={tabsConfig}
       search={{
         placeholder: "Tìm kiếm họ tên, email...",
