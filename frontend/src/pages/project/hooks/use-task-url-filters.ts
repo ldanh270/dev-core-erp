@@ -30,7 +30,6 @@ export function useTaskUrlFilters() {
   const [currentPage, setCurrentPageState] = useState(() => Number(searchParams.get("page")) || 1)
   const [pageSize, setPageSizeState] = useState(() => Number(searchParams.get("limit")) || 25)
 
-  // Sync state changes to URL query params
   const updateUrlParams = useCallback(
     (paramsObj: Record<string, string | number | null | undefined>) => {
       setSearchParams(
@@ -57,8 +56,6 @@ export function useTaskUrlFilters() {
     },
     [setSearchParams],
   )
-
-  // External listener when searchParams change externally (e.g. back/forward navigation or custom query application)
 
   useEffect(() => {
     setIssueSearchState(searchParams.get("search") || "")

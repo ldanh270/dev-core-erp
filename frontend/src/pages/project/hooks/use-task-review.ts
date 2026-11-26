@@ -16,19 +16,19 @@ interface UseTaskReviewProps {
   onOpenChange: (open: boolean) => void
 }
 
+/**
+ * Hook coordinating task completion submissions by assignees and approval/rejection reviews by leaders.
+ */
 export function useTaskReview({ task, projectId, onOpenChange }: UseTaskReviewProps) {
   const queryClient = useQueryClient()
 
-  // Form states for employee submitting work
   const [resultNotes, setResultNotes] = useState(task.resultNotes || "")
 
-  // Rejection states for leader reviewing work
   const [isRejecting, setIsRejecting] = useState(false)
   const [rejectionReason, setRejectionReason] = useState("")
 
   const [formError, setFormError] = useState<string | null>(null)
 
-  // Task update mutation
   const submitReviewMutation = useMutation({
     mutationFn: async (payload: UpdateTaskDto) => {
       return taskApi.update(task.id, payload)
@@ -46,30 +46,27 @@ export function useTaskReview({ task, projectId, onOpenChange }: UseTaskReviewPr
     },
   })
 
-  // Employee submitting task for review
   const handleSubmitWork = (e: React.FormEvent) => {
     e.preventDefault()
     setFormError(null)
 
     submitReviewMutation.mutate({
       status: TASK_STATUS.IN_REVIEW,
-      resultUrl: null, // Clear resultUrl as it is removed from UI
+      resultUrl: null,
       resultNotes: resultNotes ? resultNotes.trim() : null,
-      progress: 95, // Automatically sets progress to 95% when awaiting review
+      progress: 95,
     })
   }
 
-  // Leader approving task completion
   const handleApprove = () => {
     setFormError(null)
     submitReviewMutation.mutate({
       status: TASK_STATUS.DONE,
       progress: 100,
-      rejectionReason: null, // Clear any previous rejection reason
+      rejectionReason: null,
     })
   }
 
-  // Leader rejecting and requesting modifications
   const handleReject = (e: React.FormEvent) => {
     e.preventDefault()
     setFormError(null)
@@ -82,7 +79,7 @@ export function useTaskReview({ task, projectId, onOpenChange }: UseTaskReviewPr
     submitReviewMutation.mutate({
       status: TASK_STATUS.REOPENED,
       rejectionReason: rejectionReason.trim(),
-      progress: 50, // Shunts progress back to 50% for correction
+      progress: 50,
     })
   }
 
