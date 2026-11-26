@@ -1,3 +1,8 @@
+import { useEffect, useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
+import { AlertTriangle, Brain, Loader2, Plus, Sparkles } from "lucide-react"
+import { toast } from "sonner"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,11 +19,105 @@ import type { GeneratedTaskSuggestion } from "@/lib/api/task-estimate-ai.api"
 import { taskApi } from "@/lib/api/task.api"
 import type { TaskPriority, TaskTracker } from "@/types/task.types"
 
-import { useEffect, useState } from "react"
+interface EditableSuggestion extends GeneratedTaskSuggestion {
+  checked: boolean
+  index: number
+}
 
-import { useQueryClient } from "@tanstack/react-query"
-import { AlertTriangle, Brain, Loader2, Plus, Sparkles } from "lucide-react"
-import { toast } from "sonner"
+const getTrackerVariant = (tracker: string) => {
+  if (tracker === "feature")
+    return "bg-purple-50 text-purple-700 dark:bg-purple-950/20 dark:text-purple-400 border-purple-200 dark:border-purple-900"
+  if (tracker === "test")
+    return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900"
+  if (tracker === "bug")
+    return "bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 border-rose-200 dark:border-rose-900"
+  return "bg-slate-50 text-slate-700 dark:bg-slate-950/20 dark:text-slate-400 border-slate-200 dark:border-slate-900"
+}
+
+const getPriorityVariant = (priority: string) => {
+  if (priority === "urgent")
+    return "bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border-red-200 dark:border-red-900"
+  if (priority === "high")
+    return "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200 dark:border-amber-900"
+  return "bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400 border-blue-200 dark:border-blue-900"
+}
+
+function ProjectTaskSuggestionCard({
+  suggestion,
+  onToggleCheck,
+  onFieldChange,
+}: {
+  suggestion: EditableSuggestion
+  onToggleCheck: (index: number) => void
+  onFieldChange: (
+    index: number,
+    field: keyof GeneratedTaskSuggestion,
+    value: string | number,
+  ) => void
+}) {
+  return (
+    <div
+      className={`p-4 border rounded-2xl transition-all duration-200 bg-card/40 flex items-start gap-4 ${
+        suggestion.checked
+          ? "border-purple-500 bg-purple-500/5"
+          : "border-border/60 opacity-60"
+      }`}
+    >
+      <input
+        type="checkbox"
+        checked={suggestion.checked}
+        onChange={() => {
+          onToggleCheck(suggestion.index)
+        }}
+        className="mt-1 h-4 w-4 text-purple-600 border-border rounded focus:ring-purple-500"
+      />
+
+      <div className="flex-1 space-y-3">
+        {/* Header Info */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Input
+            value={suggestion.title}
+            onChange={(e) => {
+              onFieldChange(suggestion.index, "title", e.target.value)
+            }}
+            className="font-bold text-foreground bg-transparent border-none focus-visible:ring-1 focus-visible:ring-purple-500 h-8 px-1 text-sm flex-1 mr-4 rounded-lg"
+            disabled={!suggestion.checked}
+          />
+          <div className="flex items-center gap-1.5 shrink-0">
+            <Badge
+              variant="outline"
+              className={`text-[10px] uppercase py-0 px-2 font-semibold border ${getTrackerVariant(suggestion.tracker)}`}
+            >
+              {suggestion.tracker}
+            </Badge>
+            <Badge
+              variant="outline"
+              className={`text-[10px] uppercase py-0 px-2 font-semibold border ${getPriorityVariant(suggestion.priority)}`}
+            >
+              {suggestion.priority}
+            </Badge>
+            <Badge
+              variant="secondary"
+              className="text-[10px] py-0 px-2 font-bold rounded-full"
+            >
+              {suggestion.estimatedTime}h Baseline
+            </Badge>
+          </div>
+        </div>
+
+        {/* Description Area */}
+        <Textarea
+          value={suggestion.description || ""}
+          onChange={(e) => {
+            onFieldChange(suggestion.index, "description", e.target.value)
+          }}
+          className="text-xs text-muted-foreground bg-transparent border-none focus-visible:ring-1 focus-visible:ring-purple-500 p-1 resize-none h-16 rounded-lg leading-relaxed"
+          disabled={!suggestion.checked}
+        />
+      </div>
+    </div>
+  )
+}
 
 interface ProjectTaskGeneratorModalProps {
   isOpen: boolean
@@ -26,11 +125,7 @@ interface ProjectTaskGeneratorModalProps {
   projectId: string
 }
 
-interface EditableSuggestion extends GeneratedTaskSuggestion {
-  checked: boolean
-  index: number
-}
-
+/** AI task generator modal converting project briefs into structured backlog tasks. */
 export function ProjectTaskGeneratorModal({
   isOpen,
   onOpenChange,
@@ -43,7 +138,6 @@ export function ProjectTaskGeneratorModal({
 
   useEffect(() => {
     if (isOpen && projectId) {
-      // eslint-disable-next-line react-hooks/immutability
       void fetchSuggestions()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,7 +186,6 @@ export function ProjectTaskGeneratorModal({
 
     setCreating(true)
     try {
-      // Create selected tasks sequentially to avoid database race conditions
       for (const t of selected) {
         await taskApi.create({
           projectId,
@@ -114,25 +207,6 @@ export function ProjectTaskGeneratorModal({
     } finally {
       setCreating(false)
     }
-  }
-
-  // Helper colors for badges
-  const getTrackerVariant = (tracker: string) => {
-    if (tracker === "feature")
-      return "bg-purple-50 text-purple-700 dark:bg-purple-950/20 dark:text-purple-400 border-purple-200 dark:border-purple-900"
-    if (tracker === "test")
-      return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900"
-    if (tracker === "bug")
-      return "bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 border-rose-200 dark:border-rose-900"
-    return "bg-slate-50 text-slate-700 dark:bg-slate-950/20 dark:text-slate-400 border-slate-200 dark:border-slate-900"
-  }
-
-  const getPriorityVariant = (priority: string) => {
-    if (priority === "urgent")
-      return "bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border-red-200 dark:border-red-900"
-    if (priority === "high")
-      return "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200 dark:border-amber-900"
-    return "bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400 border-blue-200 dark:border-blue-900"
   }
 
   return (
@@ -174,67 +248,12 @@ export function ProjectTaskGeneratorModal({
           ) : (
             <div className="space-y-4 py-2">
               {suggestions.map((suggestion) => (
-                <div
+                <ProjectTaskSuggestionCard
                   key={suggestion.index}
-                  className={`p-4 border rounded-2xl transition-all duration-200 bg-card/40 flex items-start gap-4 ${
-                    suggestion.checked
-                      ? "border-purple-500 bg-purple-500/5"
-                      : "border-border/60 opacity-60"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={suggestion.checked}
-                    onChange={() => {
-                      handleToggleCheck(suggestion.index)
-                    }}
-                    className="mt-1 h-4 w-4 text-purple-600 border-border rounded focus:ring-purple-500"
-                  />
-
-                  <div className="flex-1 space-y-3">
-                    {/* Header Info */}
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <Input
-                        value={suggestion.title}
-                        onChange={(e) => {
-                          handleFieldChange(suggestion.index, "title", e.target.value)
-                        }}
-                        className="font-bold text-foreground bg-transparent border-none focus-visible:ring-1 focus-visible:ring-purple-500 h-8 px-1 text-sm flex-1 mr-4 rounded-lg"
-                        disabled={!suggestion.checked}
-                      />
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <Badge
-                          variant="outline"
-                          className={`text-[10px] uppercase py-0 px-2 font-semibold border ${getTrackerVariant(suggestion.tracker)}`}
-                        >
-                          {suggestion.tracker}
-                        </Badge>
-                        <Badge
-                          variant="outline"
-                          className={`text-[10px] uppercase py-0 px-2 font-semibold border ${getPriorityVariant(suggestion.priority)}`}
-                        >
-                          {suggestion.priority}
-                        </Badge>
-                        <Badge
-                          variant="secondary"
-                          className="text-[10px] py-0 px-2 font-bold rounded-full"
-                        >
-                          {suggestion.estimatedTime}h Baseline
-                        </Badge>
-                      </div>
-                    </div>
-
-                    {/* Description Area */}
-                    <Textarea
-                      value={suggestion.description || ""}
-                      onChange={(e) => {
-                        handleFieldChange(suggestion.index, "description", e.target.value)
-                      }}
-                      className="text-xs text-muted-foreground bg-transparent border-none focus-visible:ring-1 focus-visible:ring-purple-500 p-1 resize-none h-16 rounded-lg leading-relaxed"
-                      disabled={!suggestion.checked}
-                    />
-                  </div>
-                </div>
+                  suggestion={suggestion}
+                  onToggleCheck={handleToggleCheck}
+                  onFieldChange={handleFieldChange}
+                />
               ))}
             </div>
           )}

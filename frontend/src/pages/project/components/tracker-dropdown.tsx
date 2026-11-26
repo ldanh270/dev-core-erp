@@ -15,6 +15,7 @@ interface TrackerDropdownProps {
   openUpward?: boolean
 }
 
+/** Standalone dropdown selector for task tracker types. */
 export function TrackerDropdown({
   roleId,
   allowed,

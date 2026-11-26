@@ -18,6 +18,7 @@ interface ProjectActivityTabProps {
   isLoading: boolean
 }
 
+/** Activity audit stream tab displaying task actions and logged work hours chronologically. */
 export function ProjectActivityTab({ activitiesList, isLoading }: ProjectActivityTabProps) {
   return (
     <PageCard className="p-6">

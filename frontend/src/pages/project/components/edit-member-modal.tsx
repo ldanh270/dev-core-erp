@@ -1,3 +1,7 @@
+import { useState } from "react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
+
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -27,30 +31,19 @@ import type { ProjectMember } from "@/types/project.types"
 import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util"
 import { extractErrorMessage } from "@/utils/error-helper"
 
-import { useState } from "react"
-
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-
 import { useProjectRoles } from "../hooks/use-project-role"
 
-interface EditMemberModalProps {
-  isOpen: boolean
-  onOpenChange: (open: boolean) => void
-  projectId: string
-  member: ProjectMember | null
-  allEmployees: Employee[]
-}
-
-interface EditMemberFormProps {
+function EditMemberForm({
+  projectId,
+  member,
+  isPartTime,
+  onClose,
+}: {
   projectId: string
   member: ProjectMember
   isPartTime: boolean
   onClose: () => void
-}
-
-/** Inner form — hourly rate (PT only), work mode, project role; remounts via key on open. */
-function EditMemberForm({ projectId, member, isPartTime, onClose }: EditMemberFormProps) {
+}) {
   const queryClient = useQueryClient()
   const { data: roles = [] } = useProjectRoles(projectId)
 
@@ -61,7 +54,6 @@ function EditMemberForm({ projectId, member, isPartTime, onClose }: EditMemberFo
   const [roleId, setRoleId] = useState(() => member.roleId || "")
   const [memberError, setMemberError] = useState<string | null>(null)
 
-  // Rate/mode changes apply on next payroll run; workMode flips GPS requirement immediately.
   const updateMemberMutation = useMutation({
     mutationFn: async () => {
       if (isPartTime && (!hourlyRate || Number(hourlyRate) <= 0)) {
@@ -178,6 +170,14 @@ function EditMemberForm({ projectId, member, isPartTime, onClose }: EditMemberFo
       </div>
     </form>
   )
+}
+
+interface EditMemberModalProps {
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
+  projectId: string
+  member: ProjectMember | null
+  allEmployees: Employee[]
 }
 
 /** Dialog to edit an existing project member's rate, work mode, and role. */

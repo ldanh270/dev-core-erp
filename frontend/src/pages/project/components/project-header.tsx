@@ -15,6 +15,7 @@ interface ProjectHeaderProps {
   onOpenAiDecompose?: () => void
 }
 
+/** Workspace header rendering project title, leader details, status badges, and actions. */
 export function ProjectHeader({
   projectId,
   name,

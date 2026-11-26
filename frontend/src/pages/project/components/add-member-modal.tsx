@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
+
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -27,12 +31,9 @@ import type { ProjectMember } from "@/types/project.types"
 import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util"
 import { extractErrorMessage } from "@/utils/error-helper"
 
-import { useEffect, useState } from "react"
-
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-
 import { useProjectRoles } from "../hooks/use-project-role"
+
+const SELECT_NONE_VALUE = "none"
 
 interface AddMemberModalProps {
   isOpen: boolean
@@ -42,8 +43,6 @@ interface AddMemberModalProps {
   allEmployees: Employee[]
   teamLeaderId?: string | null
 }
-
-const SELECT_NONE_VALUE = "none"
 
 /** Add employee to project with PT-specific hourlyRate and workMode (remote/onsite). */
 export function AddMemberModal({
@@ -55,14 +54,13 @@ export function AddMemberModal({
   teamLeaderId,
 }: AddMemberModalProps) {
   const queryClient = useQueryClient()
+  const { data: roles = [] } = useProjectRoles(projectId)
+
   const [memberEmployeeId, setMemberEmployeeId] = useState(SELECT_NONE_VALUE)
   const [hourlyRate, setHourlyRate] = useState("")
-  // Default remote: PT logs Spent Time without GPS. TL can switch to onsite per project.
   const [workMode, setWorkMode] = useState<string>(PROJECT_MEMBER_WORK_MODE.REMOTE)
   const [roleId, setRoleId] = useState("")
   const [memberError, setMemberError] = useState<string | null>(null)
-
-  const { data: roles = [] } = useProjectRoles(projectId)
 
   useEffect(() => {
     if (roles.length > 0 && !roleId) {
@@ -76,8 +74,16 @@ export function AddMemberModal({
   }, [roles, roleId])
 
   const selectedEmployee = allEmployees.find((e) => e.id === memberEmployeeId)
-  // PT members require hourlyRate on ProjectMember for payroll.
   const isPartTime = selectedEmployee ? isPartTimeWorkSchedule(selectedEmployee) : false
+
+  const resetForm = () => {
+    setMemberEmployeeId(SELECT_NONE_VALUE)
+    setHourlyRate("")
+    setWorkMode(PROJECT_MEMBER_WORK_MODE.REMOTE)
+    const devRole = roles.find((r) => r.code === "developer")
+    setRoleId(devRole ? devRole.id : roles[0]?.id || "")
+    setMemberError(null)
+  }
 
   const addMemberMutation = useMutation({
     mutationFn: async () => {
@@ -85,7 +91,6 @@ export function AddMemberModal({
         throw new Error("Vui lòng chọn nhân viên")
       }
       if (isPartTime && (!hourlyRate || Number(hourlyRate) <= 0)) {
-        // Backend rejects PT members without rate — payroll uses ProjectMember.hourlyRate.
         throw new Error(PROJECT_MESSAGES.PART_TIME_HOURLY_RATE_REQUIRED)
       }
 
@@ -98,14 +103,8 @@ export function AddMemberModal({
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["members", projectId] })
+      resetForm()
       onOpenChange(false)
-      setMemberEmployeeId(SELECT_NONE_VALUE)
-      setHourlyRate("")
-      setWorkMode(PROJECT_MEMBER_WORK_MODE.REMOTE)
-      // Reset roleId to default developer
-      const devRole = roles.find((r) => r.code === "developer")
-      setRoleId(devRole ? devRole.id : roles[0]?.id || "")
-      setMemberError(null)
       toast.success("Thêm thành viên vào dự án thành công")
     },
     onError: (err: unknown) => {
@@ -113,20 +112,15 @@ export function AddMemberModal({
     },
   })
 
+  const handleClose = () => {
+    resetForm()
+    onOpenChange(false)
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setMemberError(null)
     addMemberMutation.mutate()
-  }
-
-  const handleClose = () => {
-    setMemberEmployeeId(SELECT_NONE_VALUE)
-    setHourlyRate("")
-    setWorkMode(PROJECT_MEMBER_WORK_MODE.REMOTE)
-    const devRole = roles.find((r) => r.code === "developer")
-    setRoleId(devRole ? devRole.id : roles[0]?.id || "")
-    setMemberError(null)
-    onOpenChange(false)
   }
 
   return (
@@ -193,9 +187,7 @@ export function AddMemberModal({
               min="0"
               step="1000"
               value={hourlyRate}
-              onChange={(e) => {
-                setHourlyRate(e.target.value)
-              }}
+              onChange={(e) => setHourlyRate(e.target.value)}
               placeholder="VD: 50000"
               className="h-10 rounded-full"
             />

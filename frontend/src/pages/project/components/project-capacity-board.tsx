@@ -2,6 +2,19 @@
  * Weekly capacity board for Admin/PM.
  * It displays cron/event-refreshed project forecasts so managers can compare shortage/surplus projects.
  */
+import type React from "react"
+import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import {
+  AlertTriangle,
+  BrainCircuit,
+  CalendarDays,
+  CheckCircle2,
+  Inbox,
+  Info,
+  RefreshCw,
+} from "lucide-react"
+
 import { PageCard } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -20,30 +33,15 @@ import type {
   CapacityForecastResult,
 } from "@/types/capacity-copilot.types"
 
-import { useState } from "react"
-
-import { useQuery } from "@tanstack/react-query"
-import {
-  AlertTriangle,
-  BrainCircuit,
-  CalendarDays,
-  CheckCircle2,
-  Inbox,
-  Info,
-  RefreshCw,
-} from "lucide-react"
-
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
 const PERCENT_WARNING_THRESHOLD = 0
 
 const padDatePart = (value: number) => value.toString().padStart(2, "0")
 
-const formatDateParam = (date: Date) => {
-  return `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}-${padDatePart(date.getDate())}`
-}
+const formatDateParam = (date: Date) =>
+  `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}-${padDatePart(date.getDate())}`
 
 const parseLocalDateParam = (dateParam: string) => {
-  // Avoid `new Date("yyyy-mm-dd")` UTC parsing because it can shift the displayed week in local time.
   const [year = "0", month = "1", day = "1"] = dateParam.split("-")
   return new Date(Number(year), Number(month) - 1, Number(day))
 }
@@ -57,9 +55,7 @@ const getCurrentWeekStart = () => {
   return date
 }
 
-const getWeekStartDateKey = (date: Date) => {
-  return formatDateParam(date)
-}
+const getWeekStartDateKey = (date: Date) => formatDateParam(date)
 
 const getWeekRangeLabel = (weekStart: string) => {
   const start = parseLocalDateParam(weekStart)
@@ -71,12 +67,9 @@ const getWeekRangeLabel = (weekStart: string) => {
 const sortByGapDescending = (
   left: CapacityBoardProjectSnapshot,
   right: CapacityBoardProjectSnapshot,
-) => {
-  return (
-    (right.forecast?.percentGap ?? Number.NEGATIVE_INFINITY) -
-    (left.forecast?.percentGap ?? Number.NEGATIVE_INFINITY)
-  )
-}
+) =>
+  (right.forecast?.percentGap ?? Number.NEGATIVE_INFINITY) -
+  (left.forecast?.percentGap ?? Number.NEGATIVE_INFINITY)
 
 const getConfidenceLabel = (confidenceLevel: CapacityConfidenceLevel) => {
   if (confidenceLevel === CAPACITY_CONFIDENCE_LEVEL.HIGH) return "Độ tin cậy cao"
@@ -92,7 +85,7 @@ const getWeakestRoleName = (forecast: CapacityForecastResult) => {
   return weakestRole?.roleName ?? "Chưa có role"
 }
 
-const ForecastRow = ({ item }: { item: CapacityBoardProjectSnapshot }) => {
+function CapacityBoardForecastRow({ item }: { item: CapacityBoardProjectSnapshot }) {
   const { forecast, projectName, errorMessage } = item
 
   if (!forecast) {
@@ -178,6 +171,45 @@ const ForecastRow = ({ item }: { item: CapacityBoardProjectSnapshot }) => {
   )
 }
 
+function CapacityBoardProjectColumn({
+  title,
+  count,
+  icon,
+  titleClassName,
+  items,
+  emptyMessage,
+}: {
+  title: string
+  count: number
+  icon: React.ReactNode
+  titleClassName: string
+  items: CapacityBoardProjectSnapshot[]
+  emptyMessage: string
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-muted/20 p-5 flex flex-col min-w-0 h-full overflow-hidden">
+      <div className={`mb-4 flex items-center gap-2 font-semibold text-sm shrink-0 ${titleClassName}`}>
+        {icon}
+        <span>
+          {title} ({count})
+        </span>
+      </div>
+      <div className="space-y-3 flex-1 min-w-0 overflow-y-auto pr-1">
+        {items.length === 0 ? (
+          <div className="h-full min-h-[200px] flex flex-col items-center justify-center rounded-xl border border-dashed border-border/80 bg-card/60 p-8 text-center">
+            <div className="rounded-full bg-secondary p-2.5 mb-2 text-muted-foreground">
+              <Inbox className="size-5" />
+            </div>
+            <p className="text-xs text-muted-foreground">{emptyMessage}</p>
+          </div>
+        ) : (
+          items.map((item) => <CapacityBoardForecastRow key={item.projectId} item={item} />)
+        )}
+      </div>
+    </div>
+  )
+}
+
 export function ProjectCapacityBoard() {
   const { hasPermission } = usePermission()
   const [weekStart, setWeekStart] = useState(getWeekStartDateKey(getCurrentWeekStart()))
@@ -185,7 +217,6 @@ export function ProjectCapacityBoard() {
 
   const forecastQuery = useQuery({
     queryKey: ["capacity-copilot", "weekly-board", weekStart],
-    // Board reads one backend aggregate endpoint instead of making PM click/forecast every project.
     queryFn: () =>
       capacityCopilotApi.forecastWeeklyBoard({
         weekStart,
@@ -239,9 +270,7 @@ export function ProjectCapacityBoard() {
             type="button"
             variant="outline"
             className="rounded-full font-semibold"
-            onClick={() => {
-              setWeekStart(getWeekStartDateKey(previousWeekStart))
-            }}
+            onClick={() => setWeekStart(getWeekStartDateKey(previousWeekStart))}
           >
             Tuần trước
           </Button>
@@ -253,9 +282,7 @@ export function ProjectCapacityBoard() {
             type="button"
             variant="outline"
             className="rounded-full font-semibold"
-            onClick={() => {
-              setWeekStart(getWeekStartDateKey(nextWeekStart))
-            }}
+            onClick={() => setWeekStart(getWeekStartDateKey(nextWeekStart))}
           >
             Tuần sau
           </Button>
@@ -290,49 +317,23 @@ export function ProjectCapacityBoard() {
         </div>
       ) : (
         <div className="mt-5 grid grid-cols-1 gap-6 xl:grid-cols-2 flex-1 min-h-0">
-          {/* Shortage projects */}
-          <div className="rounded-xl border border-border bg-muted/20 p-5 flex flex-col min-w-0 h-full overflow-hidden">
-            <div className="mb-4 flex items-center gap-2 font-semibold text-sm text-destructive shrink-0">
-              <AlertTriangle className="size-4 shrink-0" />
-              <span>Project thiếu capacity ({shortageItems.length})</span>
-            </div>
-            <div className="space-y-3 flex-1 min-w-0 overflow-y-auto pr-1">
-              {shortageItems.length === 0 ? (
-                <div className="h-full min-h-[200px] flex flex-col items-center justify-center rounded-xl border border-dashed border-border/80 bg-card/60 p-8 text-center">
-                  <div className="rounded-full bg-secondary p-2.5 mb-2 text-muted-foreground">
-                    <Inbox className="size-5" />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Không có project thiếu capacity trong tuần này.
-                  </p>
-                </div>
-              ) : (
-                shortageItems.map((item) => <ForecastRow key={item.projectId} item={item} />)
-              )}
-            </div>
-          </div>
+          <CapacityBoardProjectColumn
+            title="Project thiếu capacity"
+            count={shortageItems.length}
+            icon={<AlertTriangle className="size-4 shrink-0" />}
+            titleClassName="text-destructive"
+            items={shortageItems}
+            emptyMessage="Không có project thiếu capacity trong tuần này."
+          />
 
-          {/* Surplus projects */}
-          <div className="rounded-xl border border-border bg-muted/20 p-5 flex flex-col min-w-0 h-full overflow-hidden">
-            <div className="mb-4 flex items-center gap-2 font-semibold text-sm text-primary shrink-0">
-              <CheckCircle2 className="size-4 shrink-0" />
-              <span>Project đủ hoặc dư capacity ({surplusItems.length})</span>
-            </div>
-            <div className="space-y-3 flex-1 min-w-0 overflow-y-auto pr-1">
-              {surplusItems.length === 0 ? (
-                <div className="h-full min-h-[200px] flex flex-col items-center justify-center rounded-xl border border-dashed border-border/80 bg-card/60 p-8 text-center">
-                  <div className="rounded-full bg-secondary p-2.5 mb-2 text-muted-foreground">
-                    <Inbox className="size-5" />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Chưa có project dư capacity để điều phối.
-                  </p>
-                </div>
-              ) : (
-                surplusItems.map((item) => <ForecastRow key={item.projectId} item={item} />)
-              )}
-            </div>
-          </div>
+          <CapacityBoardProjectColumn
+            title="Project đủ hoặc dư capacity"
+            count={surplusItems.length}
+            icon={<CheckCircle2 className="size-4 shrink-0" />}
+            titleClassName="text-primary"
+            items={surplusItems}
+            emptyMessage="Chưa có project dư capacity để điều phối."
+          />
         </div>
       )}
 
