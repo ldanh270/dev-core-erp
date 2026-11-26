@@ -30,6 +30,10 @@ const resultVariantMap: Record<string, "success" | "warning" | "danger" | "info"
   no_show: "neutral",
 }
 
+/**
+ * Modal dialog displaying detailed interview round summary, candidate identity,
+ * schedule timeline, format badge, and evaluation outcome pill.
+ */
 export function ViewInterviewDialog({ open, onOpenChange, interview }: Props) {
   if (!interview) return null
 
