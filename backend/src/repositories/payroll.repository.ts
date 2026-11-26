@@ -29,9 +29,17 @@ export class PrismaPayrollRepository extends BaseRepository implements IPayrollR
     })
   }
 
-  /** Finds active administrators or employees with both approval route permissions. */
+  /**
+   * Finds active employees authorized to read and approve payroll, including administrators.
+   *
+   * @returns {Promise<string[]>} Identifiers of employees eligible to receive payroll approval alerts.
+   */
   async findApproverIds(): Promise<string[]> {
     const active = { isActive: true, deletedAt: null } as const
+    /**
+     * Requires each payroll route permission, even when granted by different roles.
+     * @type {Prisma.EmployeeWhereInput[]}
+     */
     const permissionChecks = Object.values(PAYROLL_APPROVAL_PERMISSIONS).map(
       (code): Prisma.EmployeeWhereInput => ({
         employeeRoles: {

@@ -75,8 +75,23 @@ interface IPayrollSettingsRepository {
   findGlobal(): Promise<{ triggerDay: number }>
 }
 
+/**
+ * Manages payroll generation, approval, and employee payslips.
+ */
 export class PayrollService implements IPayrollService {
-  /** Injects payroll data access and the optional post-commit notification publisher. */
+  /**
+   * Sets up payroll generation and optional notification delivery after commit.
+   *
+   * @param {IPayrollRepository} payrollRepo - Payroll storage and lookup.
+   * @param {IPayslipRepository} payslipRepo - Employee payslip storage.
+   * @param {IEmployeeSalaryConfigRepository} salaryConfigRepo - Employee salary configuration.
+   * @param {IAttendanceRepository} attendanceRepo - Attendance records used in payroll.
+   * @param {IEmployeeRepository} employeeRepo - Employee lookup for payroll eligibility.
+   * @param {ISpentTimeRepository} spentTimeRepo - Work logs used in payroll.
+   * @param {IPayrollSettingsRepository} settingsRepo - Payroll cycle settings.
+   * @param {PrismaClient} prisma - Client used to commit payroll and payslips together.
+   * @param {Pick<PayrollNotificationService, "notifyGeneratedPayroll">} [notifications] - Publisher invoked after a successful commit.
+   */
   constructor(
     private payrollRepo: IPayrollRepository,
     private payslipRepo: IPayslipRepository,
@@ -90,14 +105,13 @@ export class PayrollService implements IPayrollService {
   ) {}
 
   /**
-   * Initialize a new payroll for a specific month and year.
-   * Uses a transaction for atomic writes and notifies recipients after commit.
+   * Creates payroll and payslips in one transaction before notifying recipients.
    *
-   * @param month - The month parameter
-   * @param year - The year parameter
-   * @param name - The name parameter (optional)
-   * @returns Returns the result of type Promise<{ name: string; id: string; periodMonth: number; periodYear: number; status: $Enums.PayrollStatus; totalAmount: Decimal; approvedById: string | null; approvedAt: Date | null; rejectReason: string | null; createdAt: Date; updatedAt: Date; }>
-   * @throws AppError if a business logic error occurs or data is not found
+   * @param {number} month - Payroll month.
+   * @param {number} year - Payroll year.
+   * @param {string} [name] - Optional name for the payroll record.
+   * @returns {Promise<Payroll>} The committed payroll.
+   * @throws {AppError} If payroll business rules prevent generation.
    */
   async generatePayroll(month: number, year: number, name?: string): Promise<Payroll> {
     const finalName = name || generateDefaultPayrollName(month, year)

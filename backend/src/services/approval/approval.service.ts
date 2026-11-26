@@ -158,11 +158,11 @@ export class ApprovalService implements IApprovalService {
   }
 
   /**
-   * Approves or rejects a specific request based on its category.
+   * Processes a request under its approval policy and alerts applicants after an application decision.
    *
-   * @param dto - Data containing request ID, category, processor ID, and new status.
-   * @returns The updated request record or a transaction result.
-   * @throws {AppError} If the request or processor is not found, or if the processor is not authorized.
+   * @param {IProcessApprovalDTO} dto - Request category, identifiers, decision, and optional reason.
+   * @returns {Promise<any>} The updated request or transaction result.
+   * @throws {AppError} If the request cannot be processed or the employee is not authorized.
    */
   async processApproval(dto: IProcessApprovalDTO): Promise<any> {
     const processorExists = await prisma.employee.findUnique({

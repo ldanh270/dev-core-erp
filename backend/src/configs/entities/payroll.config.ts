@@ -32,11 +32,21 @@ export const PAYROLL_NOTIFICATION = {
   APPROVAL: {
     PATH: "/payroll/list",
     TITLE: "Có kỳ lương cần duyệt",
+    /**
+     * Formats the payroll review alert.
+     * @param {string} period - Display label for the payroll period.
+     * @returns {string} Notification body.
+     */
     message: (period: string) => `Kỳ lương ${period} đã được tạo và đang chờ duyệt.`,
   },
   PAYSLIP: {
     PATH: "/payroll/my-payslips",
     TITLE: "Phiếu lương đã có",
+    /**
+     * Formats the employee payslip alert.
+     * @param {string} period - Display label for the payroll period.
+     * @returns {string} Notification body.
+     */
     message: (period: string) => `Bạn có thể kiểm tra phiếu lương kỳ ${period}.`,
   },
 } as const

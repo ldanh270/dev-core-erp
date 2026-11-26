@@ -31,7 +31,16 @@ const LAYER_NAME = "TaskService"
  * Handles task access control, validation, and status transitions within a project.
  */
 export class TaskService implements ITaskService {
-  /** Injects the task persistence, authorization, and notification dependencies. */
+  /**
+   * Sets up task persistence, assignment rules, and notification delivery.
+   *
+   * @param {ITaskRepository} repository - Task storage.
+   * @param {IProjectRepository} projectRepository - Project and membership lookup.
+   * @param {IEmployeeRepository} employeeRepository - Employee lookup for validating assignees.
+   * @param {IProjectTaskStatusRepository} [statusRepository] - Project task status lookup.
+   * @param {IPositionService} [positionService] - Task rules for employee positions.
+   * @param {typeof eventBus} [bus] - Event bus for notification delivery.
+   */
   constructor(
     private repository: ITaskRepository,
     private projectRepository: IProjectRepository,
@@ -42,8 +51,12 @@ export class TaskService implements ITaskService {
   ) {}
 
   /**
-   * Queues a realtime notification for the employee involved in a saved task change.
-   * The notification service persists it before streaming it to the recipient.
+   * Queues a realtime alert for an employee after a task change has been saved.
+   *
+   * @param {Task} task - Persisted task shown in the notification.
+   * @param {string} employeeId - Employee who should receive the alert.
+   * @param {(typeof TASK_NOTIFICATION_TITLE)[keyof typeof TASK_NOTIFICATION_TITLE]} title - Title for the assignment or review event.
+   * @returns {void}
    */
   private notifyTaskChange(
     task: Task,
@@ -61,7 +74,10 @@ export class TaskService implements ITaskService {
   }
 
   /**
-   * Performs operations for isAuthorizedAdminOrGM.
+   * Checks whether an employee has permission to update projects.
+   *
+   * @param {string} userId - Employee whose project permissions are checked.
+   * @returns {Promise<boolean>} Whether the employee can update projects.
    */
   private async isAuthorizedAdminOrGM(userId: string): Promise<boolean> {
     const authContext = await authorizationService.getAuthorizationContext(userId)
@@ -142,9 +158,12 @@ export class TaskService implements ITaskService {
   }
 
   /**
-   * Creates a task after validating project membership, assignee eligibility, and status defaults.
-   * @param data The task payload to create
-   * @param userId The authenticated user ID
+   * Creates a task and alerts its initial assignee after saving it.
+   *
+   * @param {CreateTaskDto} data - Task details, project, and optional assignee.
+   * @param {string} userId - Authenticated employee creating the task.
+   * @returns {Promise<Task>} The saved task.
+   * @throws {AppError} If the project, permission, assignee, or task status is invalid.
    */
   async createTask(data: CreateTaskDto, userId: string): Promise<Task> {
     const project = await this.projectRepository.findById(data.projectId)
@@ -265,10 +284,13 @@ export class TaskService implements ITaskService {
   }
 
   /**
-   * Updates a task after permission checks and transition validation.
-   * @param id The task ID
-   * @param data The task fields to update
-   * @param userId The authenticated user ID
+   * Saves authorized task changes and alerts employees affected by assignment or review.
+   *
+   * @param {string} id - Task identifier.
+   * @param {UpdateTaskDto} data - Requested changes to the task.
+   * @param {string} userId - Authenticated employee requesting the update.
+   * @returns {Promise<Task | null>} The saved task, or null when storage returns no update.
+   * @throws {AppError} If the task or project is unavailable, or a requested change is invalid or forbidden.
    */
   async updateTask(id: string, data: UpdateTaskDto, userId: string): Promise<Task | null> {
     const task = await this.repository.findById(id)
@@ -453,6 +475,10 @@ export class TaskService implements ITaskService {
     }
     if (statusEnum && task.status !== updated.status) {
       if (updated.status === TASK_STATUS.IN_REVIEW) {
+        /**
+         * Selects the team leader or an authorized project creator to review the task.
+         * @type {string | null}
+         */
         const reviewerId =
           project.teamLeaderId ??
           ((await this.isAuthorizedAdminOrGM(project.createdById).catch(() => false))

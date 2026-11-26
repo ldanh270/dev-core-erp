@@ -42,7 +42,10 @@ const settingsRepo = {
   },
 }
 
-/** Wires payroll generation to the shared real-time notification transport. */
+/**
+ * Wires HTTP payroll generation to the post-commit notification workflow.
+ * @type {PayrollService}
+ */
 const service = new PayrollService(
   payrollRepo,
   payslipRepo,

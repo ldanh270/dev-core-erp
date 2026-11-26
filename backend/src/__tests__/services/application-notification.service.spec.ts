@@ -10,15 +10,33 @@ import type { CreateNotificationDto } from "@/types/notification.types.ts"
 
 /** Covers recipient selection and routing at each application handoff. */
 describe("Application notifications", () => {
+  /**
+   * Represents the employee who requested a shift swap.
+   */
   const applicant = { employeeId: "applicant", type: APPLICATION_TYPES.SHIFT_SWAP.LABEL }
+  /**
+   * Collects notification events emitted by the current test.
+   * @type {CreateNotificationDto[]}
+   */
   const received: CreateNotificationDto[] = []
+  /**
+   * Records an application notification for recipient assertions.
+   * @param {CreateNotificationDto} payload - Emitted notification.
+   * @returns {number} Number of collected notifications.
+   */
   const collect = (payload: CreateNotificationDto) => received.push(payload)
 
+  /**
+   * Clears captured notifications and subscribes before each test.
+   */
   beforeEach(() => {
     received.length = 0
     eventBus.onTyped("notification:create", collect)
   })
 
+  /**
+   * Removes the test subscriber to keep event delivery isolated.
+   */
   afterEach(() => {
     eventBus.offTyped("notification:create", collect)
   })

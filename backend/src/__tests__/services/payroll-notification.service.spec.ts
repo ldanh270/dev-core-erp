@@ -7,6 +7,9 @@ import { InMemoryNotificationRepository } from "../helpers/in-memory-notificatio
 
 /** Verifies that payroll events reach only their intended live inboxes. */
 describe("PayrollNotificationService", () => {
+  /**
+   * Represents a generated payroll period that is ready for approval.
+   */
   const payroll = {
     id: "payroll-1",
     periodMonth: 11,
@@ -16,6 +19,9 @@ describe("PayrollNotificationService", () => {
 
   /** Uses the real notification subscriber and an isolated persistence fixture. */
   it("delivers one payslip alert per employee and a separate approval alert", async () => {
+    /**
+     * Selects a known payroll approver independently of the employee inbox.
+     */
     const findApproverIds = jest.fn().mockResolvedValue(["approver"])
     const inbox = new NotificationService(new InMemoryNotificationRepository())
     const received: Notification[] = []

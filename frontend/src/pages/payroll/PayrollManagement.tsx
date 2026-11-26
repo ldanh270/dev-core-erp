@@ -39,9 +39,8 @@ const getPayrollStatusVariant = (status: string): "info" | "success" | "danger" 
 }
 
 /**
- * PayrollManagement — Enterprise payroll cycles management page.
- * Powered by DataTablePage master component with viewport-locked internal scrolling,
- * sticky header, standardized column widths, and pinned pagination footer.
+ * Displays payroll periods and opens the period referenced by an approval notification.
+ * @returns {import("react").ReactElement} The payroll screen.
  */
 export default function PayrollManagement() {
   const [filters] = useState<{ status?: string; year?: number }>({})
@@ -49,6 +48,10 @@ export default function PayrollManagement() {
   const { mutate: approvePayroll } = useApprovePayroll()
   const { mutate: rejectPayroll } = useRejectPayroll()
   const [searchParams, setSearchParams] = useSearchParams()
+  /**
+   * Identifies the payroll period requested by the notification link.
+   * @type {string | null}
+   */
   const linkedPayrollId = searchParams.get(PAYROLL_DETAIL_SEARCH_PARAM)
 
   const [selectedPayrollId, setSelectedPayrollId] = useState<string | null>(null)
@@ -56,7 +59,10 @@ export default function PayrollManagement() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
 
-  /** Closes either a locally selected payroll or a notification deep link. */
+  /**
+   * Closes the payroll details and removes the notification link parameter.
+   * @returns {void}
+   */
   const handleCloseDetail = () => {
     setSelectedPayrollId(null)
     if (linkedPayrollId) {

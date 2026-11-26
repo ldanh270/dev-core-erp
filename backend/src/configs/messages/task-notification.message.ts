@@ -5,7 +5,12 @@ export const TASK_NOTIFICATION_TITLE = {
   CHANGES_REQUESTED: "Công việc cần chỉnh sửa",
 } as const
 
-/** Builds the web route shared by task assignment and review notifications. */
+/**
+ * Builds a link to the task associated with an assignment or review alert.
+ *
+ * @param {string} taskId - Identifier of the task to open.
+ * @returns {string} The web path to the task detail page.
+ */
 export function buildTaskNotificationLink(taskId: string): string {
   return `/project/task/${encodeURIComponent(taskId)}`
 }

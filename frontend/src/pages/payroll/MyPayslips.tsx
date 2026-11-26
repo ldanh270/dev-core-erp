@@ -39,14 +39,21 @@ const getReceiptStatusVariant = (receiptStatus?: string): "success" | "neutral" 
 }
 
 /**
- * MyPayslips — Employee personal payslip preview and history page.
- * Powered by DataTablePage master component with viewport-locked internal scrolling,
- * sticky header, standardized column widths, and pinned pagination footer.
+ * Displays the employee’s payslips and opens the one referenced by a notification.
+ * @returns {import("react").ReactElement} The payroll screen.
  */
 export default function MyPayslips() {
   const { data: payslips, isLoading, refetch } = useMyPayslips()
   const [searchParams, setSearchParams] = useSearchParams()
+  /**
+   * Identifies the payroll period requested by the notification link.
+   * @type {string | null}
+   */
   const linkedPayrollId = searchParams.get(PAYROLL_DETAIL_SEARCH_PARAM)
+  /**
+   * Finds the linked payslip in the signed-in employee’s own results.
+   * @type {IPayslip | undefined}
+   */
   const linkedPayslip = payslips?.find(({ payrollId }) => payrollId === linkedPayrollId)
 
   // A notification can link to a payslip created while this page was already open.
@@ -61,7 +68,10 @@ export default function MyPayslips() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
 
-  /** Returns to the employee's list and clears any payroll link from the URL. */
+  /**
+   * Returns to the payslip list and removes the notification link parameter.
+   * @returns {void}
+   */
   const handleCloseForm = () => {
     setSelectedPayslip(null)
     if (linkedPayrollId) {
@@ -240,6 +250,10 @@ export default function MyPayslips() {
     [page, limit],
   )
 
+  /**
+   * Uses the notification target before falling back to a row selected in the list.
+   * @type {IPayslip | null}
+   */
   const detailPayslip = linkedPayslip ?? selectedPayslip
   if (detailPayslip) {
     return <PayslipDetailPage payslip={detailPayslip} onClose={handleCloseForm} />

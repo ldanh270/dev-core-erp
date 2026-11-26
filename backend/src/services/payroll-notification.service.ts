@@ -7,7 +7,15 @@ import {
 import { eventBus } from "@/libs/event-bus.ts"
 import { logger } from "@/utils/logger.util.ts"
 
-/** Public payroll fields used to build an inbox message. */
+/**
+ * Describes the committed payroll fields used by notification messages.
+ *
+ * @typedef {object} GeneratedPayrollFields
+ * @property {string} id - Payroll identifier used in the detail link.
+ * @property {number} periodMonth - Payroll month.
+ * @property {number} periodYear - Payroll year.
+ * @property {PayrollStatusType} status - Current payroll status.
+ */
 type GeneratedPayroll = {
   id: string
   periodMonth: number
@@ -17,15 +25,34 @@ type GeneratedPayroll = {
 
 /** Publishes payroll inbox events after payroll and its payslips have committed. */
 export class PayrollNotificationService {
-  /** Injects the employee lookup and notification transport. */
+  /**
+   * Sets up payroll recipient lookup and notification delivery.
+   *
+   * @param {{ findApproverIds(): Promise<string[]> }} approvers - Lookup for employees authorized to approve payroll.
+   * @param {typeof eventBus} [bus] - Event bus for delivery to notification subscribers.
+   */
   constructor(
     private readonly approvers: { findApproverIds(): Promise<string[]> },
     private readonly bus = eventBus,
   ) {}
 
-  /** Notifies employees with persisted payslips and users who can approve the generated payroll. */
+  /**
+   * Alerts employees about new payslips and eligible approvers about payroll awaiting review.
+   *
+   * @param {GeneratedPayroll} payroll - The committed payroll record.
+   * @param {readonly string[]} employeeIds - Employees whose payslips were created.
+   * @returns {void}
+   */
   notifyGeneratedPayroll(payroll: GeneratedPayroll, employeeIds: readonly string[]): void {
+    /**
+     * Labels the payroll period in employee and approver alerts.
+     * @type {string}
+     */
     const period = `${payroll.periodMonth}/${payroll.periodYear}`
+    /**
+     * Encodes the payroll identifier for both notification destinations.
+     * @type {string}
+     */
     const query = new URLSearchParams({
       [PAYROLL_NOTIFICATION.PAYROLL_ID_PARAM]: payroll.id,
     }).toString()
@@ -51,7 +78,13 @@ export class PayrollNotificationService {
     }
   }
 
-  /** Sends one approval notification to each authorized employee. */
+  /**
+   * Sends the payroll review alert to each authorized approver.
+   *
+   * @param {string} period - Display label for the payroll period.
+   * @param {string} query - Serialized query string linking to the payroll record.
+   * @returns {Promise<void>} Resolves after the approval events are published.
+   */
   private async notifyApprovers(period: string, query: string): Promise<void> {
     const approverIds = await this.approvers.findApproverIds()
     const { APPROVAL } = PAYROLL_NOTIFICATION

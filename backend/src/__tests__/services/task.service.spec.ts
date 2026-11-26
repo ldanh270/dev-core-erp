@@ -150,6 +150,7 @@ describe("TaskService Suite", () => {
 
   /** Covers saved task changes that feed the employee-specific realtime stream. */
   describe("task notifications", () => {
+    /** Represents the persisted task before each notification scenario. */
     const task = {
       id: "task-1",
       projectId: "project-1",
@@ -158,14 +159,20 @@ describe("TaskService Suite", () => {
       assigneeId: "assignee-1",
       status: "in_progress",
     } as const
+    /** Identifies the project and its default reviewer for the task fixture. */
     const project = {
       id: task.projectId,
       teamLeaderId: task.createdById,
       createdById: task.createdById,
       taskCreationPolicy: "ANYONE",
     }
+    /**
+     * Observes the notification events published by each task operation.
+     * @type {jest.SpiedFunction<typeof eventBus.emitTyped>}
+     */
     let emitTyped: jest.SpiedFunction<typeof eventBus.emitTyped>
 
+    /** Sets up an event spy and the baseline project permissions before each scenario. */
     beforeEach(() => {
       emitTyped = jest.spyOn(eventBus, "emitTyped")
       mockProjectRepository.findById.mockResolvedValue(project)
@@ -178,10 +185,12 @@ describe("TaskService Suite", () => {
       })
     })
 
+    /** Restores the event bus after each notification scenario. */
     afterEach(() => {
       emitTyped.mockRestore()
     })
 
+    /** Checks that an initial task assignment alerts its assignee. */
     it("notifies the employee assigned when a task is created", async () => {
       mockTaskRepository.createTask.mockResolvedValue(task)
       await taskService.createTask(
@@ -199,6 +208,7 @@ describe("TaskService Suite", () => {
       })
     })
 
+    /** Checks that reassignment alerts the new assignee once. */
     it("notifies only the new assignee after reassignment and ignores replay", async () => {
       const newAssignee = "assignee-2"
       const updated = { ...task, assigneeId: newAssignee }
@@ -218,6 +228,7 @@ describe("TaskService Suite", () => {
       )
     })
 
+    /** Checks that submitting a task for review alerts the team leader. */
     it("notifies the team leader when the assignee submits work for review", async () => {
       mockTaskRepository.updateTask.mockResolvedValue({ ...task, status: "in_review" })
       await taskService.updateTask(task.id, { status: "in_review" }, task.assigneeId)
@@ -231,6 +242,7 @@ describe("TaskService Suite", () => {
       )
     })
 
+    /** Checks that returning a task for changes alerts the assignee. */
     it("notifies the assignee when a task in review is returned for changes", async () => {
       mockTaskRepository.findById.mockResolvedValue({ ...task, status: "in_review" })
       mockTaskRepository.updateTask.mockResolvedValue({ ...task, status: "reopened" })
@@ -249,6 +261,7 @@ describe("TaskService Suite", () => {
       )
     })
 
+    /** Checks the reviewer fallback when the project has no team leader. */
     it("routes review to an authorized project creator when there is no team leader", async () => {
       mockProjectRepository.findById.mockResolvedValue({ ...project, teamLeaderId: null })
       authorizationService.getAuthorizationContext.mockResolvedValueOnce({
@@ -266,6 +279,7 @@ describe("TaskService Suite", () => {
       )
     })
 
+    /** Checks that a failed reassignment emits no notification. */
     it("does not notify the employee when the reassignment fails", async () => {
       const failure = new Error("Task update failed")
       mockTaskRepository.updateTask.mockRejectedValue(failure)
