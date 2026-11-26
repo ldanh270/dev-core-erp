@@ -177,6 +177,13 @@ export function useNewTaskForm() {
     [taskTitle, taskStart, taskDue, parentTask, projectTasks, createTaskMutation],
   )
 
+  const handleSubmitAnother = useCallback(() => {
+    setTaskError(null)
+    if (!taskTitle.trim()) return setTaskError("Vui lòng nhập tiêu đề")
+    if (!validateTaskDateConstraints(taskStart, taskDue, parentTask, projectTasks)) return
+    createTaskMutation.mutate({ title: taskTitle, andAnother: true })
+  }, [taskTitle, taskStart, taskDue, parentTask, projectTasks, createTaskMutation])
+
   const formatTracker = useCallback(
     (trackerCode: string) => {
       const dbTracker = trackers.find((t) => t.code === trackerCode)
@@ -224,6 +231,7 @@ export function useNewTaskForm() {
     setIsDragOver,
     isPending: createTaskMutation.isPending,
     handleSubmit,
+    handleSubmitAnother,
     formatTracker,
     handleSelectAllWatchers,
     handleToggleWatcher,
