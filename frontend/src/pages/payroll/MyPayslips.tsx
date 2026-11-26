@@ -3,6 +3,7 @@ import { PayslipDetailPage } from "@/components/features/payroll/payslip-detail-
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
+  PAYROLL_DETAIL_SEARCH_PARAM,
   PAYROLL_STATUS,
   PAYROLL_STATUS_LABELS,
   PAYSLIP_RECEIPT_STATUS,
@@ -14,9 +15,10 @@ import { useMyPayslips } from "@/hooks/payroll/use-my-payslips"
 import { cn, formatCurrency } from "@/lib/utils"
 import type { IPayslip } from "@/types/payroll.types"
 
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { CalendarDays, ChevronRight, Inbox } from "lucide-react"
+import { useSearchParams } from "react-router-dom"
 
 const getPayrollStatusVariant = (status?: string): "info" | "success" | "danger" | "neutral" => {
   switch (status) {
@@ -37,28 +39,47 @@ const getReceiptStatusVariant = (receiptStatus?: string): "success" | "neutral" 
 }
 
 /**
- * MyPayslips — Employee personal payslip preview and history page.
- * Powered by DataTablePage master component with viewport-locked internal scrolling,
- * sticky header, standardized column widths, and pinned pagination footer.
+ * Displays the employee’s payslips and opens the one referenced by a notification.
+ * @returns {import("react").ReactElement} The payroll screen.
  */
 export default function MyPayslips() {
-  const { data: payslips, isLoading } = useMyPayslips()
+  const { data: payslips, isLoading, refetch } = useMyPayslips()
+  const [searchParams, setSearchParams] = useSearchParams()
+  /**
+   * Identifies the payroll period requested by the notification link.
+   * @type {string | null}
+   */
+  const linkedPayrollId = searchParams.get(PAYROLL_DETAIL_SEARCH_PARAM)
+  /**
+   * Finds the linked payslip in the signed-in employee’s own results.
+   * @type {IPayslip | undefined}
+   */
+  const linkedPayslip = payslips?.find(({ payrollId }) => payrollId === linkedPayrollId)
 
-  const [view, setView] = useState<"list" | "detail">("list")
+  // A notification can link to a payslip created while this page was already open.
+  useEffect(() => {
+    if (linkedPayrollId && !linkedPayslip) {
+      void refetch()
+    }
+  }, [linkedPayrollId, linkedPayslip, refetch])
+
   const [selectedPayslip, setSelectedPayslip] = useState<IPayslip | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
 
-  const handleCloseForm = useCallback(() => {
-    setView("list")
+  /**
+   * Returns to the payslip list and removes the notification link parameter.
+   * @returns {void}
+   */
+  const handleCloseForm = () => {
     setSelectedPayslip(null)
-  }, [])
-
-  const handleSelect = useCallback((payslip: IPayslip) => {
-    setSelectedPayslip(payslip)
-    setView("detail")
-  }, [])
+    if (linkedPayrollId) {
+      const nextParams = new URLSearchParams(searchParams)
+      nextParams.delete(PAYROLL_DETAIL_SEARCH_PARAM)
+      setSearchParams(nextParams, { replace: true })
+    }
+  }
 
   const handleSearch = useCallback((val: string) => {
     setSearchTerm(val)
@@ -107,7 +128,7 @@ export default function MyPayslips() {
             type="button"
             className="flex items-center gap-3 cursor-pointer group text-left focus:outline-none"
             onClick={() => {
-              handleSelect(payslip)
+              setSelectedPayslip(payslip)
             }}
           >
             <div className="size-8 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
@@ -217,7 +238,7 @@ export default function MyPayslips() {
             size="icon"
             className="size-8 rounded-full text-muted-foreground hover:text-foreground"
             onClick={() => {
-              handleSelect(payslip)
+              setSelectedPayslip(payslip)
             }}
             aria-label="Xem chi tiết phiếu lương"
           >
@@ -226,11 +247,16 @@ export default function MyPayslips() {
         ),
       },
     ],
-    [page, limit, handleSelect],
+    [page, limit],
   )
 
-  if (view !== "list") {
-    return <PayslipDetailPage payslip={selectedPayslip} onClose={handleCloseForm} />
+  /**
+   * Uses the notification target before falling back to a row selected in the list.
+   * @type {IPayslip | null}
+   */
+  const detailPayslip = linkedPayslip ?? selectedPayslip
+  if (detailPayslip) {
+    return <PayslipDetailPage payslip={detailPayslip} onClose={handleCloseForm} />
   }
 
   return (

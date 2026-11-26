@@ -5,14 +5,17 @@ import {
   PAID_LEAVE_TYPES,
 } from "@/configs/entities/attendance.config.ts"
 import { EMPLOYEE_STATUS } from "@/configs/entities/employee.config.ts"
-import { NOTIFICATION_PRIORITY, NOTIFICATION_TYPE } from "@/configs/entities/notification.config.ts"
 import { PERMISSION_CODE } from "@/configs/entities/permission.config.ts"
 import { PROJECT_STATUS } from "@/configs/entities/project.config.ts"
 import { APPLICATION_ERROR_MESSAGES } from "@/configs/messages/application.message.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { prisma } from "@/libs/database.ts"
-import { eventBus } from "@/libs/event-bus.ts"
+import {
+  notifyApplicationApprover,
+  notifyApplicationDecision,
+  notifyApplicationSubmitted,
+} from "@/services/application-notification.service.ts"
 import { authorizationService } from "@/services/authorization.service.ts"
 import {
   IApplicationListResultDTO,
@@ -115,49 +118,33 @@ export class ApplicationService implements IApplicationService {
   }
 
   /**
-   * Submits a new application after validating the specific business rules
-   * based on the type of application (leave, overtime, late/early, shift swap).
+   * Validates and saves an application before notifying the next participant.
    *
-   * @param data - The application submission data transfer object.
-   * @returns A promise that resolves to the submitted application.
-   * @throws {AppError} If validation fails (e.g. invalid date range, leave overlap, insufficient balance).
+   * @param {ISubmitApplicationDTO} data - Application details and optional approver.
+   * @returns {Promise<unknown>} The saved application.
+   * @throws {AppError} If the application violates its submission rules.
    */
   async submitApplication(data: ISubmitApplicationDTO): Promise<unknown> {
     await this._validateApplicationSubmission(data)
     const result = await this.applicationRepo.submit(data)
-    eventBus.emitTyped("notification:create", {
-      employeeId: data.employeeId,
-      title: "Tạo đơn thành công",
-      message: `Đơn (${data.type}) của bạn đã được gửi và đang chờ phê duyệt.`,
-      type: NOTIFICATION_TYPE.APPLICATION,
-      priority: NOTIFICATION_PRIORITY.MEDIUM,
-      link: "/application/my-applications",
-    })
-    if (data.assignedToId) {
-      eventBus.emitTyped("notification:create", {
-        employeeId: data.assignedToId,
-        title: "Có đơn mới cần duyệt",
-        message: `Có đơn mới (${data.type}) cần bạn phê duyệt.`,
-        type: NOTIFICATION_TYPE.APPLICATION,
-        priority: NOTIFICATION_PRIORITY.HIGH,
-        link: "/application/review",
-      })
-    }
+    notifyApplicationSubmitted(result)
     return result
   }
 
   /**
-   * Submits multiple applications in a single transaction after validating each one.
+   * Validates and saves a batch of applications before issuing submission alerts.
    *
-   * @param data - The array of application submission data transfer objects.
-   * @returns A promise that resolves to an array of submitted applications.
-   * @throws {AppError} If validation fails for any of the applications.
+   * @param {ISubmitApplicationDTO[]} data - Applications to submit in one batch.
+   * @returns {Promise<unknown[]>} The saved applications.
+   * @throws {AppError} If any application violates its submission rules.
    */
   async submitBulkApplications(data: ISubmitApplicationDTO[]): Promise<unknown[]> {
     for (const item of data) {
       await this._validateApplicationSubmission(item)
     }
-    return this.applicationRepo.submitBulk(data)
+    const applications = await this.applicationRepo.submitBulk(data)
+    applications.forEach(notifyApplicationSubmitted)
+    return applications
   }
 
   /**
@@ -213,11 +200,12 @@ export class ApplicationService implements IApplicationService {
   }
 
   /**
-   * Retrieves an application by its unique identifier.
+   * Returns application details after checking whether the requester may view them.
    *
-   * @param id - The unique identifier of the application.
-   * @returns A promise that resolves to the application details.
-   * @throws {AppError} If the application is not found.
+   * @param {string} id - Application identifier.
+   * @param {{ empId: string }} [requester] - Employee requesting access.
+   * @returns {Promise<unknown>} The application and its associated details.
+   * @throws {AppError} If the application is missing or the requester may not view it.
    */
   async getApplicationById(id: string, requester?: { empId: string }): Promise<unknown> {
     const app = await this.applicationRepo.findById(id)
@@ -230,13 +218,28 @@ export class ApplicationService implements IApplicationService {
       )
     }
 
-    if (requester && app.employeeId !== requester.empId) {
+    /**
+     * Identifies the employee entitled to view a swap awaiting their confirmation.
+     * @type {boolean}
+     */
+    const isPendingSwapPartner =
+      app.status === APPLICATION_STATUS.PARTNER_PENDING &&
+      app.shiftSwapDetail?.swapWithEmployeeId === requester?.empId
+
+    if (requester && app.employeeId !== requester.empId && !isPendingSwapPartner) {
       const authContext = await authorizationService.getAuthorizationContext(requester.empId)
       const isGlobalApprover =
         authContext.isDynamicAdmin || authContext.permissions.has(PERMISSION_CODE.APPLICATION_READ)
 
-      if (!isGlobalApprover) {
-        if (!authContext.permissions.has(PERMISSION_CODE.APPLICATION_APPROVE)) {
+      const canApprove = authContext.permissions.has(PERMISSION_CODE.APPLICATION_APPROVE)
+      /**
+       * Identifies the designated approver with permission to review applications.
+       * @type {boolean}
+       */
+      const isAssignedApprover = canApprove && app.assignedToId === requester.empId
+
+      if (!isGlobalApprover && !isAssignedApprover) {
+        if (!canApprove) {
           throw new AppError(
             APPLICATION_ERROR_MESSAGES.VIEW_FORBIDDEN,
             HttpStatusCode.FORBIDDEN,
@@ -346,12 +349,12 @@ export class ApplicationService implements IApplicationService {
   }
 
   /**
-   * Approves a pending application.
+   * Approves a pending application and notifies its applicant.
    *
-   * @param id - The ID of the application to approve.
-   * @param processorId - The ID of the employee/manager processing the approval.
-   * @returns A promise that resolves to the approved application.
-   * @throws {AppError} If the application is not found or is not in pending status.
+   * @param {string} id - Application identifier.
+   * @param {string} processorId - Employee approving the application.
+   * @returns {Promise<unknown>} The approved application.
+   * @throws {AppError} If the application is missing, no longer pending, or the decision cannot be saved.
    */
   async approveApplication(id: string, processorId: string): Promise<unknown> {
     const app = await this.applicationRepo.findById(id)
@@ -383,25 +386,18 @@ export class ApplicationService implements IApplicationService {
         ErrorLayer.SERVICE,
       )
     }
-    eventBus.emitTyped("notification:create", {
-      employeeId: app.employeeId,
-      title: "Đơn đã được phê duyệt",
-      message: `Đơn (${app.type}) của bạn đã được phê duyệt thành công.`,
-      type: NOTIFICATION_TYPE.SUCCESS,
-      priority: NOTIFICATION_PRIORITY.HIGH,
-      link: "/application/my-applications",
-    })
+    notifyApplicationDecision(app, APPLICATION_STATUS.APPROVED)
     return updated
   }
 
   /**
-   * Rejects a pending application with a specified reason.
+   * Rejects a pending application and notifies its applicant.
    *
-   * @param id - The ID of the application to reject.
-   * @param processorId - The ID of the employee/manager processing the rejection.
-   * @param rejectReason - The reason for rejecting the application.
-   * @returns A promise that resolves to the rejected application.
-   * @throws {AppError} If the application is not found or is not in pending status.
+   * @param {string} id - Application identifier.
+   * @param {string} processorId - Employee rejecting the application.
+   * @param {string} rejectReason - Reason for rejecting the application.
+   * @returns {Promise<unknown>} The rejected application.
+   * @throws {AppError} If the application is missing, no longer pending, or the decision cannot be saved.
    */
   async rejectApplication(id: string, processorId: string, rejectReason: string): Promise<unknown> {
     const app = await this.applicationRepo.findById(id)
@@ -433,14 +429,7 @@ export class ApplicationService implements IApplicationService {
         ErrorLayer.SERVICE,
       )
     }
-    eventBus.emitTyped("notification:create", {
-      employeeId: app.employeeId,
-      title: "Đơn bị từ chối",
-      message: `Đơn (${app.type}) của bạn đã bị từ chối. Lý do: ${rejectReason}`,
-      type: NOTIFICATION_TYPE.WARNING,
-      priority: NOTIFICATION_PRIORITY.HIGH,
-      link: "/application/my-applications",
-    })
+    notifyApplicationDecision(app, APPLICATION_STATUS.REJECTED)
     return updated
   }
 
@@ -656,6 +645,14 @@ export class ApplicationService implements IApplicationService {
     )
   }
 
+  /**
+   * Moves a confirmed swap into the approval queue and alerts the assigned approver.
+   *
+   * @param {string} id - Application identifier.
+   * @param {string} partnerId - Employee asked to confirm the swap.
+   * @returns {Promise<unknown>} The confirmed swap application.
+   * @throws {AppError} If the request is missing, the partner cannot decide it, or the decision cannot be saved.
+   */
   async confirmSwapPartner(id: string, partnerId: string): Promise<unknown> {
     const app = await this.applicationRepo.findById(id)
 
@@ -696,9 +693,19 @@ export class ApplicationService implements IApplicationService {
       )
     }
 
+    notifyApplicationApprover(updated)
     return updated
   }
 
+  /**
+   * Closes a declined swap and informs the requesting employee.
+   *
+   * @param {string} id - Application identifier.
+   * @param {string} partnerId - Employee asked to confirm the swap.
+   * @param {string} rejectReason - Reason the swap partner declined.
+   * @returns {Promise<unknown>} The rejected swap application.
+   * @throws {AppError} If the request is missing, the partner cannot decide it, or the decision cannot be saved.
+   */
   async rejectSwapPartner(id: string, partnerId: string, rejectReason: string): Promise<unknown> {
     const app = await this.applicationRepo.findById(id)
 
@@ -739,6 +746,7 @@ export class ApplicationService implements IApplicationService {
       )
     }
 
+    notifyApplicationDecision(app, APPLICATION_STATUS.REJECTED)
     return updated
   }
 }

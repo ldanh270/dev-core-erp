@@ -8,7 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { PAYROLL_STATUS, PAYROLL_STATUS_LABELS } from "@/config/entities/payroll.config"
+import {
+  PAYROLL_DETAIL_SEARCH_PARAM,
+  PAYROLL_STATUS,
+  PAYROLL_STATUS_LABELS,
+} from "@/config/entities/payroll.config"
 import { getTableColWidthPx } from "@/config/table-columns.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
 import { useApprovePayroll, usePayrolls, useRejectPayroll } from "@/hooks/payroll/use-payrolls"
@@ -19,6 +23,7 @@ import { exportPayrollsToCSV } from "@/utils/export.util"
 import { useCallback, useMemo, useState } from "react"
 
 import { CheckCircle2, Download, Inbox, MoreHorizontal, XCircle } from "lucide-react"
+import { useSearchParams } from "react-router-dom"
 
 const getPayrollStatusVariant = (status: string): "info" | "success" | "danger" | "neutral" => {
   switch (status) {
@@ -34,20 +39,38 @@ const getPayrollStatusVariant = (status: string): "info" | "success" | "danger" 
 }
 
 /**
- * PayrollManagement — Enterprise payroll cycles management page.
- * Powered by DataTablePage master component with viewport-locked internal scrolling,
- * sticky header, standardized column widths, and pinned pagination footer.
+ * Displays payroll periods and opens the period referenced by an approval notification.
+ * @returns {import("react").ReactElement} The payroll screen.
  */
 export default function PayrollManagement() {
   const [filters] = useState<{ status?: string; year?: number }>({})
   const { data: payrolls, isLoading } = usePayrolls(filters)
   const { mutate: approvePayroll } = useApprovePayroll()
   const { mutate: rejectPayroll } = useRejectPayroll()
+  const [searchParams, setSearchParams] = useSearchParams()
+  /**
+   * Identifies the payroll period requested by the notification link.
+   * @type {string | null}
+   */
+  const linkedPayrollId = searchParams.get(PAYROLL_DETAIL_SEARCH_PARAM)
 
   const [selectedPayrollId, setSelectedPayrollId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
+
+  /**
+   * Closes the payroll details and removes the notification link parameter.
+   * @returns {void}
+   */
+  const handleCloseDetail = () => {
+    setSelectedPayrollId(null)
+    if (linkedPayrollId) {
+      const nextParams = new URLSearchParams(searchParams)
+      nextParams.delete(PAYROLL_DETAIL_SEARCH_PARAM)
+      setSearchParams(nextParams, { replace: true })
+    }
+  }
 
   const handleExport = useCallback(() => {
     if (payrolls && payrolls.length > 0) {
@@ -284,10 +307,8 @@ export default function PayrollManagement() {
       />
 
       <PayrollDetailSheet
-        payrollId={selectedPayrollId}
-        onClose={() => {
-          setSelectedPayrollId(null)
-        }}
+        payrollId={linkedPayrollId ?? selectedPayrollId}
+        onClose={handleCloseDetail}
       />
     </>
   )

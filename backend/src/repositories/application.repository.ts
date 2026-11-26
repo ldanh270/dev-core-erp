@@ -68,19 +68,15 @@ export class PrismaApplicationRepository extends BaseRepository implements IAppl
   }
 
   /**
-   * Creates and submits a new application with the correct detail relation in a single query.
+   * Stores an application with its type-specific details and initial workflow status.
    *
-   * @param data - The application details and parameters.
-   * @returns A promise that resolves to the newly created application with all included relations.
+   * @param {ISubmitApplicationDTO} data - Application details and optional routing information.
+   * @returns {Promise<IApplicationEntity>} The saved application and its associated details.
    */
   async submit(data: ISubmitApplicationDTO): Promise<IApplicationEntity> {
     const { employeeId, type, startDate, endDate, reason, note, assignedToId, detail } = data
 
-    // shift_swap starts at partner_pending — the swap partner must confirm first
-    const isShiftSwap = type === ApplicationType.shift_swap
-    const initialStatus = isShiftSwap
-      ? ApplicationStatus.partner_pending
-      : ApplicationStatus.pending
+    const initialStatus = this.getInitialStatus(data)
 
     return this.prisma.application.create({
       data: {
@@ -99,19 +95,16 @@ export class PrismaApplicationRepository extends BaseRepository implements IAppl
   }
 
   /**
-   * Creates and submits multiple applications in a single transaction.
+   * Stores a batch of applications in one transaction.
    *
-   * @param data - Array of application details.
-   * @returns A promise that resolves to an array of created applications.
+   * @param {ISubmitApplicationDTO[]} data - Applications to submit together.
+   * @returns {Promise<IApplicationEntity[]>} The saved applications and their associated details.
    */
   async submitBulk(data: ISubmitApplicationDTO[]): Promise<IApplicationEntity[]> {
     const creates = data.map((item) => {
       const { employeeId, type, startDate, endDate, reason, note, assignedToId } = item
 
-      const isShiftSwap = type === ApplicationType.shift_swap
-      const initialStatus = isShiftSwap
-        ? ApplicationStatus.partner_pending
-        : ApplicationStatus.pending
+      const initialStatus = this.getInitialStatus(item)
 
       return this.prisma.application.create({
         data: {
@@ -130,6 +123,18 @@ export class PrismaApplicationRepository extends BaseRepository implements IAppl
     })
 
     return this.prisma.$transaction(creates)
+  }
+
+  /**
+   * Requires partner confirmation only when the shift swap names a colleague.
+   *
+   * @param {ISubmitApplicationDTO} data - Application details used to determine its first workflow step.
+   * @returns {ApplicationStatus} The initial workflow status.
+   */
+  private getInitialStatus(data: ISubmitApplicationDTO): ApplicationStatus {
+    const requiresPartner =
+      data.type === ApplicationType.shift_swap && Boolean(data.detail.swapWithEmployeeId)
+    return requiresPartner ? ApplicationStatus.partner_pending : ApplicationStatus.pending
   }
 
   /**
@@ -253,12 +258,11 @@ export class PrismaApplicationRepository extends BaseRepository implements IAppl
   }
 
   /**
-   * Approves a pending application and records the approving processor.
-   * Also executes necessary side-effects (like swapping shifts).
+   * Approves a pending application and commits its related workflow changes together.
    *
-   * @param id - The application ID.
-   * @param approvedBy - The ID of the processor approving the application.
-   * @returns A promise that resolves to the updated application, or null if update failed.
+   * @param {string} id - Application identifier.
+   * @param {string} approvedBy - Employee who approved the application.
+   * @returns {Promise<IApplicationEntity | null>} The approved application, or null if the decision could not be recorded.
    */
   async approve(id: string, approvedBy: string): Promise<IApplicationEntity | null> {
     try {
@@ -450,9 +454,9 @@ export class PrismaApplicationRepository extends BaseRepository implements IAppl
             }
           }
 
-          // 3. Update application status
+          // The pending guard rolls back side effects when another processor decides first.
           return await tx.application.update({
-            where: { id },
+            where: { id, status: ApplicationStatus.pending },
             data: {
               status: ApplicationStatus.approved,
               approvedById: approvedBy,
@@ -471,17 +475,17 @@ export class PrismaApplicationRepository extends BaseRepository implements IAppl
   }
 
   /**
-   * Rejects a pending application, recording the processor and the rejection reason.
+   * Records a rejection only if the application is still pending.
    *
-   * @param id - The application ID.
-   * @param rejectedBy - The ID of the processor rejecting the application.
-   * @param rejectReason - The explanation for rejection.
-   * @returns A promise that resolves to the updated application, or null if update failed.
+   * @param {string} id - Application identifier.
+   * @param {string} rejectedBy - Employee who rejected the application.
+   * @param {string} [rejectReason] - Optional explanation for the decision.
+   * @returns {Promise<IApplicationEntity | null>} The rejected application, or null if the decision could not be recorded.
    */
   async reject(
     id: string,
     rejectedBy: string,
-    rejectReason: string,
+    rejectReason?: string,
   ): Promise<IApplicationEntity | null> {
     try {
       return await this.prisma.application.update({
