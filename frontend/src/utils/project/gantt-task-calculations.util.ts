@@ -1,4 +1,4 @@
-import { TASK_PRIORITY, TASK_STATUS, TASK_TRACKER } from "@/config/entities/project.config"
+﻿import { TASK_PRIORITY, TASK_STATUS, TASK_TRACKER } from "@/config/entities/project.config"
 import type { Task } from "@/types/task.types"
 
 import { differenceInDays, startOfDay } from "date-fns"
@@ -9,7 +9,7 @@ import {
   GANTT_FILTER_KEY,
   GANTT_FILTER_OPERATOR,
   GANTT_FILTER_TYPE,
-} from "../constants/gantt.constants"
+} from '@/constants/gantt.constants'
 
 /**
  * Resolves the default filter comparison operator for a given Gantt filter property key.
@@ -323,3 +323,5 @@ export function getGanttTaskGridStyle(
     gridColumnEnd: startCol + span,
   }
 }
+
+

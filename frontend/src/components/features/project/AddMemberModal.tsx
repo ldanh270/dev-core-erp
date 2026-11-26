@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+﻿import { useEffect, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
@@ -31,7 +31,7 @@ import type { ProjectMember } from "@/types/project.types"
 import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util"
 import { extractErrorMessage } from "@/utils/error-helper"
 
-import { useProjectRoles } from "../hooks/use-project-role"
+import { useProjectRoles } from '@/hooks/project/use-project-role'
 
 const SELECT_NONE_VALUE = "none"
 
@@ -258,3 +258,4 @@ export function AddMemberModal({
     </Dialog>
   )
 }
+

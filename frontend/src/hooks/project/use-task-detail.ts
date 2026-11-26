@@ -1,10 +1,10 @@
-import { PROJECT_ROLE } from "@/config/entities/project.config"
+﻿import { PROJECT_ROLE } from "@/config/entities/project.config"
 import { usePermission } from "@/hooks/use-permission"
 import { useProfile } from "@/hooks/use-profile"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
 import { projectApi } from "@/lib/api/project.api"
 import { taskApi } from "@/lib/api/task.api"
-import { useProjectTrackers } from "@/pages/project/hooks/use-project-tracker"
+import { useProjectTrackers } from "@/hooks/project/use-project-tracker"
 import { useAuthStore } from "@/store/auth-store"
 import type { Task } from "@/types/task.types"
 
@@ -234,3 +234,4 @@ export function useTaskDetail() {
     ...editForm,
   }
 }
+

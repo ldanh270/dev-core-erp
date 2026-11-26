@@ -210,6 +210,9 @@ function CapacityBoardProjectColumn({
   )
 }
 
+/**
+ * Weekly capacity board presenter component for managers to track staffing forecasts.
+ */
 export function ProjectCapacityBoard() {
   const { hasPermission } = usePermission()
   const [weekStart, setWeekStart] = useState(getWeekStartDateKey(getCurrentWeekStart()))

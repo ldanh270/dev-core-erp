@@ -1,4 +1,4 @@
-import type React from "react"
+﻿import type React from "react"
 import { Edit2, Plus, RefreshCw, Save, Trash2, X } from "lucide-react"
 
 import { PageCard } from "@/components/common"
@@ -30,8 +30,8 @@ import {
   type DisplayRoleMember,
   SELECT_NONE_VALUE,
   useProjectPositionRules,
-} from "../hooks/use-project-position-rules"
-import { TrackerDropdown } from "./tracker-dropdown"
+} from '@/hooks/project/use-project-position-rules'
+import { TrackerDropdown } from './TrackerDropdown'
 
 function ProjectRoleFormDialog({
   isOpen,
@@ -559,3 +559,5 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
     </>
   )
 }
+
+

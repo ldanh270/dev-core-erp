@@ -1,9 +1,9 @@
-import { Label } from "@/components/ui/label"
+﻿import { Label } from "@/components/ui/label"
 import {
   useCreateProjectTracker,
   useDeleteProjectTracker,
   useUpdateProjectTracker,
-} from "@/pages/project/hooks/use-project-tracker"
+} from "@/hooks/project/use-project-tracker"
 import type { ProjectTracker } from "@/types/project-tracker.types"
 import { Check, CheckSquare, ChevronDown, Edit2, Plus, Square, Trash2, X } from "lucide-react"
 import { useState } from "react"
@@ -387,3 +387,4 @@ export function ProjectTrackersDropdown({
     </div>
   )
 }
+

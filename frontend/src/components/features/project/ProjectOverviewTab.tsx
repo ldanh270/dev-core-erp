@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+﻿import { useMemo } from "react"
 import { BarChart3, Clock, TrendingUp, Users } from "lucide-react"
 
 import { PageCard } from "@/components/common"
@@ -15,7 +15,7 @@ import { TASK_TRACKERS, getProjectMemberWorkModeLabel } from "@/config/entities/
 import type { Project, ProjectMember } from "@/types/project.types"
 import type { Task } from "@/types/task.types"
 
-import { ProjectCapacityCopilotCard } from "./project-capacity-copilot-card"
+import { ProjectCapacityCopilotCard } from './ProjectCapacityCopilotCard'
 
 interface TaskStatusSegment {
   value: number
@@ -549,3 +549,4 @@ export function ProjectOverviewTab({
     </div>
   )
 }
+

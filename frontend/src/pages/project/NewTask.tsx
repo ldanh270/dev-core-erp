@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom"
+﻿import { useNavigate } from "react-router-dom"
 import { EntityFormPage } from "@/components/common"
-import { useNewTaskForm } from "@/pages/project/hooks/use-new-task-form"
+import { useNewTaskForm } from "@/hooks/project/use-new-task-form"
 import { NewTaskForm } from "@/components/features/project/NewTaskForm"
 
 /**
@@ -109,3 +109,4 @@ export default function NewTask() {
     </EntityFormPage>
   )
 }
+

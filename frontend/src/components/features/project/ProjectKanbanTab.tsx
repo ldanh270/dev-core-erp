@@ -1,4 +1,4 @@
-import { BoardAddColumnCard, BoardView } from "@/components/common"
+﻿import { BoardAddColumnCard, BoardView } from "@/components/common"
 import { ProjectKanbanColumn } from "@/components/features/project/kanban/ProjectKanbanColumn"
 import { ProjectKanbanDialogs } from "@/components/features/project/kanban/ProjectKanbanDialogs"
 import { groupTasksByStatus } from "@/components/features/project/kanban/project-kanban-utils"
@@ -24,7 +24,7 @@ import { useMemo } from "react"
 
 import { FolderKanban, Plus } from "lucide-react"
 
-import { useProjectKanban } from "../hooks/use-project-kanban"
+import { useProjectKanban } from '@/hooks/project/use-project-kanban'
 
 interface ProjectKanbanTabProps {
   projectId: string
@@ -213,3 +213,4 @@ export function ProjectKanbanTab({ projectId, teamLeader, user }: ProjectKanbanT
     </div>
   )
 }
+

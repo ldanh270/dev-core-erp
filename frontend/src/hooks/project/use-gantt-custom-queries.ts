@@ -1,4 +1,4 @@
-import { CUSTOM_QUERY_TYPE } from "@/config/entities/project.config"
+﻿import { CUSTOM_QUERY_TYPE } from "@/config/entities/project.config"
 import { customQueryApi } from "@/lib/api/custom-query.api"
 import type { CustomQuery } from "@/lib/api/custom-query.api"
 import { extractErrorMessage } from "@/utils/error-helper"
@@ -9,7 +9,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 
-import { PROJECT_QUERY_KEY } from "../constants/gantt.constants"
+import { PROJECT_QUERY_KEY } from '@/constants/gantt.constants'
 
 interface UseGanttCustomQueriesProps {
   projectId: string
@@ -176,3 +176,5 @@ export function useGanttCustomQueries({
     clearUrlQueryId,
   }
 }
+
+

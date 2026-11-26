@@ -1,4 +1,4 @@
-import { DatePicker } from "@/components/common"
+﻿import { DatePicker } from "@/components/common"
 import { ProjectTrackersDropdown } from "@/components/features/project/ProjectTrackersDropdown"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,7 +20,7 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { PROJECT_STATUSES, TASK_CREATION_POLICIES } from "@/config/entities/project.config"
 import { SELECT_NONE_VALUE, useEditProjectForm } from "@/hooks/project/use-edit-project-form"
-import { useProjectTrackers } from "@/pages/project/hooks/use-project-tracker"
+import { useProjectTrackers } from "@/hooks/project/use-project-tracker"
 import type { Employee } from "@/types/employee.types"
 import type { Project } from "@/types/project.types"
 import type { ProjectTracker } from "@/types/project-tracker.types"
@@ -432,3 +432,4 @@ export function EditProjectModal({
     </Dialog>
   )
 }
+

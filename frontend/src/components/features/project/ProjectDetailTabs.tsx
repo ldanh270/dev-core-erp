@@ -1,12 +1,12 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+﻿import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { type ActivityItem, PROJECT_TABS } from "@/hooks/project/use-project-detail"
 import { cn } from "@/lib/utils"
-import { ProjectActivityTab } from "@/pages/project/components/project-activity-tab"
-import { ProjectGanttTab } from "@/pages/project/components/project-gantt-tab"
-import { ProjectIssuesTab } from "@/pages/project/components/project-issues-tab"
-import { ProjectKanbanTab } from "@/pages/project/components/project-kanban-tab"
-import { ProjectOverviewTab } from "@/pages/project/components/project-overview-tab"
-import { ProjectPositionRules } from "@/pages/project/components/project-position-rules"
+import { ProjectActivityTab } from '@/components/features/project/ProjectActivityTab'
+import { ProjectGanttTab } from '@/components/features/project/ProjectGanttTab'
+import { ProjectIssuesTab } from '@/components/features/project/ProjectIssuesTab'
+import { ProjectKanbanTab } from '@/components/features/project/ProjectKanbanTab'
+import { ProjectOverviewTab } from '@/components/features/project/ProjectOverviewTab'
+import { ProjectPositionRules } from '@/components/features/project/ProjectPositionRules'
 import type { Project, ProjectMember } from "@/types/project.types"
 import type { Task } from "@/types/task.types"
 import type { User } from "@/store/auth-store"
@@ -160,3 +160,5 @@ export function ProjectDetailTabs({
     </Tabs>
   )
 }
+
+

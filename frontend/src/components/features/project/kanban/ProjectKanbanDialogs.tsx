@@ -11,6 +11,9 @@ export interface KanbanColorPickerProps {
   setColumnColor: (color: string) => void
 }
 
+/**
+ * Color picker presenter component for choosing Kanban column themes.
+ */
 export function KanbanColorPicker({ columnColor, setColumnColor }: KanbanColorPickerProps) {
   return (
     <div className="space-y-1.5">

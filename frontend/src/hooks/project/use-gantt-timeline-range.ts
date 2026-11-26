@@ -1,4 +1,4 @@
-import type { Project } from "@/types/project.types"
+﻿import type { Project } from "@/types/project.types"
 import type { Task } from "@/types/task.types"
 
 import { useEffect, useMemo, useState } from "react"
@@ -8,7 +8,7 @@ import { addDays, differenceInDays, eachDayOfInterval, format } from "date-fns"
 import {
   DEFAULT_MONTHS_RANGE,
   DEFAULT_MONTHS_RANGE_STRING,
-} from "../constants/gantt.constants"
+} from '@/constants/gantt.constants'
 
 interface UseGanttTimelineRangeProps {
   project: Project
@@ -197,3 +197,5 @@ export function useGanttTimelineRange({ project, tasks }: UseGanttTimelineRangeP
     handleZoomOut,
   }
 }
+
+

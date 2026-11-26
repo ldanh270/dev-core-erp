@@ -1,4 +1,4 @@
-import type { Project } from "@/types/project.types"
+﻿import type { Project } from "@/types/project.types"
 
 import { Clock } from "lucide-react"
 
@@ -9,7 +9,7 @@ import { GanttTaskHoverTooltip } from "./gantt/GanttTaskHoverTooltip"
 import { GanttTimelineGrid } from "./gantt/GanttTimelineGrid"
 import { GanttToolbar } from "./gantt/GanttToolbar"
 import { useProjectGanttTabState } from "./gantt/useProjectGanttTabState"
-import { TaskReviewModal } from "./task-review-modal"
+import { TaskReviewModal } from './TaskReviewModal'
 
 /**
  * Properties for ProjectGanttTab component.
@@ -165,3 +165,4 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
     </div>
   )
 }
+

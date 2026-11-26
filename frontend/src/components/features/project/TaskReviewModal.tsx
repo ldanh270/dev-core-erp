@@ -1,4 +1,4 @@
-import type { FormEvent } from "react"
+﻿import type { FormEvent } from "react"
 import { AlertTriangle, CheckCircle2, Clock, CornerDownRight, FileText, XCircle } from "lucide-react"
 
 import { SafeHtml } from "@/components/common"
@@ -16,7 +16,7 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { Textarea } from "@/components/ui/textarea"
 import type { Task } from "@/types/task.types"
 
-import { useTaskReview } from "../hooks/use-task-review"
+import { useTaskReview } from '@/hooks/project/use-task-review'
 
 function TaskReviewStatusBanner({ task }: { task: Task }) {
   return (
@@ -344,3 +344,4 @@ export function TaskReviewModal({
     </Dialog>
   )
 }
+

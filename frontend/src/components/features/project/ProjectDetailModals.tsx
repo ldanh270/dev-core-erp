@@ -1,8 +1,8 @@
-import React from "react"
-import { AddMemberModal } from "@/pages/project/components/add-member-modal"
-import { EditMemberModal } from "@/pages/project/components/edit-member-modal"
+﻿import React from "react"
+import { AddMemberModal } from '@/components/features/project/AddMemberModal'
+import { EditMemberModal } from '@/components/features/project/EditMemberModal'
 import { EditProjectModal } from "@/components/features/project/EditProjectModal"
-import { ProjectTaskGeneratorModal } from "@/pages/project/components/project-task-generator-modal"
+import { ProjectTaskGeneratorModal } from '@/components/features/project/ProjectTaskGeneratorModal'
 import type { Project, ProjectMember } from "@/types/project.types"
 import type { Employee } from "@/types/employee.types"
 
@@ -75,3 +75,5 @@ export const ProjectDetailModals: React.FC<ProjectDetailModalsProps> = ({
     </>
   )
 }
+
+

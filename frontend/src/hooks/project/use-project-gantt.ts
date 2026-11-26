@@ -1,4 +1,4 @@
-import { TASK_PRIORITY, TASK_TRACKER } from "@/config/entities/project.config"
+﻿import { TASK_PRIORITY, TASK_TRACKER } from "@/config/entities/project.config"
 import { usePermission } from "@/hooks/use-permission"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
 import { projectApi } from "@/lib/api/project.api"
@@ -19,14 +19,14 @@ import {
   GANTT_FILTER_OPERATOR,
   PROJECT_QUERY_KEY,
   QUICK_QUERY_TYPE,
-} from "../constants/gantt.constants"
+} from '@/constants/gantt.constants'
 import {
   buildGanttTaskTree,
   filterGanttTasks,
   getDefaultGanttOperator,
   getDefaultGanttValue,
   getGanttTaskGridStyle,
-} from "../utils/gantt-task-calculations.util"
+} from '@/utils/project/gantt-task-calculations.util'
 import { useGanttCustomQueries } from "./use-gantt-custom-queries"
 import { useGanttTimelineRange } from "./use-gantt-timeline-range"
 
@@ -364,3 +364,5 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
     handleQuickQuery,
   }
 }
+
+

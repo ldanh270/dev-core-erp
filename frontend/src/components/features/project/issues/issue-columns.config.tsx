@@ -11,6 +11,9 @@ import { Link } from "react-router-dom"
  */
 export const ALL_FILTER_VALUE = "all"
 
+/**
+ * Returns localized label for task status codes in issue columns.
+ */
 export const formatStatus = (status: string) => {
   switch (status) {
     case "todo":

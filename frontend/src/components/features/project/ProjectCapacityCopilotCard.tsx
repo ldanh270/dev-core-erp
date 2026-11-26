@@ -135,6 +135,9 @@ interface ProjectCapacityCopilotCardProps {
   dealTargetPercent: number | null
 }
 
+/**
+ * Per-project forecast card presenter component driven by deal target and staffing predictions.
+ */
 export function ProjectCapacityCopilotCard({
   projectId,
   members,

@@ -1,4 +1,4 @@
-import { useConfirm } from "@/components/common"
+﻿import { useConfirm } from "@/components/common"
 import { usePermission } from "@/hooks/use-permission"
 import { employeeApi } from "@/lib/api/employee.api"
 import { projectApi } from "@/lib/api/project.api"
@@ -8,12 +8,12 @@ import {
   PROJECT_TABS,
   type ProjectTab,
   buildActivitiesList,
-} from "@/pages/project/types/project-detail.types"
+} from "@/types/project-detail.types"
 import {
   computeTaskCounts,
   computeTotalSpentHours,
   computeTrackerStats,
-} from "@/pages/project/utils/project-statistics.util"
+} from "@/utils/project/project-statistics.util"
 import { useAuthStore } from "@/store/auth-store"
 import type { ProjectMember } from "@/types/project.types"
 import { extractErrorMessage } from "@/utils/error-helper"
@@ -213,3 +213,4 @@ export function useProjectDetail() {
     handleTabChange,
   }
 }
+

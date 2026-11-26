@@ -206,6 +206,9 @@ interface LogTimeModalProps {
   onSuccess?: () => void
 }
 
+/**
+ * Modal dialog component for project members to log task hours and record spent time.
+ */
 export default function LogTimeModal({
   open,
   onOpenChange,
