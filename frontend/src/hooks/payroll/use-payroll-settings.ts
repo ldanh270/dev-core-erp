@@ -5,6 +5,9 @@ import type { IPayrollSettings } from "@/types/payroll.types"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
+/**
+ * Query hook fetching organizational payroll cycle configuration and date boundaries.
+ */
 export function usePayrollSettings() {
   return useQuery({
     queryKey: PAYROLL_QUERY_KEYS.SETTINGS,

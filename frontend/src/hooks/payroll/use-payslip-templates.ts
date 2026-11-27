@@ -5,6 +5,9 @@ import type { IPayslipTemplate } from "@/types/payroll.types"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
+/**
+ * Query and mutation hooks for payslip templates CRUD operations.
+ */
 export function usePayslipTemplates() {
   return useQuery({
     queryKey: PAYROLL_QUERY_KEYS.PAYSLIP_TEMPLATES,

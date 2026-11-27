@@ -29,6 +29,9 @@ const formSchema = z.object({
   description: z.string().optional(),
 })
 
+/**
+ * Custom hook managing salary component creation and formula configuration state.
+ */
 export type SalaryComponentFormValues = z.infer<typeof formSchema>
 
 interface UseSalaryComponentFormProps {

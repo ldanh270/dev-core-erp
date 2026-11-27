@@ -5,6 +5,9 @@ import type { ISalaryComponent } from "@/types/payroll.types"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
+/**
+ * Query and mutation hooks for salary components CRUD operations.
+ */
 export function useSalaryComponents() {
   return useQuery({
     queryKey: PAYROLL_QUERY_KEYS.SALARY_COMPONENTS,

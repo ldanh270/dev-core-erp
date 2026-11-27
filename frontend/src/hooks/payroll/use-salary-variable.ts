@@ -5,6 +5,9 @@ import apiClient from "@/lib/api-client"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
+/**
+ * Query and mutation hooks for salary variable definitions and values.
+ */
 export interface ISalaryVariable {
   id: string
   code: string

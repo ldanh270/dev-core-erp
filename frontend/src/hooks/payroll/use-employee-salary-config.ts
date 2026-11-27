@@ -5,6 +5,9 @@ import type { IEmployeeSalaryConfig, IPayslipTemplate } from "@/types/payroll.ty
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
+/**
+ * Custom hook managing employee salary configuration form state and mutation submission.
+ */
 export function useActiveSalaryConfig(employeeId: string) {
   return useQuery({
     queryKey: [...PAYROLL_QUERY_KEYS.EMPLOYEE_SALARY_CONFIG, "active", employeeId],

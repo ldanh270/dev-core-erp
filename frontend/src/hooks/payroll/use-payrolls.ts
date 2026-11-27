@@ -14,6 +14,9 @@ import type { IPayslip } from "@/types/payroll.types"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
+/**
+ * Query and mutation hooks for fetching, generating, and approving monthly payroll batches.
+ */
 export function usePayslip(payrollId: string | null, employeeId: string | null) {
   return useQuery({
     queryKey: [...PAYROLL_QUERY_KEYS.PAYSLIP, payrollId, employeeId],

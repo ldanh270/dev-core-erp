@@ -22,6 +22,9 @@ interface SalaryVariableFormPageProps {
   onEdit?: () => void
 }
 
+/**
+ * Form page component to create or update salary computation variables and formula references.
+ */
 export function SalaryVariableFormPage({
   initialData,
   isReadOnly = false,

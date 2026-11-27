@@ -19,6 +19,9 @@ const formSchema = z.object({
   isActive: z.boolean().default(true),
 })
 
+/**
+ * Custom hook managing salary variable form state, validation, and submission.
+ */
 export type SalaryVariableFormValues = z.infer<typeof formSchema>
 
 interface UseSalaryVariableFormProps {
