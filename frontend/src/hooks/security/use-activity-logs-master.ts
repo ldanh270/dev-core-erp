@@ -1,3 +1,4 @@
+import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useActivityLogs } from "@/hooks/security/queries/use-security-query"
 import { useDebounce } from "@/hooks/use-debounce"
 import type { ActivityLogQuery } from "@/types/security.types"
@@ -22,7 +23,7 @@ export function useActivityLogsMaster() {
 
   const [query, setQuery] = useState<ActivityLogQuery>({
     page: pageParam,
-    limit: 20,
+    limit: SYSTEM_CONFIG.PAGINATION.MEDIUM_LIMIT,
     category: categoryParam,
     actionType: actionTypeParam,
     fromDate: fromDateParam,
@@ -100,9 +101,18 @@ export function useActivityLogsMaster() {
     [],
   )
 
+  const currentPage = query.page || 1
+  const pageSize = query.limit || SYSTEM_CONFIG.PAGINATION.MEDIUM_LIMIT
+  const totalPages = data?.meta.totalPages ?? 0
+  const totalItems = data?.meta.total ?? 0
+
   return {
     query,
     setQuery,
+    currentPage,
+    pageSize,
+    totalPages,
+    totalItems,
     searchTerm,
     handleSearch,
     handleFilterChange,

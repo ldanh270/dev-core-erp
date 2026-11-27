@@ -13,12 +13,18 @@ import type { ActivityLogQuery } from "@/types/security.types"
 
 import { Download, FileWarning, Loader2 } from "lucide-react"
 
+/**
+ * Props for ExportLogsModal component.
+ */
 interface ExportLogsModalProps {
   isOpen: boolean
   onClose: () => void
   query: ActivityLogQuery
 }
 
+/**
+ * Modal dialog for initiating, monitoring, and downloading exported activity logs.
+ */
 export function ExportLogsModal({ isOpen, onClose, query }: ExportLogsModalProps) {
   const { progress, startExport, cancelExport } = useActivityExport(query)
 
