@@ -66,7 +66,9 @@ export function TaskDetailHeader({
                 <Button
                   variant="ghost"
                   disabled={!prevTaskId}
-                  onClick={() => onNavigateSibling(prevTaskId)}
+                  onClick={() => {
+                    onNavigateSibling(prevTaskId)
+                  }}
                   className="h-5 cursor-pointer px-1.5 text-[9px] font-bold hover:bg-background disabled:opacity-40"
                 >
                   « Trước
@@ -77,7 +79,9 @@ export function TaskDetailHeader({
                 <Button
                   variant="ghost"
                   disabled={!nextTaskId}
-                  onClick={() => onNavigateSibling(nextTaskId)}
+                  onClick={() => {
+                    onNavigateSibling(nextTaskId)
+                  }}
                   className="h-5 cursor-pointer px-1.5 text-[9px] font-bold hover:bg-background disabled:opacity-40"
                 >
                   Sau »

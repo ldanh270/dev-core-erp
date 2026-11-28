@@ -25,7 +25,9 @@ export function KanbanColorPicker({ columnColor, setColumnColor }: KanbanColorPi
           <button
             key={hex}
             type="button"
-            onClick={() => setColumnColor(hex)}
+            onClick={() => {
+              setColumnColor(hex)
+            }}
             className={`size-6 rounded-full border transition-all relative shrink-0 cursor-pointer ${
               columnColor === hex
                 ? "scale-110 ring-2 ring-primary/45 border-transparent"

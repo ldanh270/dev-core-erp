@@ -138,7 +138,9 @@ export function RoleCardsGrid({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 rounded-full text-muted-foreground hover:text-primary"
-                      onClick={() => onOpenEdit(role)}
+                      onClick={() => {
+                        onOpenEdit(role)
+                      }}
                       aria-label={`Chỉnh sửa vai trò ${ROLE_LABELS[role.name] || role.name}`}
                     >
                       <Edit2 size={13} />
@@ -149,7 +151,9 @@ export function RoleCardsGrid({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 rounded-full text-muted-foreground hover:text-destructive"
-                      onClick={() => onDeleteRole(role.id)}
+                      onClick={() => {
+                        onDeleteRole(role.id)
+                      }}
                       aria-label={`Xóa vai trò ${ROLE_LABELS[role.name] || role.name}`}
                     >
                       <Trash2 size={13} />
@@ -159,7 +163,9 @@ export function RoleCardsGrid({
                     variant="ghost"
                     size="sm"
                     className="gap-1.5 h-8 px-2.5 rounded-full text-xs text-primary hover:text-primary hover:bg-primary/5"
-                    onClick={() => onOpenDetail(role)}
+                    onClick={() => {
+                      onOpenDetail(role)
+                    }}
                   >
                     Xem chi tiết
                     <ArrowRight size={13} />

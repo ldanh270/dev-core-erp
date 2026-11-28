@@ -63,7 +63,9 @@ export function KanbanCreateColumnDialog({
             <Input
               id="create-kanban-status-name"
               value={columnName}
-              onChange={(e) => setColumnName(e.target.value)}
+              onChange={(e) => {
+                setColumnName(e.target.value)
+              }}
               placeholder="Ví dụ: Đang đợi, QC, Hoàn tất..."
               required
               className="h-9 text-xs border-border rounded-full"
@@ -98,7 +100,9 @@ export function KanbanCreateColumnDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                onOpenChange(false)
+              }}
               className="h-9 text-xs rounded-full"
             >
               Hủy

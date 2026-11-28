@@ -142,9 +142,13 @@ export function CustomQueryFilterSection({
         <CustomQueryFilterRow
           label="Kiểu công việc"
           enabled={newQueryFilters.tracker.enabled}
-          onEnabledChange={(checked) => updateFilter("tracker", "enabled", checked)}
+          onEnabledChange={(checked) => {
+            updateFilter("tracker", "enabled", checked)
+          }}
           value={newQueryFilters.tracker.value}
-          onValueChange={(val) => updateFilter("tracker", "value", val)}
+          onValueChange={(val) => {
+            updateFilter("tracker", "value", val)
+          }}
           options={[
             { value: "all", label: "tất cả" },
             ...TASK_TRACKERS.map((tr) => ({ value: tr, label: tr })),
@@ -155,9 +159,13 @@ export function CustomQueryFilterSection({
         <CustomQueryFilterRow
           label="Mức ưu tiên"
           enabled={newQueryFilters.priority.enabled}
-          onEnabledChange={(checked) => updateFilter("priority", "enabled", checked)}
+          onEnabledChange={(checked) => {
+            updateFilter("priority", "enabled", checked)
+          }}
           value={newQueryFilters.priority.value}
-          onValueChange={(val) => updateFilter("priority", "value", val)}
+          onValueChange={(val) => {
+            updateFilter("priority", "value", val)
+          }}
           options={[
             { value: "all", label: "tất cả" },
             ...TASK_PRIORITIES.map((pr) => ({ value: pr, label: pr })),
@@ -168,9 +176,13 @@ export function CustomQueryFilterSection({
         <CustomQueryFilterRow
           label="Người thực hiện"
           enabled={newQueryFilters.assignee.enabled}
-          onEnabledChange={(checked) => updateFilter("assignee", "enabled", checked)}
+          onEnabledChange={(checked) => {
+            updateFilter("assignee", "enabled", checked)
+          }}
           value={newQueryFilters.assignee.value}
-          onValueChange={(val) => updateFilter("assignee", "value", val)}
+          onValueChange={(val) => {
+            updateFilter("assignee", "value", val)
+          }}
         >
           <SelectItem value="all">tất cả</SelectItem>
           <SelectItem value="me">Tôi (Người đăng nhập)</SelectItem>
@@ -186,9 +198,13 @@ export function CustomQueryFilterSection({
         <CustomQueryFilterRow
           label="Tác giả"
           enabled={newQueryFilters.createdBy.enabled}
-          onEnabledChange={(checked) => updateFilter("createdBy", "enabled", checked)}
+          onEnabledChange={(checked) => {
+            updateFilter("createdBy", "enabled", checked)
+          }}
           value={newQueryFilters.createdBy.value}
-          onValueChange={(val) => updateFilter("createdBy", "value", val)}
+          onValueChange={(val) => {
+            updateFilter("createdBy", "value", val)
+          }}
         >
           <SelectItem value="all">tất cả</SelectItem>
           <SelectItem value="me">Tôi (Người tạo)</SelectItem>

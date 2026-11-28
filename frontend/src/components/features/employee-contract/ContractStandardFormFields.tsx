@@ -68,7 +68,12 @@ export function ContractStandardFormFields({
         <Label htmlFor="contractType" className="text-xs font-medium">
           Loại hợp đồng <span className="text-destructive">*</span>
         </Label>
-        <Select value={contractType} onValueChange={(val) => setContractType(val as ContractType)}>
+        <Select
+          value={contractType}
+          onValueChange={(val) => {
+            setContractType(val as ContractType)
+          }}
+        >
           <SelectTrigger className="rounded-full">
             <SelectValue placeholder="Chọn loại HĐ" />
           </SelectTrigger>
@@ -89,7 +94,9 @@ export function ContractStandardFormFields({
         <Input
           id="contractNumber"
           value={contractNumber}
-          onChange={(e) => setContractNumber(e.target.value)}
+          onChange={(e) => {
+            setContractNumber(e.target.value)
+          }}
           placeholder="HD-XXXX"
           className="rounded-full"
           required
@@ -103,7 +110,9 @@ export function ContractStandardFormFields({
         <Input
           id="title"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => {
+            setTitle(e.target.value)
+          }}
           placeholder="VD: Hợp đồng lao động chính thức"
           className="rounded-full"
         />
@@ -116,7 +125,9 @@ export function ContractStandardFormFields({
         <DatePicker
           id="startDate"
           value={startDate || null}
-          onChange={(val) => setStartDate(val || "")}
+          onChange={(val) => {
+            setStartDate(val || "")
+          }}
           placeholder="Chọn ngày bắt đầu..."
         />
       </div>
@@ -129,7 +140,9 @@ export function ContractStandardFormFields({
           id="endDate"
           value={endDate || null}
           minDate={startDate}
-          onChange={(val) => setEndDate(val || "")}
+          onChange={(val) => {
+            setEndDate(val || "")
+          }}
           placeholder="Chọn ngày kết thúc..."
         />
       </div>
@@ -142,7 +155,9 @@ export function ContractStandardFormFields({
           <DatePicker
             id="trialEndDate"
             value={trialEndDate || null}
-            onChange={(val) => setTrialEndDate(val || "")}
+            onChange={(val) => {
+              setTrialEndDate(val || "")
+            }}
             placeholder="Chọn ngày kết thúc thử việc..."
           />
         </div>
@@ -156,7 +171,9 @@ export function ContractStandardFormFields({
           id="salary"
           type="number"
           value={salary}
-          onChange={(e) => setSalary(e.target.value)}
+          onChange={(e) => {
+            setSalary(e.target.value)
+          }}
           placeholder="0"
           className="rounded-full"
           required
@@ -172,7 +189,9 @@ export function ContractStandardFormFields({
             id="probationSalary"
             type="number"
             value={probationSalary}
-            onChange={(e) => setProbationSalary(e.target.value)}
+            onChange={(e) => {
+              setProbationSalary(e.target.value)
+            }}
             placeholder="0"
             className="rounded-full"
           />
@@ -187,7 +206,9 @@ export function ContractStandardFormFields({
           id="note"
           placeholder="Ghi chú thêm về điều khoản..."
           value={note}
-          onChange={(e) => setNote(e.target.value)}
+          onChange={(e) => {
+            setNote(e.target.value)
+          }}
           className="rounded-xl border-border resize-none"
           rows={2}
         />

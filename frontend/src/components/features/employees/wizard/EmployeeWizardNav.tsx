@@ -29,7 +29,9 @@ export function EmployeeWizardNav({ activeTab, onTabChange }: EmployeeWizardNavP
           <button
             key={tab.id}
             type="button"
-            onClick={() => onTabChange(tab.id)}
+            onClick={() => {
+              onTabChange(tab.id)
+            }}
             className={`flex-1 py-2 px-5 text-sm font-medium rounded-full transition-all text-center cursor-pointer ${
               isActive
                 ? "bg-primary text-primary-foreground shadow-none font-semibold"

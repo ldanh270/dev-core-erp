@@ -30,7 +30,7 @@ function parseRoleDetails(details: unknown): string {
   if (!details) return "N/A"
   try {
     const parsed = typeof details === "string" ? JSON.parse(details) : details
-    return (parsed as { role?: string })?.role || "N/A"
+    return (parsed as { role?: string }).role || "N/A"
   } catch {
     return "N/A"
   }

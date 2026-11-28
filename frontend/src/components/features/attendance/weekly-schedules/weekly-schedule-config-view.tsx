@@ -69,7 +69,13 @@ export function WeeklyScheduleConfigView({
       contextPanel={<WeeklyScheduleConfigContextPanel />}
     >
       <Form {...form}>
-        <form id="weekly-schedule-config-form" onSubmit={onSubmit} className="w-full space-y-6">
+        <form
+          id="weekly-schedule-config-form"
+          onSubmit={(e) => {
+            void onSubmit(e)
+          }}
+          className="w-full space-y-6"
+        >
           <div className="space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <h3 className="text-lg font-medium tracking-tight">Chi tiết lịch trình</h3>

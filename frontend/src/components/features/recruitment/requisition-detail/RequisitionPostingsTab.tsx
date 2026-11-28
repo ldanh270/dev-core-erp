@@ -67,7 +67,9 @@ export function RequisitionPostingsTab({
                 <Button
                   variant="outline"
                   className="rounded-full"
-                  onClick={() => onOpen(posting.id)}
+                  onClick={() => {
+                    onOpen(posting.id)
+                  }}
                 >
                   <ExternalLink className="mr-2 size-4" />
                   Chi tiết
@@ -76,7 +78,9 @@ export function RequisitionPostingsTab({
                   <Button
                     variant="outline"
                     className="rounded-full"
-                    onClick={() => onPublish(posting.id)}
+                    onClick={() => {
+                      onPublish(posting.id)
+                    }}
                     disabled={publishing}
                   >
                     <FileSpreadsheet className="mr-2 size-4" />
@@ -93,7 +97,9 @@ export function RequisitionPostingsTab({
                 {posting.status === "open" && posting.connectorStatus === "ready" && canSync && (
                   <Button
                     className="rounded-full"
-                    onClick={() => onSync(posting.id)}
+                    onClick={() => {
+                      onSync(posting.id)
+                    }}
                     disabled={syncing}
                   >
                     <RefreshCw className={`mr-2 size-4 ${syncing ? "animate-spin" : ""}`} />

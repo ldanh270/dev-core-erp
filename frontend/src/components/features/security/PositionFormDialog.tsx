@@ -62,7 +62,12 @@ export function PositionFormDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={onSubmit} className="space-y-6 py-2">
+        <form
+          onSubmit={(e) => {
+            void onSubmit(e)
+          }}
+          className="space-y-6 py-2"
+        >
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label htmlFor="name" className="text-xs font-bold">
@@ -71,7 +76,9 @@ export function PositionFormDialog({
               <Input
                 id="name"
                 value={name}
-                onChange={(e) => onNameChange(e.target.value)}
+                onChange={(e) => {
+                  onNameChange(e.target.value)
+                }}
                 placeholder="Ví dụ: Lập trình viên"
                 className="rounded-full h-10 text-sm"
                 required
@@ -84,7 +91,9 @@ export function PositionFormDialog({
               <Input
                 id="code"
                 value={code}
-                onChange={(e) => onCodeChange(e.target.value)}
+                onChange={(e) => {
+                  onCodeChange(e.target.value)
+                }}
                 placeholder="Ví dụ: developer"
                 className="rounded-full h-10 text-sm font-mono"
                 disabled={!!editingId}
@@ -100,7 +109,9 @@ export function PositionFormDialog({
             <Textarea
               id="desc"
               value={description}
-              onChange={(e) => onDescriptionChange(e.target.value)}
+              onChange={(e) => {
+                onDescriptionChange(e.target.value)
+              }}
               placeholder="Nhập mô tả ngắn gọn về vai trò/chức năng của chức vụ này..."
               className="rounded-xl min-h-[60px] text-sm"
             />
@@ -122,7 +133,9 @@ export function PositionFormDialog({
                     <button
                       type="button"
                       key={key}
-                      onClick={() => onToggleTracker(key)}
+                      onClick={() => {
+                        onToggleTracker(key)
+                      }}
                       className={`flex items-center gap-2 p-2.5 rounded-full border text-left transition-all duration-200 cursor-pointer ${
                         isChecked
                           ? "bg-primary/5 border-primary text-primary"
@@ -146,7 +159,9 @@ export function PositionFormDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                onOpenChange(false)
+              }}
               className="rounded-full text-xs h-9"
             >
               Hủy bỏ

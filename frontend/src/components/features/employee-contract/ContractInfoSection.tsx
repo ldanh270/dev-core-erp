@@ -88,8 +88,12 @@ export function ContractInfoSection({
             </Label>
             <Input
               value={contractNumber}
-              onChange={(e) => onContractNumberChange(e.target.value)}
-              onBlur={() => onBlur("contractNumber")}
+              onChange={(e) => {
+                onContractNumberChange(e.target.value)
+              }}
+              onBlur={() => {
+                onBlur("contractNumber")
+              }}
               placeholder="HDLD.000018"
               className={cn(
                 "rounded-full font-mono",
@@ -106,7 +110,9 @@ export function ContractInfoSection({
             <Label className="text-xs font-medium">Hợp đồng tham chiếu</Label>
             <Input
               value={referenceContract}
-              onChange={(e) => onReferenceContractChange(e.target.value)}
+              onChange={(e) => {
+                onReferenceContractChange(e.target.value)
+              }}
               placeholder="Hợp đồng tham chiếu"
               className="rounded-full bg-muted/20"
             />
@@ -118,7 +124,9 @@ export function ContractInfoSection({
             </Label>
             <Select
               value={contractType}
-              onValueChange={(val) => onContractTypeChange(val as ContractType)}
+              onValueChange={(val) => {
+                onContractTypeChange(val as ContractType)
+              }}
             >
               <SelectTrigger className="rounded-full">
                 <SelectValue placeholder="Loại hợp đồng" />
@@ -139,7 +147,9 @@ export function ContractInfoSection({
             </Label>
             <DatePicker
               value={startDate || null}
-              onChange={(val) => onStartDateChange(val || "")}
+              onChange={(val) => {
+                onStartDateChange(val || "")
+              }}
               placeholder="Chọn ngày bắt đầu..."
             />
           </div>
@@ -149,7 +159,9 @@ export function ContractInfoSection({
             <DatePicker
               value={endDate || null}
               minDate={startDate}
-              onChange={(val) => onEndDateChange(val || "")}
+              onChange={(val) => {
+                onEndDateChange(val || "")
+              }}
               placeholder="Chọn ngày kết thúc..."
             />
           </div>
@@ -178,7 +190,9 @@ export function ContractInfoSection({
             </Label>
             <DatePicker
               value={signedDate || null}
-              onChange={(val) => onSignedDateChange(val || "")}
+              onChange={(val) => {
+                onSignedDateChange(val || "")
+              }}
               placeholder="Chọn ngày ký..."
             />
           </div>
@@ -188,7 +202,9 @@ export function ContractInfoSection({
             <div className="relative">
               <Input
                 value={attachmentName}
-                onChange={(e) => onAttachmentNameChange(e.target.value)}
+                onChange={(e) => {
+                  onAttachmentNameChange(e.target.value)
+                }}
                 placeholder="Tải lên tệp hợp đồng..."
                 className="rounded-full pr-10"
               />

@@ -138,7 +138,9 @@ export function TaskDetailEditDialog({
             <Input
               id="editTitle"
               value={taskTitle}
-              onChange={(e) => setTaskTitle(e.target.value)}
+              onChange={(e) => {
+                setTaskTitle(e.target.value)
+              }}
               className="rounded-full border-border"
               required
             />
@@ -306,7 +308,9 @@ export function TaskDetailEditDialog({
               <DatePicker
                 id="editDue"
                 value={taskDue || null}
-                onChange={(val) => setTaskDue(val || "")}
+                onChange={(val) => {
+                  setTaskDue(val || "")
+                }}
                 placeholder="Chọn hạn hoàn thành..."
               />
             </div>
@@ -332,7 +336,9 @@ export function TaskDetailEditDialog({
             <div className="text-xs font-bold text-foreground">Kết quả công việc</div>
             <Tabs
               value={resultTab}
-              onValueChange={(val) => setResultTab(val as "report" | "optional")}
+              onValueChange={(val) => {
+                setResultTab(val as "report" | "optional")
+              }}
               className="w-full animate-in fade-in duration-300"
             >
               <TabsList className="grid h-9 w-full grid-cols-2 rounded-full border border-border/40 bg-muted/60 p-1">
@@ -357,7 +363,9 @@ export function TaskDetailEditDialog({
                     type="text"
                     placeholder="https://github.com/... hoặc link sản phẩm..."
                     value={resultUrl}
-                    onChange={(e) => setResultUrl(e.target.value)}
+                    onChange={(e) => {
+                      setResultUrl(e.target.value)
+                    }}
                     className="rounded-full border-border bg-background"
                   />
                 </div>
@@ -389,7 +397,9 @@ export function TaskDetailEditDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                onOpenChange(false)
+              }}
               className="rounded-full px-5 text-sm font-semibold shadow-xs"
               disabled={isUpdating}
             >

@@ -381,7 +381,9 @@ export default function EmployeeSalaryConfigDialog({ open, onOpenChange, employe
                           form={form}
                           templates={templates}
                           isPending={assignMutation.isPending}
-                          onClose={() => onOpenChange(false)}
+                          onClose={() => {
+                            onOpenChange(false)
+                          }}
                         />
                       </form>
                     </Form>

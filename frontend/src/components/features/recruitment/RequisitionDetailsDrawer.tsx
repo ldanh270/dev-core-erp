@@ -487,7 +487,9 @@ export function RequisitionDetailsDrawer({
                   data: { approved: true },
                 })
               }
-              onOpenReject={() => setIsRejectOpen(true)}
+              onOpenReject={() => {
+                setIsRejectOpen(true)
+              }}
               onClose={onClose}
             />
             <RequisitionDrawerBody requisition={requisition} />

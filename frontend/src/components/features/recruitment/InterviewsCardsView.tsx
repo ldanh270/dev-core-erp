@@ -87,7 +87,9 @@ export function InterviewsCardsView({
               return (
                 <button
                   key={tab.id}
-                  onClick={() => tabs.onTabChange(tab.id)}
+                  onClick={() => {
+                    tabs.onTabChange(tab.id)
+                  }}
                   className={`relative flex items-center gap-2 py-4 font-medium text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                     isActive
                       ? "text-primary font-semibold"

@@ -486,7 +486,9 @@ export function ScheduleInterviewDialog({
           <Button
             type="button"
             variant="outline"
-            onClick={() => close(false)}
+            onClick={() => {
+              close(false)
+            }}
             className="h-9 rounded-full px-5 text-xs font-bold border-border/80 hover:bg-secondary"
           >
             Hủy

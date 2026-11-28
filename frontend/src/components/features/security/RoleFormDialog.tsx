@@ -77,7 +77,11 @@ export function RoleFormDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] rounded-xl">
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={(e) => {
+            void handleSubmit(e)
+          }}
+        >
           <DialogHeader>
             <DialogTitle className={cn(TYPOGRAPHY.MODAL_TITLE)}>
               {isEdit ? "Chỉnh sửa vai trò" : "Thêm vai trò mới"}
@@ -100,7 +104,9 @@ export function RoleFormDialog({
                 id="role-form-name"
                 placeholder={isEdit ? undefined : "e.g. hr_assistant, project_viewer"}
                 value={roleName}
-                onChange={(e) => setRoleName(e.target.value)}
+                onChange={(e) => {
+                  setRoleName(e.target.value)
+                }}
                 className="rounded-full text-xs"
                 required
                 disabled={isEdit && role?.name === "admin"}
@@ -115,7 +121,9 @@ export function RoleFormDialog({
                 id="role-form-desc"
                 placeholder="Nhập mô tả chi tiết chức năng của vai trò này..."
                 value={roleDesc}
-                onChange={(e) => setRoleDesc(e.target.value)}
+                onChange={(e) => {
+                  setRoleDesc(e.target.value)
+                }}
                 className="text-xs min-h-[80px] rounded-xl"
               />
             </div>
@@ -125,7 +133,9 @@ export function RoleFormDialog({
                 type="checkbox"
                 id="role-form-is-default"
                 checked={isDefault}
-                onChange={(e) => setIsDefault(e.target.checked)}
+                onChange={(e) => {
+                  setIsDefault(e.target.checked)
+                }}
                 className="size-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
               />
               <Label
@@ -141,7 +151,9 @@ export function RoleFormDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                onOpenChange(false)
+              }}
               className="rounded-full text-xs font-semibold"
             >
               Hủy

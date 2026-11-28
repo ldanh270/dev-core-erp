@@ -31,7 +31,9 @@ export function JobPostingApplicantsTab({
           <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
           <Input
             value={searchQuery}
-            onChange={(event) => onSearchChange(event.target.value)}
+            onChange={(event) => {
+              onSearchChange(event.target.value)
+            }}
             className="h-9 rounded-full pl-9 text-xs"
             placeholder="Tìm theo ứng viên, email, giai đoạn..."
           />

@@ -76,7 +76,9 @@ export function DatabaseErdTab({
         onFit={viewport.fitGraph}
         onResetLayout={viewport.resetNodePositions}
         isFullscreen={viewport.isFullscreen}
-        onToggleFullscreen={viewport.toggleFullscreen}
+        onToggleFullscreen={() => {
+          void viewport.toggleFullscreen()
+        }}
       />
       <DatabaseErdCanvas
         graph={viewport.graph}

@@ -245,7 +245,9 @@ export function ApplicantIntakePreviewCard({
       <div className="p-4">
         <Textarea
           value={rawCsv}
-          onChange={(event) => onRawCsvChange(event.target.value)}
+          onChange={(event) => {
+            onRawCsvChange(event.target.value)
+          }}
           className="min-h-32 font-mono text-xs rounded-xl"
         />
       </div>

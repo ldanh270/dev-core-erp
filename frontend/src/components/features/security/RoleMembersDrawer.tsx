@@ -148,7 +148,9 @@ export function RoleMembersDrawer({
                 size="sm"
                 className="rounded-full px-3 text-[11px] font-semibold"
                 disabled={currentPage === 1}
-                onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+                onClick={() => {
+                  onPageChange(Math.max(1, currentPage - 1))
+                }}
               >
                 Trước
               </Button>
@@ -157,7 +159,9 @@ export function RoleMembersDrawer({
                 size="sm"
                 className="rounded-full px-3 text-[11px] font-semibold"
                 disabled={currentPage === totalPages}
-                onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+                onClick={() => {
+                  onPageChange(Math.min(totalPages, currentPage + 1))
+                }}
               >
                 Sau
               </Button>

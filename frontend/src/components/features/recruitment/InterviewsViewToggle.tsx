@@ -19,7 +19,9 @@ export function InterviewsViewToggle({ viewMode, onViewModeChange }: InterviewsV
           <Button
             variant={viewMode === "table" ? "secondary" : "ghost"}
             size="sm"
-            onClick={() => onViewModeChange("table")}
+            onClick={() => {
+              onViewModeChange("table")
+            }}
             className="h-7 px-3 rounded-full text-xs gap-1.5"
           >
             <List className="h-3.5 w-3.5" />
@@ -33,7 +35,9 @@ export function InterviewsViewToggle({ viewMode, onViewModeChange }: InterviewsV
           <Button
             variant={viewMode === "cards" ? "secondary" : "ghost"}
             size="sm"
-            onClick={() => onViewModeChange("cards")}
+            onClick={() => {
+              onViewModeChange("cards")
+            }}
             className="h-7 px-3 rounded-full text-xs gap-1.5"
           >
             <LayoutGrid className="h-3.5 w-3.5" />

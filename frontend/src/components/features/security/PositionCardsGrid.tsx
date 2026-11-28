@@ -75,7 +75,9 @@ export function PositionCardsGrid({
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => onOpenEdit(pos)}
+                  onClick={() => {
+                    onOpenEdit(pos)
+                  }}
                   className="size-8 rounded-full hover:bg-muted"
                   aria-label={`Chỉnh sửa chức vụ ${pos.name}`}
                 >
@@ -84,7 +86,9 @@ export function PositionCardsGrid({
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => onDelete(pos.id)}
+                  onClick={() => {
+                    onDelete(pos.id)
+                  }}
                   className="size-8 rounded-full hover:bg-destructive/10 hover:text-destructive"
                   aria-label={`Xóa chức vụ ${pos.name}`}
                 >

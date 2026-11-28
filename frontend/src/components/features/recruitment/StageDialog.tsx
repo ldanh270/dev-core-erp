@@ -67,7 +67,9 @@ export function StageDialog({
             <Label className="text-xs font-bold text-foreground">Tên cột trạng thái</Label>
             <Input
               value={name}
-              onChange={(event) => setName(event.target.value)}
+              onChange={(event) => {
+                setName(event.target.value)
+              }}
               placeholder="Ví dụ: Đang đợi, QC, Hoàn tất..."
               required
               className="h-9 rounded-lg border-border text-xs"
@@ -80,7 +82,9 @@ export function StageDialog({
                 <button
                   key={c}
                   type="button"
-                  onClick={() => setColor(c)}
+                  onClick={() => {
+                    setColor(c)
+                  }}
                   className={`relative size-6 shrink-0 rounded-full border transition-all ${
                     color === c
                       ? "scale-110 border-transparent ring-2 ring-primary/45"
@@ -100,7 +104,9 @@ export function StageDialog({
               <input
                 type="checkbox"
                 checked={completed}
-                onChange={(event) => setCompleted(event.target.checked)}
+                onChange={(event) => {
+                  setCompleted(event.target.checked)
+                }}
                 className="size-4 rounded border-border text-primary"
               />
               Đánh dấu là cột hoàn thành (isCompleted)
@@ -109,7 +115,9 @@ export function StageDialog({
               <input
                 type="checkbox"
                 checked={isDefault}
-                onChange={(event) => setDefault(event.target.checked)}
+                onChange={(event) => {
+                  setDefault(event.target.checked)
+                }}
                 disabled={defaultDisabled}
                 className="size-4 rounded border-border text-primary disabled:opacity-40"
               />
@@ -120,7 +128,9 @@ export function StageDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                onOpenChange(false)
+              }}
               className="h-9 rounded-full text-xs"
             >
               Hủy

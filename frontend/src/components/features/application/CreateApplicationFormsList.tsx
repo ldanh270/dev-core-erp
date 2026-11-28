@@ -47,7 +47,9 @@ export function CreateApplicationFormsList({
             formIndex={index}
             onRemove={forms.length > 1 ? () => onRemoveForm(index) : undefined}
             form={form}
-            set={(k, v) => onUpdateForm(index, k, v)}
+            set={(k, v) => {
+              onUpdateForm(index, k, v)
+            }}
           />
         ) : (
           <CreateApplicationTimeSection
@@ -56,7 +58,9 @@ export function CreateApplicationFormsList({
             onRemove={forms.length > 1 ? () => onRemoveForm(index) : undefined}
             type={type}
             form={form}
-            set={(k, v) => onUpdateForm(index, k, v)}
+            set={(k, v) => {
+              onUpdateForm(index, k, v)
+            }}
             employees={employees}
           />
         ),

@@ -63,7 +63,9 @@ export function KanbanEditColumnDialog({
             <Input
               id="edit-kanban-status-name"
               value={columnName}
-              onChange={(e) => setColumnName(e.target.value)}
+              onChange={(e) => {
+                setColumnName(e.target.value)
+              }}
               placeholder="Ví dụ: Đang đợi, QC, Hoàn tất..."
               required
               className="h-9 text-xs border-border rounded-full"

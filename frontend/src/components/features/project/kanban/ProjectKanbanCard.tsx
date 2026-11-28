@@ -62,11 +62,17 @@ export function ProjectKanbanCard({
       )}
       <div
         draggable
-        onDragStart={(e) => onDragStart(e, task)}
+        onDragStart={(e) => {
+          onDragStart(e, task)
+        }}
         onDragEnd={onDragEnd}
-        onDragOver={(e) => onDragOver(e, task.id)}
+        onDragOver={(e) => {
+          onDragOver(e, task.id)
+        }}
         onDragLeave={onDragLeave}
-        onDrop={(e) => onDrop(e, task)}
+        onDrop={(e) => {
+          onDrop(e, task)
+        }}
         className={`bg-card border border-border/80 rounded-xl p-3.5 space-y-3 shadow-sm hover:shadow-md hover:border-primary/40 transition-all cursor-grab active:cursor-grabbing group/card ${
           isDragging ? "opacity-40 scale-[0.98]" : ""
         }`}

@@ -144,7 +144,9 @@ export function DatePickerCalendar({
               key={`day-${day}`}
               type="button"
               disabled={disabledDay}
-              onClick={() => onSelectDay(day)}
+              onClick={() => {
+                onSelectDay(day)
+              }}
               className={cn(
                 "h-7 w-7 text-xs rounded-full flex items-center justify-center transition-all cursor-pointer font-medium",
                 selected && "bg-primary text-primary-foreground font-semibold shadow-xs",

@@ -63,7 +63,9 @@ export function PartTimeAssignmentSlotItem({
             size="icon"
             className="h-5 w-5 rounded-full hover:text-destructive hover:bg-destructive/10 transition-colors"
             disabled={disabled}
-            onClick={() => onRemoveSlot(index)}
+            onClick={() => {
+              onRemoveSlot(index)
+            }}
             aria-label="Xóa khung giờ"
           >
             <Minus className="h-3 w-3" />
@@ -79,8 +81,12 @@ export function PartTimeAssignmentSlotItem({
             value={slot.startTime ?? ""}
             disabled={disabled}
             className="availability-time-input flex h-8 w-full rounded-full border border-input/60 bg-background px-3 py-1 text-xs font-mono focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-50 [color-scheme:light] dark:[color-scheme:dark]"
-            onChange={(event) => onUpdateSlot(index, { startTime: event.target.value || null })}
-            onBlur={() => onNotifyValidation(slot)}
+            onChange={(event) => {
+              onUpdateSlot(index, { startTime: event.target.value || null })
+            }}
+            onBlur={() => {
+              onNotifyValidation(slot)
+            }}
           />
         </label>
         <label className="flex items-center gap-1.5">
@@ -90,8 +96,12 @@ export function PartTimeAssignmentSlotItem({
             value={slot.endTime ?? ""}
             disabled={disabled}
             className="availability-time-input flex h-8 w-full rounded-full border border-input/60 bg-background px-3 py-1 text-xs font-mono focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-50 [color-scheme:light] dark:[color-scheme:dark]"
-            onChange={(event) => onUpdateSlot(index, { endTime: event.target.value || null })}
-            onBlur={() => onNotifyValidation(slot)}
+            onChange={(event) => {
+              onUpdateSlot(index, { endTime: event.target.value || null })
+            }}
+            onBlur={() => {
+              onNotifyValidation(slot)
+            }}
           />
         </label>
       </div>

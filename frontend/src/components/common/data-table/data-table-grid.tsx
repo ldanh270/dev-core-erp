@@ -247,7 +247,13 @@ export function DataTableGrid<T>({
                   onRowClick && "cursor-pointer",
                   rowClassName ? rowClassName(item, idx) : undefined,
                 )}
-                onClick={onRowClick ? () => onRowClick(item, idx) : undefined}
+                onClick={
+                  onRowClick
+                    ? () => {
+                        onRowClick(item, idx)
+                      }
+                    : undefined
+                }
                 onContextMenu={onRowContextMenu ? (e) => onRowContextMenu(e, item, idx) : undefined}
                 tabIndex={onRowClick ? 0 : undefined}
                 onKeyDown={

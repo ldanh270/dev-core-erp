@@ -32,7 +32,9 @@ export function RequisitionCandidatesTab({
           <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
           <Input
             value={search}
-            onChange={(event) => onSearchChange(event.target.value)}
+            onChange={(event) => {
+              onSearchChange(event.target.value)
+            }}
             className="h-9 rounded-full pl-9 text-xs"
             placeholder="Tìm ứng viên, email, stage..."
           />
@@ -66,7 +68,9 @@ export function RequisitionCandidatesTab({
               return (
                 <tr
                   key={application.id}
-                  onClick={() => onSelectCandidate(application.id)}
+                  onClick={() => {
+                    onSelectCandidate(application.id)
+                  }}
                   className="group cursor-pointer border-b border-border transition-colors hover:bg-muted/30 last:border-0"
                 >
                   <td className="p-3 font-medium">

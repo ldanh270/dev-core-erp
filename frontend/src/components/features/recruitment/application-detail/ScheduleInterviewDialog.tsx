@@ -110,7 +110,9 @@ export function ScheduleInterviewDialog({
           <Button
             type="button"
             variant="outline"
-            onClick={() => onOpenChange(false)}
+            onClick={() => {
+              onOpenChange(false)
+            }}
             className="h-9 rounded-full border-border/80 px-5 text-xs font-bold hover:bg-secondary"
           >
             Hủy

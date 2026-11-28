@@ -286,15 +286,19 @@ function HistoryTableRow({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40 rounded-xl">
-              <DropdownMenuItem onClick={() => {
-                onApprove(payroll.id)
-              }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  onApprove(payroll.id)
+                }}
+              >
                 <CheckCircle2 className="mr-2 h-4 w-4 text-emerald-600" />
                 <span>Approve</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                onReject(payroll.id)
-              }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  onReject(payroll.id)
+                }}
+              >
                 <XCircle className="mr-2 h-4 w-4 text-destructive" />
                 <span>Reject</span>
               </DropdownMenuItem>

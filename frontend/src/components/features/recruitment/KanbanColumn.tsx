@@ -133,7 +133,9 @@ export function KanbanColumn({
               </DropdownMenuItem>
               {!stage.isDefault && statuses.length > 1 && (
                 <DropdownMenuItem
-                  onClick={() => onDeleteColumn(stage)}
+                  onClick={() => {
+                    onDeleteColumn(stage)
+                  }}
                   className="cursor-pointer rounded-lg text-xs font-semibold text-destructive"
                 >
                   Xóa cột
@@ -176,7 +178,9 @@ export function KanbanColumn({
                 onDragEnd={onCardDragEnd}
                 onDragOver={(event) => onCardDragOver(event, application.id)}
                 onDragLeave={() => setDragOverInfo(null)}
-                onDrop={(event) => onCardDrop(event, application)}
+                onDrop={(event) => {
+                  onCardDrop(event, application)
+                }}
                 onClick={() => onApplicationClick(application.id)}
               />
               {dragOverInfo?.taskId === application.id && dragOverInfo.position === "bottom" && (

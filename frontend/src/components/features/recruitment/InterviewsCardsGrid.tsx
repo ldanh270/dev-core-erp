@@ -45,7 +45,9 @@ export function InterviewsCardsGrid({
         <InterviewCard
           key={interview.id}
           interview={interview}
-          onClick={() => onViewDetails(interview)}
+          onClick={() => {
+            onViewDetails(interview)
+          }}
         />
       ))}
     </div>

@@ -65,7 +65,9 @@ export function ContractAllowanceSection({
       <div className="px-6 py-4 flex items-center justify-between bg-muted/50 border-b border-border">
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+            setIsOpen(!isOpen)
+          }}
           className="flex items-center gap-2 font-semibold text-sm text-foreground"
         >
           <span className="text-muted-foreground">
@@ -109,7 +111,9 @@ export function ContractAllowanceSection({
                     row={row}
                     index={idx}
                     allowanceOptions={allowanceOptions}
-                    onOpenCustomModal={() => setIsCustomModalOpen(true)}
+                    onOpenCustomModal={() => {
+                      setIsCustomModalOpen(true)
+                    }}
                     onUpdateRow={onUpdateRow}
                     onRemoveRow={onRemoveRow}
                   />
@@ -190,7 +194,9 @@ function AllowanceTableRow({
           type="number"
           placeholder="0"
           value={row.value || ""}
-          onChange={(e) => onUpdateRow(row.id, "value", Number(e.target.value))}
+          onChange={(e) => {
+            onUpdateRow(row.id, "value", Number(e.target.value))
+          }}
           className="rounded-full text-right font-mono"
         />
       </TableCell>
@@ -199,7 +205,9 @@ function AllowanceTableRow({
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => onRemoveRow(row.id)}
+          onClick={() => {
+            onRemoveRow(row.id)
+          }}
           className="text-destructive hover:bg-destructive/10 h-8 w-8 p-0 rounded-full"
         >
           <Trash2 size={15} />

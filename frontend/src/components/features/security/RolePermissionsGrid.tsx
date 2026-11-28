@@ -110,7 +110,9 @@ export function RolePermissionsGrid({
                 variant="ghost"
                 size="sm"
                 className="gap-1.5 rounded-full px-3 text-xs font-semibold text-primary hover:text-primary hover:bg-primary/5"
-                onClick={() => onOpenRoleDetail(role)}
+                onClick={() => {
+                  onOpenRoleDetail(role)
+                }}
               >
                 Cấu hình quyền
                 <ArrowRight size={13} />

@@ -24,7 +24,9 @@ export function MyInterviewsViewSwitcher({
       <Button
         size="sm"
         variant={viewMode === "calendar" ? "default" : "ghost"}
-        onClick={() => onViewModeChange("calendar")}
+        onClick={() => {
+          onViewModeChange("calendar")
+        }}
         className="h-8 rounded-full px-4 text-xs font-bold transition-all cursor-pointer"
       >
         <Grid className="mr-1.5 size-3.5" />
@@ -33,7 +35,9 @@ export function MyInterviewsViewSwitcher({
       <Button
         size="sm"
         variant={viewMode === "list" ? "default" : "ghost"}
-        onClick={() => onViewModeChange("list")}
+        onClick={() => {
+          onViewModeChange("list")
+        }}
         className="h-8 rounded-full px-4 text-xs font-bold transition-all cursor-pointer"
       >
         <List className="mr-1.5 size-3.5" />

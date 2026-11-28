@@ -127,7 +127,9 @@ export function getOAuthAccountsColumns({
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => onDelete(account.id, account.name)}
+                  onClick={() => {
+                    onDelete(account.id, account.name)
+                  }}
                   className="h-8 w-8 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="h-3.5 w-3.5" />

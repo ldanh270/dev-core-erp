@@ -35,7 +35,9 @@ export function ApplicationNotesTab({
       <div className="space-y-3">
         <Textarea
           value={noteText}
-          onChange={(e) => setNoteText(e.target.value)}
+          onChange={(e) => {
+            setNoteText(e.target.value)
+          }}
           placeholder="Nhập ghi chú hoặc thảo luận về ứng viên này..."
           className="min-h-[90px] rounded-xl text-xs transition-all focus:border-primary/60"
         />

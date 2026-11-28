@@ -95,7 +95,9 @@ export function ProjectKanbanColumn({
       header={
         <div
           draggable={canManageStatuses}
-          onDragStart={(e) => onColumnDragStart(e, status.id)}
+          onDragStart={(e) => {
+            onColumnDragStart(e, status.id)
+          }}
           onDragEnd={onColumnDragEnd}
           className={canManageStatuses ? "cursor-grab active:cursor-grabbing" : ""}
         >
@@ -113,7 +115,9 @@ export function ProjectKanbanColumn({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="rounded-xl border-border bg-popover">
                     <DropdownMenuItem
-                      onClick={() => onOpenEditColumn(status)}
+                      onClick={() => {
+                        onOpenEditColumn(status)
+                      }}
                       className="rounded-lg text-xs font-semibold cursor-pointer"
                     >
                       Cấu hình cột

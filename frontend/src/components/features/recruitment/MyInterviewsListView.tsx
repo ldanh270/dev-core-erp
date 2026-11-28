@@ -43,7 +43,9 @@ export function MyInterviewsListView({
             placeholder="Tìm kiếm ứng viên, vị trí phỏng vấn..."
             className="h-10 rounded-full pl-9 text-xs"
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={(e) => {
+              onSearchChange(e.target.value)
+            }}
           />
         </div>
 
@@ -79,7 +81,9 @@ export function MyInterviewsListView({
             <MyInterviewCard
               key={interview.id}
               interview={interview}
-              onFeedback={() => onFeedback(interview)}
+              onFeedback={() => {
+                onFeedback(interview)
+              }}
             />
           ))}
         </div>

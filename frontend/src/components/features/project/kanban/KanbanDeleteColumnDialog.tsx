@@ -89,7 +89,9 @@ export function KanbanDeleteColumnDialog({
           <Button
             type="button"
             variant="outline"
-            onClick={() => onOpenChange(false)}
+            onClick={() => {
+              onOpenChange(false)
+            }}
             className="h-9 text-xs rounded-full"
           >
             Hủy

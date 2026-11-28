@@ -87,7 +87,9 @@ export function DeleteColumnDialog({
           <Button
             type="button"
             variant="outline"
-            onClick={() => onOpenChange(false)}
+            onClick={() => {
+              onOpenChange(false)
+            }}
             className="h-9 rounded-full text-xs"
           >
             Hủy

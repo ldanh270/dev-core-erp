@@ -325,7 +325,9 @@ export function ShiftDialog({ open, onOpenChange, initialData }: ShiftDialogProp
               onMapLocationChange={handleMapLocationChange}
             />
             <FormActionFooter
-              onCancel={() => onOpenChange(false)}
+              onCancel={() => {
+                onOpenChange(false)
+              }}
               submitLabel={initialData ? "Save Changes" : "Create Shift"}
               isPending={isPending}
             />
