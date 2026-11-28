@@ -98,7 +98,7 @@ export function ApplicantIntakeFileUploadCard({
         accept=".csv,.xlsx,.xls,text/csv"
         className="hidden"
         onChange={(event) => {
-          void onFileSelect(event.target.files?.[0])
+          onFileSelect(event.target.files?.[0])
         }}
       />
       <Button

@@ -210,7 +210,9 @@ function SubmitApplicationTypeSpecificFields({
               required
               placeholder="Nhập CUID ca làm việc..."
               value={form.employeeShiftId}
-              onChange={(e) => setFormField("employeeShiftId", e.target.value)}
+              onChange={(e) => {
+                setFormField("employeeShiftId", e.target.value)
+              }}
               className="font-mono bg-background"
             />
           </div>
@@ -257,7 +259,9 @@ function SubmitApplicationTypeSpecificFields({
               required
               placeholder="Nhập CUID ca làm việc..."
               value={form.employeeShiftId}
-              onChange={(e) => setFormField("employeeShiftId", e.target.value)}
+              onChange={(e) => {
+                setFormField("employeeShiftId", e.target.value)
+              }}
               className="font-mono bg-background"
             />
           </div>
