@@ -1,13 +1,13 @@
 import { PASSWORD_RESET_STATUS } from "@/configs/auth/auth.config.ts"
 import { APPLICATION_STATUS } from "@/configs/entities/attendance.config.ts"
-import { NOTIFICATION_PRIORITY, NOTIFICATION_TYPE } from "@/configs/entities/notification.config.ts"
 import { PROJECT_STATUS } from "@/configs/entities/project.config.ts"
+import { APPLICATION_ERROR_MESSAGES } from "@/configs/messages/application.message.ts"
 import { APPROVAL_CATEGORY } from "@/configs/rules/approval.config.ts"
 import { ErrorLayer } from "@/configs/system/error-code.config.ts"
 import { HttpStatusCode } from "@/configs/system/http.config.ts"
 import { prisma } from "@/libs/database.ts"
-import { eventBus } from "@/libs/event-bus.ts"
 import { PrismaApplicationRepository } from "@/repositories/application.repository.ts"
+import { notifyApplicationDecision } from "@/services/application-notification.service.ts"
 import { ApprovalStrategyFactory } from "@/services/approval/approval.strategy.ts"
 import { authorizationService } from "@/services/authorization.service.ts"
 import { IApprovalItem, IApprovalService, IProcessApprovalDTO } from "@/types/approval.types.ts"
@@ -158,11 +158,11 @@ export class ApprovalService implements IApprovalService {
   }
 
   /**
-   * Approves or rejects a specific request based on its category.
+   * Processes a request under its approval policy and alerts applicants after an application decision.
    *
-   * @param dto - Data containing request ID, category, processor ID, and new status.
-   * @returns The updated request record or a transaction result.
-   * @throws {AppError} If the request or processor is not found, or if the processor is not authorized.
+   * @param {IProcessApprovalDTO} dto - Request category, identifiers, decision, and optional reason.
+   * @returns {Promise<any>} The updated request or transaction result.
+   * @throws {AppError} If the request cannot be processed or the employee is not authorized.
    */
   async processApproval(dto: IProcessApprovalDTO): Promise<any> {
     const processorExists = await prisma.employee.findUnique({
@@ -211,33 +211,17 @@ export class ApprovalService implements IApprovalService {
             HttpStatusCode.INTERNAL_SERVER_ERROR,
             ErrorLayer.SERVICE,
           )
-        eventBus.emitTyped("notification:create", {
-          employeeId: applicantId,
-          title: "Đơn đã được duyệt",
-          message: `Đơn của bạn (${app.type}) đã được phê duyệt thành công.`,
-          type: NOTIFICATION_TYPE.SUCCESS,
-          priority: NOTIFICATION_PRIORITY.HIGH,
-          link: "/application/my-applications",
-        })
+        notifyApplicationDecision(app, APPLICATION_STATUS.APPROVED)
         return result
       } else {
-        const result = await prisma.application.update({
-          where: { id: dto.id },
-          data: {
-            status: APPLICATION_STATUS.REJECTED,
-            approvedById: dto.processorId,
-            approvedAt: new Date(),
-            rejectReason: dto.rejectReason,
-          },
-        })
-        eventBus.emitTyped("notification:create", {
-          employeeId: applicantId,
-          title: "Đơn bị từ chối",
-          message: `Đơn của bạn (${app.type}) đã bị từ chối.${dto.rejectReason ? ` Lý do: ${dto.rejectReason}` : ""}`,
-          type: NOTIFICATION_TYPE.WARNING,
-          priority: NOTIFICATION_PRIORITY.HIGH,
-          link: "/application/my-applications",
-        })
+        const result = await this.appRepo.reject(dto.id, dto.processorId, dto.rejectReason)
+        if (!result)
+          throw new AppError(
+            APPLICATION_ERROR_MESSAGES.REJECT_FAILED,
+            HttpStatusCode.CONFLICT,
+            ErrorLayer.SERVICE,
+          )
+        notifyApplicationDecision(app, APPLICATION_STATUS.REJECTED)
         return result
       }
     } else if (dto.category === APPROVAL_CATEGORY.PASSWORD_RESET) {

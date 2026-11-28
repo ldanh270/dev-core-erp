@@ -275,7 +275,15 @@ export class PrismaAuthRepository extends BaseRepository implements IAuthReposit
         ipAddress,
         createdAt: timestamp,
         expiresAt: new Date(timestamp.getTime() + ACTIVITY_LOG_TTL), // retention by config
-        details: details ? JSON.parse(details) : undefined,
+        details: details
+          ? (() => {
+              try {
+                return JSON.parse(details)
+              } catch {
+                return { message: details }
+              }
+            })()
+          : undefined,
       },
     })
   }

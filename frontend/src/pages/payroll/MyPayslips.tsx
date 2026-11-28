@@ -8,9 +8,8 @@ import type { IPayslip } from "@/types/payroll.types"
 import { Inbox } from "lucide-react"
 
 /**
- * MyPayslips — Employee personal payslip preview and history page.
- * Powered by DataTablePage master component with viewport-locked internal scrolling,
- * sticky header, standardized column widths, and pinned pagination footer.
+ * Displays the employee’s payslips and opens the one referenced by a notification.
+ * @returns {import("react").ReactElement} The payroll screen.
  */
 export default function MyPayslips() {
   const {

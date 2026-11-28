@@ -7,6 +7,12 @@ export const PAYROLL_STATUS = {
 } as const
 export type PayrollStatus = (typeof PAYROLL_STATUS)[keyof typeof PAYROLL_STATUS]
 
+/**
+ * Names the query parameter that opens a payroll or payslip detail from an alert.
+ * @type {"payrollId"}
+ */
+export const PAYROLL_DETAIL_SEARCH_PARAM = "payrollId"
+
 export const PAYROLL_STATUS_LABELS: Record<PayrollStatus, string> = {
   draft: "Bản nháp",
   pending_approval: "Chờ duyệt",

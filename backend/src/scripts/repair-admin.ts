@@ -1,13 +1,28 @@
+import { REGEX } from "../configs/auth/auth.config.ts"
 import { EMPLOYEE_STATUS } from "../configs/entities/employee.config.ts"
 import { prisma } from "../libs/database.ts"
 import { HashUtil } from "../utils/hash.util.ts"
 import { getSeedPassword } from "./seeders/seed-password.util.ts"
 
-async function runRepair() {
+/**
+ * Repairs the fallback admin role and account.
+ * Pass `--reset-password` to replace an existing admin password with the configured core seed password.
+ */
+async function runRepair(): Promise<void> {
   console.log("Running fallback admin repair script...")
 
   try {
-    // Find or create the dynamic Admin role
+    let resetPasswordHash: string | undefined
+    if (process.argv.includes("--reset-password")) {
+      const password = getSeedPassword("SEED_CORE_ACCOUNTS_PASSWORD")
+      if (!REGEX.PASSWORD.test(password)) {
+        throw new Error(
+          "The configured core seed password must meet the login password requirements.",
+        )
+      }
+      resetPasswordHash = await HashUtil.hash(password)
+    }
+
     let adminRole = await prisma.appRole.findFirst({
       where: {
         name: {
@@ -40,7 +55,6 @@ async function runRepair() {
       })
     }
 
-    // Look for username 'admin'
     let adminEmployee = await prisma.employee.findFirst({
       where: {
         username: "admin",
@@ -58,11 +72,16 @@ async function runRepair() {
           status: EMPLOYEE_STATUS.ACTIVE,
           failedLoginCount: 0,
           lockedUntil: null,
+          ...(resetPasswordHash ? { passwordHash: resetPasswordHash } : {}),
         },
       })
+      if (resetPasswordHash) {
+        console.log("Reset the existing admin password from the configured core seed password.")
+      }
     } else {
       console.log("Creating new fallback admin employee...")
-      const passwordHash = await HashUtil.hash(getSeedPassword("SEED_PASSWORD"))
+      const passwordHash =
+        resetPasswordHash ?? (await HashUtil.hash(getSeedPassword("SEED_PASSWORD")))
       adminEmployee = await prisma.employee.create({
         data: {
           fullName: "System Administrator",
@@ -72,10 +91,13 @@ async function runRepair() {
           status: EMPLOYEE_STATUS.ACTIVE,
         },
       })
-      console.log("Created fallback admin: username 'admin', password from SEED_PASSWORD")
+      console.log(
+        resetPasswordHash
+          ? "Created fallback admin with the configured core seed password."
+          : "Created fallback admin: username 'admin', password from SEED_PASSWORD",
+      )
     }
 
-    // Ensure EmployeeRole mapping exists
     const existingMapping = await prisma.employeeRole.findUnique({
       where: {
         employeeId_roleId: {
@@ -96,7 +118,6 @@ async function runRepair() {
       })
     }
 
-    // Ensure at least one lock record exists in AdminStateLock
     const lockCount = await prisma.adminStateLock.count()
     if (lockCount === 0) {
       console.log("Initializing AdminStateLock...")
@@ -108,6 +129,7 @@ async function runRepair() {
     console.log("Fallback admin repair completed successfully!")
   } catch (error) {
     console.error("Error during admin repair:", error)
+    process.exitCode = 1
   } finally {
     await prisma.$disconnect()
   }

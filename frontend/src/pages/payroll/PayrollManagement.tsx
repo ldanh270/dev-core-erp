@@ -1,12 +1,13 @@
 import { DataTablePage } from "@/components/common"
 import { GeneratePayrollModal } from "@/components/features/payroll/GeneratePayrollModal"
 import { PayrollDetailSheet } from "@/components/features/payroll/PayrollDetailSheet"
+import { PayrollManagementToolbarActions } from "@/components/features/payroll/PayrollManagementToolbarActions"
 import { usePayrollManagementColumns } from "@/components/features/payroll/use-payroll-management-columns"
-import { Button } from "@/components/ui/button"
+import { SYSTEM_CONFIG } from "@/config/system.config"
 import { usePayrollManagement } from "@/hooks/payroll/use-payroll-management"
 import type { IPayroll } from "@/types/payroll.types"
 
-import { Download, Inbox } from "lucide-react"
+import { Inbox } from "lucide-react"
 
 /**
  * PayrollManagement — Enterprise payroll cycles management page.
@@ -25,6 +26,7 @@ export default function PayrollManagement() {
     setPageSize,
     selectedPayrollId,
     setSelectedPayrollId,
+    handleCloseDetail,
     handleExport,
     handleApprove,
     handleReject,
@@ -45,19 +47,14 @@ export default function PayrollManagement() {
         density="compact"
         primaryAction={<GeneratePayrollModal />}
         toolbarActions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExport}
-            disabled={!rawPayrolls || rawPayrolls.length === 0}
-            className="rounded-full gap-2 border-border cursor-pointer"
-          >
-            <Download className="size-4 text-muted-foreground" />
-            Xuất CSV
-          </Button>
+          <PayrollManagementToolbarActions
+            onExport={handleExport}
+            canExport={Boolean(rawPayrolls && rawPayrolls.length > 0)}
+          />
         }
         search={{
           placeholder: "Tìm kiếm kỳ lương...",
+          debounceMs: SYSTEM_CONFIG.SEARCH.DEBOUNCE_MS,
           onSearch: handleSearch,
         }}
         columns={columns}
@@ -76,15 +73,14 @@ export default function PayrollManagement() {
           itemsPerPage: pageSize,
           onPageChange: setCurrentPage,
           onItemsPerPageChange: setPageSize,
+          pageSizeOptions: SYSTEM_CONFIG.PAGINATION.PAGE_SIZE_OPTIONS as unknown as number[],
         }}
       />
 
       {selectedPayrollId && (
         <PayrollDetailSheet
           payrollId={selectedPayrollId}
-          onClose={() => {
-            setSelectedPayrollId(null)
-          }}
+          onClose={handleCloseDetail}
         />
       )}
     </>

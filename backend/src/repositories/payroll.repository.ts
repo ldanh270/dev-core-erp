@@ -1,4 +1,5 @@
-import { PAYROLL_STATUS } from "@/configs/entities/payroll.config.ts"
+import { EMPLOYEE_STATUS } from "@/configs/entities/employee.config.ts"
+import { PAYROLL_APPROVAL_PERMISSIONS, PAYROLL_STATUS } from "@/configs/entities/payroll.config.ts"
 import { IPayrollRepository, IUpdatePayrollStatusDTO } from "@/types/payroll.types.ts"
 
 import { Payroll, PayrollStatus, Prisma, PrismaClient } from "@prisma/client"
@@ -26,6 +27,43 @@ export class PrismaPayrollRepository extends BaseRepository implements IPayrollR
     return this.prisma.payroll.findUnique({
       where: { id },
     })
+  }
+
+  /**
+   * Finds active employees authorized to read and approve payroll, including administrators.
+   *
+   * @returns {Promise<string[]>} Identifiers of employees eligible to receive payroll approval alerts.
+   */
+  async findApproverIds(): Promise<string[]> {
+    const active = { isActive: true, deletedAt: null } as const
+    /**
+     * Requires each payroll route permission, even when granted by different roles.
+     * @type {Prisma.EmployeeWhereInput[]}
+     */
+    const permissionChecks = Object.values(PAYROLL_APPROVAL_PERMISSIONS).map(
+      (code): Prisma.EmployeeWhereInput => ({
+        employeeRoles: {
+          some: {
+            role: {
+              ...active,
+              permissions: { some: { permission: { code, ...active } } },
+            },
+          },
+        },
+      }),
+    )
+    const approvers = await this.prisma.employee.findMany({
+      where: {
+        status: EMPLOYEE_STATUS.ACTIVE,
+        deletedAt: null,
+        OR: [
+          { employeeRoles: { some: { role: { ...active, isAdministrative: true } } } },
+          { AND: permissionChecks },
+        ],
+      },
+      select: { id: true },
+    })
+    return approvers.map(({ id }) => id)
   }
 
   async findAll(filter: { status?: PayrollStatus; year?: number }): Promise<Payroll[]> {

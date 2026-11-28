@@ -5,6 +5,7 @@ import { PrismaEmployeeRepository } from "@/repositories/employee.repository.ts"
 import { PrismaPayrollRepository } from "@/repositories/payroll.repository.ts"
 import { PrismaPayslipRepository } from "@/repositories/payslip.repository.ts"
 import { PrismaSpentTimeRepository } from "@/repositories/spent-time.repository.ts"
+import { PayrollNotificationService } from "@/services/payroll-notification.service.ts"
 import { PayrollService } from "@/services/payroll.service.ts"
 
 import cron from "node-cron"
@@ -33,6 +34,10 @@ const settingsRepo = {
   },
 }
 
+/**
+ * Shares the post-commit notification workflow used by manual and scheduled payroll generation.
+ * @type {PayrollService}
+ */
 const payrollService = new PayrollService(
   payrollRepo,
   payslipRepo,
@@ -42,8 +47,13 @@ const payrollService = new PayrollService(
   spentTimeRepo,
   settingsRepo,
   prisma,
+  new PayrollNotificationService(payrollRepo),
 )
 
+/**
+ * Schedules automated payroll generation and approval according to the configured cycle.
+ * @returns {void}
+ */
 export const initCronJobs = () => {
   // Run every minute to check if current time matches payroll automation settings.
   cron.schedule("* * * * *", async () => {

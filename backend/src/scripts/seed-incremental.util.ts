@@ -63,12 +63,16 @@ async function shouldSkipSeederInternal(name: string): Promise<boolean> {
       return count > 0
 
     case "Employees":
-      count = await prisma.employee.count()
-      return count > 0
+      count = await prisma.employee.count({
+        where: { username: { not: "admin" }, deletedAt: null },
+      })
+      return count >= 2
 
     case "RBAC":
-      count = await prisma.employeeRole.count()
-      return count > 0
+      count = await prisma.employee.count({
+        where: { employeeRoles: { none: {} } },
+      })
+      return count === 0
 
     case "WorkingShifts":
       count = await prisma.workingShift.count()

@@ -520,6 +520,7 @@ export class RBACSeeder implements ISeeder {
       if (employeeRolesData.length > 0) {
         await prisma.employeeRole.createMany({
           data: employeeRolesData,
+          skipDuplicates: true,
         })
       }
       console.info(
