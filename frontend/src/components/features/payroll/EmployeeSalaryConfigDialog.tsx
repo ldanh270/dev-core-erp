@@ -3,7 +3,6 @@ import { useForm, type UseFormReturn } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Calendar, History, Loader2, Save, User } from "lucide-react"
 import { toast } from "sonner"
-import { z } from "zod"
 
 import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
@@ -42,33 +41,14 @@ import {
   useSalaryConfigHistory,
 } from "@/hooks/payroll/use-employee-salary-config"
 import { usePermission } from "@/hooks/use-permission"
+import {
+  salaryConfigFormSchema,
+  type SalaryConfigFormValues,
+} from "@/schemas/payroll.schema"
 import type { IEmployeeSalaryConfig, IPayslipTemplate } from "@/types/payroll.types"
+import { formatCurrencyVND as formatCurrency, formatDateVN as formatDate } from "@/utils/formatters"
 
-// ---------------------------------------------------------------------------
-// Schema & Helpers
-// ---------------------------------------------------------------------------
-
-const salaryConfigFormSchema = z.object({
-  templateId: z.string().min(1, "Vui lòng chọn mẫu phiếu lương"),
-  baseSalary: z.number().min(0, "Lương cơ bản không được âm"),
-  effectiveFrom: z.string().min(1, "Vui lòng nhập ngày áp dụng"),
-  note: z.string().optional(),
-})
-
-type SalaryConfigFormValues = z.infer<typeof salaryConfigFormSchema>
-
-const formatCurrency = (val: number) =>
-  new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(val)
-
-const formatDate = (dateString?: string) => {
-  if (!dateString) return "-"
-  return new Date(dateString).toLocaleDateString("vi-VN")
-}
-
-// ---------------------------------------------------------------------------
-// Subcomponents
-// ---------------------------------------------------------------------------
-
+/** Presenter fields for editing employee base salary and template selection. */
 function SalaryConfigFormFields({
   form,
   templates,
@@ -190,6 +170,7 @@ function SalaryConfigFormFields({
   )
 }
 
+/** Presenter timeline rendering historical salary configuration revisions. */
 function SalaryConfigHistoryTimeline({
   history,
   isLoading,
@@ -257,10 +238,6 @@ function SalaryConfigHistoryTimeline({
     </div>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Main Component
-// ---------------------------------------------------------------------------
 
 interface Props {
   open: boolean

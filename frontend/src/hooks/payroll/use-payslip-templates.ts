@@ -27,6 +27,7 @@ export interface ICreatePayslipTemplatePayload {
   }>
 }
 
+/** Mutation hook to create a new payslip template definition. */
 export function useCreatePayslipTemplate() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -40,6 +41,7 @@ export function useCreatePayslipTemplate() {
   })
 }
 
+/** Mutation hook to update an existing payslip template. */
 export function useUpdatePayslipTemplate() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -56,6 +58,7 @@ export function useUpdatePayslipTemplate() {
   })
 }
 
+/** Mutation hook to delete an unassigned payslip template. */
 export function useDeletePayslipTemplate() {
   const queryClient = useQueryClient()
   return useMutation({

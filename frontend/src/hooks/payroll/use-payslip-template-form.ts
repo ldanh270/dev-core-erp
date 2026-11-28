@@ -32,6 +32,7 @@ interface UsePayslipTemplateFormProps {
   onSuccess?: () => void
 }
 
+/** Custom hook managing payslip template creation, component ordering, and formula logic. */
 export function usePayslipTemplateForm({
   initialData,
   onSuccess,

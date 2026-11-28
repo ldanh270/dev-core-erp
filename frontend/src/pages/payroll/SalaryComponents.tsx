@@ -1,6 +1,7 @@
 import { DataTablePage } from "@/components/common"
 import { SalaryComponentFormPage } from "@/components/features/payroll/SalaryComponentFormPage"
 import { useSalaryComponentsColumns } from "@/components/features/payroll/use-salary-components-columns"
+import { FORM_VIEW_MODE } from "@/config/entities/payroll.config"
 import { useSalaryComponentsManagement } from "@/hooks/payroll/use-salary-components-management"
 import type { ISalaryComponent } from "@/types/payroll.types"
 
@@ -34,7 +35,7 @@ export default function SalaryComponents() {
     onEdit: handleEdit,
   })
 
-  if (view === "create" || view === "edit") {
+  if (view === FORM_VIEW_MODE.CREATE || view === FORM_VIEW_MODE.EDIT) {
     return (
       <SalaryComponentFormPage
         initialData={selectedComponent}

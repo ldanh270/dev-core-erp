@@ -18,6 +18,7 @@ export function useSalaryComponents() {
   })
 }
 
+/** Mutation hook to register a new salary component. */
 export function useCreateSalaryComponent() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -31,6 +32,7 @@ export function useCreateSalaryComponent() {
   })
 }
 
+/** Mutation hook to update salary component definitions. */
 export function useUpdateSalaryComponent() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -44,6 +46,7 @@ export function useUpdateSalaryComponent() {
   })
 }
 
+/** Mutation hook to remove a salary component. */
 export function useDeleteSalaryComponent() {
   const queryClient = useQueryClient()
   return useMutation({

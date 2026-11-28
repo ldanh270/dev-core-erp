@@ -39,6 +39,7 @@ interface UseSalaryComponentFormProps {
   onSuccess?: () => void
 }
 
+/** Custom hook managing salary component form state, validation, and submission. */
 export function useSalaryComponentForm({
   initialData,
   onSuccess,

@@ -18,6 +18,7 @@ export function useMyPayslips() {
   })
 }
 
+/** Mutation hook submitting employee inquiries or feedback regarding payslip lines. */
 export function useSubmitPayslipFeedback() {
   const queryClient = useQueryClient()
   return useMutation({

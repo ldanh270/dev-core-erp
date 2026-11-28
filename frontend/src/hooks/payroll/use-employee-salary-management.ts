@@ -13,6 +13,7 @@ export interface SelectedSalaryEmployee {
   position?: string
 }
 
+/** Custom hook orchestrating employee salary query, search filters, modal states, and pagination. */
 export function useEmployeeSalaryManagement() {
   const [searchQuery, setSearchQuery] = useState("")
   const [page, setPage] = useState(1)

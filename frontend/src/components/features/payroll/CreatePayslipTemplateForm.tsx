@@ -44,6 +44,7 @@ export interface CreatePayslipTemplateFormProps {
   onEdit?: () => void
 }
 
+/** Presenter card for template code, name, and description inputs. */
 function TemplateBasicInfoCard({
   form,
   isReadOnly,
@@ -101,6 +102,7 @@ function TemplateBasicInfoCard({
   )
 }
 
+/** Presenter table listing selected salary components and formula ordering. */
 function TemplateSalaryComponentsTable({
   form,
   fields,
@@ -240,6 +242,7 @@ function TemplateSalaryComponentsTable({
   )
 }
 
+/** Presenter footer containing submission and cancel buttons for template form. */
 function TemplateFormFooter({
   isReadOnly,
   isPending,
@@ -304,6 +307,7 @@ function TemplateFormFooter({
   )
 }
 
+/** Master form component allowing creation and editing of payslip templates. */
 export function CreatePayslipTemplateForm({
   initialData,
   isReadOnly = false,

@@ -22,10 +22,12 @@ const ATTENDANCE_STATUS_LABELS: Record<string, string> = {
 
 const ATTENDANCE_STATUS_LABEL_MAP = new Map(Object.entries(ATTENDANCE_STATUS_LABELS))
 
+/** Helper formatter for human-readable work duration hours string. */
 function formatWorkHours(hours: number) {
   return `${Math.max(0, hours).toFixed(2).replace(/\.00$/, "")} giờ`
 }
 
+/** Helper mapping attendance status code to localized label. */
 function getAttendanceStatusLabel(status: string) {
   return ATTENDANCE_STATUS_LABEL_MAP.get(status) || status
 }

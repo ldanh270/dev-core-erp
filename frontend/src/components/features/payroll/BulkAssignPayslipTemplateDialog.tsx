@@ -21,10 +21,9 @@ import { useBulkAssignSalaryTemplate } from "@/hooks/payroll/use-employee-salary
 import type { Employee } from "@/types/employee.types"
 import type { IPayslipTemplate } from "@/types/payroll.types"
 
-// ---------------------------------------------------------------------------
-// Subcomponents
-// ---------------------------------------------------------------------------
 
+
+/** Presenter subcomponent for searching and selecting employees to assign. */
 function BulkAssignEmployeePicker({
   search,
   onSearchChange,
@@ -110,10 +109,6 @@ function BulkAssignEmployeePicker({
     </div>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Main Component
-// ---------------------------------------------------------------------------
 
 interface BulkAssignPayslipTemplateDialogProps {
   template: IPayslipTemplate | null

@@ -29,6 +29,7 @@ interface UseSalaryVariableFormProps {
   onSuccess?: () => void
 }
 
+/** Custom hook managing salary variable form state, validation, and submission. */
 export function useSalaryVariableForm({ initialData, onSuccess }: UseSalaryVariableFormProps): {
   form: UseFormReturn<SalaryVariableFormValues>
   isPending: boolean

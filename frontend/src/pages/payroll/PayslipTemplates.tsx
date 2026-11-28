@@ -3,6 +3,7 @@ import { BulkAssignPayslipTemplateDialog } from "@/components/features/payroll/B
 import { DeletePayslipTemplateDialog } from "@/components/features/payroll/DeletePayslipTemplateDialog"
 import { usePayslipTemplatesColumns } from "@/components/features/payroll/use-payslip-templates-columns"
 import { CreatePayslipTemplateForm } from "@/components/features/payroll/CreatePayslipTemplateForm"
+import { FORM_VIEW_MODE } from "@/config/entities/payroll.config"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import { usePayslipTemplatesManagement } from "@/hooks/payroll/use-payslip-templates-management"
 import type { IPayslipTemplate } from "@/types/payroll.types"
@@ -50,16 +51,16 @@ export default function PayslipTemplates() {
     onDelete: setTemplateToDelete,
   })
 
-  if (view !== "list") {
+  if (view !== FORM_VIEW_MODE.LIST) {
     return (
       <CreatePayslipTemplateForm
         initialData={selectedTemplate}
-        isReadOnly={view === "view"}
+        isReadOnly={view === FORM_VIEW_MODE.VIEW}
         onSuccess={handleCloseForm}
         onCancel={handleCloseForm}
         onEdit={() => {
           if (selectedTemplate) {
-            setView("edit")
+            setView(FORM_VIEW_MODE.EDIT)
           }
         }}
       />

@@ -34,6 +34,7 @@ const getPayrollStatusVariant = (status: string): "info" | "success" | "danger" 
   }
 }
 
+/** Custom hook managing search filter and status filtering for payroll history runs. */
 function usePayrollHistoryFilter(payrolls: IPayroll[]) {
   const [searchTerm, setSearchTerm] = useState("")
   const [page, setPage] = useState(1)
@@ -216,6 +217,7 @@ export function PayrollHistoryTable({ payrolls, isLoading }: PayrollHistoryTable
   )
 }
 
+/** Presenter table row rendering single payroll cycle run metadata and actions. */
 function HistoryTableRow({
   payroll,
   indexNumber,

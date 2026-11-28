@@ -1,3 +1,4 @@
+import { FORM_VIEW_MODE, type FormViewMode } from "@/config/entities/payroll.config"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useSalaryComponents } from "@/hooks/payroll/use-salary-components"
 import type { ISalaryComponent } from "@/types/payroll.types"
@@ -11,7 +12,7 @@ import { useCallback, useMemo, useState } from "react"
 export function useSalaryComponentsManagement() {
   const { data: components, isLoading } = useSalaryComponents()
 
-  const [view, setView] = useState<"list" | "create" | "edit">("list")
+  const [view, setView] = useState<FormViewMode>(FORM_VIEW_MODE.LIST)
   const [selectedComponent, setSelectedComponent] = useState<ISalaryComponent | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [page, setPage] = useState(1)
@@ -19,16 +20,16 @@ export function useSalaryComponentsManagement() {
 
   const handleCreate = useCallback(() => {
     setSelectedComponent(null)
-    setView("create")
+    setView(FORM_VIEW_MODE.CREATE)
   }, [])
 
   const handleEdit = useCallback((comp: ISalaryComponent) => {
     setSelectedComponent(comp)
-    setView("edit")
+    setView(FORM_VIEW_MODE.EDIT)
   }, [])
 
   const handleCloseForm = useCallback(() => {
-    setView("list")
+    setView(FORM_VIEW_MODE.LIST)
     setSelectedComponent(null)
   }, [])
 

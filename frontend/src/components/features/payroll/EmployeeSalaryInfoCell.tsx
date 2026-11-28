@@ -10,6 +10,7 @@ export interface EmployeeSalaryInfoCellProps {
   templates?: { id: string; name: string }[]
 }
 
+/** Table cell presenter rendering formatted employee salary information and base pay. */
 export function EmployeeSalaryInfoCell({
   employeeId,
   templates,

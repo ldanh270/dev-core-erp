@@ -48,6 +48,7 @@ export interface GeneratePayrollModalProps {
   trigger?: React.ReactNode
 }
 
+/** Modal dialog configuring period, employee filters, and triggering batch payroll generation. */
 export function GeneratePayrollModal({
   triggerLabel = "Tạo bảng lương",
   trigger,

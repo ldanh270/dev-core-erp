@@ -21,7 +21,10 @@ import {
   COMPONENT_VALUE_TYPE_LABELS,
   FORMULA_VALIDATION_STATUS,
 } from "@/config/entities/payroll.config"
-import { useSalaryComponentForm } from "@/hooks/payroll/use-salary-component-form"
+import {
+  type SalaryComponentFormValues,
+  useSalaryComponentForm,
+} from "@/hooks/payroll/use-salary-component-form"
 import {
   type ISalaryVariable,
   useSalaryVariables,
@@ -39,13 +42,13 @@ const SYSTEM_VARS = [
   { code: "unpaidLeaveDays", name: "Nghỉ không lương" },
 ]
 
+/** Presenter section for salary component name, code, and description. */
 function SalaryComponentBasicInfoSection({
   form,
   isReadOnly = false,
   handleAutoGenerateCode,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: UseFormReturn<any>
+  form: UseFormReturn<SalaryComponentFormValues>
   isReadOnly?: boolean
   handleAutoGenerateCode: () => void
 }) {
@@ -124,12 +127,12 @@ function SalaryComponentBasicInfoSection({
   )
 }
 
+/** Presenter section configuring component classification (Earning, Deduction, Taxable). */
 function SalaryComponentClassificationSection({
   form,
   isReadOnly = false,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: UseFormReturn<any>
+  form: UseFormReturn<SalaryComponentFormValues>
   isReadOnly?: boolean
 }) {
   return (
@@ -206,6 +209,7 @@ function SalaryComponentClassificationSection({
   )
 }
 
+/** Presenter section for defining formula expression and variable tokens. */
 function SalaryComponentFormulaSection({
   form,
   isReadOnly = false,
@@ -213,8 +217,7 @@ function SalaryComponentFormulaSection({
   appendToFormula,
   userVariables,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: UseFormReturn<any>
+  form: UseFormReturn<SalaryComponentFormValues>
   isReadOnly?: boolean
   formulaStatus: string
   appendToFormula: (variableCode: string) => void

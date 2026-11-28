@@ -47,6 +47,7 @@ interface SalaryComponentSelectModalProps {
   existingComponentIds?: string[]
 }
 
+/** Table presenter allowing selection checkboxes across registered components. */
 function SalaryComponentSelectTable({
   isLoading,
   filteredComponents,

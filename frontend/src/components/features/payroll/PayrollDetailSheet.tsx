@@ -29,6 +29,7 @@ const getPayrollStatusVariant = (status: string): "info" | "success" | "danger" 
   }
 }
 
+/** Utility function formatting payroll line items into downloadable CSV text. */
 function exportPayrollToCsv(payroll: IPayrollWithPayslips) {
   if (!payroll || !payroll.payslips) return
 
@@ -150,6 +151,7 @@ export function PayrollDetailSheet({ payrollId, onClose }: PayrollDetailSheetPro
   )
 }
 
+/** Data table presenting individual payslip summaries inside the payroll drawer. */
 function DetailPayslipsTable({
   payslips,
   onSelectPayslip,

@@ -1,6 +1,7 @@
 import { DataTablePage, useConfirm } from "@/components/common"
 import { SalaryVariableFormPage } from "@/components/features/payroll/SalaryVariableFormPage"
 import { useSalaryVariablesColumns } from "@/components/features/payroll/use-salary-variables-columns"
+import { FORM_VIEW_MODE } from "@/config/entities/payroll.config"
 import {
   type VariableRow,
   useSalaryVariablesManagement,
@@ -46,7 +47,7 @@ export default function SalaryVariables() {
     isDeleting: deleteMutation.isPending,
   })
 
-  if (view === "create" || view === "edit") {
+  if (view === FORM_VIEW_MODE.CREATE || view === FORM_VIEW_MODE.EDIT) {
     return (
       <SalaryVariableFormPage
         initialData={selectedVariable}

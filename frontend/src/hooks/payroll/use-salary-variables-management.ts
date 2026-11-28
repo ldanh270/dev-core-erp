@@ -1,3 +1,4 @@
+import { FORM_VIEW_MODE, type FormViewMode } from "@/config/entities/payroll.config"
 import { SALARY_VARIABLE_DESCRIPTIONS } from "@/config/messages/payroll.message"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useDeleteSalaryVariable, useSalaryVariables } from "@/hooks/payroll/use-salary-variable"
@@ -10,6 +11,7 @@ export type VariableRow = Omit<ISalaryVariable, "value"> & {
   isSystem?: boolean
 }
 
+/** System predefined built-in calculation variables available in all payroll formulas. */
 export const SYSTEM_VARIABLES: VariableRow[] = [
   {
     id: "sys_baseSalary",
@@ -88,7 +90,7 @@ export function useSalaryVariablesManagement() {
   const deleteMutation = useDeleteSalaryVariable()
 
   const [activeTab, setActiveTab] = useState<string>("all")
-  const [view, setView] = useState<"list" | "create" | "edit">("list")
+  const [view, setView] = useState<FormViewMode>(FORM_VIEW_MODE.LIST)
   const [selectedVariable, setSelectedVariable] = useState<ISalaryVariable | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [page, setPage] = useState(1)
@@ -96,18 +98,18 @@ export function useSalaryVariablesManagement() {
 
   const handleCreate = useCallback(() => {
     setSelectedVariable(null)
-    setView("create")
+    setView(FORM_VIEW_MODE.CREATE)
   }, [])
 
   const handleEdit = useCallback((variable: VariableRow) => {
     if (typeof variable.value === "number") {
       setSelectedVariable(variable as ISalaryVariable)
-      setView("edit")
+      setView(FORM_VIEW_MODE.EDIT)
     }
   }, [])
 
   const handleCloseForm = useCallback(() => {
-    setView("list")
+    setView(FORM_VIEW_MODE.LIST)
     setSelectedVariable(null)
   }, [])
 

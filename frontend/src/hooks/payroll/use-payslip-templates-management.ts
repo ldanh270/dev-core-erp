@@ -1,3 +1,4 @@
+import { FORM_VIEW_MODE, type FormViewMode } from "@/config/entities/payroll.config"
 import { PAYROLL_MESSAGES } from "@/config/messages/payroll.message"
 import {
   useDeletePayslipTemplate,
@@ -12,7 +13,7 @@ import { toast } from "sonner"
  * Custom hook orchestrating payslip template listing, delete confirmations, and assignment dialogs.
  */
 export function usePayslipTemplatesManagement() {
-  const [view, setView] = useState<"list" | "create" | "edit" | "view">("list")
+  const [view, setView] = useState<FormViewMode>(FORM_VIEW_MODE.LIST)
   const [selectedTemplate, setSelectedTemplate] = useState<IPayslipTemplate | null>(null)
   const [templateToDelete, setTemplateToDelete] = useState<IPayslipTemplate | null>(null)
   const [templateToAssign, setTemplateToAssign] = useState<IPayslipTemplate | null>(null)
@@ -36,21 +37,21 @@ export function usePayslipTemplatesManagement() {
 
   const handleOpenCreate = useCallback(() => {
     setSelectedTemplate(null)
-    setView("create")
+    setView(FORM_VIEW_MODE.CREATE)
   }, [])
 
   const handleOpenEdit = useCallback((template: IPayslipTemplate) => {
     setSelectedTemplate(template)
-    setView("edit")
+    setView(FORM_VIEW_MODE.EDIT)
   }, [])
 
   const handleOpenView = useCallback((template: IPayslipTemplate) => {
     setSelectedTemplate(template)
-    setView("view")
+    setView(FORM_VIEW_MODE.VIEW)
   }, [])
 
   const handleCloseForm = useCallback(() => {
-    setView("list")
+    setView(FORM_VIEW_MODE.LIST)
     setSelectedTemplate(null)
   }, [])
 

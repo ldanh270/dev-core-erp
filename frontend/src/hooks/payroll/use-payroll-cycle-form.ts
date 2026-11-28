@@ -27,6 +27,7 @@ export const settingsSchema = z
 
 export type SettingsFormValues = z.infer<typeof settingsSchema>
 
+/** Custom hook managing payroll cycle form values, validation, and update mutations. */
 export function usePayrollCycleForm({
   initialData,
   onSuccess,

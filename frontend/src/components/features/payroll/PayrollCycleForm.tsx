@@ -30,6 +30,7 @@ const DAYS_OF_MONTH = Array.from({ length: 28 }, (_, i) => i + 1)
 const HOURS_OF_DAY = Array.from({ length: 24 }, (_, i) => i)
 const MINUTES_INTERVAL = [0, 15, 30, 45]
 
+/** Presenter sidebar providing contextual explanation of payroll period boundaries. */
 function CycleContextPanel() {
   return (
     <div className="flex flex-col gap-6">
@@ -74,6 +75,7 @@ function CycleContextPanel() {
   )
 }
 
+/** Presenter input control for choosing monthly cutoff and payment days. */
 function ScheduleDayField({
   control,
   name,
@@ -123,6 +125,7 @@ function ScheduleDayField({
   )
 }
 
+/** Presenter input control for configuring cutoff and processing times. */
 function ScheduleTimeField({
   control,
   hourName,
@@ -199,6 +202,7 @@ function ScheduleTimeField({
   )
 }
 
+/** Visual timeline step diagram depicting monthly cycle calculation sequence. */
 function CycleTimelineIndicator({ control }: { control: Control<SettingsFormValues> }) {
   const triggerDay = useWatch({ control, name: "triggerDay" })
   const approvalDay = useWatch({ control, name: "approvalDay" })

@@ -30,6 +30,7 @@ export function usePayslip(payrollId: string | null, employeeId: string | null) 
   })
 }
 
+/** Query hook fetching past payroll cycles with status and year filters. */
 export function usePayrolls(params?: { status?: string; year?: number }) {
   return useQuery({
     queryKey: [...PAYROLL_QUERY_KEYS.PAYROLLS, params],
@@ -37,6 +38,7 @@ export function usePayrolls(params?: { status?: string; year?: number }) {
   })
 }
 
+/** Query hook fetching full payroll run details including all employee payslips. */
 export function usePayrollDetails(id: string) {
   return useQuery({
     queryKey: [...PAYROLL_QUERY_KEYS.PAYROLL_DETAILS, id],
@@ -45,6 +47,7 @@ export function usePayrollDetails(id: string) {
   })
 }
 
+/** Mutation hook to calculate and trigger batch payroll generation. */
 export function useGeneratePayroll() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -60,6 +63,7 @@ export function useGeneratePayroll() {
   })
 }
 
+/** Mutation hook marking a generated payroll cycle as approved. */
 export function useApprovePayroll() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -75,6 +79,7 @@ export function useApprovePayroll() {
   })
 }
 
+/** Mutation hook rejecting a payroll cycle and reverting to draft. */
 export function useRejectPayroll() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -90,6 +95,7 @@ export function useRejectPayroll() {
   })
 }
 
+/** Query hook fetching personal payslip history for a specified employee. */
 export function useEmployeePayslipsHistory(employeeId: string | null) {
   return useQuery({
     queryKey: [...PAYROLL_QUERY_KEYS.PAYSLIPS_HISTORY, employeeId],

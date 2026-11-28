@@ -20,6 +20,7 @@ export function usePayrollSettings() {
   })
 }
 
+/** Mutation hook updating recurring payroll cycle schedule and cutoff dates. */
 export function useUpdatePayrollSettings() {
   const queryClient = useQueryClient()
   return useMutation({
