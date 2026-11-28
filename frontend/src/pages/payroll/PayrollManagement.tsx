@@ -78,10 +78,7 @@ export default function PayrollManagement() {
       />
 
       {selectedPayrollId && (
-        <PayrollDetailSheet
-          payrollId={selectedPayrollId}
-          onClose={handleCloseDetail}
-        />
+        <PayrollDetailSheet payrollId={selectedPayrollId} onClose={handleCloseDetail} />
       )}
     </>
   )
