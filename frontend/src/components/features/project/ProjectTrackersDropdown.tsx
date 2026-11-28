@@ -5,8 +5,10 @@ import {
   useUpdateProjectTracker,
 } from "@/hooks/project/use-project-tracker"
 import type { ProjectTracker } from "@/types/project-tracker.types"
-import { Check, CheckSquare, ChevronDown, Edit2, Plus, Square, Trash2, X } from "lucide-react"
+
 import { useState } from "react"
+
+import { Check, CheckSquare, ChevronDown, Edit2, Plus, Square, Trash2, X } from "lucide-react"
 
 interface TrackerCreateSectionProps {
   newTrackerName: string
@@ -107,9 +109,7 @@ function TrackerItemRow({
             onClick={(e) => e.stopPropagation()}
           />
         ) : (
-          <span className="text-xs font-semibold leading-tight line-clamp-1">
-            {tracker.name}
-          </span>
+          <span className="text-xs font-semibold leading-tight line-clamp-1">{tracker.name}</span>
         )}
       </button>
 
@@ -192,7 +192,9 @@ function useProjectTrackersDropdown({
               prev.map((code) => (code === oldTracker.code ? updatedTracker.code : code)),
             )
             onApplyTrackers(
-              selectedTrackers.map((code) => (code === oldTracker.code ? updatedTracker.code : code)),
+              selectedTrackers.map((code) =>
+                code === oldTracker.code ? updatedTracker.code : code,
+              ),
             )
           }
         },
@@ -275,12 +277,7 @@ export function ProjectTrackersDropdown({
         Chỉ chọn các loại yêu cầu được phép tạo trong dự án này (để trống nếu cho phép tất cả).
       </p>
 
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => onOpenChange(false)}
-        />
-      )}
+      {isOpen && <div className="fixed inset-0 z-40" onClick={() => onOpenChange(false)} />}
 
       <div className="relative w-full">
         <button
@@ -387,4 +384,3 @@ export function ProjectTrackersDropdown({
     </div>
   )
 }
-

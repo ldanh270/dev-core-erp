@@ -14,13 +14,10 @@ import type { CreateEmployeeFormValues } from "@/hooks/employees/useEmployeeCrea
 import { useEmployeeCreateModal } from "@/hooks/employees/useEmployeeCreateModal"
 import { usePositions } from "@/hooks/use-position-query"
 import type { Role } from "@/types/security.types"
+
 import { X } from "lucide-react"
-import type {
-  FieldErrors,
-  UseFormRegister,
-  UseFormSetValue,
-  UseFormWatch,
-} from "react-hook-form"
+import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
+
 import { EmployeeJobFieldsSection } from "./EmployeeJobFieldsSection"
 
 export interface EmployeeCreateModalProps {
@@ -139,9 +136,7 @@ function CreateAccountSection({
             {...register("username")}
             className={`bg-background h-10 ${errors.username ? "border-destructive" : ""}`}
           />
-          {errors.username && (
-            <p className="text-xs text-destructive">{errors.username.message}</p>
-          )}
+          {errors.username && <p className="text-xs text-destructive">{errors.username.message}</p>}
         </div>
 
         <div className="space-y-1.5">
@@ -154,9 +149,7 @@ function CreateAccountSection({
             {...register("email")}
             className={`bg-background h-10 ${errors.email ? "border-destructive" : ""}`}
           />
-          {errors.email && (
-            <p className="text-xs text-destructive">{errors.email.message}</p>
-          )}
+          {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
         </div>
 
         <div className="space-y-1.5">
@@ -169,9 +162,7 @@ function CreateAccountSection({
             {...register("password")}
             className={`bg-background h-10 ${errors.password ? "border-destructive" : ""}`}
           />
-          {errors.password && (
-            <p className="text-xs text-destructive">{errors.password.message}</p>
-          )}
+          {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
         </div>
 
         <div className="space-y-1.5">
@@ -232,9 +223,7 @@ function CreateBasicInfoSection({
             {...register("fullName")}
             className={`bg-background h-10 ${errors.fullName ? "border-destructive" : ""}`}
           />
-          {errors.fullName && (
-            <p className="text-xs text-destructive">{errors.fullName.message}</p>
-          )}
+          {errors.fullName && <p className="text-xs text-destructive">{errors.fullName.message}</p>}
         </div>
 
         <div className="space-y-1.5">
@@ -246,9 +235,7 @@ function CreateBasicInfoSection({
             {...register("phone")}
             className={`bg-background h-10 ${errors.phone ? "border-destructive" : ""}`}
           />
-          {errors.phone && (
-            <p className="text-xs text-destructive">{errors.phone.message}</p>
-          )}
+          {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
         </div>
 
         <div className="space-y-1.5">

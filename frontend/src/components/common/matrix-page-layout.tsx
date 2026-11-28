@@ -43,7 +43,9 @@ export function MatrixPageLayout({
   className,
 }: MatrixPageLayoutProps) {
   return (
-    <PageContainer className={cn("flex flex-col h-[calc(100vh-4rem)] overflow-hidden gap-4", className)}>
+    <PageContainer
+      className={cn("flex flex-col h-[calc(100vh-4rem)] overflow-hidden gap-4", className)}
+    >
       {/* Top Header & Navigation */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0 border-b border-border pb-4">
         <div className="flex items-center gap-3">

@@ -1,8 +1,10 @@
 import { KanbanColumn } from "@/components/features/recruitment/KanbanColumn"
 import { routerNavigate } from "@/lib/router-navigator"
 import type { KanbanApplication, RecruitmentPipelineStage } from "@/types/recruitment.types"
-import { Plus } from "lucide-react"
+
 import type { DragEvent } from "react"
+
+import { Plus } from "lucide-react"
 
 interface KanbanBoardAreaProps {
   statuses: RecruitmentPipelineStage[]

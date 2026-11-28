@@ -7,15 +7,8 @@ import {
   getWorkScheduleTypeLabel,
 } from "@/config/entities/employee.config"
 import type { ProfileDto } from "@/types/profile.types"
-import {
-  Briefcase,
-  Calendar,
-  Mail,
-  MapPin,
-  Phone,
-  ShieldCheck,
-  User,
-} from "lucide-react"
+
+import { Briefcase, Calendar, Mail, MapPin, Phone, ShieldCheck, User } from "lucide-react"
 
 const ROLE_LABEL_MAP = new Map(Object.entries(ROLE_LABELS))
 const EMPLOYEE_TYPE_LABEL_MAP = new Map(Object.entries(EMPLOYEE_TYPE_LABELS))
@@ -175,7 +168,9 @@ export function ProfileOverviewSection({ profile }: ProfileOverviewSectionProps)
               <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
                 Vai trò hệ thống
               </p>
-              <p className="text-sm font-semibold text-foreground mt-0.5 capitalize">{roleLabels}</p>
+              <p className="text-sm font-semibold text-foreground mt-0.5 capitalize">
+                {roleLabels}
+              </p>
             </div>
           </div>
 

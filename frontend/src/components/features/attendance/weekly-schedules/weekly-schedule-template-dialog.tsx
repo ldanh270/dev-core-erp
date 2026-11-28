@@ -23,8 +23,10 @@ import type {
   IWorkingShift,
 } from "@/types/attendance.types"
 import { buildEmptyTemplateWeeks } from "@/utils/attendance/build-empty-template-weeks"
-import { Loader2 } from "lucide-react"
+
 import { type FormEvent, useState } from "react"
+
+import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
 function WeeklyScheduleTemplateForm({

@@ -19,8 +19,10 @@ import {
   useSubmitApplicationForm,
 } from "@/hooks/application/use-submit-application-form"
 import { routerNavigate } from "@/lib/router-navigator"
-import { ArrowLeft, Send, X } from "lucide-react"
+
 import { useState } from "react"
+
+import { ArrowLeft, Send, X } from "lucide-react"
 
 function ApplicationTypePicker({ onClose }: { onClose: () => void }) {
   return (
@@ -298,9 +300,7 @@ function SubmitApplicationReasonFields({
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-semibold text-muted-foreground">
           Lý do{" "}
-          <span className="text-muted-foreground/70 font-normal">
-            (tối thiểu 5 ký tự nếu điền)
-          </span>
+          <span className="text-muted-foreground/70 font-normal">(tối thiểu 5 ký tự nếu điền)</span>
         </label>
         <Textarea
           rows={3}

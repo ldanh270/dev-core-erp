@@ -1,8 +1,4 @@
-﻿import { useEffect, useState } from "react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-
-import { Button } from "@/components/ui/button"
+﻿import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -25,13 +21,17 @@ import {
   getProjectMemberWorkModeLabel,
 } from "@/config/entities/project.config"
 import { PROJECT_MESSAGES } from "@/config/messages/project.message"
+import { useProjectRoles } from "@/hooks/project/use-project-role"
 import { projectApi } from "@/lib/api/project.api"
 import type { Employee } from "@/types/employee.types"
 import type { ProjectMember } from "@/types/project.types"
 import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util"
 import { extractErrorMessage } from "@/utils/error-helper"
 
-import { useProjectRoles } from '@/hooks/project/use-project-role'
+import { useEffect, useState } from "react"
+
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 const SELECT_NONE_VALUE = "none"
 
@@ -258,4 +258,3 @@ export function AddMemberModal({
     </Dialog>
   )
 }
-

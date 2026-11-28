@@ -49,9 +49,7 @@ export function GanttViewOptionsPanel({
       </div>
 
       <div className="space-y-2">
-        <h5 className="font-bold text-muted-foreground border-b border-border/20 pb-1">
-          Tiến độ
-        </h5>
+        <h5 className="font-bold text-muted-foreground border-b border-border/20 pb-1">Tiến độ</h5>
         <div className="space-y-2 pt-1">
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input

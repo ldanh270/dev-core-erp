@@ -5,8 +5,10 @@ import { getInterviewsColumns } from "@/components/features/recruitment/intervie
 import { ViewInterviewDialog } from "@/components/features/recruitment/view-interview-dialog"
 import { useInterviewsManagement } from "@/hooks/recruitment/use-interviews-management"
 import type { InterviewRound } from "@/types/recruitment.types"
-import { Plus } from "lucide-react"
+
 import { useMemo } from "react"
+
+import { Plus } from "lucide-react"
 
 /**
  * Tier 2 Page Orchestrator for upcoming interview rounds.
@@ -52,9 +54,7 @@ export default function InterviewsPage() {
     onClick: () => {},
   }
 
-  const viewToggle = (
-    <InterviewsViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
-  )
+  const viewToggle = <InterviewsViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
 
   return (
     <>

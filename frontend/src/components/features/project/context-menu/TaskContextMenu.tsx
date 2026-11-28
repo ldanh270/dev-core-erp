@@ -1,12 +1,14 @@
-import { useContextMenuPosition } from "./use-context-menu-position"
-import { DEFAULT_STATUSES } from "./task-context-menu.constants"
-import { TaskContextMenuSubmenu } from "./TaskContextMenuSubmenu"
-import { TaskContextAttributesSubmenus } from "./TaskContextAttributesSubmenus"
-import { TaskContextAssigneeSubmenu } from "./TaskContextAssigneeSubmenu"
+import type { Task } from "@/types/task.types"
+
 import { ClipboardList, Clock, ExternalLink, Plus } from "lucide-react"
 import { Link } from "react-router-dom"
 import { toast } from "sonner"
-import type { Task } from "@/types/task.types"
+
+import { TaskContextAssigneeSubmenu } from "./TaskContextAssigneeSubmenu"
+import { TaskContextAttributesSubmenus } from "./TaskContextAttributesSubmenus"
+import { TaskContextMenuSubmenu } from "./TaskContextMenuSubmenu"
+import { DEFAULT_STATUSES } from "./task-context-menu.constants"
+import { useContextMenuPosition } from "./use-context-menu-position"
 
 export interface TaskContextMenuProps {
   isOpen: boolean

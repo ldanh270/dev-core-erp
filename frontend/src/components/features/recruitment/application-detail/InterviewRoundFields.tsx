@@ -13,6 +13,7 @@ import {
 import { INTERVIEW_FORMAT } from "@/config/entities/recruitment.config"
 import type { Employee } from "@/types/employee.types"
 import type { RecruitmentPipelineStage } from "@/types/recruitment.types"
+
 import { format } from "date-fns"
 import {
   Calendar,
@@ -62,7 +63,9 @@ function InterviewStageSelectField({
           <Layers className="size-3.5 text-primary" />
           <span>Vòng phỏng vấn (Cột Kanban)</span>
         </div>
-        <span className="text-[10px] font-normal text-muted-foreground">Tự động gắn vào Kanban</span>
+        <span className="text-[10px] font-normal text-muted-foreground">
+          Tự động gắn vào Kanban
+        </span>
       </Label>
       {dynamicStages.length > 0 ? (
         <Select value={title} onValueChange={setTitle}>
@@ -326,11 +329,7 @@ export function InterviewRoundFields({
 }: InterviewRoundFieldsProps) {
   return (
     <div className="space-y-4 py-3">
-      <InterviewStageSelectField
-        title={title}
-        setTitle={setTitle}
-        dynamicStages={dynamicStages}
-      />
+      <InterviewStageSelectField title={title} setTitle={setTitle} dynamicStages={dynamicStages} />
 
       <InterviewSchedulePicker
         formatVal={formatVal}

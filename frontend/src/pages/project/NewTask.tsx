@@ -1,7 +1,8 @@
-﻿import { useNavigate } from "react-router-dom"
-import { EntityFormPage } from "@/components/common"
-import { useNewTaskForm } from "@/hooks/project/use-new-task-form"
+﻿import { EntityFormPage } from "@/components/common"
 import { NewTaskForm } from "@/components/features/project/NewTaskForm"
+import { useNewTaskForm } from "@/hooks/project/use-new-task-form"
+
+import { useNavigate } from "react-router-dom"
 
 /**
  * Tier 2 Page Orchestrator for creating a new task within a project.
@@ -109,4 +110,3 @@ export default function NewTask() {
     </EntityFormPage>
   )
 }
-

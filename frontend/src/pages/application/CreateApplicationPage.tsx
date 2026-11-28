@@ -8,6 +8,7 @@ import { ROUTES } from "@/config/routes.config"
 import { useCreateApplicationForm } from "@/hooks/application/useCreateApplicationForm"
 import { routerNavigate } from "@/lib/router-navigator"
 import { useAuthStore } from "@/store/auth-store"
+
 import { useParams } from "react-router-dom"
 
 /**

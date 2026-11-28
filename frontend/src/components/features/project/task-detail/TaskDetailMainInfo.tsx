@@ -1,10 +1,10 @@
-import { Calendar, Clock, User } from "lucide-react"
-
 import { PageCard, SafeHtml, StatusPill } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { TASK_STATUS } from "@/config/entities/project.config"
 import type { ProjectTaskStatus } from "@/types/project-task-status.types"
 import type { Task } from "@/types/task.types"
+
+import { Calendar, Clock, User } from "lucide-react"
 
 function formatStatus(status: string) {
   if (status === TASK_STATUS.TODO) return "Đang mở"
@@ -158,9 +158,7 @@ export function TaskDetailMainInfo({ task, statuses }: TaskDetailMainInfoProps) 
           </h3>
           <div className="space-y-4">
             <div className="space-y-1">
-              <span className="text-xs font-semibold text-muted-foreground">
-                Ghi chú kết quả:
-              </span>
+              <span className="text-xs font-semibold text-muted-foreground">Ghi chú kết quả:</span>
               <SafeHtml
                 content={task.resultNotes}
                 className="prose prose-sm dark:prose-invert max-w-none rounded-lg border border-border/40 bg-muted/30 p-3 text-sm leading-relaxed text-foreground"

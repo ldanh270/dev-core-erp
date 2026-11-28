@@ -1,7 +1,9 @@
-import React from "react"
-import { PageCard, DatePicker } from "@/components/common"
-import { Label } from "@/components/ui/label"
+import { DatePicker, PageCard } from "@/components/common"
+import { TaskAttachmentDropzone } from "@/components/features/project/TaskAttachmentDropzone"
+import { TaskWatchersSelect } from "@/components/features/project/TaskWatchersSelect"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import {
   Select,
   SelectContent,
@@ -9,14 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { RichTextEditor } from "@/components/ui/rich-text-editor"
-import { TaskAttachmentDropzone } from "@/components/features/project/TaskAttachmentDropzone"
-import { TaskWatchersSelect } from "@/components/features/project/TaskWatchersSelect"
 import { TASK_PRIORITIES } from "@/config/entities/project.config"
-import { formatPriority } from "@/utils/formatters"
-import type { TaskTracker, TaskPriority, Task } from "@/types/task.types"
 import type { ProjectTaskStatus } from "@/types/project-task-status.types"
 import type { ProjectMember } from "@/types/project.types"
+import type { Task, TaskPriority, TaskTracker } from "@/types/task.types"
+import { formatPriority } from "@/utils/formatters"
+
+import React from "react"
 
 const PROGRESS_OPTIONS: number[] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
@@ -228,7 +229,10 @@ export const NewTaskForm: React.FC<NewTaskFormProps> = ({
                 setTaskPriority(val as TaskPriority)
               }}
             >
-              <SelectTrigger id="priority" className="w-full border-border rounded-full bg-background">
+              <SelectTrigger
+                id="priority"
+                className="w-full border-border rounded-full bg-background"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent position="popper" className="rounded-xl border-border bg-popover">
@@ -249,7 +253,10 @@ export const NewTaskForm: React.FC<NewTaskFormProps> = ({
               NGƯỜI THỰC HIỆN
             </Label>
             <Select value={taskAssignee} onValueChange={setTaskAssignee}>
-              <SelectTrigger id="assignee" className="w-full border-border rounded-full bg-background">
+              <SelectTrigger
+                id="assignee"
+                className="w-full border-border rounded-full bg-background"
+              >
                 <SelectValue placeholder="Chưa phân công" />
               </SelectTrigger>
               <SelectContent position="popper" className="rounded-xl border-border bg-popover">
@@ -271,7 +278,10 @@ export const NewTaskForm: React.FC<NewTaskFormProps> = ({
               CÔNG VIỆC CHA (NẾU CÓ)
             </Label>
             <Select value={parentTask} onValueChange={setParentTask}>
-              <SelectTrigger id="parentTask" className="w-full border-border rounded-full bg-background">
+              <SelectTrigger
+                id="parentTask"
+                className="w-full border-border rounded-full bg-background"
+              >
                 <SelectValue placeholder="Không có" />
               </SelectTrigger>
               <SelectContent position="popper" className="rounded-xl border-border bg-popover">

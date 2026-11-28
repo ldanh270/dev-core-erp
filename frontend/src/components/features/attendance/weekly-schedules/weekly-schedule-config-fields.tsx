@@ -22,6 +22,7 @@ import {
   getDayOfWeekFullLabel,
 } from "@/config/entities/attendance.config"
 import type { WeeklyScheduleSettingsFormValues } from "@/hooks/attendance/use-weekly-schedule-config-form"
+
 import { CalendarClock, Info, Settings2 } from "lucide-react"
 import { type Control, useWatch } from "react-hook-form"
 

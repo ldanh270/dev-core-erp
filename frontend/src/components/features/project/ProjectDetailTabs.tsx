@@ -1,15 +1,15 @@
-﻿import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+﻿import { ProjectActivityTab } from "@/components/features/project/ProjectActivityTab"
+import { ProjectGanttTab } from "@/components/features/project/ProjectGanttTab"
+import { ProjectIssuesTab } from "@/components/features/project/ProjectIssuesTab"
+import { ProjectKanbanTab } from "@/components/features/project/ProjectKanbanTab"
+import { ProjectOverviewTab } from "@/components/features/project/ProjectOverviewTab"
+import { ProjectPositionRules } from "@/components/features/project/ProjectPositionRules"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { type ActivityItem, PROJECT_TABS } from "@/hooks/project/use-project-detail"
 import { cn } from "@/lib/utils"
-import { ProjectActivityTab } from '@/components/features/project/ProjectActivityTab'
-import { ProjectGanttTab } from '@/components/features/project/ProjectGanttTab'
-import { ProjectIssuesTab } from '@/components/features/project/ProjectIssuesTab'
-import { ProjectKanbanTab } from '@/components/features/project/ProjectKanbanTab'
-import { ProjectOverviewTab } from '@/components/features/project/ProjectOverviewTab'
-import { ProjectPositionRules } from '@/components/features/project/ProjectPositionRules'
+import type { User } from "@/store/auth-store"
 import type { Project, ProjectMember } from "@/types/project.types"
 import type { Task } from "@/types/task.types"
-import type { User } from "@/store/auth-store"
 
 export interface ProjectDetailTabsProps {
   projectId: string
@@ -160,5 +160,3 @@ export function ProjectDetailTabs({
     </Tabs>
   )
 }
-
-

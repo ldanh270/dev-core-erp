@@ -19,9 +19,9 @@ export const LAYOUT_DIMENSIONS = {
 
   /** Full-page form max width container */
   FORM_MAX_WIDTH: {
-    COMPACT: "768px",  // max-w-3xl
+    COMPACT: "768px", // max-w-3xl
     STANDARD: "896px", // max-w-4xl
-    WIDE: "1024px",    // max-w-5xl
+    WIDE: "1024px", // max-w-5xl
   },
 
   /** Drawer widths */

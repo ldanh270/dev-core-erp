@@ -1,5 +1,6 @@
 import { PageCard } from "@/components/common"
-import { CalendarX2, Clock, Users, UserCheck } from "lucide-react"
+
+import { CalendarX2, Clock, UserCheck, Users } from "lucide-react"
 
 interface AttendanceDashboardStatsProps {
   totalRecords?: number

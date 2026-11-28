@@ -2,8 +2,11 @@ import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { type ControlSize, getControlSizeClass } from "@/config/ui-density.config"
 import { cn } from "@/lib/utils"
-import { Calendar as CalendarIcon, X } from "lucide-react"
+
 import * as React from "react"
+
+import { Calendar as CalendarIcon, X } from "lucide-react"
+
 import { DatePicker } from "./date-picker"
 import { formatDisplayDate } from "./date-picker.utils"
 

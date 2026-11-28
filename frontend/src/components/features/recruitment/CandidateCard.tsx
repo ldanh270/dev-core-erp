@@ -11,6 +11,7 @@ import { routerNavigate } from "@/lib/router-navigator"
 import type { KanbanApplication, RecruitmentPipelineStage } from "@/types/recruitment.types"
 
 import type { DragEventHandler } from "react"
+
 import { format } from "date-fns"
 import { Calendar } from "lucide-react"
 

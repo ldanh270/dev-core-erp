@@ -1,7 +1,9 @@
-import React from "react"
-import { DashboardTaskTable } from "./DashboardTaskTable"
 import type { DataTableColumn } from "@/components/common"
 import type { Task } from "@/types/task.types"
+
+import React from "react"
+
+import { DashboardTaskTable } from "./DashboardTaskTable"
 
 export interface DashboardTaskTablesLayoutProps {
   taskColumns: DataTableColumn<Task>[]

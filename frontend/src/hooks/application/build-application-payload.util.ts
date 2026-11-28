@@ -1,4 +1,5 @@
 import { APPLICATION_TYPES } from "@/config/entities/attendance.config"
+
 import { type ApplicationFormState, combineDateAndTime } from "./application-form.types"
 
 /** Builds the API payload list for single or bulk application submission. */

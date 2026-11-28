@@ -1,6 +1,6 @@
 ﻿import LogTimeModal from "@/components/features/project/LogTimeModal"
+import { TaskAssigneeAiModal } from "@/components/features/project/TaskAssigneeAiModal"
 import { TaskDetailEditDialog } from "@/components/features/project/task-detail/TaskDetailEditDialog"
-import { TaskAssigneeAiModal } from '@/components/features/project/TaskAssigneeAiModal'
 import type { ProjectTaskStatus } from "@/types/project-task-status.types"
 import type { ProjectMember } from "@/types/project.types"
 import type { SpentTime } from "@/types/spent-time.types"
@@ -160,5 +160,3 @@ export function TaskDetailModals({
     </>
   )
 }
-
-

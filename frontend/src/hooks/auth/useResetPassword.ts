@@ -4,9 +4,10 @@ import { resetPasswordSchema } from "@/schemas/auth.schema"
 import type { ResetPasswordSchemaType } from "@/schemas/auth.schema"
 
 import { useEffect, useState } from "react"
+
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 
 /**

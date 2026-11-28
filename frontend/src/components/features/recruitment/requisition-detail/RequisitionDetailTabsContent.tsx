@@ -1,10 +1,3 @@
-import { RequisitionActivityTab } from "./RequisitionActivityTab"
-import { RequisitionCandidatesTab } from "./RequisitionCandidatesTab"
-import { RequisitionOverviewTab } from "./RequisitionOverviewTab"
-import { RequisitionPostingsTab } from "./RequisitionPostingsTab"
-import { RequisitionBackgroundChecksTab } from "../requisition-workspace/RequisitionBackgroundChecksTab"
-import { RequisitionInterviewsTab } from "../requisition-workspace/RequisitionInterviewsTab"
-import { RequisitionOffersTab } from "../requisition-workspace/RequisitionOffersTab"
 import KanbanPage from "@/pages/recruitment/KanbanPage"
 import type {
   JobPosting,
@@ -12,6 +5,14 @@ import type {
   KanbanApplication,
   RecruitmentPipelineStage,
 } from "@/types/recruitment.types"
+
+import { RequisitionBackgroundChecksTab } from "../requisition-workspace/RequisitionBackgroundChecksTab"
+import { RequisitionInterviewsTab } from "../requisition-workspace/RequisitionInterviewsTab"
+import { RequisitionOffersTab } from "../requisition-workspace/RequisitionOffersTab"
+import { RequisitionActivityTab } from "./RequisitionActivityTab"
+import { RequisitionCandidatesTab } from "./RequisitionCandidatesTab"
+import { RequisitionOverviewTab } from "./RequisitionOverviewTab"
+import { RequisitionPostingsTab } from "./RequisitionPostingsTab"
 
 export interface StageWithCount extends RecruitmentPipelineStage {
   count: number

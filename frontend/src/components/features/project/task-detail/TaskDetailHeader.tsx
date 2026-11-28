@@ -72,9 +72,7 @@ export function TaskDetailHeader({
                   « Trước
                 </Button>
                 <span className="select-none px-1 font-mono text-[9px] text-muted-foreground">
-                  {currentTaskIndex !== -1
-                    ? `${currentTaskIndex + 1}/${siblingTasksLength}`
-                    : "-"}
+                  {currentTaskIndex !== -1 ? `${currentTaskIndex + 1}/${siblingTasksLength}` : "-"}
                 </span>
                 <Button
                   variant="ghost"

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { ResetPasswordSchemaType } from "@/schemas/auth.schema"
+
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import type { FieldErrors, UseFormRegister } from "react-hook-form"
 
@@ -55,9 +56,7 @@ export function ResetPasswordForm({
               placeholder="••••••••"
               {...register("newPassword")}
               className={
-                errors.newPassword
-                  ? "border-destructive pr-12 rounded-full"
-                  : "pr-12 rounded-full"
+                errors.newPassword ? "border-destructive pr-12 rounded-full" : "pr-12 rounded-full"
               }
             />
             <button

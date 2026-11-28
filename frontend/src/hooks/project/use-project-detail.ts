@@ -3,22 +3,24 @@ import { usePermission } from "@/hooks/use-permission"
 import { employeeApi } from "@/lib/api/employee.api"
 import { projectApi } from "@/lib/api/project.api"
 import { taskApi } from "@/lib/api/task.api"
+import { useAuthStore } from "@/store/auth-store"
 import {
   type ActivityItem,
   PROJECT_TABS,
   type ProjectTab,
   buildActivitiesList,
 } from "@/types/project-detail.types"
+import type { ProjectMember } from "@/types/project.types"
+import { extractErrorMessage } from "@/utils/error-helper"
 import {
   computeTaskCounts,
   computeTotalSpentHours,
   computeTrackerStats,
 } from "@/utils/project/project-statistics.util"
-import { useAuthStore } from "@/store/auth-store"
-import type { ProjectMember } from "@/types/project.types"
-import { extractErrorMessage } from "@/utils/error-helper"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+
 import { useCallback, useEffect, useMemo, useState } from "react"
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 
@@ -213,4 +215,3 @@ export function useProjectDetail() {
     handleTabChange,
   }
 }
-

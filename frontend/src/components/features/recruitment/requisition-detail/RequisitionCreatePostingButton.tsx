@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+
 import { Plus } from "lucide-react"
 
 export interface RequisitionCreatePostingButtonProps {
@@ -14,11 +15,7 @@ export function RequisitionCreatePostingButton({
   onClick,
 }: RequisitionCreatePostingButtonProps) {
   return (
-    <Button
-      className="rounded-full font-semibold"
-      onClick={onClick}
-      disabled={!canManagePosting}
-    >
+    <Button className="rounded-full font-semibold" onClick={onClick} disabled={!canManagePosting}>
       <Plus className="mr-2 size-4" />
       Tạo bài đăng
     </Button>

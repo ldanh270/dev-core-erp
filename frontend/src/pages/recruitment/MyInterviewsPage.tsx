@@ -38,12 +38,7 @@ export default function MyInterviewsPage() {
       <PageHeader
         title="Lịch phỏng vấn của tôi"
         description="Theo dõi thời khóa biểu và gửi đánh giá ứng viên các vòng phỏng vấn"
-        actions={
-          <MyInterviewsViewSwitcher
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-          />
-        }
+        actions={<MyInterviewsViewSwitcher viewMode={viewMode} onViewModeChange={setViewMode} />}
       />
 
       <MyInterviewsStatsRow

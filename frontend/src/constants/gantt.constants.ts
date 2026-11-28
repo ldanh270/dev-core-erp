@@ -309,4 +309,3 @@ export const GANTT_AVAILABLE_COLUMNS = [
   { key: "assignee", label: "Người thực hiện nhiệm vụ (Assignee)" },
   { key: "progress", label: "Hiển thị nhãn tiến độ dòng thời gian (Progress)" },
 ]
-

@@ -1,4 +1,5 @@
 ﻿import { CUSTOM_QUERY_TYPE } from "@/config/entities/project.config"
+import { PROJECT_QUERY_KEY } from "@/constants/gantt.constants"
 import { customQueryApi } from "@/lib/api/custom-query.api"
 import type { CustomQuery } from "@/lib/api/custom-query.api"
 import { extractErrorMessage } from "@/utils/error-helper"
@@ -9,14 +10,16 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 
-import { PROJECT_QUERY_KEY } from '@/constants/gantt.constants'
-
 interface UseGanttCustomQueriesProps {
   projectId: string
   setActiveFilterKeys: (keys: string[]) => void
-  setFilterStates: (states: Record<string, { enabled: boolean; operator: string; value: string }>) => void
+  setFilterStates: (
+    states: Record<string, { enabled: boolean; operator: string; value: string }>,
+  ) => void
   setAppliedFilterKeys: (keys: string[]) => void
-  setAppliedFilterStates: (states: Record<string, { enabled: boolean; operator: string; value: string }>) => void
+  setAppliedFilterStates: (
+    states: Record<string, { enabled: boolean; operator: string; value: string }>,
+  ) => void
   setShowEstTime: (val: boolean) => void
   setShowAssignee: (val: boolean) => void
   setShowProgress: (val: boolean) => void
@@ -60,8 +63,10 @@ export function useGanttCustomQueries({
 
             if (data.options) {
               if (data.options.showEstTime !== undefined) setShowEstTime(data.options.showEstTime)
-              if (data.options.showAssignee !== undefined) setShowAssignee(data.options.showAssignee)
-              if (data.options.showProgress !== undefined) setShowProgress(data.options.showProgress)
+              if (data.options.showAssignee !== undefined)
+                setShowAssignee(data.options.showAssignee)
+              if (data.options.showProgress !== undefined)
+                setShowProgress(data.options.showProgress)
             }
             setAppliedUrlQueryId(urlQueryId)
             toast.success(`Đã tự động áp dụng truy vấn: ${matched.name}`)
@@ -176,5 +181,3 @@ export function useGanttCustomQueries({
     clearUrlQueryId,
   }
 }
-
-

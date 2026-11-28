@@ -1,9 +1,3 @@
-import { useEffect, useState } from "react"
-import { useForm, type UseFormReturn } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Calendar, History, Loader2, Save, User } from "lucide-react"
-import { toast } from "sonner"
-
 import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
@@ -41,12 +35,16 @@ import {
   useSalaryConfigHistory,
 } from "@/hooks/payroll/use-employee-salary-config"
 import { usePermission } from "@/hooks/use-permission"
-import {
-  salaryConfigFormSchema,
-  type SalaryConfigFormValues,
-} from "@/schemas/payroll.schema"
+import { type SalaryConfigFormValues, salaryConfigFormSchema } from "@/schemas/payroll.schema"
 import type { IEmployeeSalaryConfig, IPayslipTemplate } from "@/types/payroll.types"
 import { formatCurrencyVND as formatCurrency, formatDateVN as formatDate } from "@/utils/formatters"
+
+import { useEffect, useState } from "react"
+
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Calendar, History, Loader2, Save, User } from "lucide-react"
+import { type UseFormReturn, useForm } from "react-hook-form"
+import { toast } from "sonner"
 
 /** Presenter fields for editing employee base salary and template selection. */
 function SalaryConfigFormFields({
@@ -158,7 +156,12 @@ function SalaryConfigFormFields({
       </div>
 
       <DialogFooter className="pt-4 border-t gap-2">
-        <Button type="button" variant="outline" onClick={onClose} className="rounded-full cursor-pointer">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onClose}
+          className="rounded-full cursor-pointer"
+        >
           Hủy
         </Button>
         <Button type="submit" disabled={isPending} className="rounded-full cursor-pointer">
@@ -346,10 +349,16 @@ export default function EmployeeSalaryConfigDialog({ open, onOpenChange, employe
             <TabsList className="bg-muted/50 rounded-lg p-1">
               {canReadConfig && (
                 <>
-                  <TabsTrigger value="config" className="rounded-md gap-1.5 py-1.5 px-4 text-xs cursor-pointer">
+                  <TabsTrigger
+                    value="config"
+                    className="rounded-md gap-1.5 py-1.5 px-4 text-xs cursor-pointer"
+                  >
                     <Save className="h-3.5 w-3.5" /> Gán mẫu phiếu lương
                   </TabsTrigger>
-                  <TabsTrigger value="history" className="rounded-md gap-1.5 py-1.5 px-4 text-xs cursor-pointer">
+                  <TabsTrigger
+                    value="history"
+                    className="rounded-md gap-1.5 py-1.5 px-4 text-xs cursor-pointer"
+                  >
                     <History className="h-3.5 w-3.5" /> Lịch sử thiết lập
                   </TabsTrigger>
                 </>
@@ -380,10 +389,7 @@ export default function EmployeeSalaryConfigDialog({ open, onOpenChange, employe
                 </TabsContent>
 
                 <TabsContent value="history" className="mt-0 outline-none">
-                  <SalaryConfigHistoryTimeline
-                    history={history}
-                    isLoading={isHistoryLoading}
-                  />
+                  <SalaryConfigHistoryTimeline history={history} isLoading={isHistoryLoading} />
                 </TabsContent>
               </>
             )}

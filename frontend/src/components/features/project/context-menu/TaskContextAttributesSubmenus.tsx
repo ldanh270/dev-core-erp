@@ -1,11 +1,9 @@
-import { ClipboardList, Folder, Plus } from "lucide-react"
-import { TaskContextMenuSubmenu } from "./TaskContextMenuSubmenu"
-import {
-  TRACKER_OPTIONS,
-  PRIORITY_OPTIONS,
-  PROGRESS_OPTIONS,
-} from "./task-context-menu.constants"
 import type { Task } from "@/types/task.types"
+
+import { ClipboardList, Folder, Plus } from "lucide-react"
+
+import { TaskContextMenuSubmenu } from "./TaskContextMenuSubmenu"
+import { PRIORITY_OPTIONS, PROGRESS_OPTIONS, TRACKER_OPTIONS } from "./task-context-menu.constants"
 
 interface TaskContextAttributesSubmenusProps {
   task: Task

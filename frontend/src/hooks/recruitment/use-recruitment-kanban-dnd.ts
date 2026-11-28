@@ -1,4 +1,5 @@
 import type { KanbanApplication } from "@/types/recruitment.types"
+
 import { type DragEvent, useState } from "react"
 
 interface UseRecruitmentKanbanDndOptions {

@@ -2,6 +2,7 @@ import { DataTablePage } from "@/components/common"
 import { useInsuranceColumns } from "@/components/features/employees/insurance-columns"
 import { useInsuranceManagement } from "@/hooks/employees/use-insurance-management"
 import type { Employee } from "@/types/employee.types"
+
 import { Plus } from "lucide-react"
 
 /**

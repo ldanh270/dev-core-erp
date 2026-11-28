@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+
 import { ChevronDown, ChevronUp } from "lucide-react"
 
 interface SalaryInfoSectionProps {

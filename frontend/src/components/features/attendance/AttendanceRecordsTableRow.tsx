@@ -1,19 +1,26 @@
-import { FileCheck2 } from "lucide-react"
 import { StatusPill } from "@/components/common/status-pill"
 import { TableCell, TableRow } from "@/components/ui/table"
 import {
   ATTENDANCE_STATUS_LABELS,
   ATTENDANCE_STATUS_VARIANTS,
 } from "@/config/entities/attendance.config"
-import { toSelectedEmployee, type SelectedEmployeeSummary } from "@/hooks/attendance/use-admin-attendance-dashboard"
+import {
+  type SelectedEmployeeSummary,
+  toSelectedEmployee,
+} from "@/hooks/attendance/use-admin-attendance-dashboard"
 import { formatDate, formatTime } from "@/lib/utils"
 import type { IAttendanceRecord } from "@/types/attendance.types"
+
+import { FileCheck2 } from "lucide-react"
 
 const ATTENDANCE_STATUS_LABEL_MAP = new Map<string, string>(
   Object.entries(ATTENDANCE_STATUS_LABELS),
 )
 const ATTENDANCE_STATUS_VARIANT_MAP = new Map<string, "success" | "warning" | "danger" | "neutral">(
-  Object.entries(ATTENDANCE_STATUS_VARIANTS) as [string, "success" | "warning" | "danger" | "neutral"][],
+  Object.entries(ATTENDANCE_STATUS_VARIANTS) as [
+    string,
+    "success" | "warning" | "danger" | "neutral",
+  ][],
 )
 
 interface AttendanceRecordsTableRowProps {
@@ -36,9 +43,7 @@ export function AttendanceRecordsTableRow({
 
   return (
     <TableRow
-      className={`cursor-pointer hover:bg-muted/30 ${
-        isSelected ? "bg-primary/5" : ""
-      }`}
+      className={`cursor-pointer hover:bg-muted/30 ${isSelected ? "bg-primary/5" : ""}`}
       onClick={() => {
         onSelectEmployee(toSelectedEmployee(record))
       }}
@@ -54,16 +59,10 @@ export function AttendanceRecordsTableRow({
       <TableCell className="px-4 py-4 text-muted-foreground whitespace-nowrap">
         {formatDate(record.date)}
       </TableCell>
-      <TableCell className="px-4 py-4 font-mono text-sm">
-        {formatTime(record.checkInAt)}
-      </TableCell>
-      <TableCell className="px-4 py-4 font-mono text-sm">
-        {formatTime(record.checkOutAt)}
-      </TableCell>
+      <TableCell className="px-4 py-4 font-mono text-sm">{formatTime(record.checkInAt)}</TableCell>
+      <TableCell className="px-4 py-4 font-mono text-sm">{formatTime(record.checkOutAt)}</TableCell>
       <TableCell className="px-4 py-4 text-muted-foreground whitespace-nowrap">
-        {record.totalWorkMinutes > 0
-          ? `${workHours}h${workMins > 0 ? ` ${workMins}m` : ""}`
-          : "—"}
+        {record.totalWorkMinutes > 0 ? `${workHours}h${workMins > 0 ? ` ${workMins}m` : ""}` : "—"}
       </TableCell>
       <TableCell className="px-4 py-4">
         <StatusPill
@@ -81,10 +80,7 @@ export function AttendanceRecordsTableRow({
         {record.overtimeMinutes > 0 && (
           <span className="text-info-foreground">+{record.overtimeMinutes}m OT</span>
         )}
-        {!record.lateMinutes &&
-          !record.earlyLeaveMinutes &&
-          !record.overtimeMinutes &&
-          "—"}
+        {!record.lateMinutes && !record.earlyLeaveMinutes && !record.overtimeMinutes && "—"}
       </TableCell>
       <TableCell className="px-4 py-4">
         {record.correctedByApplication ? (

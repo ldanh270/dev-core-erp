@@ -1,4 +1,3 @@
-import { Loader2 } from "lucide-react"
 import { PageCard } from "@/components/common"
 import {
   Table,
@@ -11,6 +10,9 @@ import {
 import type { IAttendanceStatus } from "@/config/entities/attendance.config"
 import type { SelectedEmployeeSummary } from "@/hooks/attendance/use-admin-attendance-dashboard"
 import type { IAttendanceRecord } from "@/types/attendance.types"
+
+import { Loader2 } from "lucide-react"
+
 import { AttendanceRecordsFilters } from "./AttendanceRecordsFilters"
 import { AttendanceRecordsTableRow } from "./AttendanceRecordsTableRow"
 

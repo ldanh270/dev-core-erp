@@ -15,6 +15,7 @@ import {
 } from "@/config/entities/employee-contract.config"
 import { cn } from "@/lib/utils"
 import type { Employee } from "@/types/employee.types"
+
 import { ChevronDown, ChevronUp, Upload } from "lucide-react"
 
 interface ContractInfoSectionProps {
@@ -97,9 +98,7 @@ export function ContractInfoSection({
               required
             />
             {isContractNumberError && (
-              <p className="text-xs text-destructive font-medium mt-1">
-                Vui lòng nhập mã hợp đồng
-              </p>
+              <p className="text-xs text-destructive font-medium mt-1">Vui lòng nhập mã hợp đồng</p>
             )}
           </div>
 

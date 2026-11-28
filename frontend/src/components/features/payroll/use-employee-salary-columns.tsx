@@ -1,8 +1,4 @@
-import {
-  type DataTableColumn,
-  TABLE_COL_WIDTH,
-  getTableColWidthPx,
-} from "@/components/common"
+import { type DataTableColumn, TABLE_COL_WIDTH, getTableColWidthPx } from "@/components/common"
 import { EmployeeSalaryInfoCell } from "@/components/features/payroll/EmployeeSalaryInfoCell"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,6 +13,7 @@ import type { Employee } from "@/types/employee.types"
 import type { IPayslipTemplate } from "@/types/payroll.types"
 
 import { useMemo } from "react"
+
 import { FileText, History, MoreHorizontal, User } from "lucide-react"
 
 interface SelectedEmployeeBrief {

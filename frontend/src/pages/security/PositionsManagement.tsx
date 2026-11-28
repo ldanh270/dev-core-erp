@@ -2,10 +2,7 @@ import { PageContainer, PageHeader } from "@/components/common"
 import { PositionCardsGrid } from "@/components/features/security/PositionCardsGrid"
 import { PositionFormDialog } from "@/components/features/security/PositionFormDialog"
 import { PositionsHeaderActions } from "@/components/features/security/PositionsHeaderActions"
-import {
-  TRACKER_LABELS,
-  usePositionsManagement,
-} from "@/hooks/security/use-positions-management"
+import { TRACKER_LABELS, usePositionsManagement } from "@/hooks/security/use-positions-management"
 
 /**
  * PositionsManagement page component.

@@ -67,7 +67,9 @@ export function ProjectKanbanColumn({
       key={status.id}
       scrollType="always"
       className={`w-[290px] h-full ${
-        isDraggingThisColumn ? "opacity-45 scale-[0.98] border-dashed border-muted-foreground/50" : ""
+        isDraggingThisColumn
+          ? "opacity-45 scale-[0.98] border-dashed border-muted-foreground/50"
+          : ""
       } ${isDragOverThisColumn ? "border-primary ring-2 ring-primary/20 bg-primary/5" : ""}`}
       onDragOver={(e) => {
         if (draggingColumnId) {

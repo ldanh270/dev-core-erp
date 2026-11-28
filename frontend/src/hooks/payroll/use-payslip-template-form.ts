@@ -8,8 +8,10 @@ import {
   createPayslipTemplateSchema,
 } from "@/schemas/payroll.schema"
 import type { IPayslipTemplate, ISalaryComponent } from "@/types/payroll.types"
-import { zodResolver } from "@hookform/resolvers/zod"
+
 import { useState } from "react"
+
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -33,10 +35,7 @@ interface UsePayslipTemplateFormProps {
 }
 
 /** Custom hook managing payslip template creation, component ordering, and formula logic. */
-export function usePayslipTemplateForm({
-  initialData,
-  onSuccess,
-}: UsePayslipTemplateFormProps) {
+export function usePayslipTemplateForm({ initialData, onSuccess }: UsePayslipTemplateFormProps) {
   const { mutateAsync: createTemplate, isPending: isCreating } = useCreatePayslipTemplate()
   const { mutateAsync: updateTemplate, isPending: isUpdating } = useUpdatePayslipTemplate()
   const isPending = isCreating || isUpdating

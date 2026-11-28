@@ -76,9 +76,7 @@ export function HolidayCardsGrid({
             <div className="space-y-2">
               <div className="flex items-start justify-between gap-2">
                 <div className="space-y-0.5">
-                  <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-semibold")}>
-                    {h.name}
-                  </span>
+                  <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-semibold")}>{h.name}</span>
                   <div className="flex items-center gap-2">
                     <StatusPill
                       label={getHolidayTypeLabel(h.type)}

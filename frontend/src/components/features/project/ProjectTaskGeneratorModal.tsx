@@ -1,8 +1,3 @@
-import { useEffect, useState } from "react"
-import { useQueryClient } from "@tanstack/react-query"
-import { AlertTriangle, Brain, Loader2, Plus, Sparkles } from "lucide-react"
-import { toast } from "sonner"
-
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,6 +13,12 @@ import { taskEstimateAiApi } from "@/lib/api/task-estimate-ai.api"
 import type { GeneratedTaskSuggestion } from "@/lib/api/task-estimate-ai.api"
 import { taskApi } from "@/lib/api/task.api"
 import type { TaskPriority, TaskTracker } from "@/types/task.types"
+
+import { useEffect, useState } from "react"
+
+import { useQueryClient } from "@tanstack/react-query"
+import { AlertTriangle, Brain, Loader2, Plus, Sparkles } from "lucide-react"
+import { toast } from "sonner"
 
 interface EditableSuggestion extends GeneratedTaskSuggestion {
   checked: boolean
@@ -58,9 +59,7 @@ function ProjectTaskSuggestionCard({
   return (
     <div
       className={`p-4 border rounded-2xl transition-all duration-200 bg-card/40 flex items-start gap-4 ${
-        suggestion.checked
-          ? "border-purple-500 bg-purple-500/5"
-          : "border-border/60 opacity-60"
+        suggestion.checked ? "border-purple-500 bg-purple-500/5" : "border-border/60 opacity-60"
       }`}
     >
       <input
@@ -96,10 +95,7 @@ function ProjectTaskSuggestionCard({
             >
               {suggestion.priority}
             </Badge>
-            <Badge
-              variant="secondary"
-              className="text-[10px] py-0 px-2 font-bold rounded-full"
-            >
+            <Badge variant="secondary" className="text-[10px] py-0 px-2 font-bold rounded-full">
               {suggestion.estimatedTime}h Baseline
             </Badge>
           </div>

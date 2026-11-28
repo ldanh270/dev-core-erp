@@ -2,19 +2,6 @@
  * Weekly capacity board for Admin/PM.
  * It displays cron/event-refreshed project forecasts so managers can compare shortage/surplus projects.
  */
-import type React from "react"
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import {
-  AlertTriangle,
-  BrainCircuit,
-  CalendarDays,
-  CheckCircle2,
-  Inbox,
-  Info,
-  RefreshCw,
-} from "lucide-react"
-
 import { PageCard } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -32,6 +19,20 @@ import type {
   CapacityBoardProjectSnapshot,
   CapacityForecastResult,
 } from "@/types/capacity-copilot.types"
+
+import type React from "react"
+import { useState } from "react"
+
+import { useQuery } from "@tanstack/react-query"
+import {
+  AlertTriangle,
+  BrainCircuit,
+  CalendarDays,
+  CheckCircle2,
+  Inbox,
+  Info,
+  RefreshCw,
+} from "lucide-react"
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
 const PERCENT_WARNING_THRESHOLD = 0
@@ -188,7 +189,9 @@ function CapacityBoardProjectColumn({
 }) {
   return (
     <div className="rounded-xl border border-border bg-muted/20 p-5 flex flex-col min-w-0 h-full overflow-hidden">
-      <div className={`mb-4 flex items-center gap-2 font-semibold text-sm shrink-0 ${titleClassName}`}>
+      <div
+        className={`mb-4 flex items-center gap-2 font-semibold text-sm shrink-0 ${titleClassName}`}
+      >
         {icon}
         <span>
           {title} ({count})

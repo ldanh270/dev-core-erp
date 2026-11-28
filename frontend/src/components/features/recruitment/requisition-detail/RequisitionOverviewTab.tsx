@@ -15,8 +15,10 @@ import type {
   KanbanApplication,
   RecruitmentPipelineStage,
 } from "@/types/recruitment.types"
-import { BarChart3, TrendingUp } from "lucide-react"
+
 import { useMemo } from "react"
+
+import { BarChart3, TrendingUp } from "lucide-react"
 
 interface StageWithCount extends RecruitmentPipelineStage {
   count: number
@@ -156,8 +158,7 @@ function RequisitionPipelineDistributionCard({
 
       <div className="mt-4 grid w-full grid-cols-2 gap-2.5 sm:grid-cols-3 md:mt-0">
         {stageCounts.map((stage) => {
-          const percent =
-            totalAppsCount > 0 ? Math.round((stage.count / totalAppsCount) * 100) : 0
+          const percent = totalAppsCount > 0 ? Math.round((stage.count / totalAppsCount) * 100) : 0
           return (
             <div
               key={stage.id}
@@ -174,9 +175,7 @@ function RequisitionPipelineDistributionCard({
               </div>
               <div className="ml-1 flex shrink-0 items-center gap-1">
                 <span className="text-xs font-bold text-foreground">{stage.count}</span>
-                <span className="text-[9px] font-medium text-muted-foreground">
-                  ({percent}%)
-                </span>
+                <span className="text-[9px] font-medium text-muted-foreground">({percent}%)</span>
               </div>
             </div>
           )

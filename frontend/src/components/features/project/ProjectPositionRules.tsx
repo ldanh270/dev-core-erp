@@ -1,7 +1,4 @@
-﻿import type React from "react"
-import { Edit2, Plus, RefreshCw, Save, Trash2, X } from "lucide-react"
-
-import { PageCard } from "@/components/common"
+﻿import { PageCard } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,16 +19,20 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { PROJECT_ROLES } from "@/config/entities/project.config"
-import type { ProjectRole } from "@/types/project-role.types"
-import type { ProjectTracker } from "@/types/project-tracker.types"
-import type { ProjectMember } from "@/types/project.types"
-
 import {
   type DisplayRoleMember,
   SELECT_NONE_VALUE,
   useProjectPositionRules,
-} from '@/hooks/project/use-project-position-rules'
-import { TrackerDropdown } from './TrackerDropdown'
+} from "@/hooks/project/use-project-position-rules"
+import type { ProjectRole } from "@/types/project-role.types"
+import type { ProjectTracker } from "@/types/project-tracker.types"
+import type { ProjectMember } from "@/types/project.types"
+
+import type React from "react"
+
+import { Edit2, Plus, RefreshCw, Save, Trash2, X } from "lucide-react"
+
+import { TrackerDropdown } from "./TrackerDropdown"
 
 function ProjectRoleFormDialog({
   isOpen,
@@ -176,9 +177,7 @@ function AssignMemberToRoleDialog({
                   Chọn thành viên
                 </SelectItem>
                 {members
-                  .filter(
-                    (m) => m.employeeId !== teamLeaderId && m.roleId !== targetRole?.id,
-                  )
+                  .filter((m) => m.employeeId !== teamLeaderId && m.roleId !== targetRole?.id)
                   .map((m) => (
                     <SelectItem key={m.employeeId} value={m.employeeId} className="rounded-lg">
                       {m.employee?.fullName || "Chưa rõ"} (Vai trò hiện tại:{" "}
@@ -334,9 +333,7 @@ function ProjectRoleRuleRow({
             </Button>
           </div>
           {roleMembers.length === 0 ? (
-            <span className="text-[10px] text-muted-foreground italic">
-              Chưa có thành viên
-            </span>
+            <span className="text-[10px] text-muted-foreground italic">Chưa có thành viên</span>
           ) : (
             roleMembers.map((m) => (
               <Badge
@@ -346,9 +343,7 @@ function ProjectRoleRuleRow({
               >
                 <span>{m.employee?.fullName || "Chưa rõ"}</span>
                 {m.isTeamLeaderField && (
-                  <span className="text-[8px] text-primary font-bold uppercase">
-                    Lead
-                  </span>
+                  <span className="text-[8px] text-primary font-bold uppercase">Lead</span>
                 )}
                 {!m.isTeamLeaderField && (
                   <button
@@ -559,5 +554,3 @@ export function ProjectPositionRules({ projectId }: ProjectPositionRulesProps) {
     </>
   )
 }
-
-

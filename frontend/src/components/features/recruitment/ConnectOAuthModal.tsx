@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select"
 import { POSTING_CHANNELS } from "@/config/entities/recruitment.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
+
 import { Link2, RefreshCw } from "lucide-react"
 
 /**

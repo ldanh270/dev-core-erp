@@ -1,6 +1,9 @@
-import { Fragment, type ReactNode } from "react"
-import { Outlet, Route } from "react-router-dom"
 import type { RouteConfig } from "@/routes"
+
+import { Fragment, type ReactNode } from "react"
+
+import { Outlet, Route } from "react-router-dom"
+
 import { ProtectedRoute } from "./ProtectedRoute"
 
 export const renderPrivateRoute = (

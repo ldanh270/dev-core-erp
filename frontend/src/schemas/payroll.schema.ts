@@ -26,4 +26,3 @@ export const salaryConfigFormSchema = z.object({
 })
 
 export type SalaryConfigFormValues = z.infer<typeof salaryConfigFormSchema>
-

@@ -1,8 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Trash2 } from "lucide-react"
-
 import { LEAVE_TYPE_OPTIONS } from "@/components/attendance/attendance-ui.meta"
 import { DatePicker, TimePicker } from "@/components/common"
 import { AddRegimeCategoryDialog } from "@/components/features/application/add-regime-category-dialog"
@@ -19,6 +16,10 @@ import type { ApplicationFormState } from "@/hooks/application/useCreateApplicat
 import { useRegimeCategories } from "@/hooks/attendance/use-regime-categories"
 import { schedulesApi } from "@/lib/api/attendance.api"
 import type { Employee } from "@/types/employee.types"
+
+import { useEffect, useState } from "react"
+
+import { Trash2 } from "lucide-react"
 
 // ---------------------------------------------------------------------------
 // Constants & Types
@@ -89,11 +90,7 @@ function useApplicationShifts(
 
   useEffect(() => {
     let active = true
-    if (
-      type === APPLICATION_TYPES.SHIFT_SWAP.LABEL &&
-      swapWithEmployeeId &&
-      swapWithDate
-    ) {
+    if (type === APPLICATION_TYPES.SHIFT_SWAP.LABEL && swapWithEmployeeId && swapWithDate) {
       schedulesApi
         .getShiftsByEmployee(swapWithEmployeeId, swapWithDate, swapWithDate)
         .then((data) => {
@@ -152,9 +149,7 @@ function TimeSectionHeader({
           {formIndex + 1}
         </div>
       )}
-      <h3 className="font-semibold text-[15px] text-foreground flex-1">
-        {getSectionTitle()}
-      </h3>
+      <h3 className="font-semibold text-[15px] text-foreground flex-1">{getSectionTitle()}</h3>
       {onRemove && (
         <button
           onClick={onRemove}
@@ -240,9 +235,7 @@ function CommonDateFields({
       {!hideEndDate && (
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-foreground">
-            {type === APPLICATION_TYPES.REGIME.LABEL
-              ? "Ngày kết thúc chế độ"
-              : "Ngày kết thúc"}
+            {type === APPLICATION_TYPES.REGIME.LABEL ? "Ngày kết thúc chế độ" : "Ngày kết thúc"}
           </label>
           <DatePicker
             value={form.endDate || null}
@@ -335,9 +328,7 @@ function LeaveApplicationFields({
                 />
               </div>
               {isStartDatePast && (
-                <span className="text-[11px] text-destructive">
-                  Thời gian không được ở quá khứ
-                </span>
+                <span className="text-[11px] text-destructive">Thời gian không được ở quá khứ</span>
               )}
               {isEndDateBeforeStart && (
                 <span className="text-[11px] text-destructive">
@@ -493,9 +484,7 @@ function RegimeApplicationFields({
               <SelectValue placeholder="Chọn loại chế độ" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={EMPTY_REGIME_CATEGORY_VALUE}>
-                Chọn loại chế độ
-              </SelectItem>
+              <SelectItem value={EMPTY_REGIME_CATEGORY_VALUE}>Chọn loại chế độ</SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>
                   {category.name}
@@ -526,9 +515,7 @@ function RegimeApplicationFields({
         />
       </div>
       <div className="space-y-1.5">
-        <label className="text-xs font-medium text-muted-foreground">
-          Thời gian về sớm (phút)
-        </label>
+        <label className="text-xs font-medium text-muted-foreground">Thời gian về sớm (phút)</label>
         <input
           type="number"
           disabled
@@ -594,12 +581,7 @@ function ForgotCardApplicationFields({
         {form.documentUrl && (
           <div className="mt-1 text-xs font-medium text-primary">
             Đã tải lên tệp:{" "}
-            <a
-              href={form.documentUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="underline"
-            >
+            <a href={form.documentUrl} target="_blank" rel="noreferrer" className="underline">
               Xem tài liệu
             </a>
           </div>
@@ -679,9 +661,7 @@ function ShiftSwapApplicationFields({
   return (
     <>
       <div className="space-y-1.5">
-        <label className="text-xs font-medium text-foreground">
-          Ngày ca của đồng nghiệp
-        </label>
+        <label className="text-xs font-medium text-foreground">Ngày ca của đồng nghiệp</label>
         <DatePicker
           value={form.swapWithDate || null}
           onChange={(val) => {

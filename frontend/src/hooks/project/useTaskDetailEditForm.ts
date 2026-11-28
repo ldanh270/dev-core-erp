@@ -161,11 +161,7 @@ export function useTaskDetailEditForm({
             )
             return
           }
-          if (
-            parentTask.dueDate &&
-            taskDue &&
-            new Date(taskDue) > new Date(parentTask.dueDate)
-          ) {
+          if (parentTask.dueDate && taskDue && new Date(taskDue) > new Date(parentTask.dueDate)) {
             toast.warning(
               `Hạn hoàn thành của công việc con không được sau hạn hoàn thành của công việc cha (${new Date(parentTask.dueDate).toLocaleDateString("vi-VN")})`,
             )
@@ -177,11 +173,7 @@ export function useTaskDetailEditForm({
       const childTasks = siblingTasks.filter((t) => t.parentTaskId === taskId)
       if (childTasks.length > 0) {
         for (const child of childTasks) {
-          if (
-            child.startDate &&
-            taskStart &&
-            new Date(taskStart) > new Date(child.startDate)
-          ) {
+          if (child.startDate && taskStart && new Date(taskStart) > new Date(child.startDate)) {
             toast.warning(
               `Khoảng thời gian công việc cha phải bao trùm công việc con "${child.title}" (bắt đầu ${new Date(child.startDate).toLocaleDateString("vi-VN")})`,
             )

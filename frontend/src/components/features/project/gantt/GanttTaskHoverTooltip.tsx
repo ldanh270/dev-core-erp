@@ -1,6 +1,6 @@
-import { format } from "date-fns"
-
 import type { HoveredTaskState } from "@/types/gantt.types"
+
+import { format } from "date-fns"
 
 interface GanttTaskHoverTooltipProps {
   hoveredTask: HoveredTaskState | null
@@ -30,9 +30,7 @@ export function GanttTaskHoverTooltip({ hoveredTask }: GanttTaskHoverTooltipProp
           ? format(new Date(hoveredTask.task.startDate), "dd/MM/yyyy")
           : "?"}{" "}
         -{" "}
-        {hoveredTask.task.dueDate
-          ? format(new Date(hoveredTask.task.dueDate), "dd/MM/yyyy")
-          : "?"}
+        {hoveredTask.task.dueDate ? format(new Date(hoveredTask.task.dueDate), "dd/MM/yyyy") : "?"}
       </p>
       <p className="font-medium text-[10px]">
         Tiến độ: {hoveredTask.task.progress}% (

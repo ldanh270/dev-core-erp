@@ -16,15 +16,10 @@ import type {
   IEmployeeWizardFormData,
   IExperienceItem,
 } from "@/types/employee-wizard.types"
-import {
-  ChevronDown,
-  ChevronUp,
-  Image as ImageIcon,
-  PlusCircle,
-  Trash2,
-  User,
-} from "lucide-react"
+
 import { type ReactNode, useState } from "react"
+
+import { ChevronDown, ChevronUp, Image as ImageIcon, PlusCircle, Trash2, User } from "lucide-react"
 
 interface CollapsibleSectionProps {
   title: string
@@ -155,10 +150,7 @@ function BioPersonalInfoSection({
 
           <div className="space-y-1.5">
             <Label className="text-xs font-medium">Giới tính</Label>
-            <Select
-              value={formData.gender}
-              onValueChange={(val) => updateField("gender", val)}
-            >
+            <Select value={formData.gender} onValueChange={(val) => updateField("gender", val)}>
               <SelectTrigger className="rounded-full">
                 <SelectValue placeholder="Chọn giới tính" />
               </SelectTrigger>

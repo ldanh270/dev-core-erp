@@ -13,14 +13,8 @@ import { useSecurityDashboard } from "@/hooks/security/use-security-dashboard"
  * Pure orchestrator monitoring authentication telemetry, account lockouts, and permission changes.
  */
 export default function SecurityDashboard() {
-  const {
-    timeRange,
-    setTimeRange,
-    data,
-    isLoading,
-    isError,
-    handleRefresh,
-  } = useSecurityDashboard()
+  const { timeRange, setTimeRange, data, isLoading, isError, handleRefresh } =
+    useSecurityDashboard()
 
   if (isLoading) {
     return (

@@ -77,7 +77,12 @@ export function DetailPageLayout({
       <div className="flex flex-col gap-4 border-b border-border pb-6">
         {(backHref || onBack) && (
           <div>
-            <BackButton backHref={backHref} fallbackHref={fallbackHref} onBack={onBack} label={backLabel} />
+            <BackButton
+              backHref={backHref}
+              fallbackHref={fallbackHref}
+              onBack={onBack}
+              label={backLabel}
+            />
           </div>
         )}
 
@@ -133,7 +138,7 @@ export function DetailPageLayout({
           <div
             className={cn(
               "grid grid-cols-1 lg:grid-cols-12 gap-6",
-              sidebarPosition === "right" && "lg:flex lg:flex-row-reverse"
+              sidebarPosition === "right" && "lg:flex lg:flex-row-reverse",
             )}
           >
             <div className="lg:col-span-4 xl:col-span-3 space-y-6">{sidebar}</div>

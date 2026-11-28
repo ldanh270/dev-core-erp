@@ -29,13 +29,8 @@ export default function KanbanPage({
   requisitionId = "",
   embedded = false,
 }: KanbanPageProps) {
-  const {
-    hasTarget,
-    selectedApplicationId,
-    setSelectedApplicationId,
-    board,
-    handleOpenAddColumn,
-  } = useKanbanManagement({ givenPostingId, requisitionId })
+  const { hasTarget, selectedApplicationId, setSelectedApplicationId, board, handleOpenAddColumn } =
+    useKanbanManagement({ givenPostingId, requisitionId })
 
   if (!hasTarget) {
     return <KanbanEmptySelectionState />
@@ -65,9 +60,7 @@ export default function KanbanPage({
       title="Kanban Board"
       description="Kéo thả để cập nhật tiến độ ứng viên theo từng giai đoạn tuyển dụng"
       actions={
-        board.canManageStages ? (
-          <KanbanAddColumnButton onClick={handleOpenAddColumn} />
-        ) : undefined
+        board.canManageStages ? <KanbanAddColumnButton onClick={handleOpenAddColumn} /> : undefined
       }
     >
       <KanbanContent

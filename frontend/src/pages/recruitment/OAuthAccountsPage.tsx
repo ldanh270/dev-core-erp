@@ -1,11 +1,13 @@
 import { DataTablePage } from "@/components/common"
 import { ConnectOAuthModal } from "@/components/features/recruitment/ConnectOAuthModal"
-import { getOAuthAccountsColumns } from "@/components/features/recruitment/oauth-accounts-columns"
 import { OAuthAccountsChannelFilter } from "@/components/features/recruitment/OAuthAccountsChannelFilter"
+import { getOAuthAccountsColumns } from "@/components/features/recruitment/oauth-accounts-columns"
 import { useOAuthAccountsManagement } from "@/hooks/recruitment/use-oauth-accounts-management"
 import type { OAuthAccount } from "@/lib/api/recruitment.api"
-import { Plus } from "lucide-react"
+
 import { useMemo } from "react"
+
+import { Plus } from "lucide-react"
 
 /**
  * Tier 2 Page Orchestrator for linked OAuth channels.

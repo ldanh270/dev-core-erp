@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+
 import { Filter, RefreshCw } from "lucide-react"
 
 /**
@@ -37,7 +38,6 @@ export function ActivityLogsHeaderActions({
   )
 }
 
-
 /**
  * Props for ActivityLogsCategoryFilter component.
  */
@@ -56,10 +56,7 @@ export function ActivityLogsCategoryFilter({
   return (
     <div className="flex items-center gap-2 shrink-0">
       <Filter className="size-4 text-muted-foreground shrink-0" />
-      <Select
-        value={category || "ALL"}
-        onValueChange={onCategoryChange}
-      >
+      <Select value={category || "ALL"} onValueChange={onCategoryChange}>
         <SelectTrigger
           className={cn("w-[155px] rounded-full bg-background", TYPOGRAPHY.TOOLBAR_CONTROL)}
         >

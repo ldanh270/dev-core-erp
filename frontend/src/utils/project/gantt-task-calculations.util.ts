@@ -1,23 +1,21 @@
 ﻿import { TASK_PRIORITY, TASK_STATUS, TASK_TRACKER } from "@/config/entities/project.config"
-import type { Task } from "@/types/task.types"
-
-import { differenceInDays, startOfDay } from "date-fns"
-
 import {
   DEFAULT_RECENT_DAYS_RANGE,
   FILTER_DEFINITIONS,
   GANTT_FILTER_KEY,
   GANTT_FILTER_OPERATOR,
   GANTT_FILTER_TYPE,
-} from '@/constants/gantt.constants'
+} from "@/constants/gantt.constants"
+import type { Task } from "@/types/task.types"
+
+import { differenceInDays, startOfDay } from "date-fns"
 
 /**
  * Resolves the default filter comparison operator for a given Gantt filter property key.
  */
 export function getDefaultGanttOperator(key: string): string {
   const def = Reflect.get(FILTER_DEFINITIONS, key) as
-    | { label: string; type: string; group: string }
-    | undefined
+    { label: string; type: string; group: string } | undefined
   if (def === undefined) return GANTT_FILTER_OPERATOR.IS
   if (key === GANTT_FILTER_KEY.DATE_DUE) return GANTT_FILTER_OPERATOR.OVERDUE
   if (key === GANTT_FILTER_KEY.STATUS) return GANTT_FILTER_OPERATOR.OPEN
@@ -40,8 +38,7 @@ export function getDefaultGanttValue(
   assignees: { id: string; fullName: string }[],
 ): string {
   const def = Reflect.get(FILTER_DEFINITIONS, key) as
-    | { label: string; type: string; group: string }
-    | undefined
+    { label: string; type: string; group: string } | undefined
   if (def === undefined) return ""
   if (key === GANTT_FILTER_KEY.TRACKER) return TASK_TRACKER.TASK
   if (key === GANTT_FILTER_KEY.PRIORITY) return TASK_PRIORITY.MEDIUM
@@ -68,8 +65,7 @@ export function filterGanttTasks(
     for (const key of appliedFilterKeys) {
       if (!Object.prototype.hasOwnProperty.call(appliedFilterStates, key)) continue
       const filter = Reflect.get(appliedFilterStates, key) as
-        | { enabled: boolean; operator: string; value: string }
-        | undefined
+        { enabled: boolean; operator: string; value: string } | undefined
       if (!filter?.enabled) continue
 
       if (key === GANTT_FILTER_KEY.STATUS) {
@@ -323,5 +319,3 @@ export function getGanttTaskGridStyle(
     gridColumnEnd: startCol + span,
   }
 }
-
-

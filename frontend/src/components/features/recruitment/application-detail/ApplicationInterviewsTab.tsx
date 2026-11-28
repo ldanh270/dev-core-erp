@@ -7,6 +7,7 @@ import {
 } from "@/config/entities/recruitment.config"
 import type { Employee } from "@/types/employee.types"
 import type { InterviewRound, Scorecard } from "@/types/recruitment.types"
+
 import { format } from "date-fns"
 import { Calendar, MapPin, Pencil, Plus, Star, Video } from "lucide-react"
 
@@ -246,7 +247,9 @@ export function ApplicationInterviewsTab({
         <span className="text-sm text-muted-foreground">Đang tải lịch phỏng vấn...</span>
       ) : interviews.length === 0 ? (
         <div className="space-y-3 rounded-2xl border border-dashed border-border/50 py-10 text-center">
-          <p className="text-sm text-muted-foreground">Chưa có vòng phỏng vấn nào được thiết lập.</p>
+          <p className="text-sm text-muted-foreground">
+            Chưa có vòng phỏng vấn nào được thiết lập.
+          </p>
           {canManage && (
             <Button
               size="sm"

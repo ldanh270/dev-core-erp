@@ -111,11 +111,7 @@ export function ProfilePasswordSection({
             >
               Xóa nhập liệu
             </Button>
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="rounded-full cursor-pointer"
-            >
+            <Button type="submit" disabled={isPending} className="rounded-full cursor-pointer">
               {isPending ? "Đang xử lý..." : "Cập nhật mật khẩu"}
             </Button>
           </div>

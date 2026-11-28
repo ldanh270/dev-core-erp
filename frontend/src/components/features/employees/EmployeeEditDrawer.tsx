@@ -23,9 +23,12 @@ import { usePositions } from "@/hooks/use-position-query"
 import type { Employee } from "@/types/employee.types"
 import type { Role } from "@/types/security.types"
 import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util"
+
 import { useState } from "react"
+
 import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
 import { toast } from "sonner"
+
 import { EmployeeJobFieldsSection } from "./EmployeeJobFieldsSection"
 
 interface Props {
@@ -195,9 +198,7 @@ function EditAccountSection({
               {...register("email")}
               className={`bg-background ${errors.email ? "border-destructive" : ""}`}
             />
-            {errors.email && (
-              <p className="text-xs text-destructive">{errors.email.message}</p>
-            )}
+            {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
           </div>
         </div>
 
@@ -257,9 +258,7 @@ function EditBasicInfoSection({
             {...register("fullName")}
             className={`bg-background ${errors.fullName ? "border-destructive" : ""}`}
           />
-          {errors.fullName && (
-            <p className="text-xs text-destructive">{errors.fullName.message}</p>
-          )}
+          {errors.fullName && <p className="text-xs text-destructive">{errors.fullName.message}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -272,9 +271,7 @@ function EditBasicInfoSection({
               {...register("phone")}
               className={`bg-background ${errors.phone ? "border-destructive" : ""}`}
             />
-            {errors.phone && (
-              <p className="text-xs text-destructive">{errors.phone.message}</p>
-            )}
+            {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
           </div>
 
           <div className="space-y-1.5">
@@ -321,9 +318,7 @@ function EditBasicInfoSection({
             {...register("address")}
             className={`bg-background ${errors.address ? "border-destructive" : ""}`}
           />
-          {errors.address && (
-            <p className="text-xs text-destructive">{errors.address.message}</p>
-          )}
+          {errors.address && <p className="text-xs text-destructive">{errors.address.message}</p>}
         </div>
       </div>
     </section>

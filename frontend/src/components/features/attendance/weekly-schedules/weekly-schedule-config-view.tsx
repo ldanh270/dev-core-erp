@@ -1,18 +1,17 @@
 import { SettingsPageLayout } from "@/components/common"
-import { Button } from "@/components/ui/button"
-import { Form } from "@/components/ui/form-ui"
-import { Separator } from "@/components/ui/separator"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
   SchedulePreviewBadge,
   TriggerDayOfWeekField,
   TriggerTimeField,
   WeeklyScheduleConfigContextPanel,
 } from "@/components/features/attendance/weekly-schedules/weekly-schedule-config-fields"
+import { Button } from "@/components/ui/button"
+import { Form } from "@/components/ui/form-ui"
+import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ROUTES } from "@/config/routes.config"
-import {
-  type WeeklyScheduleSettingsFormValues,
-} from "@/hooks/attendance/use-weekly-schedule-config-form"
+import { type WeeklyScheduleSettingsFormValues } from "@/hooks/attendance/use-weekly-schedule-config-form"
+
 import type { UseFormReturn } from "react-hook-form"
 
 /**

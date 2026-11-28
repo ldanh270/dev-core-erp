@@ -1,4 +1,5 @@
 ﻿import { TASK_STATUS } from "@/config/entities/project.config"
+import { PROJECT_QUERY_KEY } from "@/constants/gantt.constants"
 import { taskApi } from "@/lib/api/task.api"
 import type { Task, UpdateTaskDto } from "@/types/task.types"
 import { extractErrorMessage } from "@/utils/error-helper"
@@ -7,8 +8,6 @@ import { useState } from "react"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-
-import { PROJECT_QUERY_KEY } from '@/constants/gantt.constants'
 
 interface UseTaskReviewProps {
   task: Task
@@ -98,5 +97,3 @@ export function useTaskReview({ task, projectId, onOpenChange }: UseTaskReviewPr
     handleReject,
   }
 }
-
-

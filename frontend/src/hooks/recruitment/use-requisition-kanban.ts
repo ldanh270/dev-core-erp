@@ -1,9 +1,12 @@
 import { requisitionApi } from "@/lib/api/recruitment.api"
 import type { KanbanApplication, RecruitmentPipelineStage } from "@/types/recruitment.types"
 import { extractErrorMessage } from "@/utils/error-helper"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+
 import { useState } from "react"
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+
 import { POSTING_STAGE_COLORS } from "./use-posting-kanban"
 import { useRecruitmentKanbanDnd } from "./use-recruitment-kanban-dnd"
 

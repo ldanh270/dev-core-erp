@@ -10,8 +10,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import type { IEmployeeWizardFormData, IFamilyMemberItem } from "@/types/employee-wizard.types"
-import { ChevronDown, ChevronUp, PlusCircle, Trash2 } from "lucide-react"
+
 import { useState } from "react"
+
+import { ChevronDown, ChevronUp, PlusCircle, Trash2 } from "lucide-react"
 
 interface FamilyTabProps {
   formData: IEmployeeWizardFormData

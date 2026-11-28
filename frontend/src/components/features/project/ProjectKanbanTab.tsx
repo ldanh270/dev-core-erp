@@ -4,7 +4,12 @@ import { ProjectKanbanDialogs } from "@/components/features/project/kanban/Proje
 import { groupTasksByStatus } from "@/components/features/project/kanban/project-kanban-utils"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useProjectKanban } from "@/hooks/project/use-project-kanban"
 import type { ProjectMember } from "@/types/project.types"
+
+import { useMemo } from "react"
+
+import { FolderKanban, Plus } from "lucide-react"
 
 function ProjectKanbanSkeleton() {
   return (
@@ -19,12 +24,6 @@ function ProjectKanbanSkeleton() {
     </div>
   )
 }
-
-import { useMemo } from "react"
-
-import { FolderKanban, Plus } from "lucide-react"
-
-import { useProjectKanban } from '@/hooks/project/use-project-kanban'
 
 interface ProjectKanbanTabProps {
   projectId: string
@@ -91,10 +90,7 @@ export function ProjectKanbanTab({ projectId, teamLeader, user }: ProjectKanbanT
     handleColumnDrop,
   } = useProjectKanban({ projectId, teamLeader, user })
 
-  const tasksByStatus = useMemo(
-    () => groupTasksByStatus(statuses, tasks),
-    [statuses, tasks],
-  )
+  const tasksByStatus = useMemo(() => groupTasksByStatus(statuses, tasks), [statuses, tasks])
 
   if (isLoadingStatuses || isLoadingTasks) {
     return <ProjectKanbanSkeleton />
@@ -213,4 +209,3 @@ export function ProjectKanbanTab({ projectId, teamLeader, user }: ProjectKanbanT
     </div>
   )
 }
-

@@ -21,6 +21,7 @@ import { formatCurrency } from "@/lib/utils"
 import type { IContract } from "@/types/employee-contract.types"
 
 import { useMemo } from "react"
+
 import { MoreHorizontal } from "lucide-react"
 
 const formatDate = (dateStr?: string | null) => {
@@ -33,10 +34,7 @@ interface UseContractsColumnsProps {
   onEdit: (contract: IContract) => void
   onRenew: (contract: IContract) => void
   onTerminate: (contract: IContract) => void
-  onSignContract: (
-    contract: IContract,
-    confirmFn: ReturnType<typeof useConfirm>,
-  ) => Promise<void>
+  onSignContract: (contract: IContract, confirmFn: ReturnType<typeof useConfirm>) => Promise<void>
 }
 
 export function useContractsColumns({
@@ -123,10 +121,7 @@ export function useContractsColumns({
         minWidth: `${TABLE_COL_WIDTH.STATUS}px`,
         align: "center",
         cell: (contract) => (
-          <StatusPill
-            label={contract.status}
-            variant={getContractStatusVariant(contract.status)}
-          />
+          <StatusPill label={contract.status} variant={getContractStatusVariant(contract.status)} />
         ),
       },
       {

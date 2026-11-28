@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { LoginSchemaType } from "@/schemas/auth.schema"
+
 import { Database, Eye, EyeOff, KeyRound } from "lucide-react"
 import type { FieldErrors, UseFormRegister } from "react-hook-form"
 import { Link } from "react-router-dom"

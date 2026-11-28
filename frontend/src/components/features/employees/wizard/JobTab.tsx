@@ -13,8 +13,10 @@ import { getJobFieldError } from "@/lib/employee-form-validation"
 import { cn } from "@/lib/utils"
 import type { IEmployeeWizardFormData } from "@/types/employee-wizard.types"
 import type { Role } from "@/types/security.types"
-import { ChevronDown, ChevronUp } from "lucide-react"
+
 import { useState } from "react"
+
+import { ChevronDown, ChevronUp } from "lucide-react"
 
 interface JobTabProps {
   formData: IEmployeeWizardFormData
@@ -55,11 +57,7 @@ export function JobTab({ formData, updateField, hasAttemptedSubmit }: JobTabProp
         startDateError={startDateError}
       />
 
-      <JobAccountSection
-        formData={formData}
-        updateField={updateField}
-        roles={roles}
-      />
+      <JobAccountSection formData={formData} updateField={updateField} roles={roles} />
     </div>
   )
 }
@@ -334,10 +332,7 @@ function JobAccountSection({
               <Label className="text-xs font-medium">
                 Nhóm quyền <span className="text-destructive">*</span>
               </Label>
-              <Select
-                value={formData.role}
-                onValueChange={(val) => updateField("role", val)}
-              >
+              <Select value={formData.role} onValueChange={(val) => updateField("role", val)}>
                 <SelectTrigger className="rounded-full">
                   <SelectValue placeholder="Nhóm quyền" />
                 </SelectTrigger>

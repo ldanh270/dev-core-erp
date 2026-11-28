@@ -18,7 +18,9 @@ import {
   useUpdateContract,
 } from "@/hooks/employee-contract/use-contracts"
 import type { IContract } from "@/types/employee-contract.types"
+
 import React, { useEffect, useState } from "react"
+
 import { ContractStandardFormFields } from "./ContractStandardFormFields"
 
 export type ContractModalMode = "create" | "edit" | "renew" | "terminate"
@@ -219,13 +221,7 @@ export interface ContractModalProps {
   contract?: IContract | null
 }
 
-export function ContractModal({
-  isOpen,
-  onClose,
-  employeeId,
-  mode,
-  contract,
-}: ContractModalProps) {
+export function ContractModal({ isOpen, onClose, employeeId, mode, contract }: ContractModalProps) {
   const {
     contractType,
     setContractType,
@@ -255,12 +251,15 @@ export function ContractModal({
   } = useContractModalForm({ isOpen, onClose, employeeId, mode, contract })
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
+    >
       <DialogContent className="sm:max-w-[540px] rounded-xl bg-card border-border">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-foreground">
-            {titleText}
-          </DialogTitle>
+          <DialogTitle className="text-xl font-semibold text-foreground">{titleText}</DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
             {mode === "terminate"
               ? `Chấm dứt hợp đồng số ${contract?.contractNumber}`
@@ -268,7 +267,12 @@ export function ContractModal({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4 py-2">
+        <form
+          onSubmit={(e) => {
+            void handleSubmit(e)
+          }}
+          className="space-y-4 py-2"
+        >
           {mode === "terminate" ? (
             <div className="space-y-4">
               <div className="space-y-2">

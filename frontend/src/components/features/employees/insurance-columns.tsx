@@ -7,8 +7,10 @@ import {
 import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn, formatCurrency } from "@/lib/utils"
 import type { Employee } from "@/types/employee.types"
-import { User } from "lucide-react"
+
 import { useMemo } from "react"
+
+import { User } from "lucide-react"
 
 /**
  * Table column definitions for the Social & Health Insurance data table.

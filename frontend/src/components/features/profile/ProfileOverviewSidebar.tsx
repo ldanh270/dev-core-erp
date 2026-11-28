@@ -3,6 +3,7 @@ import { PersonalEmployeeLinkSection } from "@/components/features/profile/perso
 import type { ProfileDto } from "@/types/profile.types"
 
 import type { ChangeEvent, RefObject } from "react"
+
 import { Camera } from "lucide-react"
 
 export interface ProfileOverviewSidebarProps {

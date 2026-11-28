@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+
 import { LayoutGrid, List } from "lucide-react"
 
 export interface InterviewsViewToggleProps {
@@ -10,10 +11,7 @@ export interface InterviewsViewToggleProps {
 /**
  * Pure UI presenter rendering a toggle button group between table and card view modes.
  */
-export function InterviewsViewToggle({
-  viewMode,
-  onViewModeChange,
-}: InterviewsViewToggleProps) {
+export function InterviewsViewToggle({ viewMode, onViewModeChange }: InterviewsViewToggleProps) {
   return (
     <div className="flex items-center gap-1 border border-border rounded-full p-0.5 bg-muted/20">
       <Tooltip>

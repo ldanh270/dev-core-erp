@@ -2,10 +2,6 @@
  * Per-project forecast card driven by the immutable deal target and a selected Monday week.
  * Historical weeks support backtesting; current/future weeks support staffing decisions.
  */
-import { useMemo, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { AlertTriangle, Brain, CheckCircle2, RefreshCw } from "lucide-react"
-
 import { DatePicker, PageCard } from "@/components/common"
 import {
   CAPACITY_CONFIDENCE_LEVEL,
@@ -21,6 +17,11 @@ import type { CapacityForecastResult } from "@/types/capacity-copilot.types"
 import type { ProjectMember } from "@/types/project.types"
 import { formatDateParam } from "@/utils/attendance/format-date-param"
 import { extractErrorMessage } from "@/utils/error-helper"
+
+import { useMemo, useState } from "react"
+
+import { useQuery } from "@tanstack/react-query"
+import { AlertTriangle, Brain, CheckCircle2, RefreshCw } from "lucide-react"
 
 const getWeekStartDateKey = (value: Date): string => {
   const date = new Date(value)
@@ -93,9 +94,7 @@ function ProjectCapacityMetricsGrid({ forecast }: { forecast: CapacityForecastRe
         </div>
         <div className="rounded-lg border border-border p-3 bg-muted/20">
           <span className="text-xs text-muted-foreground">Độ tin cậy (Confidence)</span>
-          <div className="text-lg font-black">
-            {getConfidenceLabel(forecast.confidenceLevel)}
-          </div>
+          <div className="text-lg font-black">{getConfidenceLabel(forecast.confidenceLevel)}</div>
         </div>
       </div>
 
@@ -108,9 +107,7 @@ function ProjectCapacityMetricsGrid({ forecast }: { forecast: CapacityForecastRe
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
         <div className="rounded-lg border border-border p-3 bg-muted/20">
           <span className="text-muted-foreground">Capacity tuần được chọn (Selected week)</span>
-          <div className="text-base font-black">
-            {forecast.totalEffectiveHours} effective hours
-          </div>
+          <div className="text-base font-black">{forecast.totalEffectiveHours} effective hours</div>
         </div>
         <div className="rounded-lg border border-border p-3 bg-muted/20">
           <span className="text-muted-foreground">Năng suất lịch sử (Productivity)</span>

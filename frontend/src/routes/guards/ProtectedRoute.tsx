@@ -4,9 +4,11 @@ import { AUTHORIZATION_STATUS } from "@/config/entities/auth.config"
 import { ROUTES } from "@/config/routes.config"
 import apiClient from "@/lib/api-client"
 import { useAuthStore } from "@/store/auth-store"
-import axios from "axios"
+
 import type { ReactNode } from "react"
 import { useEffect } from "react"
+
+import axios from "axios"
 import { Navigate } from "react-router-dom"
 
 interface ProtectedRouteProps {

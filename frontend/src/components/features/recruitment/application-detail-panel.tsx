@@ -18,10 +18,12 @@ import type {
   RecruitmentApplication,
   RecruitmentOffer,
 } from "@/types/recruitment.types"
+
+import { useState } from "react"
+
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { Calendar, ExternalLink, MapPin, Plus, Video } from "lucide-react"
-import { useState } from "react"
 import { Link } from "react-router-dom"
 
 function ApplicationPanelHeader({ application }: { application: RecruitmentApplication }) {
@@ -136,8 +138,15 @@ function ApplicationPanelInterviewsTab({
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">Các vòng phỏng vấn</h3>
         {canManageInterviews && (
-          <Button size="sm" variant="outline" className="h-8 rounded-full text-xs font-semibold" asChild>
-            <Link to={`/recruitment/applications/${applicationId}?tab=interviews&createInterview=1`}>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 rounded-full text-xs font-semibold"
+            asChild
+          >
+            <Link
+              to={`/recruitment/applications/${applicationId}?tab=interviews&createInterview=1`}
+            >
               <Plus className="mr-1.5 size-3" />
               Thêm vòng
             </Link>
@@ -181,9 +190,7 @@ function ApplicationPanelInterviewsTab({
                       ) : (
                         <MapPin className="size-3.5" />
                       )}
-                      <span>
-                        {INTERVIEW_FORMAT_LABELS[interview.format] ?? interview.format}
-                      </span>
+                      <span>{INTERVIEW_FORMAT_LABELS[interview.format] ?? interview.format}</span>
                     </div>
                   </div>
                 </div>
@@ -245,7 +252,10 @@ function ApplicationPanelOffersTab({
       {offers && offers.length > 0 ? (
         <div className="space-y-3">
           {offers.map((offer) => (
-            <div key={offer.id} className="rounded-xl border border-border/60 bg-card p-4 space-y-1.5">
+            <div
+              key={offer.id}
+              className="rounded-xl border border-border/60 bg-card p-4 space-y-1.5"
+            >
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-sm">{offer.jobTitle ?? "Offer"}</span>
                 <StatusPill

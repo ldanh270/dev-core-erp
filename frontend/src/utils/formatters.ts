@@ -26,4 +26,3 @@ export function formatDateVN(dateString?: string): string {
   if (!dateString) return "-"
   return new Date(dateString).toLocaleDateString("vi-VN")
 }
-

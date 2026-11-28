@@ -5,10 +5,7 @@ import {
   getTableColWidthPx,
 } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
-import {
-  getProjectStatusLabel,
-  getProjectStatusVariant,
-} from "@/config/entities/project.config"
+import { getProjectStatusLabel, getProjectStatusVariant } from "@/config/entities/project.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn } from "@/lib/utils"
 import type { Project } from "@/types/project.types"

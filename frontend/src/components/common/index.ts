@@ -24,7 +24,11 @@ export { AppDrawer } from "./app-drawer"
 export { AppModal } from "./app-modal"
 export { ConfirmProvider, useConfirm } from "./confirm-provider"
 export { EntityFormPage } from "./entity-form-page"
-export { DetailPageLayout, type DetailPageLayoutProps, type DetailTabItem } from "./detail-page-layout"
+export {
+  DetailPageLayout,
+  type DetailPageLayoutProps,
+  type DetailTabItem,
+} from "./detail-page-layout"
 export { DashboardLayout, type DashboardLayoutProps } from "./dashboard-layout"
 export { MatrixPageLayout, type MatrixPageLayoutProps } from "./matrix-page-layout"
 export { BoardPageLayout, type BoardPageLayoutProps } from "./board-page-layout"

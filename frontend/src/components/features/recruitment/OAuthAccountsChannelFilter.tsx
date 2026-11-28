@@ -7,6 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { POSTING_CHANNELS } from "@/config/entities/recruitment.config"
+
 import { Filter, RotateCcw } from "lucide-react"
 
 export interface OAuthAccountsChannelFilterProps {

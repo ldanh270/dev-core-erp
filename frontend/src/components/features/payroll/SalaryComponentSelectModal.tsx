@@ -29,12 +29,12 @@ import {
 } from "@/config/entities/payroll.config"
 import { useSalaryComponents } from "@/hooks/payroll/use-salary-components"
 import type { ISalaryComponent } from "@/types/payroll.types"
-import { Search } from "lucide-react"
+
 import { useMemo, useState } from "react"
 
-const COMPONENT_TYPE_LABEL_MAP = new Map<string, string>(
-  Object.entries(COMPONENT_TYPE_LABELS),
-)
+import { Search } from "lucide-react"
+
+const COMPONENT_TYPE_LABEL_MAP = new Map<string, string>(Object.entries(COMPONENT_TYPE_LABELS))
 
 const COMPONENT_VALUE_TYPE_LABEL_MAP = new Map<string, string>(
   Object.entries(COMPONENT_VALUE_TYPE_LABELS),
@@ -72,8 +72,7 @@ function SalaryComponentSelectTable({
                   type="checkbox"
                   className="w-4 h-4 rounded border-border cursor-pointer"
                   checked={
-                    selectedIds.size === filteredComponents.length &&
-                    filteredComponents.length > 0
+                    selectedIds.size === filteredComponents.length && filteredComponents.length > 0
                   }
                   onChange={handleToggleAll}
                 />

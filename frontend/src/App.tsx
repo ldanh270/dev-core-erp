@@ -8,7 +8,9 @@ import { PublicRoute } from "@/routes/guards/PublicRoute"
 import { renderPrivateRoute } from "@/routes/guards/RouteRenderer"
 import { useAuthStore } from "@/store/auth-store"
 import { resolveSubsystemDestination } from "@/utils/navigation/resolve-subsystem-destination"
+
 import { Fragment, Suspense, lazy, useEffect } from "react"
+
 import { Navigate, Route, BrowserRouter as Router, Routes, useNavigate } from "react-router-dom"
 import { Toaster } from "sonner"
 

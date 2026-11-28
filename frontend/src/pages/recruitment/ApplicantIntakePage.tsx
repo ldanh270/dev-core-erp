@@ -37,11 +37,7 @@ export default function ApplicantIntakePage() {
   } = useApplicantIntake()
 
   const canSubmit = Boolean(
-    requisitionId &&
-      postingId &&
-      source &&
-      rows.length > 0 &&
-      validationErrors.length === 0,
+    requisitionId && postingId && source && rows.length > 0 && validationErrors.length === 0,
   )
 
   return (
@@ -66,10 +62,7 @@ export default function ApplicantIntakePage() {
           onSourceChange={setSource}
         />
 
-        <ApplicantIntakeFileUploadCard
-          fileRef={fileRef}
-          onFileSelect={readFile}
-        />
+        <ApplicantIntakeFileUploadCard fileRef={fileRef} onFileSelect={readFile} />
       </div>
 
       <ApplicantIntakePreviewCard

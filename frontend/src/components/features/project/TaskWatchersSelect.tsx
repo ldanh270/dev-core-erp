@@ -48,9 +48,7 @@ export function TaskWatchersSelect({
           onClick={onSelectAllWatchers}
           className="text-[10px] font-bold text-primary hover:underline cursor-pointer"
         >
-          {members && selectedWatchers.length === members.length
-            ? "Bỏ chọn tất cả"
-            : "Chọn tất cả"}
+          {members && selectedWatchers.length === members.length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
         </button>
       </div>
 

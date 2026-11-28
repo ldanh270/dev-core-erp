@@ -3,6 +3,16 @@ import { ROUTES } from "@/config/routes.config"
 import { useAllApplications } from "@/hooks/application/useAllApplications"
 import { useManageApplications } from "@/hooks/application/useManageApplications"
 import { useMyApplications } from "@/hooks/application/useMyApplications"
+import {
+  type IApplication,
+  type IApplicationListItem,
+  applicationApi,
+} from "@/lib/api/application.api"
+
+import { startTransition, useCallback, useEffect, useState } from "react"
+
+import { useLocation, useSearchParams } from "react-router-dom"
+import { toast } from "sonner"
 
 const { ERRORS } = APPLICATION_MESSAGES
 
@@ -32,16 +42,6 @@ export interface UseApplicationDashboardReturn {
   handleRowClick: (app: IApplicationListItem) => Promise<void>
   handleBackToList: () => void
 }
-import {
-  type IApplication,
-  type IApplicationListItem,
-  applicationApi,
-} from "@/lib/api/application.api"
-
-import { startTransition, useCallback, useEffect, useState } from "react"
-
-import { useLocation, useSearchParams } from "react-router-dom"
-import { toast } from "sonner"
 
 /**
  * Custom hook to coordinate application lists, view switching, modals, and queries.

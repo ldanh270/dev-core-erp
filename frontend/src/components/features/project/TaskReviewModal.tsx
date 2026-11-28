@@ -1,7 +1,4 @@
-﻿import type { FormEvent } from "react"
-import { AlertTriangle, CheckCircle2, Clock, CornerDownRight, FileText, XCircle } from "lucide-react"
-
-import { SafeHtml } from "@/components/common"
+﻿import { SafeHtml } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,19 +11,26 @@ import {
 import { Label } from "@/components/ui/label"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { Textarea } from "@/components/ui/textarea"
+import { useTaskReview } from "@/hooks/project/use-task-review"
 import type { Task } from "@/types/task.types"
 
-import { useTaskReview } from '@/hooks/project/use-task-review'
+import type { FormEvent } from "react"
+
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  CornerDownRight,
+  FileText,
+  XCircle,
+} from "lucide-react"
 
 function TaskReviewStatusBanner({ task }: { task: Task }) {
   return (
     <>
       <div className="flex items-center justify-between text-xs border-b border-border/40 pb-2">
         <span className="text-muted-foreground font-medium">Trạng thái hiện tại:</span>
-        <Badge
-          variant="outline"
-          className="capitalize rounded-full font-semibold px-2.5 py-0.5"
-        >
+        <Badge variant="outline" className="capitalize rounded-full font-semibold px-2.5 py-0.5">
           {task.status}
         </Badge>
       </div>
@@ -102,9 +106,7 @@ function TaskEmployeeSubmitSection({
           className="w-full rounded-full text-xs font-bold"
           disabled={isPending}
         >
-          {isPending
-            ? "Đang gửi báo cáo..."
-            : "Gửi yêu cầu đánh giá (Submit for Review)"}
+          {isPending ? "Đang gửi báo cáo..." : "Gửi yêu cầu đánh giá (Submit for Review)"}
         </Button>
       </form>
     )
@@ -163,9 +165,7 @@ function TaskLeaderReviewSection({
           </span>
           {task.resultNotes && (
             <div className="bg-muted/10 p-2.5 rounded-lg border border-border/40 space-y-1">
-              <span className="font-bold text-[10px] uppercase text-muted-foreground">
-                Mô tả:{" "}
-              </span>
+              <span className="font-bold text-[10px] uppercase text-muted-foreground">Mô tả: </span>
               <SafeHtml
                 content={task.resultNotes}
                 className="prose prose-sm dark:prose-invert max-w-none text-xs text-foreground"
@@ -243,7 +243,8 @@ function TaskLeaderReviewSection({
     return (
       <div className="space-y-3 pt-2">
         <p className="text-xs text-muted-foreground font-medium">
-          Công việc chưa gửi kết quả đánh giá. Là Team Leader, bạn có thể phê duyệt hoàn thành trực tiếp:
+          Công việc chưa gửi kết quả đánh giá. Là Team Leader, bạn có thể phê duyệt hoàn thành trực
+          tiếp:
         </p>
         <Button
           onClick={handleApprove}
@@ -344,4 +345,3 @@ export function TaskReviewModal({
     </Dialog>
   )
 }
-

@@ -29,8 +29,7 @@ export function CustomQueryColumnsTransfer({
   selSelectedKey,
   setSelSelectedKey,
 }: CustomQueryColumnsTransferProps) {
-  const isFirstSelected =
-    !selSelectedKey || newQuerySelectedCols.indexOf(selSelectedKey) === 0
+  const isFirstSelected = !selSelectedKey || newQuerySelectedCols.indexOf(selSelectedKey) === 0
   const isLastSelected =
     !selSelectedKey ||
     newQuerySelectedCols.indexOf(selSelectedKey) === newQuerySelectedCols.length - 1
@@ -71,9 +70,7 @@ export function CustomQueryColumnsTransfer({
 
   return (
     <div className="space-y-2 border-t border-border pt-3">
-      <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-        Cột
-      </span>
+      <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Cột</span>
       <div className="grid grid-cols-12 gap-3 items-center">
         {/* Available Columns */}
         <div className="col-span-5 flex flex-col gap-1">
@@ -89,17 +86,17 @@ export function CustomQueryColumnsTransfer({
             }}
             className="w-full text-xs p-2 border border-border rounded-xl h-32 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
           >
-            {AVAILABLE_COLUMNS.filter(
-              (col) => !newQuerySelectedCols.includes(col.key),
-            ).map((col) => (
-              <option
-                key={col.key}
-                value={col.key}
-                className="p-1 rounded-lg hover:bg-muted cursor-pointer"
-              >
-                {col.label}
-              </option>
-            ))}
+            {AVAILABLE_COLUMNS.filter((col) => !newQuerySelectedCols.includes(col.key)).map(
+              (col) => (
+                <option
+                  key={col.key}
+                  value={col.key}
+                  className="p-1 rounded-lg hover:bg-muted cursor-pointer"
+                >
+                  {col.label}
+                </option>
+              ),
+            )}
           </select>
         </div>
 

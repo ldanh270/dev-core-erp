@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { APPLICATION_STATUS } from "@/config/entities/attendance.config"
 import type { IApplication } from "@/lib/api/application.api"
 import { minutesToTime } from "@/lib/utils"
+
 import { Check, ExternalLink, FileCheck2, Paperclip, X } from "lucide-react"
 
 function ApplicationDetailHeader({
@@ -361,9 +362,7 @@ function ApplicationTimeTableCard({ application }: { application: IApplication }
             <tr>{renderDetailTable(application.type)}</tr>
           </thead>
           <tbody className="divide-y divide-border">
-            <tr className="hover:bg-muted/30 transition-colors">
-              {renderDetailRow(application)}
-            </tr>
+            <tr className="hover:bg-muted/30 transition-colors">{renderDetailRow(application)}</tr>
           </tbody>
         </table>
       </div>

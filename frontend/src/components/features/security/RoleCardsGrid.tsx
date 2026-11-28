@@ -4,6 +4,7 @@ import { ROLE_LABELS } from "@/config/entities/employee.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn } from "@/lib/utils"
 import type { Role } from "@/types/security.types"
+
 import {
   AlertTriangle,
   ArrowRight,
@@ -83,7 +84,10 @@ export function RoleCardsGrid({
         const IconComponent = getRoleIcon(role.name)
 
         return (
-          <PageCard key={role.id} className="flex flex-col h-full hover:shadow-md transition-shadow">
+          <PageCard
+            key={role.id}
+            className="flex flex-col h-full hover:shadow-md transition-shadow"
+          >
             <div className="p-5 flex-1 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">

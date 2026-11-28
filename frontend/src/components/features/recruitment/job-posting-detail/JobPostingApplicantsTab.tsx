@@ -74,10 +74,7 @@ export function JobPostingApplicantsTab({
                   <p className="mt-0.5 text-xs">{application.candidate.phone ?? ""}</p>
                 </td>
                 <td className="p-3">
-                  <StatusPill
-                    label={application.pipelineStage?.name ?? "Nộp đơn"}
-                    variant="info"
-                  />
+                  <StatusPill label={application.pipelineStage?.name ?? "Nộp đơn"} variant="info" />
                 </td>
                 <td className="p-3 text-muted-foreground">
                   {application.assignedTo?.fullName ?? "Chưa phân công"}

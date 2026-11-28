@@ -1,12 +1,13 @@
 import { DataTablePage } from "@/components/common"
+import { getWeeklySchedulesColumns } from "@/components/features/attendance/weekly-schedules-columns"
 import { ApplyWeeklyScheduleTemplateDialog } from "@/components/features/attendance/weekly-schedules/apply-weekly-schedule-template-dialog"
 import { WeeklyScheduleTemplateDialog } from "@/components/features/attendance/weekly-schedules/weekly-schedule-template-dialog"
-import { getWeeklySchedulesColumns } from "@/components/features/attendance/weekly-schedules-columns"
 import { useWeeklySchedulesManagement } from "@/hooks/attendance/use-weekly-schedules-management"
 import type { IWeeklyScheduleTemplate } from "@/types/attendance.types"
 
-import { Plus } from "lucide-react"
 import { useMemo } from "react"
+
+import { Plus } from "lucide-react"
 
 /**
  * Standardized Weekly Schedules Template page.

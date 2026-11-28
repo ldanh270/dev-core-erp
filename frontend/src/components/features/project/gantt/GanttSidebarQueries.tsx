@@ -1,8 +1,7 @@
-﻿import type { CustomQuery } from "@/lib/api/custom-query.api"
+﻿import { QUICK_QUERY_TYPE } from "@/constants/gantt.constants"
+import type { CustomQuery } from "@/lib/api/custom-query.api"
 
 import { Trash2 } from "lucide-react"
-
-import { QUICK_QUERY_TYPE } from '@/constants/gantt.constants'
 
 interface GanttSidebarQueriesProps {
   isSidebarExpanded: boolean
@@ -132,5 +131,3 @@ export function GanttSidebarQueries({
     </div>
   )
 }
-
-

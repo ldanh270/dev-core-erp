@@ -32,8 +32,10 @@ import type {
   JobPosting,
   JobRequisition,
 } from "@/types/recruitment.types"
-import { FileSpreadsheet, Inbox, Upload } from "lucide-react"
+
 import type { RefObject } from "react"
+
+import { FileSpreadsheet, Inbox, Upload } from "lucide-react"
 
 /**
  * Displays summary metric tile with count and title.
@@ -280,10 +282,7 @@ export function ApplicantIntakePreviewCard({
           <TableBody>
             {rows.length === 0 ? (
               <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="h-32 text-center text-xs text-muted-foreground"
-                >
+                <TableCell colSpan={4} className="h-32 text-center text-xs text-muted-foreground">
                   <Inbox className="mx-auto mb-2 h-6 w-6 opacity-40" />
                   Chưa có dữ liệu hợp lệ để hiển thị
                 </TableCell>

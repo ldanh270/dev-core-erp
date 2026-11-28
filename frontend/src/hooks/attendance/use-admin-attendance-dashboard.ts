@@ -1,6 +1,4 @@
-import {
-  type IAttendanceStatus,
-} from "@/config/entities/attendance.config"
+import { type IAttendanceStatus } from "@/config/entities/attendance.config"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useAttendanceRecords } from "@/hooks/attendance/use-attendance"
 import { attendanceApi } from "@/lib/api/attendance.api"

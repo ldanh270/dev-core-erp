@@ -1,15 +1,10 @@
 import { interviewApi } from "@/lib/api/recruitment.api"
 import type { InterviewRound } from "@/types/recruitment.types"
-import { useQuery } from "@tanstack/react-query"
-import {
-  addDays,
-  eachDayOfInterval,
-  endOfWeek,
-  isSameDay,
-  startOfWeek,
-  subDays,
-} from "date-fns"
+
 import { useCallback, useMemo, useState } from "react"
+
+import { useQuery } from "@tanstack/react-query"
+import { addDays, eachDayOfInterval, endOfWeek, isSameDay, startOfWeek, subDays } from "date-fns"
 
 /**
  * Manages calendar intervals, upcoming rounds, search filters,

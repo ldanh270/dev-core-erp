@@ -1,4 +1,3 @@
-import { Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -9,6 +8,9 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+
+import { Sparkles } from "lucide-react"
+
 import { KanbanColorPicker } from "./ProjectKanbanDialogs"
 
 interface KanbanCreateColumnDialogProps {
@@ -52,7 +54,10 @@ export function KanbanCreateColumnDialog({
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4 pt-2">
           <div className="space-y-1.5">
-            <Label htmlFor="create-kanban-status-name" className="text-xs font-bold text-foreground">
+            <Label
+              htmlFor="create-kanban-status-name"
+              className="text-xs font-bold text-foreground"
+            >
               Tên cột trạng thái
             </Label>
             <Input

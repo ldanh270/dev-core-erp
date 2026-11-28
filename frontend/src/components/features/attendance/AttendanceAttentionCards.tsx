@@ -1,6 +1,7 @@
-import { AlertTriangle, TimerOff, UserCheck } from "lucide-react"
 import { PageCard } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
+
+import { AlertTriangle, TimerOff, UserCheck } from "lucide-react"
 
 export interface AttendanceAttentionCardsProps {
   openCheckoutCount: number

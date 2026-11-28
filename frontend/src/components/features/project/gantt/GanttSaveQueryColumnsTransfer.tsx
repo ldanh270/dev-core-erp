@@ -1,13 +1,7 @@
 import { Button } from "@/components/ui/button"
-
-import {
-  ArrowLeft,
-  ArrowRight,
-  ChevronsDown,
-  ChevronsUp,
-} from "lucide-react"
-
 import { GANTT_AVAILABLE_COLUMNS } from "@/constants/gantt.constants"
+
+import { ArrowLeft, ArrowRight, ChevronsDown, ChevronsUp } from "lucide-react"
 
 interface GanttSaveQueryColumnsTransferProps {
   newQuerySelectedCols: string[]
@@ -27,8 +21,7 @@ export function GanttSaveQueryColumnsTransfer({
   selSelectedKey,
   setSelSelectedKey,
 }: GanttSaveQueryColumnsTransferProps) {
-  const isFirstSelected =
-    !selSelectedKey || newQuerySelectedCols.indexOf(selSelectedKey) === 0
+  const isFirstSelected = !selSelectedKey || newQuerySelectedCols.indexOf(selSelectedKey) === 0
   const isLastSelected =
     !selSelectedKey ||
     newQuerySelectedCols.indexOf(selSelectedKey) === newQuerySelectedCols.length - 1
@@ -40,20 +33,13 @@ export function GanttSaveQueryColumnsTransfer({
       if (idx === -1 || idx === prev.length - 1) return prev
       const nextItem = prev.at(idx + 1)
       if (nextItem === undefined) return prev
-      return [
-        ...prev.slice(0, idx),
-        nextItem,
-        selSelectedKey,
-        ...prev.slice(idx + 2),
-      ]
+      return [...prev.slice(0, idx), nextItem, selSelectedKey, ...prev.slice(idx + 2)]
     })
   }
 
   return (
     <div className="space-y-2 border-t border-border pt-3">
-      <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-        Cột
-      </span>
+      <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Cột</span>
       <div className="grid grid-cols-12 gap-3 items-center">
         <div className="col-span-5 flex flex-col gap-1">
           <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
@@ -68,13 +54,13 @@ export function GanttSaveQueryColumnsTransfer({
             }}
             className="w-full text-xs p-1.5 border border-border rounded-lg h-24 bg-background focus:outline-none focus:ring-1 focus:ring-primary"
           >
-            {GANTT_AVAILABLE_COLUMNS.filter(
-              (col) => !newQuerySelectedCols.includes(col.key),
-            ).map((col) => (
-              <option key={col.key} value={col.key} className="p-0.5 rounded hover:bg-muted">
-                {col.label}
-              </option>
-            ))}
+            {GANTT_AVAILABLE_COLUMNS.filter((col) => !newQuerySelectedCols.includes(col.key)).map(
+              (col) => (
+                <option key={col.key} value={col.key} className="p-0.5 rounded hover:bg-muted">
+                  {col.label}
+                </option>
+              ),
+            )}
           </select>
         </div>
 

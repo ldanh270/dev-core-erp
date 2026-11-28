@@ -3,14 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { RecruitmentApplication } from "@/types/recruitment.types"
 
-import {
-  Building,
-  ExternalLink,
-  FileText,
-  Link as LinkIcon,
-  Mail,
-  Phone,
-} from "lucide-react"
+import { Building, ExternalLink, FileText, Link as LinkIcon, Mail, Phone } from "lucide-react"
 
 interface ApplicationOverviewTabProps {
   application: RecruitmentApplication

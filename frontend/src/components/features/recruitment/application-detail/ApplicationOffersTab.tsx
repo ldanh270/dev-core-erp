@@ -23,9 +23,7 @@ export function ApplicationOffersTab({
   return (
     <PageCard className="border border-border/60 p-6">
       <div className="mb-4 flex items-center justify-between border-b border-border pb-2">
-        <h3 className="text-base font-bold text-foreground">
-          Thông tin Offer & Lời mời làm việc
-        </h3>
+        <h3 className="text-base font-bold text-foreground">Thông tin Offer & Lời mời làm việc</h3>
         {canManage && (
           <Button
             size="sm"

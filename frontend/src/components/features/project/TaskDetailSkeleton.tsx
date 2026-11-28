@@ -1,6 +1,7 @@
-import React from "react"
 import { PageContainer } from "@/components/common"
 import { Skeleton } from "@/components/ui/skeleton"
+
+import React from "react"
 
 /**
  * Presenter component that displays loading skeletons for the Task Detail page.

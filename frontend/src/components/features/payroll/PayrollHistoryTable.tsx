@@ -17,8 +17,11 @@ import {
 import { PAYROLL_STATUS, PAYROLL_STATUS_LABELS } from "@/config/entities/payroll.config"
 import { useApprovePayroll, useRejectPayroll } from "@/hooks/payroll/use-payrolls"
 import type { IPayroll } from "@/types/payroll.types"
-import { CheckCircle2, Clock, MoreHorizontal, XCircle } from "lucide-react"
+
 import { useState } from "react"
+
+import { CheckCircle2, Clock, MoreHorizontal, XCircle } from "lucide-react"
+
 import { PayrollDetailSheet } from "./PayrollDetailSheet"
 
 const getPayrollStatusVariant = (status: string): "info" | "success" | "danger" | "neutral" => {

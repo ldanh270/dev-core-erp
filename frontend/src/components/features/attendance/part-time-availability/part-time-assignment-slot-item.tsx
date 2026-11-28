@@ -1,8 +1,9 @@
-import { Minus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { IPartTimeAvailabilityDay } from "@/types/part-time-availability.types"
 import { validatePartTimeAssignmentSlot } from "@/utils/attendance/part-time-availability.util"
+
+import { Minus } from "lucide-react"
 
 interface PartTimeAssignmentSlotItemProps {
   slot: { startTime: string | null; endTime: string | null }
@@ -78,9 +79,7 @@ export function PartTimeAssignmentSlotItem({
             value={slot.startTime ?? ""}
             disabled={disabled}
             className="availability-time-input flex h-8 w-full rounded-full border border-input/60 bg-background px-3 py-1 text-xs font-mono focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-50 [color-scheme:light] dark:[color-scheme:dark]"
-            onChange={(event) =>
-              onUpdateSlot(index, { startTime: event.target.value || null })
-            }
+            onChange={(event) => onUpdateSlot(index, { startTime: event.target.value || null })}
             onBlur={() => onNotifyValidation(slot)}
           />
         </label>
@@ -91,9 +90,7 @@ export function PartTimeAssignmentSlotItem({
             value={slot.endTime ?? ""}
             disabled={disabled}
             className="availability-time-input flex h-8 w-full rounded-full border border-input/60 bg-background px-3 py-1 text-xs font-mono focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-50 [color-scheme:light] dark:[color-scheme:dark]"
-            onChange={(event) =>
-              onUpdateSlot(index, { endTime: event.target.value || null })
-            }
+            onChange={(event) => onUpdateSlot(index, { endTime: event.target.value || null })}
             onBlur={() => onNotifyValidation(slot)}
           />
         </label>

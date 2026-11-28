@@ -71,9 +71,15 @@ export function useIssuesCustomQueries({
           }
 
           if (data.filters) {
-            setStatusFilter(data.filters.status?.enabled ? data.filters.status.value : ALL_FILTER_VALUE)
-            setTrackerFilter(data.filters.tracker?.enabled ? data.filters.tracker.value : ALL_FILTER_VALUE)
-            setPriorityFilter(data.filters.priority?.enabled ? data.filters.priority.value : ALL_FILTER_VALUE)
+            setStatusFilter(
+              data.filters.status?.enabled ? data.filters.status.value : ALL_FILTER_VALUE,
+            )
+            setTrackerFilter(
+              data.filters.tracker?.enabled ? data.filters.tracker.value : ALL_FILTER_VALUE,
+            )
+            setPriorityFilter(
+              data.filters.priority?.enabled ? data.filters.priority.value : ALL_FILTER_VALUE,
+            )
             setAssigneeFilter(
               data.filters.assignee?.enabled
                 ? data.filters.assignee.value === "me"
@@ -115,9 +121,15 @@ export function useIssuesCustomQueries({
       if (matched) {
         try {
           const data = JSON.parse(matched.queryData)
-          const matchStatus = data.filters?.status?.enabled ? data.filters.status.value : ALL_FILTER_VALUE
-          const matchTracker = data.filters?.tracker?.enabled ? data.filters.tracker.value : ALL_FILTER_VALUE
-          const matchPriority = data.filters?.priority?.enabled ? data.filters.priority.value : ALL_FILTER_VALUE
+          const matchStatus = data.filters?.status?.enabled
+            ? data.filters.status.value
+            : ALL_FILTER_VALUE
+          const matchTracker = data.filters?.tracker?.enabled
+            ? data.filters.tracker.value
+            : ALL_FILTER_VALUE
+          const matchPriority = data.filters?.priority?.enabled
+            ? data.filters.priority.value
+            : ALL_FILTER_VALUE
           const matchAssignee = data.filters?.assignee?.enabled
             ? data.filters.assignee.value === "me"
               ? user?.id || ALL_FILTER_VALUE
@@ -141,9 +153,7 @@ export function useIssuesCustomQueries({
             setSearchParams(newParams)
             setAppliedUrlQueryId(null)
           }
-        } catch {
-
-        }
+        } catch {}
       }
     }
   }, [
@@ -209,8 +219,12 @@ export function useIssuesCustomQueries({
 
       if (data.filters) {
         setStatusFilter(data.filters.status?.enabled ? data.filters.status.value : ALL_FILTER_VALUE)
-        setTrackerFilter(data.filters.tracker?.enabled ? data.filters.tracker.value : ALL_FILTER_VALUE)
-        setPriorityFilter(data.filters.priority?.enabled ? data.filters.priority.value : ALL_FILTER_VALUE)
+        setTrackerFilter(
+          data.filters.tracker?.enabled ? data.filters.tracker.value : ALL_FILTER_VALUE,
+        )
+        setPriorityFilter(
+          data.filters.priority?.enabled ? data.filters.priority.value : ALL_FILTER_VALUE,
+        )
         setAssigneeFilter(
           data.filters.assignee?.enabled
             ? data.filters.assignee.value === "me"

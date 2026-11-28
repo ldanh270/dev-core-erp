@@ -7,15 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import {
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  RotateCcw,
-  Save,
-  ZoomIn,
-  ZoomOut,
-} from "lucide-react"
+import { Check, ChevronLeft, ChevronRight, RotateCcw, Save, ZoomIn, ZoomOut } from "lucide-react"
 
 interface GanttMonthZoomControlsProps {
   monthsInput: string

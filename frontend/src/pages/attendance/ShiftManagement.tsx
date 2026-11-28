@@ -4,8 +4,9 @@ import { getShiftColumns } from "@/components/features/attendance/shift-columns"
 import { useShiftManagement } from "@/hooks/attendance/use-shift-management"
 import type { IWorkingShift } from "@/types/attendance.types"
 
-import { Clock, Plus } from "lucide-react"
 import { useMemo } from "react"
+
+import { Clock, Plus } from "lucide-react"
 
 /**
  * ShiftManagement — Standardized Management page for Defining and configuring Working Shifts.
@@ -75,11 +76,7 @@ export default function ShiftManagement() {
         }}
       />
 
-      <ShiftDialog
-        open={sheetOpen}
-        onOpenChange={setSheetOpen}
-        initialData={editing}
-      />
+      <ShiftDialog open={sheetOpen} onOpenChange={setSheetOpen} initialData={editing} />
     </>
   )
 }

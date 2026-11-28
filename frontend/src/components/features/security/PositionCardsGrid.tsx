@@ -2,6 +2,7 @@ import { PageCard } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { Position } from "@/lib/api/position.api"
+
 import { Briefcase, Edit2, Trash2 } from "lucide-react"
 
 /**
@@ -45,7 +46,9 @@ export function PositionCardsGrid({
       <div className="text-center py-16 border border-dashed border-border rounded-xl">
         <Briefcase className="size-8 text-muted-foreground mx-auto mb-2" />
         <p className="text-sm font-semibold text-foreground">Chưa có chức vụ nào</p>
-        <p className="text-xs text-muted-foreground mt-1">Bấm nút &quot;Thêm chức vụ mới&quot; để tạo.</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Bấm nút &quot;Thêm chức vụ mới&quot; để tạo.
+        </p>
       </div>
     )
   }

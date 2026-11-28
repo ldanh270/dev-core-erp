@@ -6,12 +6,13 @@ import {
   PageHeader,
 } from "@/components/common"
 import type {
+  DataTablePageProps,
   DataTablePaginationConfig,
   DataTableTabItem,
-  DataTablePageProps,
 } from "@/components/common/data-table.types"
 import { Button } from "@/components/ui/button"
 import type { InterviewRound } from "@/types/recruitment.types"
+
 import type { ReactNode } from "react"
 
 import { InterviewsCardsGrid } from "./InterviewsCardsGrid"

@@ -2,10 +2,9 @@ import { PageContainer, PageHeader } from "@/components/common"
 import { DashboardTaskTablesLayout } from "@/components/features/project/DashboardTaskTablesLayout"
 import LogTimeModal from "@/components/features/project/LogTimeModal"
 import { ProjectGridCards } from "@/components/features/project/ProjectGridCards"
+import { TaskContextMenu } from "@/components/features/project/context-menu/TaskContextMenu"
 import { useTaskTableColumns } from "@/components/features/project/use-task-table-columns"
 import { useProjectDashboard } from "@/hooks/project/use-project-dashboard"
-
-import { TaskContextMenu } from "@/components/features/project/context-menu/TaskContextMenu"
 
 /**
  * Tier 2 Page Orchestrator for personal project dashboard, task queues, and quick actions.

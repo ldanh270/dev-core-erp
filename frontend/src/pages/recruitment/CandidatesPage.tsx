@@ -5,8 +5,10 @@ import { ROUTES } from "@/config/routes.config"
 import { useCandidatesManagement } from "@/hooks/recruitment/use-candidates-management"
 import { routerNavigate } from "@/lib/router-navigator"
 import type { Candidate } from "@/types/recruitment.types"
-import { Plus, UserX } from "lucide-react"
+
 import { useMemo } from "react"
+
+import { Plus, UserX } from "lucide-react"
 
 /**
  * Tier 2 Page Orchestrator for Candidates directory.

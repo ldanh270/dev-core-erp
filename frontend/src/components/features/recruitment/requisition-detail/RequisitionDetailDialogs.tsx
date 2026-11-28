@@ -1,5 +1,5 @@
-import { ApplicationDetailPanel } from "@/components/features/recruitment/application-detail-panel"
 import { CreateJobPostingDialog } from "@/components/features/recruitment/CreateJobPostingDialog"
+import { ApplicationDetailPanel } from "@/components/features/recruitment/application-detail-panel"
 import { ViewJobPostingDialog } from "@/components/features/recruitment/view-job-posting-dialog"
 import type { JobPosting, JobRequisition } from "@/types/recruitment.types"
 

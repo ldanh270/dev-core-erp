@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils"
 import type { ISalaryComponent } from "@/types/payroll.types"
 
 import { useMemo } from "react"
+
 import { MoreHorizontal, Pencil } from "lucide-react"
 
 const COMPONENT_TYPE_LABELS_MAP = new Map(Object.entries(COMPONENT_TYPE_LABELS))

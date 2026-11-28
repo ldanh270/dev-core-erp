@@ -1,5 +1,6 @@
 import { ROLE } from "@/config/entities/employee.config"
 import { ROUTES } from "@/config/routes.config"
+
 import { type ComponentType, lazy } from "react"
 
 const MainLayout = lazy(() => import("@/layouts/MainLayout.tsx"))

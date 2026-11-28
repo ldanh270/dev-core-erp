@@ -1,4 +1,5 @@
-﻿import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
+﻿import { useTaskUrlFilters } from "@/hooks/project/use-task-url-filters"
+import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
 import { taskApi } from "@/lib/api/task.api"
 import type { ProjectMember } from "@/types/project.types"
 import type { Task, TaskPriority, TaskTracker } from "@/types/task.types"
@@ -9,7 +10,6 @@ import { useEffect, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import { useTaskUrlFilters } from '@/hooks/project/use-task-url-filters'
 import { ALL_FILTER_VALUE } from "./issue-columns.config"
 import { useIssuesCustomQueries } from "./useIssuesCustomQueries"
 import { useIssuesCustomQueryForm } from "./useIssuesCustomQueryForm"
@@ -130,7 +130,15 @@ export function useProjectIssuesTab({ projectId, user }: UseProjectIssuesTabProp
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [issueSearch, trackerFilter, statusFilter, priorityFilter, assigneeFilter, createdByIdFilter, setCurrentPage])
+  }, [
+    issueSearch,
+    trackerFilter,
+    statusFilter,
+    priorityFilter,
+    assigneeFilter,
+    createdByIdFilter,
+    setCurrentPage,
+  ])
 
   const { data: tasksData, isLoading: isLoadingTasks } = useQuery({
     queryKey: [
@@ -156,7 +164,8 @@ export function useProjectIssuesTab({ projectId, user }: UseProjectIssuesTabProp
         search: issueSearch || undefined,
         tracker: trackerFilter === ALL_FILTER_VALUE ? undefined : (trackerFilter as TaskTracker),
         statusId: statusFilter === ALL_FILTER_VALUE ? undefined : statusFilter,
-        priority: priorityFilter === ALL_FILTER_VALUE ? undefined : (priorityFilter as TaskPriority),
+        priority:
+          priorityFilter === ALL_FILTER_VALUE ? undefined : (priorityFilter as TaskPriority),
         assigneeId: assigneeFilter === ALL_FILTER_VALUE ? undefined : assigneeFilter,
         createdById: createdByIdFilter === ALL_FILTER_VALUE ? undefined : createdByIdFilter,
         sortBy,
@@ -227,4 +236,3 @@ export function useProjectIssuesTab({ projectId, user }: UseProjectIssuesTabProp
     setLogTimeTask,
   }
 }
-

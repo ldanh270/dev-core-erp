@@ -23,6 +23,7 @@ import { ATTENDANCE_GPS_RULES, WORKING_SHIFT_FORM_RULES } from "@/config/rules/a
 import { useShiftForm } from "@/hooks/attendance/use-shift-form"
 import type { ShiftFormValues } from "@/schemas/attendance.schema"
 import type { IWorkingShift } from "@/types/attendance.types"
+
 import { Clock, Info, MapPin } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 
@@ -295,15 +296,8 @@ export interface ShiftDialogProps {
  * Coordinates basic timing inputs, break schedules, and interactive GPS geofencing configuration.
  */
 export function ShiftDialog({ open, onOpenChange, initialData }: ShiftDialogProps) {
-  const {
-    form,
-    isPending,
-    gpsLat,
-    gpsLng,
-    gpsRadiusMeters,
-    handleMapLocationChange,
-    onSubmit,
-  } = useShiftForm({ open, onOpenChange, initialData })
+  const { form, isPending, gpsLat, gpsLng, gpsRadiusMeters, handleMapLocationChange, onSubmit } =
+    useShiftForm({ open, onOpenChange, initialData })
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

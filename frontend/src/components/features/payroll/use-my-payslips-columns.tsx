@@ -17,6 +17,7 @@ import { cn, formatCurrency } from "@/lib/utils"
 import type { IPayslip } from "@/types/payroll.types"
 
 import { useMemo } from "react"
+
 import { CalendarDays, ChevronRight } from "lucide-react"
 
 const getPayrollStatusVariant = (status?: string): "info" | "success" | "danger" | "neutral" => {
@@ -46,11 +47,7 @@ interface UseMyPayslipsColumnsProps {
 /**
  * Hook returning DataTableColumn definitions for employee personal payslips table.
  */
-export function useMyPayslipsColumns({
-  page,
-  limit,
-  onSelectPayslip,
-}: UseMyPayslipsColumnsProps) {
+export function useMyPayslipsColumns({ page, limit, onSelectPayslip }: UseMyPayslipsColumnsProps) {
   return useMemo<DataTableColumn<IPayslip>[]>(
     () => [
       {

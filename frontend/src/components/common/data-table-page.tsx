@@ -5,10 +5,13 @@ import { PageHeader } from "@/components/common/page-header"
 import { SearchInput } from "@/components/common/search-input"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import type { LucideIcon } from "lucide-react"
+
 import type { ReactNode } from "react"
-import { DataTableGrid } from "./data-table/data-table-grid"
+
+import type { LucideIcon } from "lucide-react"
+
 import type { DataTablePageProps, DataTableTabItem } from "./data-table.types"
+import { DataTableGrid } from "./data-table/data-table-grid"
 
 export type {
   DataTableColumn,

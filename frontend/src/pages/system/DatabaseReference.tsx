@@ -1,11 +1,4 @@
 import { DataTablePage } from "@/components/common"
-import { SYSTEM_CONFIG } from "@/config/system.config"
-import schemaSummaryRaw from "@/data/schema-summary.json"
-
-import { useMemo } from "react"
-
-import { Database } from "lucide-react"
-
 import { DatabaseDiagramView } from "@/components/features/system/database-reference/components/DatabaseDiagramView"
 import { DatabaseReferenceHeaderActions } from "@/components/features/system/database-reference/components/DatabaseReferenceHeaderActions"
 import { DatabaseTableSheet } from "@/components/features/system/database-reference/components/DatabaseTableSheet"
@@ -17,6 +10,12 @@ import type {
 import { useDatabaseCategoryTabs } from "@/components/features/system/database-reference/hooks/use-database-category-tabs"
 import { useDatabaseReference } from "@/components/features/system/database-reference/hooks/use-database-reference"
 import { useDatabaseTableColumns } from "@/components/features/system/database-reference/hooks/use-database-table-columns"
+import { SYSTEM_CONFIG } from "@/config/system.config"
+import schemaSummaryRaw from "@/data/schema-summary.json"
+
+import { useMemo } from "react"
+
+import { Database } from "lucide-react"
 
 /**
  * Extracted schema summary and individual table metadata JSON records generated from prisma schema.

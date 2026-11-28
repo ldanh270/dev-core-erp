@@ -1,5 +1,5 @@
 /** Displays company schedules for a selected week and employee search scope using DataTablePage. */
-import { DatePicker, DataTablePage, type DataTableColumn } from "@/components/common"
+import { type DataTableColumn, DataTablePage, DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { CALENDAR_WEEK_DAY_COUNT } from "@/config/rules/calendar.config"
 import { getTableColWidthPx } from "@/config/table-columns.config"
@@ -11,16 +11,18 @@ import type { IHoliday } from "@/types/attendance.types"
 import type { Employee } from "@/types/employee.types"
 import { addDays } from "@/utils/attendance/add-days"
 import { formatDateParam } from "@/utils/attendance/format-date-param"
-import { getWeekDates, type WeekDay } from "@/utils/attendance/get-week-dates"
+import { type WeekDay, getWeekDates } from "@/utils/attendance/get-week-dates"
 import { getWeekRangeLabel } from "@/utils/attendance/get-week-range-label"
 import { getWeekStart } from "@/utils/attendance/get-week-start"
 import {
   groupHolidaysByDate,
   pickHolidayForEmployee,
 } from "@/utils/attendance/pick-holiday-for-employee.util"
+
+import { useCallback, useMemo, useState } from "react"
+
 import { useQueries, useQuery } from "@tanstack/react-query"
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react"
-import { useCallback, useMemo, useState } from "react"
 
 interface CompanyWorkSchedulesToolbarProps {
   weekRangeLabel: string

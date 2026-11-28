@@ -8,15 +8,15 @@
   SelectValue,
 } from "@/components/ui/select"
 import { TASK_STATUS } from "@/config/entities/project.config"
-
-import { X } from "lucide-react"
-
 import {
   FILTER_DEFINITIONS,
   GANTT_FILTER_KEY,
   GANTT_FILTER_OPERATOR,
   GANTT_FILTER_TYPE,
-} from '@/constants/gantt.constants'
+} from "@/constants/gantt.constants"
+
+import { X } from "lucide-react"
+
 import { GanttFilterValueSelector } from "./GanttFilterValueSelector"
 
 interface GanttFilterEditorProps {
@@ -51,13 +51,11 @@ export function GanttFilterEditor({
           {activeFilterKeys.map((key) => {
             if (!Object.prototype.hasOwnProperty.call(FILTER_DEFINITIONS, key)) return null
             const filter = Reflect.get(filterStates, key) as
-              | { enabled: boolean; operator: string; value: string }
-              | undefined
+              { enabled: boolean; operator: string; value: string } | undefined
             if (filter === undefined) return null
 
             const def = Reflect.get(FILTER_DEFINITIONS, key) as
-              | { label: string; type: string; group: string }
-              | undefined
+              { label: string; type: string; group: string } | undefined
 
             return (
               <div key={key} className="flex flex-wrap items-center gap-2 md:gap-4 py-1">
@@ -70,8 +68,7 @@ export function GanttFilterEditor({
                       setFilterStates((prev) => {
                         if (!Object.prototype.hasOwnProperty.call(prev, key)) return prev
                         const existing = Reflect.get(prev, key) as
-                          | { enabled: boolean; operator: string; value: string }
-                          | undefined
+                          { enabled: boolean; operator: string; value: string } | undefined
                         if (existing === undefined) return prev
                         const next = { ...prev }
                         Reflect.set(next, key, { ...existing, enabled: e.target.checked })
@@ -115,8 +112,7 @@ export function GanttFilterEditor({
                     setFilterStates((prev) => {
                       if (!Object.prototype.hasOwnProperty.call(prev, key)) return prev
                       const existing = Reflect.get(prev, key) as
-                        | { enabled: boolean; operator: string; value: string }
-                        | undefined
+                        { enabled: boolean; operator: string; value: string } | undefined
                       if (existing === undefined) return prev
                       const next = { ...prev }
                       Reflect.set(next, key, { ...existing, operator: op, value: val })
@@ -223,8 +219,7 @@ export function GanttFilterEditor({
                     setFilterStates((prev) => {
                       if (!Object.prototype.hasOwnProperty.call(prev, key)) return prev
                       const existing = Reflect.get(prev, key) as
-                        | { enabled: boolean; operator: string; value: string }
-                        | undefined
+                        { enabled: boolean; operator: string; value: string } | undefined
                       if (existing === undefined) return prev
                       const next = { ...prev }
                       Reflect.set(next, key, { ...existing, value: val })
@@ -276,7 +271,11 @@ export function GanttFilterEditor({
               {Object.entries(FILTER_DEFINITIONS)
                 .filter(([k, def]) => !def.group && !activeFilterKeys.includes(k))
                 .map(([k, def]) => (
-                  <SelectItem key={k} value={k} className="text-xs py-2.5 my-1 rounded-lg cursor-pointer">
+                  <SelectItem
+                    key={k}
+                    value={k}
+                    className="text-xs py-2.5 my-1 rounded-lg cursor-pointer"
+                  >
                     {def.label}
                   </SelectItem>
                 ))}
@@ -319,5 +318,3 @@ export function GanttFilterEditor({
     </div>
   )
 }
-
-

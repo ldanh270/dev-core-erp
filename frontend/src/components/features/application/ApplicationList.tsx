@@ -19,8 +19,10 @@ import { useManageApplications } from "@/hooks/application/useManageApplications
 import { useMyApplications } from "@/hooks/application/useMyApplications"
 import type { IApplicationListItem } from "@/lib/api/application.api"
 import { cn } from "@/lib/utils"
-import { RotateCcw, type LucideIcon } from "lucide-react"
+
 import { type ReactNode, useEffect, useMemo, useState } from "react"
+
+import { type LucideIcon, RotateCcw } from "lucide-react"
 
 type StatusVariant = "success" | "warning" | "danger" | "neutral"
 
@@ -32,9 +34,7 @@ const STATUS_MAP = new Map<string, { label: string; variant: StatusVariant }>([
   [APPLICATION_STATUS.CANCELLED, { label: "Đã hủy", variant: "neutral" }],
 ])
 
-const APPLICATION_TYPE_MAP = new Map<string, string>(
-  Object.entries(APPLICATION_TYPE_LABELS),
-)
+const APPLICATION_TYPE_MAP = new Map<string, string>(Object.entries(APPLICATION_TYPE_LABELS))
 
 function useApplicationColumns(mode: "mine" | "manage" | "all") {
   return useMemo(() => {

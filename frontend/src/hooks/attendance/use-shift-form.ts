@@ -4,14 +4,16 @@ import { ATTENDANCE_GPS_RULES, WORKING_SHIFT_FORM_RULES } from "@/config/rules/a
 import { useCreateShift, useUpdateShift } from "@/hooks/attendance/use-shifts"
 import { minutesToTime } from "@/lib/utils"
 import {
+  type ShiftFormValues,
   buildGpsPayload,
   getShiftMutationError,
   shiftFormSchema,
-  type ShiftFormValues,
 } from "@/schemas/attendance.schema"
 import type { IWorkingShift } from "@/types/attendance.types"
-import { zodResolver } from "@hookform/resolvers/zod"
+
 import { useCallback, useEffect } from "react"
+
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 

@@ -39,15 +39,12 @@ export function ApplicationPipelineStepper({
   dynamicStages,
   interviews,
 }: ApplicationPipelineStepperProps) {
-  const stagesList: PipelineStageItem[] =
-    dynamicStages.length > 0 ? dynamicStages : FALLBACK_STAGES
+  const stagesList: PipelineStageItem[] = dynamicStages.length > 0 ? dynamicStages : FALLBACK_STAGES
 
   const currentStageId =
-    (application as { pipelineStageId?: string }).pipelineStageId ||
-    application.pipelineStage?.id
+    (application as { pipelineStageId?: string }).pipelineStageId || application.pipelineStage?.id
   const currentStageIndex = stagesList.findIndex(
-    (s: PipelineStageItem) =>
-      s.id === currentStageId || s.name === application.pipelineStage?.name,
+    (s: PipelineStageItem) => s.id === currentStageId || s.name === application.pipelineStage?.name,
   )
   const activeIdx = currentStageIndex >= 0 ? currentStageIndex : 0
 

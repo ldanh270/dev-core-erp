@@ -1,12 +1,13 @@
+import type { IAllowanceRow } from "@/components/features/employee-contract/ContractAllowanceSection"
 import { type ContractType } from "@/config/entities/employee-contract.config"
 import { ROUTES } from "@/config/routes.config"
 import { useCreateContract } from "@/hooks/employee-contract/use-contracts"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import { routerNavigate } from "@/lib/router-navigator"
 import type { Employee } from "@/types/employee.types"
-import type { IAllowanceRow } from "@/components/features/employee-contract/ContractAllowanceSection"
 
 import { useCallback, useState } from "react"
+
 import { toast } from "sonner"
 
 /**

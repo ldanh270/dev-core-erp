@@ -1,7 +1,3 @@
-import { useState } from "react"
-import { Loader2, Search, UserCheck } from "lucide-react"
-import { toast } from "sonner"
-
 import { DatePicker } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -21,7 +17,10 @@ import { useBulkAssignSalaryTemplate } from "@/hooks/payroll/use-employee-salary
 import type { Employee } from "@/types/employee.types"
 import type { IPayslipTemplate } from "@/types/payroll.types"
 
+import { useState } from "react"
 
+import { Loader2, Search, UserCheck } from "lucide-react"
+import { toast } from "sonner"
 
 /** Presenter subcomponent for searching and selecting employees to assign. */
 function BulkAssignEmployeePicker({

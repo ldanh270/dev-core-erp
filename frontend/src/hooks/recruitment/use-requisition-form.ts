@@ -5,16 +5,18 @@ import {
 } from "@/hooks/recruitment/use-recruitment-queries"
 import type { CreateRequisitionDto } from "@/lib/api/recruitment.api"
 import {
+  type RequisitionFormValues,
   defaultCandidateSchema,
   defaultRequisitionValues,
   isEmployeeType,
   isRequisitionPriority,
   requisitionFormSchema,
-  type RequisitionFormValues,
 } from "@/schemas/recruitment.schema"
 import type { JobRequisition, RecruitmentFormField } from "@/types/recruitment.types"
-import { zodResolver } from "@hookform/resolvers/zod"
+
 import { useEffect, useState } from "react"
+
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useWatch } from "react-hook-form"
 
 interface UseRequisitionFormProps {
@@ -27,11 +29,7 @@ interface UseRequisitionFormProps {
  * Encapsulates react-hook-form initialization, custom form field schemas,
  * approver hierarchy data, and create/update mutations for job requisitions.
  */
-export function useRequisitionForm({
-  open,
-  onOpenChange,
-  requisition,
-}: UseRequisitionFormProps) {
+export function useRequisitionForm({ open, onOpenChange, requisition }: UseRequisitionFormProps) {
   const createRequisition = useCreateRequisition()
   const updateRequisition = useUpdateRequisition()
   const { data: approvers = [], isLoading: isLoadingApprovers } = useRequisitionApprovers()

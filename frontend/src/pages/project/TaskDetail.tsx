@@ -1,9 +1,10 @@
 import { DetailNotFound, PageContainer } from "@/components/common"
 import { TaskDetailContentLayout } from "@/components/features/project/TaskDetailContentLayout"
+import { TaskDetailSkeleton } from "@/components/features/project/TaskDetailSkeleton"
 import { TaskDetailHeader } from "@/components/features/project/task-detail/TaskDetailHeader"
 import { TaskDetailModals } from "@/components/features/project/task-detail/TaskDetailModals"
-import { TaskDetailSkeleton } from "@/components/features/project/TaskDetailSkeleton"
 import { useTaskDetail } from "@/hooks/project/use-task-detail"
+
 import { useNavigate } from "react-router-dom"
 
 /**

@@ -1,11 +1,11 @@
 import { DataTablePage } from "@/components/common"
+import { ProjectCreateModal } from "@/components/features/project/ProjectCreateModal"
 import { useProjectListColumns } from "@/components/features/project/use-project-list-columns"
 import {
   PROJECT_STATUS_TABS,
   useProjectListManagement,
 } from "@/hooks/project/use-project-list-management"
 import { routerNavigate } from "@/lib/router-navigator"
-import { ProjectCreateModal } from "@/components/features/project/ProjectCreateModal"
 import type { Project } from "@/types/project.types"
 
 import { Plus } from "lucide-react"
@@ -86,4 +86,3 @@ export default function ProjectList() {
     </>
   )
 }
-

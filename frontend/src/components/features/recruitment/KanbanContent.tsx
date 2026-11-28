@@ -7,8 +7,7 @@ import type { useRequisitionKanban } from "@/hooks/recruitment/use-requisition-k
 import { useMemo } from "react"
 
 export type KanbanBoardHandle =
-  | ReturnType<typeof usePostingKanban>
-  | ReturnType<typeof useRequisitionKanban>
+  ReturnType<typeof usePostingKanban> | ReturnType<typeof useRequisitionKanban>
 
 /**
  * Props for {@link KanbanContent} component.

@@ -1,6 +1,7 @@
-import { useSecuritySummary } from "@/hooks/security/queries/use-security-query"
-import { useState } from "react"
 import type { SecurityTimeRange } from "@/components/features/security/SecurityDashboardActions"
+import { useSecuritySummary } from "@/hooks/security/queries/use-security-query"
+
+import { useState } from "react"
 
 /**
  * Custom hook orchestrating security dashboard metrics, selected time range, and query refetch.

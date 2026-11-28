@@ -25,11 +25,9 @@ import {
   type SalaryComponentFormValues,
   useSalaryComponentForm,
 } from "@/hooks/payroll/use-salary-component-form"
-import {
-  type ISalaryVariable,
-  useSalaryVariables,
-} from "@/hooks/payroll/use-salary-variable"
+import { type ISalaryVariable, useSalaryVariables } from "@/hooks/payroll/use-salary-variable"
 import type { ISalaryComponent } from "@/types/payroll.types"
+
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 
@@ -369,10 +367,7 @@ export function SalaryComponentFormPage({
             handleAutoGenerateCode={handleAutoGenerateCode}
           />
 
-          <SalaryComponentClassificationSection
-            form={form}
-            isReadOnly={isReadOnly}
-          />
+          <SalaryComponentClassificationSection form={form} isReadOnly={isReadOnly} />
 
           <SalaryComponentFormulaSection
             form={form}

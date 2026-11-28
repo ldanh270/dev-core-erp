@@ -1,12 +1,9 @@
-﻿import {
-  PROJECT_STATUS,
-  PROJECT_STATUS_LABELS,
-} from "@/config/entities/project.config"
+﻿import { PROJECT_STATUS, PROJECT_STATUS_LABELS } from "@/config/entities/project.config"
 import { SYSTEM_CONFIG } from "@/config/system.config"
+import { useProjectTrackers } from "@/hooks/project/use-project-tracker"
 import { usePermission } from "@/hooks/use-permission"
 import { employeeApi } from "@/lib/api/employee.api"
 import { projectApi } from "@/lib/api/project.api"
-import { useProjectTrackers } from "@/hooks/project/use-project-tracker"
 import type { Project } from "@/types/project.types"
 
 import { useCallback, useMemo, useState } from "react"
@@ -160,4 +157,3 @@ export function useProjectListManagement() {
     handleLimitChange,
   }
 }
-

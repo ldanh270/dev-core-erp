@@ -2,9 +2,12 @@ import { DEFAULT_KANBAN_COLOR, KANBAN_PALETTE_COLORS } from "@/config/entities/p
 import { applicationApi, jobPostingApi } from "@/lib/api/recruitment.api"
 import type { KanbanApplication, RecruitmentPipelineStage } from "@/types/recruitment.types"
 import { extractErrorMessage } from "@/utils/error-helper"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+
 import { useState } from "react"
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+
 import { useRecruitmentKanbanDnd } from "./use-recruitment-kanban-dnd"
 
 const colors = KANBAN_PALETTE_COLORS

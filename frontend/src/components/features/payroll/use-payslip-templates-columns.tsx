@@ -1,8 +1,4 @@
-import {
-  type DataTableColumn,
-  TABLE_COL_WIDTH,
-  getTableColWidthPx,
-} from "@/components/common"
+import { type DataTableColumn, TABLE_COL_WIDTH, getTableColWidthPx } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -16,6 +12,7 @@ import { cn, formatDate } from "@/lib/utils"
 import type { IPayslipTemplate } from "@/types/payroll.types"
 
 import { useMemo } from "react"
+
 import { MoreHorizontal, Pencil, Trash2, Users } from "lucide-react"
 
 interface UsePayslipTemplatesColumnsProps {

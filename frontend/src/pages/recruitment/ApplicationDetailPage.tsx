@@ -5,6 +5,7 @@ import { ApplicationDetailHeader } from "@/components/features/recruitment/appli
 import { ApplicationDetailSkeleton } from "@/components/features/recruitment/application-detail/ApplicationDetailStates"
 import { ApplicationPipelineStepper } from "@/components/features/recruitment/application-detail/ApplicationPipelineStepper"
 import { useApplicationDetail } from "@/hooks/recruitment/use-application-detail"
+
 import { useNavigate } from "react-router-dom"
 
 /**

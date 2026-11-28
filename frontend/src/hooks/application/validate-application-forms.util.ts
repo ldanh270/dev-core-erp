@@ -1,6 +1,8 @@
 import { APPLICATION_TYPES } from "@/config/entities/attendance.config"
 import { APPLICATION_MESSAGES } from "@/config/messages/application.message"
+
 import { toast } from "sonner"
+
 import type { ApplicationFormState } from "./application-form.types"
 
 const { VALIDATION } = APPLICATION_MESSAGES
@@ -11,10 +13,7 @@ export function validateApplicationForms(
   type: string,
   assignedToId: string,
 ): boolean {
-  if (
-    type !== APPLICATION_TYPES.RESIGNATION.LABEL &&
-    (!assignedToId || assignedToId === "none")
-  ) {
+  if (type !== APPLICATION_TYPES.RESIGNATION.LABEL && (!assignedToId || assignedToId === "none")) {
     toast.error(VALIDATION.APPROVER_REQUIRED)
     return false
   }

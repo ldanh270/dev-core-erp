@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button"
 import { ROLE_LABELS } from "@/config/entities/employee.config"
 import { getTableColWidthPx } from "@/config/table-columns.config"
 import { cn } from "@/lib/utils"
-import { Lock, ShieldCheck, Unlock, User } from "lucide-react"
+
 import { useMemo } from "react"
+
+import { Lock, ShieldCheck, Unlock, User } from "lucide-react"
 
 /**
  * Data item representing a user in the Users Management table.
@@ -86,11 +88,7 @@ export function useUsersManagementColumns({
         header: "Vai trò",
         minWidth: getTableColWidthPx("POSITION"),
         cell: (user) => (
-          <StatusPill
-            label={getRoleLabel(user.role)}
-            variant="neutral"
-            className="font-medium"
-          />
+          <StatusPill label={getRoleLabel(user.role)} variant="neutral" className="font-medium" />
         ),
       },
       {

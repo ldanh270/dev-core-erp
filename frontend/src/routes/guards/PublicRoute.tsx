@@ -1,9 +1,11 @@
 import { API_BASE_URL, API_ENDPOINTS } from "@/config/api.config"
 import { ROUTES } from "@/config/routes.config"
 import { useAuthStore } from "@/store/auth-store"
-import axios from "axios"
+
 import type { ReactNode } from "react"
 import { useEffect, useState } from "react"
+
+import axios from "axios"
 import { Navigate } from "react-router-dom"
 
 interface PublicRouteProps {

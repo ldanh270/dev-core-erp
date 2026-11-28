@@ -1,7 +1,4 @@
-﻿import { useMemo } from "react"
-import { BarChart3, Clock, TrendingUp, Users } from "lucide-react"
-
-import { PageCard } from "@/components/common"
+﻿import { PageCard } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -15,7 +12,11 @@ import { TASK_TRACKERS, getProjectMemberWorkModeLabel } from "@/config/entities/
 import type { Project, ProjectMember } from "@/types/project.types"
 import type { Task } from "@/types/task.types"
 
-import { ProjectCapacityCopilotCard } from './ProjectCapacityCopilotCard'
+import { useMemo } from "react"
+
+import { BarChart3, Clock, TrendingUp, Users } from "lucide-react"
+
+import { ProjectCapacityCopilotCard } from "./ProjectCapacityCopilotCard"
 
 interface TaskStatusSegment {
   value: number
@@ -285,9 +286,7 @@ function ProjectSpentTimeCard({
       </h3>
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-xl border border-border p-4 bg-muted/20 flex flex-col justify-center">
-          <span className="text-xs text-muted-foreground font-semibold">
-            Ước tính (Estimated)
-          </span>
+          <span className="text-xs text-muted-foreground font-semibold">Ước tính (Estimated)</span>
           <span className="text-2xl font-black mt-1 text-foreground">
             {totalEstimatedHours.toFixed(1)} <span className="text-xs font-normal">giờ</span>
           </span>
@@ -511,10 +510,7 @@ export function ProjectOverviewTab({
           totalTasksCount={totalTasksCount}
           completionRate={completionRate}
         />
-        <ProjectTaskStatusDonutCard
-          totalTasksCount={totalTasksCount}
-          segments={segments}
-        />
+        <ProjectTaskStatusDonutCard totalTasksCount={totalTasksCount} segments={segments} />
       </div>
 
       <div className="col-span-12 xl:col-span-7 space-y-6">
@@ -549,4 +545,3 @@ export function ProjectOverviewTab({
     </div>
   )
 }
-

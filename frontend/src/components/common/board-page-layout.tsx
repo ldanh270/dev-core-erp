@@ -31,7 +31,9 @@ export function BoardPageLayout({
   className,
 }: BoardPageLayoutProps) {
   return (
-    <PageContainer className={cn("flex flex-col h-[calc(100vh-4rem)] overflow-hidden gap-4 pb-4", className)}>
+    <PageContainer
+      className={cn("flex flex-col h-[calc(100vh-4rem)] overflow-hidden gap-4 pb-4", className)}
+    >
       {/* Board Header with Search/Filter Toolbar and Actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0 border-b border-border pb-4">
         <PageHeader title={title} description={description} />

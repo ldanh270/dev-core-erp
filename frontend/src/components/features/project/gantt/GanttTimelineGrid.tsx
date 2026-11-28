@@ -1,3 +1,4 @@
+import type { HoveredTaskState } from "@/types/gantt.types"
 import type { Task } from "@/types/task.types"
 
 import React from "react"
@@ -5,8 +6,6 @@ import React from "react"
 import { differenceInDays, format } from "date-fns"
 import { vi } from "date-fns/locale"
 import { CheckCircle2, Clock, FileText } from "lucide-react"
-
-import type { HoveredTaskState } from "@/types/gantt.types"
 
 interface GanttTimelineGridProps {
   timelineDays: Date[]

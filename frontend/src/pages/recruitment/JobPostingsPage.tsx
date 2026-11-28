@@ -8,6 +8,7 @@ import {
 import type { JobPosting } from "@/types/recruitment.types"
 
 import { useMemo } from "react"
+
 import { Plus, Share2 } from "lucide-react"
 
 /**
@@ -37,10 +38,7 @@ export default function JobPostingsPage() {
     handleTabChange,
   } = useJobPostingsManagement()
 
-  const columns = useMemo(
-    () => getJobPostingsColumns(handleOpenWorkspace),
-    [handleOpenWorkspace],
-  )
+  const columns = useMemo(() => getJobPostingsColumns(handleOpenWorkspace), [handleOpenWorkspace])
 
   const tabsConfig = useMemo(
     () => ({

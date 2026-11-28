@@ -29,8 +29,10 @@ import {
   usePayslipTemplateForm,
 } from "@/hooks/payroll/use-payslip-template-form"
 import type { IPayslipTemplate } from "@/types/payroll.types"
+
 import { ChevronLeft, Minus, Plus } from "lucide-react"
 import type { FieldArrayWithId, UseFormReturn } from "react-hook-form"
+
 import { SalaryComponentSelectModal } from "./SalaryComponentSelectModal"
 
 /**

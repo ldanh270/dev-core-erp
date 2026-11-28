@@ -1,4 +1,3 @@
-import { AlertCircle, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -16,6 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import type { ProjectTaskStatus } from "@/types/project-task-status.types"
+
+import { AlertCircle, RefreshCw } from "lucide-react"
 
 interface KanbanDeleteColumnDialogProps {
   isOpen: boolean
@@ -52,8 +53,8 @@ export function KanbanDeleteColumnDialog({
         <div className="space-y-4 pt-2 text-xs">
           <p className="text-muted-foreground leading-relaxed">
             Bạn đang yêu cầu xóa trạng thái{" "}
-            <span className="font-bold text-foreground">&quot;{selectedColumn?.name}&quot;</span>. Các công
-            việc thuộc cột này sẽ bị ảnh hưởng.
+            <span className="font-bold text-foreground">&quot;{selectedColumn?.name}&quot;</span>.
+            Các công việc thuộc cột này sẽ bị ảnh hưởng.
           </p>
 
           {statuses.length > 1 && (
@@ -70,7 +71,11 @@ export function KanbanDeleteColumnDialog({
                   {statuses
                     .filter((s) => s.id !== selectedColumn?.id)
                     .map((s) => (
-                      <SelectItem key={s.id} value={s.id} className="rounded-lg text-xs font-semibold">
+                      <SelectItem
+                        key={s.id}
+                        value={s.id}
+                        className="rounded-lg text-xs font-semibold"
+                      >
                         {s.name}
                       </SelectItem>
                     ))}

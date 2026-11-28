@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { POSTING_STAGE_COLORS } from "@/hooks/recruitment/use-posting-kanban"
 
 import type { FormEventHandler } from "react"
+
 import { Check, Sparkles } from "lucide-react"
 
 export interface StageDialogProps {
@@ -81,7 +82,9 @@ export function StageDialog({
                   type="button"
                   onClick={() => setColor(c)}
                   className={`relative size-6 shrink-0 rounded-full border transition-all ${
-                    color === c ? "scale-110 border-transparent ring-2 ring-primary/45" : "border-border hover:scale-105"
+                    color === c
+                      ? "scale-110 border-transparent ring-2 ring-primary/45"
+                      : "border-border hover:scale-105"
                   }`}
                   style={{ backgroundColor: c }}
                 >

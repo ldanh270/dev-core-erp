@@ -1,9 +1,7 @@
 import { EMPLOYEE_TYPES } from "@/config/entities/employee.config"
-import {
-  REQUISITION_PRIORITIES,
-  REQUISITION_PRIORITY,
-} from "@/config/entities/recruitment.config"
+import { REQUISITION_PRIORITIES, REQUISITION_PRIORITY } from "@/config/entities/recruitment.config"
 import type { RecruitmentFormField } from "@/types/recruitment.types"
+
 import { z } from "zod"
 
 const optionalText = z

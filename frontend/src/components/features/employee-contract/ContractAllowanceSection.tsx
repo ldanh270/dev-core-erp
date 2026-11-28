@@ -15,8 +15,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ChevronDown, ChevronUp, PlusCircle, Trash2 } from "lucide-react"
+
 import { useState } from "react"
+
+import { ChevronDown, ChevronUp, PlusCircle, Trash2 } from "lucide-react"
+
 import { CustomAllowanceModal } from "./CustomAllowanceModal"
 
 export interface IAllowanceRow {

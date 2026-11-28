@@ -12,9 +12,11 @@ import {
 } from "@/components/ui/table"
 import { PAYROLL_STATUS, PAYROLL_STATUS_LABELS } from "@/config/entities/payroll.config"
 import { usePayrollDetails } from "@/hooks/payroll/use-payrolls"
-import type { IPayslipWithEmployee, IPayrollWithPayslips } from "@/types/payroll.types"
-import { ChevronRight } from "lucide-react"
+import type { IPayrollWithPayslips, IPayslipWithEmployee } from "@/types/payroll.types"
+
 import { useState } from "react"
+
+import { ChevronRight } from "lucide-react"
 
 const getPayrollStatusVariant = (status: string): "info" | "success" | "danger" | "neutral" => {
   switch (status) {
@@ -48,10 +50,7 @@ function exportPayrollToCsv(payroll: IPayrollWithPayslips) {
   const url = URL.createObjectURL(blob)
   const link = document.createElement("a")
   link.setAttribute("href", url)
-  link.setAttribute(
-    "download",
-    `payroll_${payroll.periodMonth}_${payroll.periodYear}_details.csv`,
-  )
+  link.setAttribute("download", `payroll_${payroll.periodMonth}_${payroll.periodYear}_details.csv`)
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
@@ -195,9 +194,7 @@ function DetailPayslipsTable({
               <TableCell className="px-4 py-3 text-center text-muted-foreground">
                 {index + 1}
               </TableCell>
-              <TableCell className="px-4 py-3 font-medium">
-                {ps.employee?.fullName}
-              </TableCell>
+              <TableCell className="px-4 py-3 font-medium">{ps.employee?.fullName}</TableCell>
               <TableCell className="px-4 py-3 text-muted-foreground">
                 {ps.employee?.email}
               </TableCell>

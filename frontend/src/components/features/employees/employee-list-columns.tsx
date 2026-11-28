@@ -1,5 +1,3 @@
-import { Edit, MoreHorizontal, RotateCcw, Trash2, Unlock, User } from "lucide-react"
-import { useMemo } from "react"
 import {
   type DataTableColumn,
   StatusPill,
@@ -22,6 +20,10 @@ import {
   getWorkScheduleTypeLabel,
 } from "@/config/entities/employee.config"
 import type { Employee } from "@/types/employee.types"
+
+import { useMemo } from "react"
+
+import { Edit, MoreHorizontal, RotateCcw, Trash2, Unlock, User } from "lucide-react"
 
 interface EmployeeTableActionsCellProps {
   employee: Employee
@@ -150,7 +152,10 @@ export function useEmployeeListColumns({
               >
                 {employee.fullName}
               </p>
-              <p className="text-xs leading-4 text-muted-foreground truncate" title={employee.username}>
+              <p
+                className="text-xs leading-4 text-muted-foreground truncate"
+                title={employee.username}
+              >
                 {employee.username}
               </p>
             </div>
@@ -179,10 +184,16 @@ export function useEmployeeListColumns({
         minWidth: `${TABLE_COL_WIDTH.POSITION}px`,
         cell: (employee) => (
           <div className="min-w-0 flex flex-col justify-center">
-            <p className="text-sm font-medium leading-5 text-foreground truncate" title={employee.position || ""}>
+            <p
+              className="text-sm font-medium leading-5 text-foreground truncate"
+              title={employee.position || ""}
+            >
               {employee.position || "—"}
             </p>
-            <p className="text-xs leading-4 text-muted-foreground truncate" title={employee.role || ""}>
+            <p
+              className="text-xs leading-4 text-muted-foreground truncate"
+              title={employee.role || ""}
+            >
               {employee.role || "—"}
             </p>
           </div>
@@ -195,7 +206,10 @@ export function useEmployeeListColumns({
         minWidth: `${TABLE_COL_WIDTH.CONTACT}px`,
         cell: (employee) => (
           <div className="min-w-0 flex flex-col justify-center">
-            <p className="text-sm font-medium leading-5 text-foreground truncate" title={employee.phone || "—"}>
+            <p
+              className="text-sm font-medium leading-5 text-foreground truncate"
+              title={employee.phone || "—"}
+            >
               {employee.phone || "—"}
             </p>
             <p className="text-xs leading-4 text-muted-foreground truncate" title={employee.email}>

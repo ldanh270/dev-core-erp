@@ -1,10 +1,11 @@
-﻿import React from "react"
-import { AddMemberModal } from '@/components/features/project/AddMemberModal'
-import { EditMemberModal } from '@/components/features/project/EditMemberModal'
+﻿import { AddMemberModal } from "@/components/features/project/AddMemberModal"
+import { EditMemberModal } from "@/components/features/project/EditMemberModal"
 import { EditProjectModal } from "@/components/features/project/EditProjectModal"
-import { ProjectTaskGeneratorModal } from '@/components/features/project/ProjectTaskGeneratorModal'
-import type { Project, ProjectMember } from "@/types/project.types"
+import { ProjectTaskGeneratorModal } from "@/components/features/project/ProjectTaskGeneratorModal"
 import type { Employee } from "@/types/employee.types"
+import type { Project, ProjectMember } from "@/types/project.types"
+
+import React from "react"
 
 export interface ProjectDetailModalsProps {
   projectId: string
@@ -75,5 +76,3 @@ export const ProjectDetailModals: React.FC<ProjectDetailModalsProps> = ({
     </>
   )
 }
-
-

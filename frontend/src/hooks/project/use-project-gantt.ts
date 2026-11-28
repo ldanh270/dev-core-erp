@@ -1,4 +1,10 @@
 ﻿import { TASK_PRIORITY, TASK_TRACKER } from "@/config/entities/project.config"
+import {
+  GANTT_FILTER_KEY,
+  GANTT_FILTER_OPERATOR,
+  PROJECT_QUERY_KEY,
+  QUICK_QUERY_TYPE,
+} from "@/constants/gantt.constants"
 import { usePermission } from "@/hooks/use-permission"
 import { projectTaskStatusApi } from "@/lib/api/project-task-status.api"
 import { projectApi } from "@/lib/api/project.api"
@@ -7,6 +13,13 @@ import { useAuthStore } from "@/store/auth-store"
 import type { Project } from "@/types/project.types"
 import type { Task, UpdateTaskDto } from "@/types/task.types"
 import { extractErrorMessage } from "@/utils/error-helper"
+import {
+  buildGanttTaskTree,
+  filterGanttTasks,
+  getDefaultGanttOperator,
+  getDefaultGanttValue,
+  getGanttTaskGridStyle,
+} from "@/utils/project/gantt-task-calculations.util"
 
 import { useMemo, useState } from "react"
 
@@ -14,19 +27,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { addDays, format } from "date-fns"
 import { toast } from "sonner"
 
-import {
-  GANTT_FILTER_KEY,
-  GANTT_FILTER_OPERATOR,
-  PROJECT_QUERY_KEY,
-  QUICK_QUERY_TYPE,
-} from '@/constants/gantt.constants'
-import {
-  buildGanttTaskTree,
-  filterGanttTasks,
-  getDefaultGanttOperator,
-  getDefaultGanttValue,
-  getGanttTaskGridStyle,
-} from '@/utils/project/gantt-task-calculations.util'
 import { useGanttCustomQueries } from "./use-gantt-custom-queries"
 import { useGanttTimelineRange } from "./use-gantt-timeline-range"
 
@@ -364,5 +364,3 @@ export function useProjectGantt({ projectId, project }: UseProjectGanttProps) {
     handleQuickQuery,
   }
 }
-
-

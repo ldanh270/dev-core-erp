@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { PART_TIME_AVAILABILITY_RULES } from "@/config/entities/part-time-availability.config"
 import { cn } from "@/lib/utils"
 import type { IPartTimeAvailabilityDayForm } from "@/types/part-time-availability.types"
+
 import { CalendarOff, Minus, Plus } from "lucide-react"
 
 interface AvailabilityModeToggleProps {
@@ -10,11 +11,7 @@ interface AvailabilityModeToggleProps {
   onChange: (isBusy: boolean) => void
 }
 
-function AvailabilityModeToggle({
-  isBusyAllDay,
-  disabled,
-  onChange,
-}: AvailabilityModeToggleProps) {
+function AvailabilityModeToggle({ isBusyAllDay, disabled, onChange }: AvailabilityModeToggleProps) {
   return (
     <div className="mb-2.5 grid grid-cols-2 gap-0.5 rounded-full bg-muted p-0.5">
       <button

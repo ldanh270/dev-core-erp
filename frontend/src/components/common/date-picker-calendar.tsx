@@ -1,11 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react"
+
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
+
 import { DAYS_OF_WEEK, MONTH_NAMES, formatDateToIso } from "./date-picker.utils"
 
 export interface DatePickerCalendarProps {
@@ -55,9 +52,7 @@ export function DatePickerCalendar({
   const isToday = (day: number) => {
     const now = new Date()
     return (
-      now.getFullYear() === currentYear &&
-      now.getMonth() === currentMonth &&
-      now.getDate() === day
+      now.getFullYear() === currentYear && now.getMonth() === currentMonth && now.getDate() === day
     )
   }
 
@@ -158,8 +153,7 @@ export function DatePickerCalendar({
                   !today &&
                   !disabledDay &&
                   "text-foreground hover:bg-muted hover:text-foreground",
-                disabledDay &&
-                  "text-muted-foreground/30 cursor-not-allowed hover:bg-transparent",
+                disabledDay && "text-muted-foreground/30 cursor-not-allowed hover:bg-transparent",
               )}
             >
               {day}

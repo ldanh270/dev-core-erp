@@ -2,7 +2,9 @@ import { LEAVE_TYPE_OPTIONS } from "@/components/attendance/attendance-ui.meta"
 import { APPLICATION_TYPES, REGIME_TYPE } from "@/config/entities/attendance.config"
 import { APPLICATION_MESSAGES } from "@/config/messages/application.message"
 import { useSubmitApplication } from "@/hooks/application/useSubmitApplication"
+
 import { useState } from "react"
+
 import { toast } from "sonner"
 
 const { VALIDATION } = APPLICATION_MESSAGES

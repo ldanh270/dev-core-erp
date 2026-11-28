@@ -1,11 +1,11 @@
 ﻿import { PageContainer } from "@/components/common"
-import { PROJECT_TABS, useProjectDetail } from "@/hooks/project/use-project-detail"
-import { cn } from "@/lib/utils"
 import { ProjectDetailErrorState } from "@/components/features/project/ProjectDetailErrorState"
 import { ProjectDetailModals } from "@/components/features/project/ProjectDetailModals"
 import { ProjectDetailSkeleton } from "@/components/features/project/ProjectDetailSkeleton"
-import { ProjectDetailTabs } from '@/components/features/project/ProjectDetailTabs'
-import { ProjectHeader } from '@/components/features/project/ProjectHeader'
+import { ProjectDetailTabs } from "@/components/features/project/ProjectDetailTabs"
+import { ProjectHeader } from "@/components/features/project/ProjectHeader"
+import { PROJECT_TABS, useProjectDetail } from "@/hooks/project/use-project-detail"
+import { cn } from "@/lib/utils"
 
 /**
  * Tier 2 Page Orchestrator for project detail workspace and multi-tab coordination.
@@ -107,5 +107,3 @@ export default function ProjectDetail() {
     </PageContainer>
   )
 }
-
-

@@ -16,8 +16,10 @@ import { useApplyWeeklyScheduleTemplate } from "@/hooks/attendance/use-weekly-sc
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import type { IWeeklyScheduleTemplate } from "@/types/attendance.types"
 import type { Employee } from "@/types/employee.types"
-import { CalendarCheck, Search } from "lucide-react"
+
 import { useMemo, useState } from "react"
+
+import { CalendarCheck, Search } from "lucide-react"
 import { toast } from "sonner"
 
 function todayInputValue(): string {
@@ -251,7 +253,9 @@ export function ApplyWeeklyScheduleTemplateDialog({
           <Button
             className="rounded-full"
             onClick={handleSubmit}
-            disabled={!template || !validFrom || selectedIds.length === 0 || applyMutation.isPending}
+            disabled={
+              !template || !validFrom || selectedIds.length === 0 || applyMutation.isPending
+            }
           >
             {applyMutation.isPending ? "Đang áp dụng..." : "Áp dụng"}
           </Button>

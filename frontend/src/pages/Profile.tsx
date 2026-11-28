@@ -1,17 +1,15 @@
-import { useMemo } from "react"
-import { Edit2, KeyRound, User } from "lucide-react"
-
 import { DetailPageLayout, StatusPill } from "@/components/common"
 import { ProfileEditSection } from "@/components/features/profile/ProfileEditSection"
 import { ProfileOverviewSection } from "@/components/features/profile/ProfileOverviewSection"
 import { ProfileOverviewSidebar } from "@/components/features/profile/ProfileOverviewSidebar"
 import { ProfilePasswordSection } from "@/components/features/profile/ProfilePasswordSection"
 import { Button } from "@/components/ui/button"
-import {
-  EMPLOYEE_STATUS,
-  EMPLOYEE_STATUS_LABELS,
-} from "@/config/entities/employee.config"
+import { EMPLOYEE_STATUS, EMPLOYEE_STATUS_LABELS } from "@/config/entities/employee.config"
 import { useProfileMaster } from "@/hooks/profile/useProfileMaster"
+
+import { useMemo } from "react"
+
+import { Edit2, KeyRound, User } from "lucide-react"
 
 /**
  * Standardized Profile Page.
@@ -73,7 +71,11 @@ export default function Profile() {
       avatar={
         <div className="size-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold text-xl overflow-hidden">
           {profile.avatar?.url ? (
-            <img src={profile.avatar.url} alt={profile.fullName} className="size-full object-cover" />
+            <img
+              src={profile.avatar.url}
+              alt={profile.fullName}
+              className="size-full object-cover"
+            />
           ) : (
             <User className="size-8 text-primary" />
           )}

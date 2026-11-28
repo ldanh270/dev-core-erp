@@ -1,5 +1,5 @@
 ﻿import { PageContainer, PageHeader } from "@/components/common"
-import { ProjectCapacityBoard } from '@/components/features/project/ProjectCapacityBoard'
+import { ProjectCapacityBoard } from "@/components/features/project/ProjectCapacityBoard"
 
 /**
  * Project-level Capacity Copilot board page orchestrator.
@@ -17,5 +17,3 @@ export default function ProjectCapacityBoardPage() {
     </PageContainer>
   )
 }
-
-

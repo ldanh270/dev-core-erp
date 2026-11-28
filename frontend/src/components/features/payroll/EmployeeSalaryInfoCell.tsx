@@ -11,13 +11,9 @@ export interface EmployeeSalaryInfoCellProps {
 }
 
 /** Table cell presenter rendering formatted employee salary information and base pay. */
-export function EmployeeSalaryInfoCell({
-  employeeId,
-  templates,
-}: EmployeeSalaryInfoCellProps) {
+export function EmployeeSalaryInfoCell({ employeeId, templates }: EmployeeSalaryInfoCellProps) {
   const { data: config, isLoading } = useActiveSalaryConfig(employeeId)
-  const templateName =
-    templates?.find((t) => t.id === config?.templateId)?.name || "Chưa thiết lập"
+  const templateName = templates?.find((t) => t.id === config?.templateId)?.name || "Chưa thiết lập"
 
   if (isLoading) {
     return <span className={cn(TYPOGRAPHY.CELL_SECONDARY, "text-xs")}>Đang tải...</span>

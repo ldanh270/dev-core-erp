@@ -27,10 +27,7 @@ export function RecruitmentChartsSection({
 }: RecruitmentChartsSectionProps) {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <UpcomingInterviewsCard
-        interviews={upcomingInterviews}
-        isLoading={isLoadingInterviews}
-      />
+      <UpcomingInterviewsCard interviews={upcomingInterviews} isLoading={isLoadingInterviews} />
       <CandidatePipelineCard appStats={appStats} totalApps={totalApps} />
     </div>
   )

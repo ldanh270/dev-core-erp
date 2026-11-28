@@ -1,4 +1,3 @@
-import { CalendarOff, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   PART_TIME_AVAILABILITY_ASSIGN_LABELS,
@@ -8,9 +7,12 @@ import { cn } from "@/lib/utils"
 import type { IPartTimeAvailabilityDay } from "@/types/part-time-availability.types"
 import type { IPartTimeAssignmentDayForm } from "@/utils/attendance/part-time-availability.util"
 import { formatAvailabilityRangesForAssign } from "@/utils/attendance/part-time-availability.util"
-import { usePartTimeDayAssignment } from "./use-part-time-day-assignment"
+
+import { CalendarOff, Plus } from "lucide-react"
+
 import { PartTimeAssignDayHeader } from "./part-time-assign-day-header"
 import { PartTimeAssignmentSlotItem } from "./part-time-assignment-slot-item"
+import { usePartTimeDayAssignment } from "./use-part-time-day-assignment"
 
 interface AdminPartTimeAssignDayColumnProps {
   dayLabel: string
@@ -115,8 +117,8 @@ export function AdminPartTimeAssignDayColumn({
             ) : null}
 
             <div className="text-center text-[9px] text-muted-foreground/60">
-              Đã thêm: {assignment.slots.length}/
-              {PART_TIME_AVAILABILITY_RULES.MAX_SLOTS_PER_DAY} khung giờ
+              Đã thêm: {assignment.slots.length}/{PART_TIME_AVAILABILITY_RULES.MAX_SLOTS_PER_DAY}{" "}
+              khung giờ
             </div>
           </div>
         </div>

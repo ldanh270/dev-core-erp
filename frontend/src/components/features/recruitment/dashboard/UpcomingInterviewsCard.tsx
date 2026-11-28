@@ -19,10 +19,7 @@ export interface UpcomingInterviewsCardProps {
 /**
  * Presenter card displaying schedule of upcoming interview rounds for the next 7 days.
  */
-export function UpcomingInterviewsCard({
-  interviews,
-  isLoading,
-}: UpcomingInterviewsCardProps) {
+export function UpcomingInterviewsCard({ interviews, isLoading }: UpcomingInterviewsCardProps) {
   return (
     <Card className="rounded-xl border border-border/60 transition-all hover:shadow-md">
       <CardHeader className="flex flex-row items-center justify-between pb-3">

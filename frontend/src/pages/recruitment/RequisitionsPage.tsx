@@ -5,8 +5,10 @@ import { RequisitionsPriorityFilter } from "@/components/features/recruitment/Re
 import { useRequisitionsColumns } from "@/components/features/recruitment/use-requisitions-columns"
 import { useRequisitionsManagement } from "@/hooks/recruitment/use-requisitions-management"
 import type { JobRequisition } from "@/types/recruitment.types"
-import { FileSearch, Plus } from "lucide-react"
+
 import { useMemo } from "react"
+
+import { FileSearch, Plus } from "lucide-react"
 
 /**
  * Tier 2 Page Orchestrator for Job Requisitions.

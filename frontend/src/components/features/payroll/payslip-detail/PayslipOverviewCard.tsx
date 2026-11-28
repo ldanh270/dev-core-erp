@@ -7,6 +7,7 @@ import {
 } from "@/config/entities/payroll.config"
 import { formatCurrency } from "@/lib/utils"
 import type { IPayslip } from "@/types/payroll.types"
+
 import { MessageSquare } from "lucide-react"
 
 interface PayslipOverviewCardProps {
@@ -25,9 +26,7 @@ export function PayslipOverviewCard({ payslip, onOpenFeedback }: PayslipOverview
           <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
             Thực Lãnh
           </span>
-          <div className="text-5xl font-bold text-primary">
-            {formatCurrency(payslip.netSalary)}
-          </div>
+          <div className="text-5xl font-bold text-primary">{formatCurrency(payslip.netSalary)}</div>
           <div className="flex flex-wrap items-center gap-2">
             {payslip.status ? (
               <Badge
@@ -50,11 +49,7 @@ export function PayslipOverviewCard({ payslip, onOpenFeedback }: PayslipOverview
           </div>
         </div>
         {payslip.canFeedback ? (
-          <Button
-            type="button"
-            className="rounded-full"
-            onClick={onOpenFeedback}
-          >
+          <Button type="button" className="rounded-full" onClick={onOpenFeedback}>
             <MessageSquare className="h-4 w-4 mr-2" />
             Feedback
           </Button>

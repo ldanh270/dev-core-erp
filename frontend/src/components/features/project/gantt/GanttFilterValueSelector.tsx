@@ -7,13 +7,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { TASK_PRIORITY, TASK_STATUS, TASK_TRACKER } from "@/config/entities/project.config"
-
 import {
   FILTER_DEFINITIONS,
   GANTT_FILTER_KEY,
   GANTT_FILTER_OPERATOR,
   GANTT_FILTER_TYPE,
-} from '@/constants/gantt.constants'
+} from "@/constants/gantt.constants"
 
 interface GanttFilterValueSelectorProps {
   filterKey: string
@@ -32,8 +31,7 @@ export function GanttFilterValueSelector({
   onChange,
 }: GanttFilterValueSelectorProps) {
   const def = Reflect.get(FILTER_DEFINITIONS, filterKey) as
-    | { label: string; type: string; group: string }
-    | undefined
+    { label: string; type: string; group: string } | undefined
   if (def === undefined) return null
 
   if (filterKey === GANTT_FILTER_KEY.STATUS) {
@@ -204,5 +202,3 @@ export function GanttFilterValueSelector({
 
   return null
 }
-
-

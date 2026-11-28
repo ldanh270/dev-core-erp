@@ -20,6 +20,9 @@ import { INTERVIEW_FORMAT } from "@/config/entities/recruitment.config"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import { useCreateInterview } from "@/hooks/recruitment/use-recruitment-queries"
 import type { KanbanApplication } from "@/types/recruitment.types"
+
+import { useState } from "react"
+
 import {
   Calendar,
   CalendarClock,
@@ -30,7 +33,6 @@ import {
   UserCheck,
   Video,
 } from "lucide-react"
-import { useState } from "react"
 
 const DEFAULT_APP_STAGES = [
   { id: "pv1", name: "Phỏng vấn vòng 1" },

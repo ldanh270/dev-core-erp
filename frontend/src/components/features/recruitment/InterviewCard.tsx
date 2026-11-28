@@ -6,18 +6,10 @@ import {
   INTERVIEW_TYPE_LABELS,
 } from "@/config/entities/recruitment.config"
 import type { InterviewRound } from "@/types/recruitment.types"
+
 import { format, parseISO } from "date-fns"
 import { vi } from "date-fns/locale"
-import {
-  Calendar,
-  CheckCircle,
-  Clock,
-  MapPin,
-  Minus,
-  Users,
-  Video,
-  XCircle,
-} from "lucide-react"
+import { Calendar, CheckCircle, Clock, MapPin, Minus, Users, Video, XCircle } from "lucide-react"
 
 const resultIconMap: Record<string, React.ReactNode> = {
   [INTERVIEW_RESULT.PASS]: <CheckCircle className="h-4 w-4 text-emerald-500" />,

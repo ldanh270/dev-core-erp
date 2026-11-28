@@ -1,4 +1,5 @@
 import { BRANDING_CONFIG } from "@/config/branding.config"
+
 import type { ReactNode } from "react"
 
 function GeometricBackground() {
@@ -27,13 +28,7 @@ function BrandLogo({
 }: {
   className?: string
 }) {
-  return (
-    <img
-      src={BRANDING_CONFIG.LOGO_URL}
-      alt={BRANDING_CONFIG.LOGO_ALT}
-      className={className}
-    />
-  )
+  return <img src={BRANDING_CONFIG.LOGO_URL} alt={BRANDING_CONFIG.LOGO_ALT} className={className} />
 }
 
 interface AuthSplitLayoutProps {

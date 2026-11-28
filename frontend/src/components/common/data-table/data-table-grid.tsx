@@ -2,9 +2,16 @@ import { EmptyState } from "@/components/common/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
-import { Inbox, type LucideIcon } from "lucide-react"
+
 import { type ReactNode, useMemo } from "react"
-import { computeStickyLayout, getStickyCellProps, type StickyLayoutResult } from "../data-table-sticky"
+
+import { Inbox, type LucideIcon } from "lucide-react"
+
+import {
+  type StickyLayoutResult,
+  computeStickyLayout,
+  getStickyCellProps,
+} from "../data-table-sticky"
 import type { DataTableColumn } from "../data-table.types"
 
 interface DataTableLoadingRowProps<T> {
@@ -241,9 +248,7 @@ export function DataTableGrid<T>({
                   rowClassName ? rowClassName(item, idx) : undefined,
                 )}
                 onClick={onRowClick ? () => onRowClick(item, idx) : undefined}
-                onContextMenu={
-                  onRowContextMenu ? (e) => onRowContextMenu(e, item, idx) : undefined
-                }
+                onContextMenu={onRowContextMenu ? (e) => onRowContextMenu(e, item, idx) : undefined}
                 tabIndex={onRowClick ? 0 : undefined}
                 onKeyDown={
                   onRowClick

@@ -22,8 +22,9 @@ import { PROJECT_STATUSES, TASK_CREATION_POLICIES } from "@/config/entities/proj
 import { SELECT_NONE_VALUE, useEditProjectForm } from "@/hooks/project/use-edit-project-form"
 import { useProjectTrackers } from "@/hooks/project/use-project-tracker"
 import type { Employee } from "@/types/employee.types"
-import type { Project } from "@/types/project.types"
 import type { ProjectTracker } from "@/types/project-tracker.types"
+import type { Project } from "@/types/project.types"
+
 import type { Dispatch, SetStateAction } from "react"
 
 const PROJECT_STATUS_LABELS = new Map<string, string>([
@@ -432,4 +433,3 @@ export function EditProjectModal({
     </Dialog>
   )
 }
-

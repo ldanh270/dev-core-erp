@@ -4,6 +4,7 @@ import { ROLE_LABELS } from "@/config/entities/employee.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn } from "@/lib/utils"
 import type { Role } from "@/types/security.types"
+
 import { AlertTriangle, ArrowRight, Inbox, RefreshCw, Shield, ShieldCheck } from "lucide-react"
 
 /**

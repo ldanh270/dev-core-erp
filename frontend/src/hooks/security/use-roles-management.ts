@@ -6,7 +6,9 @@ import {
   useUpdateRole,
 } from "@/hooks/security/queries/use-security-query"
 import type { Role } from "@/types/security.types"
+
 import { useCallback, useState } from "react"
+
 import { toast } from "sonner"
 
 /**

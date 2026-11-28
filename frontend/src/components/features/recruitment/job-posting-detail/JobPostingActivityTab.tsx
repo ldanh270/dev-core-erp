@@ -91,7 +91,9 @@ export function JobPostingActivityTab({
               <p className="font-medium text-destructive">
                 {response.errorMessage ?? "Dữ liệu Form không hợp lệ"}
               </p>
-              <p className="mt-1 text-muted-foreground">{getResponseEmail(response.responseData)}</p>
+              <p className="mt-1 text-muted-foreground">
+                {getResponseEmail(response.responseData)}
+              </p>
             </div>
           ))}
         </div>

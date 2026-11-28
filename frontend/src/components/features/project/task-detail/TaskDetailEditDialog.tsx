@@ -1,6 +1,3 @@
-import React from "react"
-import { Brain } from "lucide-react"
-
 import { DatePicker } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
@@ -24,6 +21,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TASK_PRIORITIES } from "@/config/entities/project.config"
 import type { ProjectTaskStatus } from "@/types/project-task-status.types"
 import type { ProjectMember } from "@/types/project.types"
+
+import React from "react"
+
+import { Brain } from "lucide-react"
 
 function formatPriority(priority: string) {
   if (priority === "low") return "Thấp"
@@ -230,7 +231,10 @@ export function TaskDetailEditDialog({
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-1.5 col-span-2 sm:col-span-1">
               <div className="flex items-center justify-between">
-                <Label htmlFor="editAssignee" className="text-xs font-semibold text-muted-foreground">
+                <Label
+                  htmlFor="editAssignee"
+                  className="text-xs font-semibold text-muted-foreground"
+                >
                   Người thực hiện
                 </Label>
                 <Button
@@ -342,7 +346,10 @@ export function TaskDetailEditDialog({
 
               <TabsContent value="report" className="space-y-3 pt-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="editResultUrl" className="text-xs font-semibold text-muted-foreground">
+                  <Label
+                    htmlFor="editResultUrl"
+                    className="text-xs font-semibold text-muted-foreground"
+                  >
                     Đường dẫn sản phẩm (resultUrl)
                   </Label>
                   <Input

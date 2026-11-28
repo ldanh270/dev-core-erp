@@ -1,9 +1,4 @@
-import {
-  type DataTableColumn,
-  StatusPill,
-  TABLE_COL_WIDTH,
-  TYPOGRAPHY,
-} from "@/components/common"
+import { type DataTableColumn, StatusPill, TABLE_COL_WIDTH, TYPOGRAPHY } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import {
   ACTIVITY_ACTION_LABELS,
@@ -15,16 +10,8 @@ import { cn } from "@/lib/utils"
 import type { ActivityLogItem } from "@/types/security.types"
 
 import { useMemo } from "react"
-import {
-  Activity,
-  Eye,
-  Globe,
-  Key,
-  Lock,
-  Shield,
-  Unlock,
-  User,
-} from "lucide-react"
+
+import { Activity, Eye, Globe, Key, Lock, Shield, Unlock, User } from "lucide-react"
 
 const ACTION_VARIANT_MAP = new Map<string, string>(Object.entries(ACTIVITY_ACTION_VARIANTS))
 

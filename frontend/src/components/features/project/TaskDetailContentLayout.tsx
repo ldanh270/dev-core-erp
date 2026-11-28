@@ -1,9 +1,10 @@
-import React from "react"
 import { TaskDetailMainInfo } from "@/components/features/project/task-detail/TaskDetailMainInfo"
 import { TaskDetailSpentTimeCard } from "@/components/features/project/task-detail/TaskDetailSpentTimeCard"
-import type { Task } from "@/types/task.types"
 import type { ProjectTaskStatus } from "@/types/project-task-status.types"
 import type { SpentTime } from "@/types/spent-time.types"
+import type { Task } from "@/types/task.types"
+
+import React from "react"
 
 export interface TaskDetailContentLayoutProps {
   task: Task

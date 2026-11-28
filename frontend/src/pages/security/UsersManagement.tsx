@@ -1,13 +1,15 @@
 import { DataTablePage } from "@/components/common"
+import { UsersManagementStatusLegend } from "@/components/features/security/UsersManagementStatusLegend"
 import {
   type UserListItem,
   useUsersManagementColumns,
 } from "@/components/features/security/use-users-management-columns"
-import { UsersManagementStatusLegend } from "@/components/features/security/UsersManagementStatusLegend"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useUsersManagementMaster } from "@/hooks/security/use-users-management-master"
-import { Lock, Users as UsersIcon } from "lucide-react"
+
 import { useMemo } from "react"
+
+import { Lock, Users as UsersIcon } from "lucide-react"
 
 /**
  * UsersManagement page component.
@@ -99,7 +101,11 @@ export default function UsersManagement() {
                 setQuery((prev) => ({ ...prev, page: p }))
               },
               onItemsPerPageChange: (limit) => {
-                setQuery((prev) => ({ ...prev, limit, page: SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE }))
+                setQuery((prev) => ({
+                  ...prev,
+                  limit,
+                  page: SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE,
+                }))
               },
               pageSizeOptions: SYSTEM_CONFIG.PAGINATION.PAGE_SIZE_OPTIONS as unknown as number[],
             }

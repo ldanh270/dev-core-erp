@@ -22,19 +22,21 @@ import {
   ATTENDANCE_EMPLOYEE_PICKER_LIMIT,
   HOLIDAY_SCOPE,
   HOLIDAY_SCOPE_LABELS,
-  HOLIDAY_TYPES,
   HOLIDAY_TYPE,
+  HOLIDAY_TYPES,
   type IHolidayScope,
   type IHolidayType,
 } from "@/config/entities/attendance.config"
 import { EMPLOYEE_STATUS } from "@/config/entities/employee.config"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import { usePositions } from "@/hooks/use-position-query"
-import type { Employee } from "@/types/employee.types"
 import type { IHoliday, IHolidayPayload } from "@/types/attendance.types"
+import type { Employee } from "@/types/employee.types"
 import { getHolidayTypeLabel } from "@/utils/attendance/get-holiday-type-label"
+
+import { type Dispatch, type FormEvent, type SetStateAction, useState } from "react"
+
 import { Loader2 } from "lucide-react"
-import { type FormEvent, useState, type Dispatch, type SetStateAction } from "react"
 import { toast } from "sonner"
 
 export interface HolidayFormState {

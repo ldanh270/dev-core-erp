@@ -10,6 +10,9 @@ import {
 } from "@/components/ui/dialog"
 import { POSTING_CHANNELS } from "@/config/entities/recruitment.config"
 import type { JobPosting, JobRequisition, RecruitmentFormField } from "@/types/recruitment.types"
+
+import { useState } from "react"
+
 import {
   Briefcase,
   Building2,
@@ -27,7 +30,6 @@ import {
   Users,
   Wallet,
 } from "lucide-react"
-import { useState } from "react"
 import { toast } from "sonner"
 
 const DEFAULT_POSTING_FIELDS: RecruitmentFormField[] = [
@@ -171,9 +173,7 @@ function JobPostingRequisitionCard({ requisition }: { requisition?: JobRequisiti
           <span className="text-muted-foreground flex items-center gap-1">
             <Users className="h-3.5 w-3.5 text-muted-foreground" /> Số lượng tuyển
           </span>
-          <p className="font-semibold text-foreground">
-            {requisition?.headcount ?? 1} ứng viên
-          </p>
+          <p className="font-semibold text-foreground">{requisition?.headcount ?? 1} ứng viên</p>
         </div>
         {requisition?.requestedBy?.fullName && (
           <div className="space-y-1">
@@ -206,7 +206,8 @@ function JobPostingPublicLinkBanner({ postingUrl }: { postingUrl?: string | null
       <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-800 dark:text-amber-300">
         <p className="font-semibold">Chưa phát hành đường dẫn công khai</p>
         <p className="mt-0.5 text-amber-700/80 dark:text-amber-400/80">
-          Nhấn nút <strong>Public</strong> ở trang danh sách bài đăng để tự động tạo Google Form và phát hành link cho ứng viên.
+          Nhấn nút <strong>Public</strong> ở trang danh sách bài đăng để tự động tạo Google Form và
+          phát hành link cho ứng viên.
         </p>
       </div>
     )
@@ -221,9 +222,7 @@ function JobPostingPublicLinkBanner({ postingUrl }: { postingUrl?: string | null
         </span>
       </div>
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-background rounded-lg p-3 border border-border">
-        <span className="text-xs font-mono text-primary break-all line-clamp-2">
-          {postingUrl}
-        </span>
+        <span className="text-xs font-mono text-primary break-all line-clamp-2">{postingUrl}</span>
         <div className="flex items-center gap-2 shrink-0">
           <Button
             size="sm"

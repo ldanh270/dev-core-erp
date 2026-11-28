@@ -20,11 +20,7 @@ interface DeleteHolidayDialogProps {
  * Confirmation dialog presenter for deleting configured holiday events.
  * Encapsulates destructive action alert dialog with standardized pill button styling.
  */
-export function DeleteHolidayDialog({
-  holiday,
-  onClose,
-  onConfirm,
-}: DeleteHolidayDialogProps) {
+export function DeleteHolidayDialog({ holiday, onClose, onConfirm }: DeleteHolidayDialogProps) {
   return (
     <AlertDialog
       open={Boolean(holiday)}

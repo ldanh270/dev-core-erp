@@ -1,14 +1,11 @@
-import { useMemo } from "react"
-import { CheckCircle2, Lock, Unlock } from "lucide-react"
-
-import {
-  type DataTableColumn,
-  TABLE_COL_WIDTH,
-  getTableColWidthPx,
-} from "@/components/common"
+import { type DataTableColumn, TABLE_COL_WIDTH, getTableColWidthPx } from "@/components/common"
 import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn } from "@/lib/utils"
 import type { RouteManifestEntry } from "@/types/system/route.types"
+
+import { useMemo } from "react"
+
+import { CheckCircle2, Lock, Unlock } from "lucide-react"
 
 // ---------------------------------------------------------------------------
 // Helpers & Subcomponents

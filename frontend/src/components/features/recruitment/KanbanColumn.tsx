@@ -1,13 +1,5 @@
 import { CandidateCard } from "@/components/features/recruitment/CandidateCard"
 import { Badge } from "@/components/ui/badge"
-
-function DropIndicator({ className }: { className?: string }) {
-  return (
-    <div
-      className={`mx-1 h-0.5 rounded-full bg-primary shadow-[0_0_6px_2px_hsl(var(--primary)/0.4)] ${className ?? ""}`}
-    />
-  )
-}
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +9,14 @@ import {
 import type { KanbanApplication, RecruitmentPipelineStage } from "@/types/recruitment.types"
 
 import { MoreHorizontal, Sparkles } from "lucide-react"
+
+function DropIndicator({ className }: { className?: string }) {
+  return (
+    <div
+      className={`mx-1 h-0.5 rounded-full bg-primary shadow-[0_0_6px_2px_hsl(var(--primary)/0.4)] ${className ?? ""}`}
+    />
+  )
+}
 
 interface KanbanColumnProps {
   stage: RecruitmentPipelineStage

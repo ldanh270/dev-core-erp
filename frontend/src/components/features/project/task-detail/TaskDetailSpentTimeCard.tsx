@@ -80,9 +80,7 @@ export function TaskDetailSpentTimeCard({
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-xs font-bold text-foreground">
-                      {st.employee?.fullName}
-                    </div>
+                    <div className="text-xs font-bold text-foreground">{st.employee?.fullName}</div>
                     <div className="text-[10px] text-muted-foreground">
                       {new Date(st.date).toLocaleDateString("vi-VN")}
                     </div>

@@ -31,16 +31,23 @@ export const APPLICATION_MESSAGES = {
     PEER_SHIFT_REQUIRED: (idx: number) => `Vui lòng chọn ca của đồng nghiệp (Đơn ${idx})`,
     MINUTES_RANGE: "Số phút muộn/sớm phải từ 1 đến 480",
     MINUTES_RANGE_WITH_INDEX: (idx: number) => `Số phút phải từ 1 đến 480 (Đơn ${idx})`,
-    PAST_DATE_OVERTIME: (idx: number) => `Không thể đăng ký tăng ca cho ngày trong quá khứ (Đơn ${idx})`,
+    PAST_DATE_OVERTIME: (idx: number) =>
+      `Không thể đăng ký tăng ca cho ngày trong quá khứ (Đơn ${idx})`,
     PAST_DATE_RESIGNATION: "Không thể đăng ký thôi việc cho ngày trong quá khứ",
     PAST_DATE_GENERIC: (idx: number) => `Không thể đăng ký cho ngày trong quá khứ (Đơn ${idx})`,
-    PAST_DATE_REMOTE: (idx: number) => `Không thể đăng ký làm việc từ xa cho ngày trong quá khứ (Đơn ${idx})`,
-    FUTURE_DATE_ATTENDANCE: (idx: number) => `Không thể đăng ký quên chấm công cho ngày ở tương lai (Đơn ${idx})`,
-    ATTENDANCE_TIME_REQUIRED: (idx: number) => `Vui lòng nhập ít nhất giờ vào hoặc giờ ra cần sửa (Đơn ${idx})`,
+    PAST_DATE_REMOTE: (idx: number) =>
+      `Không thể đăng ký làm việc từ xa cho ngày trong quá khứ (Đơn ${idx})`,
+    FUTURE_DATE_ATTENDANCE: (idx: number) =>
+      `Không thể đăng ký quên chấm công cho ngày ở tương lai (Đơn ${idx})`,
+    ATTENDANCE_TIME_REQUIRED: (idx: number) =>
+      `Vui lòng nhập ít nhất giờ vào hoặc giờ ra cần sửa (Đơn ${idx})`,
     REGIME_TYPE_REQUIRED: (idx: number) => `Vui lòng chọn loại chế độ (Đơn ${idx})`,
-    END_DATE_BEFORE_START: (idx: number) => `Ngày kết thúc không được nhỏ hơn ngày bắt đầu (Đơn ${idx})`,
-    RECRUITMENT_POSITION_REQUIRED: (idx: number) => `Vui lòng nhập tên vị trí cần tuyển (Đơn ${idx})`,
-    RECRUITMENT_QUANTITY_POSITIVE: (idx: number) => `Số lượng cần tuyển phải lớn hơn 0 (Đơn ${idx})`,
+    END_DATE_BEFORE_START: (idx: number) =>
+      `Ngày kết thúc không được nhỏ hơn ngày bắt đầu (Đơn ${idx})`,
+    RECRUITMENT_POSITION_REQUIRED: (idx: number) =>
+      `Vui lòng nhập tên vị trí cần tuyển (Đơn ${idx})`,
+    RECRUITMENT_QUANTITY_POSITIVE: (idx: number) =>
+      `Số lượng cần tuyển phải lớn hơn 0 (Đơn ${idx})`,
   },
   SUCCESS: {
     SUBMIT_SINGLE: "Đơn đã được gửi thành công!",

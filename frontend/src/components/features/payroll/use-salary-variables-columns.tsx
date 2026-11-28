@@ -12,6 +12,7 @@ import type { VariableRow } from "@/hooks/payroll/use-salary-variables-managemen
 import { cn } from "@/lib/utils"
 
 import { useMemo } from "react"
+
 import { Pencil, Trash2 } from "lucide-react"
 
 interface UseSalaryVariablesColumnsProps {

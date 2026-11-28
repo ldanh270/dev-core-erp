@@ -1,6 +1,5 @@
 import { PageCard } from "@/components/common"
 import { StatusPill } from "@/components/common/status-pill"
-import { ScheduleInterviewDialog } from "../ScheduleInterviewDialog"
 import { Button } from "@/components/ui/button"
 import type { KanbanApplication } from "@/types/recruitment.types"
 
@@ -8,6 +7,7 @@ import { useState } from "react"
 
 import { Plus } from "lucide-react"
 
+import { ScheduleInterviewDialog } from "../ScheduleInterviewDialog"
 import { EmptyRow, WorkspaceHeader } from "./WorkspaceShared"
 
 interface RequisitionInterviewsTabProps {

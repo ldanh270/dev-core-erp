@@ -83,7 +83,9 @@ export function CreateCustomQueryDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-card border-border">
         <DialogHeader>
-          <DialogTitle className="text-base font-bold text-foreground">Tạo truy vấn mới</DialogTitle>
+          <DialogTitle className="text-base font-bold text-foreground">
+            Tạo truy vấn mới
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={onSubmit} className="space-y-4 pt-2">

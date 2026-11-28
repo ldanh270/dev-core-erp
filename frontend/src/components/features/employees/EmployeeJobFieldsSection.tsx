@@ -18,6 +18,7 @@ import {
   getEmployeeTypeLabel,
 } from "@/config/entities/employee.config"
 import type { EmployeeStatus, WorkScheduleType } from "@/types/employee.types"
+
 import type { FieldErrors, UseFormSetValue, UseFormWatch } from "react-hook-form"
 
 interface EmployeeJobFieldsSectionProps {

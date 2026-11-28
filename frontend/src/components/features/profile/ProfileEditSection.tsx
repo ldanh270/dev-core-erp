@@ -4,8 +4,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { ProfileFormValues } from "@/hooks/profile/useProfileMaster"
 
-import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
 import { Edit2, Save, X } from "lucide-react"
+import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
 
 export interface ProfileEditSectionProps {
   register: UseFormRegister<ProfileFormValues>
@@ -48,11 +48,7 @@ export function ProfileEditSection({
               <X size={14} className="mr-1.5" />
               Hủy
             </Button>
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="rounded-full cursor-pointer"
-            >
+            <Button type="submit" disabled={isPending} className="rounded-full cursor-pointer">
               {isPending ? (
                 "Đang lưu..."
               ) : (

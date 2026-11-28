@@ -1,5 +1,6 @@
 import { EmptyState, PageContainer } from "@/components/common"
 import { Button } from "@/components/ui/button"
+
 import { AlertCircle, type LucideIcon } from "lucide-react"
 
 export interface DetailNotFoundProps {

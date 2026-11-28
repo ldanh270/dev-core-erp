@@ -3,7 +3,8 @@ import { IconBox } from "@/components/common/icon-box"
 import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn } from "@/lib/utils"
 import type { ActivityLogItem } from "@/types/security.types"
-import { History, Lock, ShieldCheck, UserCheck, UserX, type LucideIcon } from "lucide-react"
+
+import { History, Lock, type LucideIcon, ShieldCheck, UserCheck, UserX } from "lucide-react"
 
 const ACTION_LABEL_MAP = new Map<string, string>([
   ["login", "Đăng nhập thành công"],

@@ -1,5 +1,6 @@
 import { EmptyState } from "@/components/common"
 import { Button } from "@/components/ui/button"
+
 import { AlertCircle, FolderKanban } from "lucide-react"
 
 /**

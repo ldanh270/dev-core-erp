@@ -5,7 +5,9 @@ import {
   useUpdatePosition,
 } from "@/hooks/use-position-query"
 import type { Position } from "@/lib/api/position.api"
+
 import { useCallback, useState } from "react"
+
 import { toast } from "sonner"
 
 /**
@@ -94,16 +96,7 @@ export function usePositionsManagement() {
         toast.error(msg)
       }
     },
-    [
-      name,
-      code,
-      description,
-      allowedTrackers,
-      editingId,
-      updateMutation,
-      createMutation,
-      refetch,
-    ],
+    [name, code, description, allowedTrackers, editingId, updateMutation, createMutation, refetch],
   )
 
   const handleDelete = useCallback(

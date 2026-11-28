@@ -19,14 +19,17 @@ interface ProjectKanbanCardProps {
 
 function getPriorityColor(priority: string) {
   if (priority === "urgent") return "bg-destructive/10 text-destructive border-destructive/20"
-  if (priority === "high") return "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:text-amber-500"
-  if (priority === "medium") return "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400"
+  if (priority === "high")
+    return "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:text-amber-500"
+  if (priority === "medium")
+    return "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400"
   return "bg-secondary text-secondary-foreground border-border"
 }
 
 function getTrackerColor(tracker: string) {
   if (tracker === "bug") return "bg-destructive/10 text-destructive border-destructive/20"
-  if (tracker === "feature") return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400"
+  if (tracker === "feature")
+    return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400"
   if (tracker === "support") return "bg-sky-500/10 text-sky-600 border-sky-500/20 dark:text-sky-400"
   return "bg-secondary text-secondary-foreground border-border"
 }
@@ -99,7 +102,10 @@ export function ProjectKanbanCard({
           <div className="flex items-center gap-1.5 max-w-[150px]">
             {task.assignee ? (
               <span
-                className={cn(TYPOGRAPHY.BOARD_CARD_SUB, "font-medium text-foreground max-w-[100px]")}
+                className={cn(
+                  TYPOGRAPHY.BOARD_CARD_SUB,
+                  "font-medium text-foreground max-w-[100px]",
+                )}
                 title={task.assignee.fullName}
               >
                 {task.assignee.fullName}

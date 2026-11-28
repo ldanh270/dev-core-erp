@@ -1,9 +1,6 @@
 import { POSTING_CHANNELS } from "@/config/entities/recruitment.config"
 import { SYSTEM_CONFIG } from "@/config/system.config"
-import {
-  useJobPostings,
-  useRequisitions,
-} from "@/hooks/recruitment/use-recruitment-queries"
+import { useJobPostings, useRequisitions } from "@/hooks/recruitment/use-recruitment-queries"
 import { usePermission } from "@/hooks/use-permission"
 import type { JobPosting } from "@/types/recruitment.types"
 

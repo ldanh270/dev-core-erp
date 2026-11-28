@@ -18,6 +18,9 @@ import {
 import { usePermission } from "@/hooks/use-permission"
 import { routerNavigate } from "@/lib/router-navigator"
 import type { JobRequisition } from "@/types/recruitment.types"
+
+import { useState } from "react"
+
 import {
   Briefcase,
   Building,
@@ -36,7 +39,6 @@ import {
   X,
   XCircle,
 } from "lucide-react"
-import { useState } from "react"
 
 const priorityVariantMap: Record<string, "destructive" | "secondary" | "outline"> = {
   [REQUISITION_PRIORITY.URGENT]: "destructive",
@@ -45,10 +47,7 @@ const priorityVariantMap: Record<string, "destructive" | "secondary" | "outline"
   [REQUISITION_PRIORITY.LOW]: "outline",
 }
 
-const statusVariantMap: Record<
-  string,
-  "success" | "warning" | "danger" | "info" | "neutral"
-> = {
+const statusVariantMap: Record<string, "success" | "warning" | "danger" | "info" | "neutral"> = {
   draft: "neutral",
   pending_approval: "warning",
   approved: "success",

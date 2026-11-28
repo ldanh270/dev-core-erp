@@ -24,8 +24,10 @@ import {
 } from "@/hooks/recruitment/use-recruitment-queries"
 import type { OAuthAccount } from "@/lib/api/recruitment.api"
 import type { JobRequisition, RecruitmentFormField } from "@/types/recruitment.types"
-import { ExternalLink, FileSpreadsheet, KeyRound, ShieldAlert } from "lucide-react"
+
 import { useEffect, useMemo, useState } from "react"
+
+import { ExternalLink, FileSpreadsheet, KeyRound, ShieldAlert } from "lucide-react"
 import { Link } from "react-router-dom"
 
 const DEFAULT_FIELDS: RecruitmentFormField[] = [
@@ -80,8 +82,7 @@ function JobPostingOAuthNotice({
                   Chưa kết nối tài khoản Google Form
                 </p>
                 <p className="text-xs text-amber-700/80 dark:text-amber-400/80 mt-0.5">
-                  Bạn cần liên kết ít nhất 1 tài khoản Google OAuth để xuất bản bài đăng trực
-                  tiếp.
+                  Bạn cần liên kết ít nhất 1 tài khoản Google OAuth để xuất bản bài đăng trực tiếp.
                 </p>
               </div>
             </div>
@@ -133,10 +134,7 @@ function JobPostingSchemaPreview({
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {fields.map((field) => (
-            <span
-              key={field.key}
-              className="rounded-full border border-border px-3 py-1 text-xs"
-            >
+            <span key={field.key} className="rounded-full border border-border px-3 py-1 text-xs">
               {field.label}
               {field.required ? " *" : ""}
             </span>

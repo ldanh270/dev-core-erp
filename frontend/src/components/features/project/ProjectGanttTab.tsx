@@ -2,6 +2,7 @@
 
 import { Clock } from "lucide-react"
 
+import { TaskReviewModal } from "./TaskReviewModal"
 import { GanttLeftTaskList } from "./gantt/GanttLeftTaskList"
 import { GanttSaveQueryDialog } from "./gantt/GanttSaveQueryDialog"
 import { GanttSidebarQueries } from "./gantt/GanttSidebarQueries"
@@ -9,7 +10,6 @@ import { GanttTaskHoverTooltip } from "./gantt/GanttTaskHoverTooltip"
 import { GanttTimelineGrid } from "./gantt/GanttTimelineGrid"
 import { GanttToolbar } from "./gantt/GanttToolbar"
 import { useProjectGanttTabState } from "./gantt/useProjectGanttTabState"
-import { TaskReviewModal } from './TaskReviewModal'
 
 /**
  * Properties for ProjectGanttTab component.
@@ -165,4 +165,3 @@ export function ProjectGanttTab({ projectId, project }: ProjectGanttTabProps) {
     </div>
   )
 }
-

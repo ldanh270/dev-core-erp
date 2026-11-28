@@ -1,4 +1,3 @@
-import { Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -10,6 +9,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { ProjectTaskStatus } from "@/types/project-task-status.types"
+
+import { Settings } from "lucide-react"
+
 import { KanbanColorPicker } from "./ProjectKanbanDialogs"
 
 interface KanbanEditColumnDialogProps {

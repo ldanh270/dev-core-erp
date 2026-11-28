@@ -23,10 +23,7 @@ export interface CandidatePipelineCardProps {
 /**
  * Presenter card displaying candidate pipeline progress and status distribution.
  */
-export function CandidatePipelineCard({
-  appStats,
-  totalApps,
-}: CandidatePipelineCardProps) {
+export function CandidatePipelineCard({ appStats, totalApps }: CandidatePipelineCardProps) {
   return (
     <Card className="rounded-xl border border-border/60 transition-all hover:shadow-md">
       <CardHeader className="flex flex-row items-center justify-between pb-3">

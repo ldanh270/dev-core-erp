@@ -61,7 +61,9 @@ export function ProjectTrackerSelector({
         {isOpen && (
           <div className="absolute left-0 mt-1 w-full bg-popover border border-border rounded-xl p-3 shadow-lg z-50 space-y-2">
             <div className="flex items-center justify-between border-b border-border pb-1.5 mb-1.5">
-              <span className="text-xs font-semibold text-muted-foreground">Chọn loại công việc</span>
+              <span className="text-xs font-semibold text-muted-foreground">
+                Chọn loại công việc
+              </span>
               <div className="flex gap-2">
                 <button
                   type="button"

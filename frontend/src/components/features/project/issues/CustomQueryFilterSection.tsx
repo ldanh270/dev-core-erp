@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/select"
 import { TASK_PRIORITIES, TASK_TRACKERS } from "@/config/entities/project.config"
 import type { ProjectMember } from "@/types/project.types"
+
 import type { ReactNode } from "react"
 
 interface FilterOption {
@@ -173,9 +174,7 @@ export function CustomQueryFilterSection({
         >
           <SelectItem value="all">tất cả</SelectItem>
           <SelectItem value="me">Tôi (Người đăng nhập)</SelectItem>
-          {teamLeader && (
-            <SelectItem value={teamLeader.id}>{teamLeader.fullName} (TL)</SelectItem>
-          )}
+          {teamLeader && <SelectItem value={teamLeader.id}>{teamLeader.fullName} (TL)</SelectItem>}
           {members.map((m) => (
             <SelectItem key={m.employeeId} value={m.employeeId}>
               {m.employee?.fullName || "Chưa rõ"}
@@ -193,9 +192,7 @@ export function CustomQueryFilterSection({
         >
           <SelectItem value="all">tất cả</SelectItem>
           <SelectItem value="me">Tôi (Người tạo)</SelectItem>
-          {teamLeader && (
-            <SelectItem value={teamLeader.id}>{teamLeader.fullName} (TL)</SelectItem>
-          )}
+          {teamLeader && <SelectItem value={teamLeader.id}>{teamLeader.fullName} (TL)</SelectItem>}
           {members.map((m) => (
             <SelectItem key={m.employeeId} value={m.employeeId}>
               {m.employee?.fullName || "Chưa rõ"}

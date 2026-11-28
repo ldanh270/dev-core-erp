@@ -1,7 +1,9 @@
 import { PageContainer, PageHeader } from "@/components/common"
+
 import type React from "react"
-import { DatabaseErdTab } from "./DatabaseErdTab"
+
 import type { DbSchemaData, TableDef } from "../database-reference.types"
+import { DatabaseErdTab } from "./DatabaseErdTab"
 
 interface DatabaseDiagramViewProps {
   headerActions: React.ReactNode

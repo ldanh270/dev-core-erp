@@ -5,6 +5,7 @@ import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn } from "@/lib/utils"
 import type { Employee } from "@/types/employee.types"
 import type { Role } from "@/types/security.types"
+
 import { AlertTriangle, FolderLock, Inbox, RefreshCw, User } from "lucide-react"
 
 /**

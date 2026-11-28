@@ -1,4 +1,5 @@
 import type React from "react"
+
 import { ChevronRight } from "lucide-react"
 
 interface TaskContextMenuSubmenuProps {
@@ -19,9 +20,7 @@ export function TaskContextMenuSubmenu({
   flipUp = false,
   dropdownClassName = "min-w-[130px]",
 }: TaskContextMenuSubmenuProps) {
-  const submenuPosClass = flipLeft
-    ? "right-full top-0 -mr-2 pr-3"
-    : "left-full top-0 -ml-2 pl-3"
+  const submenuPosClass = flipLeft ? "right-full top-0 -mr-2 pr-3" : "left-full top-0 -ml-2 pl-3"
 
   const submenuAlignClass = flipUp ? "bottom-0 top-auto" : "top-0"
 

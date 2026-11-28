@@ -1,4 +1,3 @@
-import { toast } from "sonner"
 import {
   PART_TIME_AVAILABILITY_ASSIGN_VALIDATION,
   PART_TIME_AVAILABILITY_RULES,
@@ -10,6 +9,8 @@ import {
   buildScheduledSlotsFromAvailabilityDay,
   validatePartTimeAssignmentSlot,
 } from "@/utils/attendance/part-time-availability.util"
+
+import { toast } from "sonner"
 
 interface UsePartTimeDayAssignmentProps {
   dayLabel: string

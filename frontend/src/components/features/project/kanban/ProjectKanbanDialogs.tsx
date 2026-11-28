@@ -1,10 +1,12 @@
-import { Check } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { KANBAN_PALETTE_COLORS } from "@/config/entities/project.config"
 import type { ProjectTaskStatus } from "@/types/project-task-status.types"
+
+import { Check } from "lucide-react"
+
 import { KanbanCreateColumnDialog } from "./KanbanCreateColumnDialog"
-import { KanbanEditColumnDialog } from "./KanbanEditColumnDialog"
 import { KanbanDeleteColumnDialog } from "./KanbanDeleteColumnDialog"
+import { KanbanEditColumnDialog } from "./KanbanEditColumnDialog"
 
 export interface KanbanColorPickerProps {
   columnColor: string

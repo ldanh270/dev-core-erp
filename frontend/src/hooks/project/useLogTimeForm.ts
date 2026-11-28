@@ -1,11 +1,10 @@
-import {
-  SPENT_TIME_ACTIVITY,
-  SPENT_TIME_WORK_TIME_TYPE,
-} from "@/config/entities/project.config"
+import { SPENT_TIME_ACTIVITY, SPENT_TIME_WORK_TIME_TYPE } from "@/config/entities/project.config"
 import { taskApi } from "@/lib/api/task.api"
 import type { SpentTime, SpentTimeActivity, SpentTimeWorkTimeType } from "@/types/spent-time.types"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+
 import { startTransition, useEffect, useState } from "react"
+
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 interface UseLogTimeFormParams {
   open: boolean

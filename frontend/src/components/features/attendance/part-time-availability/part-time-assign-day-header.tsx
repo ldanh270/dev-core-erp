@@ -1,8 +1,9 @@
-import { CalendarOff } from "lucide-react"
 import { PART_TIME_AVAILABILITY_ASSIGN_LABELS } from "@/config/entities/part-time-availability.config"
 import { cn } from "@/lib/utils"
 import type { IPartTimeAvailabilityDay } from "@/types/part-time-availability.types"
 import { formatAvailabilityDaySummary } from "@/utils/attendance/part-time-availability.util"
+
+import { CalendarOff } from "lucide-react"
 
 interface PartTimeAssignDayHeaderProps {
   dayLabel: string
@@ -60,9 +61,7 @@ export function PartTimeAssignDayHeader({
             onClick={onWorkDayClick}
             className={cn(
               "rounded-full py-1 text-[10px] font-semibold transition-colors",
-              isScheduled
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground",
+              isScheduled ? "bg-background text-foreground shadow-sm" : "text-muted-foreground",
             )}
           >
             {PART_TIME_AVAILABILITY_ASSIGN_LABELS.WORK_DAY}
@@ -73,9 +72,7 @@ export function PartTimeAssignDayHeader({
             onClick={onOffDayClick}
             className={cn(
               "rounded-full py-1 text-[10px] font-semibold transition-colors",
-              !isScheduled
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground",
+              !isScheduled ? "bg-background text-foreground shadow-sm" : "text-muted-foreground",
             )}
           >
             {PART_TIME_AVAILABILITY_ASSIGN_LABELS.OFF_DAY}

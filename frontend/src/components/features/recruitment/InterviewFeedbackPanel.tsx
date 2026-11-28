@@ -6,9 +6,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { interviewApi, scorecardApi } from "@/lib/api/recruitment.api"
 import type { InterviewRound, Scorecard } from "@/types/recruitment.types"
 import { extractErrorMessage } from "@/utils/error-helper"
+
+import { useEffect, useState } from "react"
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ExternalLink, Star } from "lucide-react"
-import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { toast } from "sonner"
 
@@ -209,9 +211,7 @@ function useInterviewFeedbackForm({
         setRating(myScorecard.overallRating ?? 0)
         setStrengths(myScorecard.strengths ?? "")
         setWeaknesses(myScorecard.weaknesses ?? "")
-        setRecommendation(
-          myScorecard.recommendation as InterviewRecommendation,
-        )
+        setRecommendation(myScorecard.recommendation as InterviewRecommendation)
       } else {
         setExistingScorecard(null)
         setRating(0)
@@ -347,11 +347,7 @@ export function InterviewFeedbackPanel({
             disabled={rating === 0 || isPending}
             className="rounded-full"
           >
-            {isPending
-              ? "Đang lưu..."
-              : existingScorecard
-                ? "Cập nhật đánh giá"
-                : "Gửi đánh giá"}
+            {isPending ? "Đang lưu..." : existingScorecard ? "Cập nhật đánh giá" : "Gửi đánh giá"}
           </Button>
         </SheetFooter>
       </SheetContent>

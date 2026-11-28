@@ -54,8 +54,7 @@ function AdminAttendanceDashboard() {
     handleExport,
   } = useAdminAttendanceDashboard()
 
-  const correctedTodayCount =
-    records?.filter((r) => r.correctedByApplication).length ?? 0
+  const correctedTodayCount = records?.filter((r) => r.correctedByApplication).length ?? 0
 
   return (
     <>

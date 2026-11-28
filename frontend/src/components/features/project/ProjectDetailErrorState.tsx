@@ -1,8 +1,10 @@
-import React from "react"
-import { useNavigate } from "react-router-dom"
-import { AlertCircle } from "lucide-react"
 import { EmptyState, PageContainer } from "@/components/common"
 import { Button } from "@/components/ui/button"
+
+import React from "react"
+
+import { AlertCircle } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 export interface ProjectDetailErrorStateProps {
   title?: string

@@ -4,8 +4,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { COMPONENT_TYPE } from "@/config/entities/payroll.config"
 import { formatCurrency } from "@/lib/utils"
 import type { IPayslip } from "@/types/payroll.types"
-import { Activity, Clock, DollarSign, MessageSquare } from "lucide-react"
+
 import { useState } from "react"
+
+import { Activity, Clock, DollarSign, MessageSquare } from "lucide-react"
+
 import { PayslipAttendanceSummary } from "./payslip-detail/PayslipAttendanceSummary"
 import { PayslipComponentsTab } from "./payslip-detail/PayslipComponentsTab"
 import { PayslipDailyWorkTab } from "./payslip-detail/PayslipDailyWorkTab"

@@ -1,4 +1,18 @@
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Skeleton } from "@/components/ui/skeleton"
+import { taskEstimateAiApi } from "@/lib/api/task-estimate-ai.api"
+import type { TaskEstimateAiSuggestion } from "@/lib/api/task-estimate-ai.api"
+
 import { useCallback, useEffect, useState } from "react"
+
 import {
   AlertTriangle,
   Brain,
@@ -13,19 +27,6 @@ import {
   XCircle,
 } from "lucide-react"
 import { toast } from "sonner"
-
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Skeleton } from "@/components/ui/skeleton"
-import { taskEstimateAiApi } from "@/lib/api/task-estimate-ai.api"
-import type { TaskEstimateAiSuggestion } from "@/lib/api/task-estimate-ai.api"
 
 const getScoreColor = (score: number) => {
   if (score >= 80)
@@ -76,9 +77,7 @@ function TaskAssigneeAiCard({
   return (
     <div
       className={`relative p-5 border rounded-2xl transition-all duration-300 hover:shadow-md bg-card/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
-        isFirst
-          ? "border-primary bg-primary/5 dark:bg-primary/5"
-          : "border-border/60"
+        isFirst ? "border-primary bg-primary/5 dark:bg-primary/5" : "border-border/60"
       }`}
     >
       {isFirst && (

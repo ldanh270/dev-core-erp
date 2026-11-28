@@ -55,9 +55,7 @@ export function useWeeklyScheduleConfigForm({
       onSuccess?.()
     } catch (err) {
       const error = err as { response?: { data?: { error?: { message?: string } } } }
-      toast.error(
-        error.response?.data?.error?.message ?? WEEKLY_SCHEDULE_MSGS.CONFIG_SAVE_ERROR,
-      )
+      toast.error(error.response?.data?.error?.message ?? WEEKLY_SCHEDULE_MSGS.CONFIG_SAVE_ERROR)
     }
   }
 

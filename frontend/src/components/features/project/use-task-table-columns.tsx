@@ -1,12 +1,14 @@
 import type { DataTableColumn } from "@/components/common"
 import { StatusPill } from "@/components/common"
 import { Badge } from "@/components/ui/badge"
-import { getTableColWidthPx, TABLE_COL_WIDTH } from "@/config/table-columns.config"
+import { TABLE_COL_WIDTH, getTableColWidthPx } from "@/config/table-columns.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn } from "@/lib/utils"
 import type { Task } from "@/types/task.types"
-import { ExternalLink, MoreHorizontal } from "lucide-react"
+
 import { useMemo } from "react"
+
+import { ExternalLink, MoreHorizontal } from "lucide-react"
 import { Link } from "react-router-dom"
 
 export interface UseTaskTableColumnsOptions {

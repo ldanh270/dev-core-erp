@@ -157,7 +157,10 @@ export function GanttSaveQueryDialog({
                   }}
                   className="rounded border-border size-4"
                 />
-                <Label htmlFor="query-default-cols" className="text-xs font-semibold cursor-pointer">
+                <Label
+                  htmlFor="query-default-cols"
+                  className="text-xs font-semibold cursor-pointer"
+                >
                   Cột mặc định
                 </Label>
               </div>
@@ -175,9 +178,7 @@ export function GanttSaveQueryDialog({
                       if (e.target.checked) {
                         setNewQuerySelectedCols((prev) => [...prev, "estimatedTime"])
                       } else {
-                        setNewQuerySelectedCols((prev) =>
-                          prev.filter((k) => k !== "estimatedTime"),
-                        )
+                        setNewQuerySelectedCols((prev) => prev.filter((k) => k !== "estimatedTime"))
                       }
                     }}
                     className="rounded border-border size-3.5"
@@ -187,9 +188,7 @@ export function GanttSaveQueryDialog({
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={
-                      newQueryDefaultCols ? true : newQuerySelectedCols.includes("assignee")
-                    }
+                    checked={newQueryDefaultCols ? true : newQuerySelectedCols.includes("assignee")}
                     disabled={newQueryDefaultCols}
                     onChange={(e) => {
                       if (e.target.checked) {
@@ -205,9 +204,7 @@ export function GanttSaveQueryDialog({
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={
-                      newQueryDefaultCols ? true : newQuerySelectedCols.includes("progress")
-                    }
+                    checked={newQueryDefaultCols ? true : newQuerySelectedCols.includes("progress")}
                     disabled={newQueryDefaultCols}
                     onChange={(e) => {
                       if (e.target.checked) {

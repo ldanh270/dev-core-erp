@@ -1,6 +1,6 @@
-import { ApplicationDetailPanel } from "@/components/features/recruitment/application-detail-panel"
 import { DeleteColumnDialog } from "@/components/features/recruitment/DeleteColumnDialog"
 import { StageDialog } from "@/components/features/recruitment/StageDialog"
+import { ApplicationDetailPanel } from "@/components/features/recruitment/application-detail-panel"
 import type { RecruitmentPipelineStage } from "@/types/recruitment.types"
 
 interface KanbanDialogsProps {

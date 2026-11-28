@@ -1,9 +1,8 @@
-﻿import type { Project } from "@/types/project.types"
+﻿import { useProjectGantt } from "@/hooks/project/use-project-gantt"
+import type { HoveredTaskState } from "@/types/gantt.types"
+import type { Project } from "@/types/project.types"
 
 import { useMemo, useState } from "react"
-
-import { useProjectGantt } from '@/hooks/project/use-project-gantt'
-import type { HoveredTaskState } from "@/types/gantt.types"
 
 export interface UseProjectGanttTabStateProps {
   projectId: string
@@ -61,8 +60,7 @@ export function useProjectGanttTabState({ projectId, project }: UseProjectGanttT
     gantt.activeFilterKeys.forEach((k) => {
       if (!Object.prototype.hasOwnProperty.call(gantt.filterStates, k)) return
       const state = Reflect.get(gantt.filterStates, k) as
-        | { enabled: boolean; operator: string; value: string }
-        | undefined
+        { enabled: boolean; operator: string; value: string } | undefined
       if (state) {
         Reflect.set(filtersCopy, k, { ...state })
       }
@@ -83,8 +81,7 @@ export function useProjectGanttTabState({ projectId, project }: UseProjectGanttT
     newQueryFilterKeys.forEach((k) => {
       if (!Object.prototype.hasOwnProperty.call(newQueryFilters, k)) return
       const filter = Reflect.get(newQueryFilters, k) as
-        | { enabled: boolean; operator: string; value: string }
-        | undefined
+        { enabled: boolean; operator: string; value: string } | undefined
       if (filter?.enabled) {
         finalKeys.push(k)
         Reflect.set(finalFilters, k, {
@@ -145,4 +142,3 @@ export function useProjectGanttTabState({ projectId, project }: UseProjectGanttT
     handleSubmitSaveQuery,
   }
 }
-

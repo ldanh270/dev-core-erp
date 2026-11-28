@@ -1,11 +1,9 @@
-import {
-  REQUISITION_STATUS,
-  REQUISITION_STATUS_LABELS,
-} from "@/config/entities/recruitment.config"
+import { REQUISITION_STATUS, REQUISITION_STATUS_LABELS } from "@/config/entities/recruitment.config"
 import { usePersonalEmployeeId } from "@/hooks/attendance/use-personal-employee-id"
 import { useRequisitions } from "@/hooks/recruitment/use-recruitment-queries"
 import { usePermission } from "@/hooks/use-permission"
 import type { JobRequisition } from "@/types/recruitment.types"
+
 import { useCallback, useMemo, useState } from "react"
 
 export const TAB_DEFINITIONS = [

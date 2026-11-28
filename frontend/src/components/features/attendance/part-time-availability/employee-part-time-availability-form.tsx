@@ -18,8 +18,10 @@ import {
   collectEmployeeAvailabilityIssues,
   mapAvailabilityToForm,
 } from "@/utils/attendance/part-time-availability.util"
-import { AlertCircle, ChevronLeft, ChevronRight, Info, Save, Send } from "lucide-react"
+
 import { useMemo, useState } from "react"
+
+import { AlertCircle, ChevronLeft, ChevronRight, Info, Save, Send } from "lucide-react"
 import { toast } from "sonner"
 
 function EmployeeAvailabilityStatusAlerts({
@@ -142,16 +144,8 @@ export function EmployeePartTimeAvailabilityForm({
   onWeekStartChange,
   onShiftWeek,
 }: EmployeePartTimeAvailabilityFormProps) {
-  const {
-    days,
-    note,
-    setNote,
-    submitLabel,
-    SubmitIcon,
-    handleDayChange,
-    handleSubmit,
-    isPending,
-  } = useEmployeePartTimeAvailabilityForm({ availability, weekStartKey })
+  const { days, note, setNote, submitLabel, SubmitIcon, handleDayChange, handleSubmit, isPending } =
+    useEmployeePartTimeAvailabilityForm({ availability, weekStartKey })
 
   return (
     <div className="space-y-6">

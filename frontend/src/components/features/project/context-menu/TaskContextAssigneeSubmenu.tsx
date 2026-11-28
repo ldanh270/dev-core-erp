@@ -1,7 +1,9 @@
+import type { Task } from "@/types/task.types"
+
 import { Eye, User } from "lucide-react"
 import { toast } from "sonner"
+
 import { TaskContextMenuSubmenu } from "./TaskContextMenuSubmenu"
-import type { Task } from "@/types/task.types"
 
 interface ProjectMember {
   id: string

@@ -40,11 +40,7 @@ export function JobPostingOverviewTab({
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-3">
-        <MetricCard
-          icon={<Users className="size-5" />}
-          label="Ứng viên"
-          value={applicationTotal}
-        />
+        <MetricCard icon={<Users className="size-5" />} label="Ứng viên" value={applicationTotal} />
         <MetricCard
           icon={<FileSpreadsheet className="size-5" />}
           label="Giai đoạn pipeline"
@@ -90,15 +86,7 @@ export function JobPostingOverviewTab({
 /**
  * Presentational metric tile displaying an icon badge alongside key statistics.
  */
-function MetricCard({
-  icon,
-  label,
-  value,
-}: {
-  icon: ReactNode
-  label: string
-  value: ReactNode
-}) {
+function MetricCard({ icon, label, value }: { icon: ReactNode; label: string; value: ReactNode }) {
   return (
     <PageCard className="flex items-center gap-3">
       <div className="rounded-full bg-primary/10 p-3 text-primary">{icon}</div>

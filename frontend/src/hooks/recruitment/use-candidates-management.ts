@@ -3,6 +3,7 @@ import { useDebounce } from "@/hooks/use-debounce"
 import { usePermission } from "@/hooks/use-permission"
 import { routerNavigate } from "@/lib/router-navigator"
 import type { Candidate } from "@/types/recruitment.types"
+
 import { useCallback, useState } from "react"
 
 /**

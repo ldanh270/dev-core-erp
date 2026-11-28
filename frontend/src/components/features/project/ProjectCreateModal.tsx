@@ -172,7 +172,10 @@ function CreateProjectFields({
             Trưởng nhóm (Team Leader)
           </Label>
           <Select value={newProjectLeader} onValueChange={setNewProjectLeader}>
-            <SelectTrigger id="projLeader" className="w-full border-border rounded-full bg-background">
+            <SelectTrigger
+              id="projLeader"
+              className="w-full border-border rounded-full bg-background"
+            >
               <SelectValue placeholder="Chọn Trưởng nhóm" />
             </SelectTrigger>
             <SelectContent position="popper" className="rounded-xl border-border bg-popover">
@@ -193,7 +196,10 @@ function CreateProjectFields({
             Quyền tạo công việc
           </Label>
           <Select value={newProjectPolicy} onValueChange={setNewProjectPolicy}>
-            <SelectTrigger id="projPolicy" className="w-full border-border rounded-full bg-background">
+            <SelectTrigger
+              id="projPolicy"
+              className="w-full border-border rounded-full bg-background"
+            >
               <SelectValue placeholder="Chọn quyền" />
             </SelectTrigger>
             <SelectContent position="popper" className="rounded-xl border-border bg-popover">

@@ -1,10 +1,17 @@
-import { BoardCard, BoardColumn, BoardColumnHeader, BoardView, StatusPill } from "@/components/common"
+import {
+  BoardCard,
+  BoardColumn,
+  BoardColumnHeader,
+  BoardView,
+  StatusPill,
+} from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { INTERVIEW_FORMAT_LABELS } from "@/config/entities/recruitment.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
 import { cn } from "@/lib/utils"
 import type { InterviewRound } from "@/types/recruitment.types"
+
 import { format, isSameDay, isToday } from "date-fns"
 import { ChevronLeft, ChevronRight, Clock, MapPin, Search, Video } from "lucide-react"
 
