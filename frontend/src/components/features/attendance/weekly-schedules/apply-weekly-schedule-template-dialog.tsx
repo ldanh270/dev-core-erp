@@ -15,20 +15,97 @@ import { WORK_SCHEDULE_TYPE } from "@/config/entities/employee.config"
 import { useApplyWeeklyScheduleTemplate } from "@/hooks/attendance/use-weekly-schedule-templates"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import type { IWeeklyScheduleTemplate } from "@/types/attendance.types"
-
-import { useMemo, useState } from "react"
-
+import type { Employee } from "@/types/employee.types"
 import { CalendarCheck, Search } from "lucide-react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
+
+function todayInputValue(): string {
+  return new Date().toISOString().slice(0, 10)
+}
+
+function WeeklyScheduleEmployeePicker({
+  search,
+  onSearchChange,
+  employees,
+  isLoading,
+  selectedIds,
+  allVisibleSelected,
+  onToggleVisible,
+  onToggleOne,
+}: {
+  search: string
+  onSearchChange: (value: string) => void
+  employees: Employee[]
+  isLoading: boolean
+  selectedIds: string[]
+  allVisibleSelected: boolean
+  onToggleVisible: () => void
+  onToggleOne: (id: string) => void
+}) {
+  return (
+    <div className="grid gap-3">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={search}
+          onChange={(event) => {
+            onSearchChange(event.target.value)
+          }}
+          placeholder="Tìm nhân viên toàn thời gian"
+          className="rounded-full pl-9"
+        />
+      </div>
+
+      <div className="flex items-center justify-between text-sm">
+        <button
+          type="button"
+          onClick={onToggleVisible}
+          className="rounded-full text-primary hover:underline"
+        >
+          {allVisibleSelected ? "Bỏ chọn danh sách" : "Chọn danh sách"}
+        </button>
+        <span className="text-muted-foreground">Đã chọn {selectedIds.length}</span>
+      </div>
+
+      <div className="h-64 overflow-auto rounded-xl border border-border">
+        <div className="divide-y divide-border">
+          {employees.map((employee) => (
+            <label
+              key={employee.id}
+              className="flex cursor-pointer items-center gap-3 px-4 py-3 hover:bg-muted/40"
+            >
+              <input
+                type="checkbox"
+                checked={selectedIds.includes(employee.id)}
+                onChange={() => {
+                  onToggleOne(employee.id)
+                }}
+                className="h-4 w-4 rounded border-border accent-primary"
+              />
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-medium">{employee.fullName}</span>
+                <span className="block truncate text-xs text-muted-foreground">
+                  {employee.position ?? "Chưa có vị trí"} · {employee.email}
+                </span>
+              </span>
+            </label>
+          ))}
+          {!isLoading && employees.length === 0 ? (
+            <div className="px-4 py-10 text-center text-sm text-muted-foreground">
+              Không có nhân viên toàn thời gian phù hợp.
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 interface ApplyWeeklyScheduleTemplateDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   template: IWeeklyScheduleTemplate | null
-}
-
-function todayInputValue(): string {
-  return new Date().toISOString().slice(0, 10)
 }
 
 export function ApplyWeeklyScheduleTemplateDialog({
@@ -42,11 +119,13 @@ export function ApplyWeeklyScheduleTemplateDialog({
   const [validTo, setValidTo] = useState("")
   const [generateShifts, setGenerateShifts] = useState(true)
   const applyMutation = useApplyWeeklyScheduleTemplate()
+
   const { data, isLoading } = useEmployees({
     limit: 100,
     status: "active",
     workSchedule: WORK_SCHEDULE_TYPE.FULL_TIME,
   })
+
   const employees = useMemo(() => {
     const keyword = search.trim().toLowerCase()
     const rows = data?.data ?? []
@@ -58,7 +137,7 @@ export function ApplyWeeklyScheduleTemplateDialog({
         .includes(keyword),
     )
   }, [data?.data, search])
-  // Bulk actions target the filtered list only, while prior selections outside the filter stay selected.
+
   const visibleIds = employees.map((employee) => employee.id)
   const allVisibleSelected =
     visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id))
@@ -79,7 +158,6 @@ export function ApplyWeeklyScheduleTemplateDialog({
 
   const handleSubmit = () => {
     if (!template) return
-    // generateShifts controls whether the backend materializes EmployeeShift rows immediately.
     applyMutation.mutate(
       {
         templateId: template.id,
@@ -148,61 +226,16 @@ export function ApplyWeeklyScheduleTemplateDialog({
             <Switch checked={generateShifts} onCheckedChange={setGenerateShifts} />
           </div>
 
-          <div className="grid gap-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={search}
-                onChange={(event) => {
-                  setSearch(event.target.value)
-                }}
-                placeholder="Tìm nhân viên toàn thời gian"
-                className="rounded-full pl-9"
-              />
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <button
-                type="button"
-                onClick={toggleVisible}
-                className="rounded-full text-primary hover:underline"
-              >
-                {allVisibleSelected ? "Bỏ chọn danh sách" : "Chọn danh sách"}
-              </button>
-              <span className="text-muted-foreground">Đã chọn {selectedIds.length}</span>
-            </div>
-            <div className="h-64 overflow-auto rounded-xl border border-border">
-              <div className="divide-y divide-border">
-                {employees.map((employee) => (
-                  <label
-                    key={employee.id}
-                    className="flex cursor-pointer items-center gap-3 px-4 py-3 hover:bg-muted/40"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.includes(employee.id)}
-                      onChange={() => {
-                        toggleOne(employee.id)
-                      }}
-                      className="h-4 w-4 rounded border-border accent-primary"
-                    />
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium">
-                        {employee.fullName}
-                      </span>
-                      <span className="block truncate text-xs text-muted-foreground">
-                        {employee.position ?? "Chưa có vị trí"} · {employee.email}
-                      </span>
-                    </span>
-                  </label>
-                ))}
-                {!isLoading && employees.length === 0 ? (
-                  <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-                    Không có nhân viên toàn thời gian phù hợp.
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </div>
+          <WeeklyScheduleEmployeePicker
+            search={search}
+            onSearchChange={setSearch}
+            employees={employees}
+            isLoading={isLoading}
+            selectedIds={selectedIds}
+            allVisibleSelected={allVisibleSelected}
+            onToggleVisible={toggleVisible}
+            onToggleOne={toggleOne}
+          />
         </div>
 
         <DialogFooter>
@@ -218,9 +251,7 @@ export function ApplyWeeklyScheduleTemplateDialog({
           <Button
             className="rounded-full"
             onClick={handleSubmit}
-            disabled={
-              !template || !validFrom || selectedIds.length === 0 || applyMutation.isPending
-            }
+            disabled={!template || !validFrom || selectedIds.length === 0 || applyMutation.isPending}
           >
             {applyMutation.isPending ? "Đang áp dụng..." : "Áp dụng"}
           </Button>

@@ -1,4 +1,4 @@
-import { PageCard, PageHeader, SectionHeader, StatusPill } from "@/components/common"
+import { PageCard, PageHeader, SectionHeader } from "@/components/common"
 import { WeekPickerActions } from "@/components/features/attendance/calendar/week-picker-actions"
 import { AvailabilityWeekGrid } from "@/components/features/attendance/part-time-availability/availability-week-grid"
 import { Button } from "@/components/ui/button"
@@ -8,11 +8,8 @@ import {
   PART_TIME_AVAILABILITY_ACTION_LABELS,
   PART_TIME_AVAILABILITY_FORM_VALIDATION,
   PART_TIME_AVAILABILITY_STATUS,
-  getPartTimeAvailabilityStatusLabel,
-  getPartTimeAvailabilityStatusVariant,
 } from "@/config/entities/part-time-availability.config"
 import { useUpsertMyPartTimeAvailability } from "@/hooks/attendance/use-part-time-availability"
-import { cn } from "@/lib/utils"
 import type {
   IPartTimeAvailabilityDayForm,
   IPartTimeWeeklyAvailability,
@@ -21,36 +18,49 @@ import {
   collectEmployeeAvailabilityIssues,
   mapAvailabilityToForm,
 } from "@/utils/attendance/part-time-availability.util"
-
-import { useMemo, useState } from "react"
-
 import { AlertCircle, ChevronLeft, ChevronRight, Info, Save, Send } from "lucide-react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
-export interface EmployeePartTimeAvailabilityFormProps {
+function EmployeeAvailabilityStatusAlerts({
+  availability,
+}: {
   availability: IPartTimeWeeklyAvailability | null | undefined
-  weekStart: Date
-  weekStartKey: string
-  weekRangeLabel: string
-  earliestWeekStart: Date
-  earliestWeekStartKey: string
-  canGoToPreviousWeek: boolean
-  onWeekStartChange: (nextWeekStart: Date) => void
-  onShiftWeek: (offset: number) => void
+}) {
+  return (
+    <>
+      {availability?.status === PART_TIME_AVAILABILITY_STATUS.SUBMITTED ? (
+        <div className="flex items-start gap-3 rounded-xl border border-border/70 bg-muted/30 px-4 py-3">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <div>
+            <p className="text-sm font-medium text-foreground">Lịch rảnh đã gửi</p>
+            <p className="text-xs text-muted-foreground">
+              Bạn có thể chỉnh sửa và cập nhật nhiều lần trước khi quản lý xếp ca.
+            </p>
+          </div>
+        </div>
+      ) : null}
+
+      {availability?.rejectReason ? (
+        <div className="flex items-start gap-3 rounded-xl border border-destructive/25 bg-destructive/5 px-4 py-3">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+          <div>
+            <p className="text-sm font-medium text-destructive">Lịch rảnh bị từ chối</p>
+            <p className="text-xs text-destructive/90">{availability.rejectReason}</p>
+          </div>
+        </div>
+      ) : null}
+    </>
+  )
 }
 
-/** Employee self-service form — week grid + note + submit/update. */
-export function EmployeePartTimeAvailabilityForm({
+function useEmployeePartTimeAvailabilityForm({
   availability,
-  weekStart,
   weekStartKey,
-  weekRangeLabel,
-  earliestWeekStart,
-  earliestWeekStartKey,
-  canGoToPreviousWeek,
-  onWeekStartChange,
-  onShiftWeek,
-}: EmployeePartTimeAvailabilityFormProps) {
+}: {
+  availability: IPartTimeWeeklyAvailability | null | undefined
+  weekStartKey: string
+}) {
   const upsertMutation = useUpsertMyPartTimeAvailability(weekStartKey)
   const [days, setDays] = useState<IPartTimeAvailabilityDayForm[]>(() =>
     mapAvailabilityToForm(availability),
@@ -95,6 +105,54 @@ export function EmployeePartTimeAvailabilityForm({
     }
   }
 
+  return {
+    days,
+    note,
+    setNote,
+    isUpdate,
+    submitLabel,
+    SubmitIcon,
+    handleDayChange,
+    handleSubmit,
+    isPending: upsertMutation.isPending,
+  }
+}
+
+export interface EmployeePartTimeAvailabilityFormProps {
+  availability: IPartTimeWeeklyAvailability | null | undefined
+  weekStart: Date
+  weekStartKey: string
+  weekRangeLabel: string
+  earliestWeekStart: Date
+  earliestWeekStartKey: string
+  canGoToPreviousWeek: boolean
+  onWeekStartChange: (nextWeekStart: Date) => void
+  onShiftWeek: (offset: number) => void
+}
+
+/** Employee self-service form — week grid + note + submit/update. */
+export function EmployeePartTimeAvailabilityForm({
+  availability,
+  weekStart,
+  weekStartKey,
+  weekRangeLabel,
+  earliestWeekStart,
+  earliestWeekStartKey,
+  canGoToPreviousWeek,
+  onWeekStartChange,
+  onShiftWeek,
+}: EmployeePartTimeAvailabilityFormProps) {
+  const {
+    days,
+    note,
+    setNote,
+    submitLabel,
+    SubmitIcon,
+    handleDayChange,
+    handleSubmit,
+    isPending,
+  } = useEmployeePartTimeAvailabilityForm({ availability, weekStartKey })
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -105,7 +163,7 @@ export function EmployeePartTimeAvailabilityForm({
             type="button"
             size="lg"
             className="rounded-full px-6"
-            disabled={upsertMutation.isPending}
+            disabled={isPending}
             onClick={() => {
               void handleSubmit()
             }}
@@ -116,27 +174,7 @@ export function EmployeePartTimeAvailabilityForm({
         }
       />
 
-      {availability?.status === PART_TIME_AVAILABILITY_STATUS.SUBMITTED ? (
-        <div className="flex items-start gap-3 rounded-xl border border-border/70 bg-muted/30 px-4 py-3">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-          <div>
-            <p className="text-sm font-medium text-foreground">Lịch rảnh đã gửi</p>
-            <p className="text-xs text-muted-foreground">
-              Bạn có thể chỉnh sửa và cập nhật nhiều lần trước khi quản lý xếp ca.
-            </p>
-          </div>
-        </div>
-      ) : null}
-
-      {availability?.rejectReason ? (
-        <div className="flex items-start gap-3 rounded-xl border border-destructive/25 bg-destructive/5 px-4 py-3">
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
-          <div>
-            <p className="text-sm font-medium text-destructive">Lịch rảnh bị từ chối</p>
-            <p className="text-xs text-destructive/90">{availability.rejectReason}</p>
-          </div>
-        </div>
-      ) : null}
+      <EmployeeAvailabilityStatusAlerts availability={availability} />
 
       <PageCard padding="lg" className="space-y-5">
         <SectionHeader
@@ -180,38 +218,30 @@ export function EmployeePartTimeAvailabilityForm({
           }
         />
 
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/30 px-4 py-2.5">
-          <p className="text-xs text-muted-foreground">
-            Chọn <span className="font-medium text-foreground">Rảnh</span> và khai báo khung giờ,
-            hoặc chọn <span className="font-medium text-foreground">Bận</span> nếu không làm.
-          </p>
-          {availability ? (
-            <StatusPill
-              label={getPartTimeAvailabilityStatusLabel(availability.status)}
-              variant={getPartTimeAvailabilityStatusVariant(availability.status)}
-            />
-          ) : (
-            <span className="text-xs font-medium text-muted-foreground">Chưa gửi</span>
-          )}
-        </div>
-
-        <AvailabilityWeekGrid weekStart={weekStart} days={days} onDayChange={handleDayChange} />
-      </PageCard>
-
-      <PageCard padding="lg" className="space-y-3">
-        <SectionHeader title="Ghi chú cho quản lý" />
-        <Textarea
-          id="availability-note"
-          value={note}
-          placeholder="Ví dụ: Thứ 5 chỉ rảnh buổi chiều nếu ca ngắn."
-          className={cn(
-            "min-h-24 rounded-xl border-border/70 bg-secondary/20 px-4 py-3 text-sm",
-            "focus-visible:ring-primary",
-          )}
-          onChange={(event) => {
-            setNote(event.target.value)
-          }}
+        <AvailabilityWeekGrid
+          weekStart={weekStart}
+          days={days}
+          disabled={isPending}
+          onDayChange={handleDayChange}
         />
+
+        <div className="space-y-2 pt-2 border-t border-border/50">
+          <label
+            htmlFor="employee-part-time-note"
+            className="text-xs font-semibold text-foreground uppercase tracking-wider block"
+          >
+            Ghi chú gửi quản lý
+          </label>
+          <Textarea
+            id="employee-part-time-note"
+            value={note}
+            onChange={(e) => {
+              setNote(e.target.value)
+            }}
+            placeholder="Ví dụ: Thứ 4 có thể đến muộn 15 phút do bận lịch thi..."
+            className="min-h-24 resize-none rounded-xl bg-background border-border"
+          />
+        </div>
       </PageCard>
     </div>
   )

@@ -1,5 +1,5 @@
 /** Displays company schedules for a selected week and employee search scope using DataTablePage. */
-import { type DataTableColumn, DataTablePage, DatePicker } from "@/components/common"
+import { DatePicker, DataTablePage, type DataTableColumn } from "@/components/common"
 import { Button } from "@/components/ui/button"
 import { CALENDAR_WEEK_DAY_COUNT } from "@/config/rules/calendar.config"
 import { getTableColWidthPx } from "@/config/table-columns.config"
@@ -7,23 +7,75 @@ import { TYPOGRAPHY } from "@/config/typography.config"
 import { useEmployees } from "@/hooks/employees/queries/useEmployeeQuery"
 import { holidaysApi, schedulesApi } from "@/lib/api/attendance.api"
 import { minutesToTime } from "@/lib/utils"
+import type { IHoliday } from "@/types/attendance.types"
 import type { Employee } from "@/types/employee.types"
 import { addDays } from "@/utils/attendance/add-days"
 import { formatDateParam } from "@/utils/attendance/format-date-param"
-import { getWeekDates } from "@/utils/attendance/get-week-dates"
+import { getWeekDates, type WeekDay } from "@/utils/attendance/get-week-dates"
 import { getWeekRangeLabel } from "@/utils/attendance/get-week-range-label"
 import { getWeekStart } from "@/utils/attendance/get-week-start"
 import {
   groupHolidaysByDate,
   pickHolidayForEmployee,
 } from "@/utils/attendance/pick-holiday-for-employee.util"
-
-import { useCallback, useMemo, useState } from "react"
-
 import { useQueries, useQuery } from "@tanstack/react-query"
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react"
+import { useCallback, useMemo, useState } from "react"
 
-export function CompanyWorkSchedulesView() {
+interface CompanyWorkSchedulesToolbarProps {
+  weekRangeLabel: string
+  selectedDate: Date
+  onSelectDate: (date: Date) => void
+}
+
+function CompanyWorkSchedulesToolbar({
+  weekRangeLabel,
+  selectedDate,
+  onSelectDate,
+}: CompanyWorkSchedulesToolbarProps) {
+  return (
+    <div className="flex items-center gap-2 shrink-0">
+      <div className="flex h-10 items-center gap-2 rounded-full border border-border bg-muted/30 px-3.5 text-sm font-semibold text-foreground shadow-xs">
+        <CalendarDays className="size-4 text-primary shrink-0" />
+        <span>{weekRangeLabel}</span>
+      </div>
+      <div className="w-44">
+        <DatePicker
+          value={formatDateParam(selectedDate)}
+          size="default"
+          clearable={false}
+          onChange={(val) => {
+            if (val) onSelectDate(new Date(val))
+          }}
+        />
+      </div>
+      <Button
+        aria-label="Tuần trước"
+        variant="outline"
+        size="icon"
+        className="rounded-full size-10 shrink-0"
+        onClick={() => {
+          onSelectDate(addDays(selectedDate, -1 * CALENDAR_WEEK_DAY_COUNT))
+        }}
+      >
+        <ChevronLeft className="size-4" />
+      </Button>
+      <Button
+        aria-label="Tuần sau"
+        variant="outline"
+        size="icon"
+        className="rounded-full size-10 shrink-0"
+        onClick={() => {
+          onSelectDate(addDays(selectedDate, 1 * CALENDAR_WEEK_DAY_COUNT))
+        }}
+      >
+        <ChevronRight className="size-4" />
+      </Button>
+    </div>
+  )
+}
+
+function useCompanyWorkSchedules() {
   const [selectedDate, setSelectedDate] = useState(() => new Date())
   const [employeeSearch, setEmployeeSearch] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
@@ -76,11 +128,35 @@ export function CompanyWorkSchedulesView() {
     return map
   }, [employees, scheduleQueries])
 
-  const handleDateChange = (dateString: string) => {
-    setSelectedDate(new Date(dateString))
+  return {
+    selectedDate,
+    setSelectedDate,
+    employeeSearch,
+    handleSearch,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    weekRangeLabel,
+    weekDates,
+    employees,
+    employeeData,
+    schedulesMap,
+    holidaysByDate,
+    isOverallLoading,
   }
+}
 
-  const columns: DataTableColumn<Employee>[] = useMemo(() => {
+function useCompanyWorkSchedulesColumns({
+  weekDates,
+  schedulesMap,
+  holidaysByDate,
+}: {
+  weekDates: WeekDay[]
+  schedulesMap: Map<string, unknown[]>
+  holidaysByDate: Map<string, IHoliday[]>
+}): DataTableColumn<Employee>[] {
+  return useMemo(() => {
     const employeeColumn: DataTableColumn<Employee> = {
       id: "employee",
       header: "Nhân viên",
@@ -151,6 +227,32 @@ export function CompanyWorkSchedulesView() {
 
     return [employeeColumn, ...dayColumns]
   }, [weekDates, schedulesMap, holidaysByDate])
+}
+
+export function CompanyWorkSchedulesView() {
+  const {
+    selectedDate,
+    setSelectedDate,
+    employeeSearch,
+    handleSearch,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    weekRangeLabel,
+    weekDates,
+    employees,
+    employeeData,
+    schedulesMap,
+    holidaysByDate,
+    isOverallLoading,
+  } = useCompanyWorkSchedules()
+
+  const columns = useCompanyWorkSchedulesColumns({
+    weekDates,
+    schedulesMap,
+    holidaysByDate,
+  })
 
   return (
     <DataTablePage<Employee>
@@ -166,44 +268,11 @@ export function CompanyWorkSchedulesView() {
         },
       }}
       toolbarActions={
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="flex h-10 items-center gap-2 rounded-full border border-border bg-muted/30 px-3.5 text-sm font-semibold text-foreground shadow-xs">
-            <CalendarDays className="size-4 text-primary shrink-0" />
-            <span>{weekRangeLabel}</span>
-          </div>
-          <div className="w-44">
-            <DatePicker
-              value={formatDateParam(selectedDate)}
-              size="default"
-              clearable={false}
-              onChange={(val) => {
-                if (val) handleDateChange(val)
-              }}
-            />
-          </div>
-          <Button
-            aria-label="Tuần trước"
-            variant="outline"
-            size="icon"
-            className="rounded-full size-10 shrink-0"
-            onClick={() => {
-              setSelectedDate((currentDate) => addDays(currentDate, -1 * CALENDAR_WEEK_DAY_COUNT))
-            }}
-          >
-            <ChevronLeft className="size-4" />
-          </Button>
-          <Button
-            aria-label="Tuần sau"
-            variant="outline"
-            size="icon"
-            className="rounded-full size-10 shrink-0"
-            onClick={() => {
-              setSelectedDate((currentDate) => addDays(currentDate, 1 * CALENDAR_WEEK_DAY_COUNT))
-            }}
-          >
-            <ChevronRight className="size-4" />
-          </Button>
-        </div>
+        <CompanyWorkSchedulesToolbar
+          weekRangeLabel={weekRangeLabel}
+          selectedDate={selectedDate}
+          onSelectDate={setSelectedDate}
+        />
       }
       columns={columns}
       data={employees}
