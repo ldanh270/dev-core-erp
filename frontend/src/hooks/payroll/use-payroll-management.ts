@@ -6,7 +6,7 @@ import { exportPayrollsToCSV } from "@/utils/export.util"
 
 import { useCallback, useMemo, useState } from "react"
 
-import { useSearchParams } from "react-router"
+import { useSearchParams } from "react-router-dom"
 
 /**
  * Custom hook to encapsulate PayrollManagement state, filtering, pagination, and approval logic.

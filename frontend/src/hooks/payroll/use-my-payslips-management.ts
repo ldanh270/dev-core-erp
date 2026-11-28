@@ -7,7 +7,7 @@ import type { IPayslip } from "@/types/payroll.types"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 
-import { useSearchParams } from "react-router"
+import { useSearchParams } from "react-router-dom"
 
 /**
  * Custom hook orchestrating employee personal payslip list, filters, and detail preview modal.
