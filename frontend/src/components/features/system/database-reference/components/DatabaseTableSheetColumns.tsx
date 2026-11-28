@@ -17,8 +17,8 @@ import type {
   OutgoingRelation,
 } from "../database-reference.types"
 import { useTableSheetColumns } from "../hooks/use-table-sheet-columns"
-import { ColumnConstraintsCell } from "./database-column-constraints-cell"
-import { ColumnIncomingCell } from "./database-column-incoming-cell"
+import { ColumnConstraintsCell } from "./DatabaseColumnConstraintsCell"
+import { ColumnIncomingCell } from "./DatabaseColumnIncomingCell"
 
 interface TableSheetColumnsProps {
   columns: ColumnDef[]

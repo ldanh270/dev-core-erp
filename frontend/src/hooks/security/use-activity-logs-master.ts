@@ -19,7 +19,7 @@ export function useActivityLogsMaster() {
   const fromDateParam = searchParams.get("fromDate") || undefined
   const toDateParam = searchParams.get("toDate") || undefined
   const pageRaw = searchParams.get("page")
-  const pageParam = pageRaw ? parseInt(pageRaw, 10) : 1
+  const pageParam = pageRaw ? parseInt(pageRaw, 10) : SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE
 
   const [query, setQuery] = useState<ActivityLogQuery>({
     page: pageParam,
@@ -91,20 +91,20 @@ export function useActivityLogsMaster() {
   const handleSearch = useCallback((valueOrEvent: React.ChangeEvent<HTMLInputElement> | string) => {
     const value = typeof valueOrEvent === "string" ? valueOrEvent : valueOrEvent.target.value
     setSearchText(value)
-    setQuery((prev) => ({ ...prev, page: 1 }))
+    setQuery((prev) => ({ ...prev, page: SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE }))
   }, [])
 
   const handleFilterChange = useCallback(
     (key: keyof ActivityLogQuery, value: ActivityLogQuery[keyof ActivityLogQuery]) => {
-      setQuery((prev) => ({ ...prev, [key]: value, page: 1 }))
+      setQuery((prev) => ({ ...prev, [key]: value, page: SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE }))
     },
     [],
   )
 
-  const currentPage = query.page || 1
+  const currentPage = query.page || SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE
   const pageSize = query.limit || SYSTEM_CONFIG.PAGINATION.MEDIUM_LIMIT
-  const totalPages = data?.meta.totalPages ?? 0
-  const totalItems = data?.meta.total ?? 0
+  const totalPages = data?.meta.totalPages ?? SYSTEM_CONFIG.PAGINATION.EMPTY_COUNT
+  const totalItems = data?.meta.total ?? SYSTEM_CONFIG.PAGINATION.EMPTY_COUNT
 
   return {
     query,

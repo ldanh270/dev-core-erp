@@ -3,8 +3,8 @@ import type { PointerEvent, RefObject } from "react"
 import type { ErdLayout, ErdPoint } from "../database-erd-geometry"
 import type { ModuleDef, TableDef } from "../database-reference.types"
 import { useDatabaseErdCanvas } from "../hooks/use-database-erd-canvas"
-import { DatabaseErdEdgesSvg } from "./database-erd-edges-svg"
-import { DatabaseErdNode } from "./database-erd-node"
+import { DatabaseErdEdgesSvg } from "./DatabaseErdEdgesSvg"
+import { DatabaseErdNode } from "./DatabaseErdNode"
 
 const ERD_GRID_SIZE = "22px 22px"
 

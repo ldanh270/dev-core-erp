@@ -88,14 +88,14 @@ export default function ActivityLogs() {
       }}
       pagination={{
         currentPage,
-        totalPages: totalPages || 1,
+        totalPages: totalPages || SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE,
         totalItems,
         itemsPerPage: pageSize,
         onPageChange: (p) => {
           setQuery((prev) => ({ ...prev, page: p }))
         },
         onItemsPerPageChange: (limit) => {
-          setQuery((prev) => ({ ...prev, limit, page: 1 }))
+          setQuery((prev) => ({ ...prev, limit, page: SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE }))
         },
         pageSizeOptions: SYSTEM_CONFIG.PAGINATION.PAGE_SIZE_OPTIONS as unknown as number[],
       }}

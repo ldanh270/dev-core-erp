@@ -2,8 +2,8 @@ import { useCallback } from "react"
 
 import type { ModuleDef, TableDef } from "../database-reference.types"
 import { useDatabaseErdTab } from "../hooks/use-database-erd-tab"
-import { DatabaseErdCanvas } from "./database-erd-canvas"
-import { DatabaseErdControls } from "./database-erd-controls"
+import { DatabaseErdCanvas } from "./DatabaseErdCanvas"
+import { DatabaseErdControls } from "./DatabaseErdControls"
 
 /**
  * Props for the interactive ERD tab container.

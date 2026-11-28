@@ -2,9 +2,8 @@ import { PageContainer, PageHeader } from "@/components/common"
 import { RoleCardsGrid } from "@/components/features/security/RoleCardsGrid"
 import { RoleFormDialog } from "@/components/features/security/RoleFormDialog"
 import { RoleMembersDrawer } from "@/components/features/security/RoleMembersDrawer"
-import { Button } from "@/components/ui/button"
+import { RolesHeaderActions } from "@/components/features/security/RolesHeaderActions"
 import { useRolesManagement } from "@/hooks/security/use-roles-management"
-import { Plus } from "lucide-react"
 
 /**
  * RolesManagement page component.
@@ -46,19 +45,16 @@ export default function RolesManagement() {
       <PageHeader
         title="Quản lý Vai trò"
         description="Xem, tạo mới và quản lý các vai trò trong hệ thống."
-        actions={
-          <Button onClick={handleOpenCreate} className="gap-1.5 rounded-full text-sm font-semibold">
-            <Plus size={16} strokeWidth={2.5} />
-            Thêm vai trò
-          </Button>
-        }
+        actions={<RolesHeaderActions onOpenCreate={handleOpenCreate} />}
       />
 
       <RoleCardsGrid
         roles={roles}
         isLoading={isLoadingRoles}
         isError={isErrorRoles}
-        onRetry={refetchRoles}
+        onRetry={() => {
+          void refetchRoles()
+        }}
         onOpenDetail={handleOpenRoleDetail}
         onOpenEdit={handleOpenEdit}
         onDeleteRole={handleDeleteRole}
@@ -71,7 +67,9 @@ export default function RolesManagement() {
         isLoading={isLoadingUsers}
         isPlaceholderData={isPlaceholderData}
         isError={isErrorUsers}
-        onRetry={refetchUsers}
+        onRetry={() => {
+          void refetchUsers()
+        }}
         currentPage={drawerPage}
         totalPages={totalDrawerPages}
         onPageChange={setDrawerPage}

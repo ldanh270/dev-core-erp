@@ -1,4 +1,4 @@
-import { DataTablePage, PageContainer, PageHeader } from "@/components/common"
+import { DataTablePage } from "@/components/common"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import schemaSummaryRaw from "@/data/schema-summary.json"
 
@@ -6,17 +6,17 @@ import { useMemo } from "react"
 
 import { Database } from "lucide-react"
 
-import { DatabaseErdTab } from "./database-reference/components/database-erd-tab"
-import { DatabaseReferenceHeaderActions } from "./database-reference/components/database-reference-header-actions"
-import { DatabaseTableSheet } from "./database-reference/components/database-table-sheet"
+import { DatabaseDiagramView } from "@/components/features/system/database-reference/components/DatabaseDiagramView"
+import { DatabaseReferenceHeaderActions } from "@/components/features/system/database-reference/components/DatabaseReferenceHeaderActions"
+import { DatabaseTableSheet } from "@/components/features/system/database-reference/components/DatabaseTableSheet"
 import type {
   DbSchemaData,
   DbSchemaSummary,
   TableDef,
-} from "./database-reference/database-reference.types"
-import { useDatabaseCategoryTabs } from "./database-reference/hooks/use-database-category-tabs"
-import { useDatabaseReference } from "./database-reference/hooks/use-database-reference"
-import { useDatabaseTableColumns } from "./database-reference/hooks/use-database-table-columns"
+} from "@/components/features/system/database-reference/database-reference.types"
+import { useDatabaseCategoryTabs } from "@/components/features/system/database-reference/hooks/use-database-category-tabs"
+import { useDatabaseReference } from "@/components/features/system/database-reference/hooks/use-database-reference"
+import { useDatabaseTableColumns } from "@/components/features/system/database-reference/hooks/use-database-table-columns"
 
 /**
  * Extracted schema summary and individual table metadata JSON records generated from prisma schema.
@@ -99,28 +99,17 @@ export default function DatabaseReference() {
 
   if (state.activeTab === "diagram") {
     return (
-      <PageContainer
-        variant="table"
-        className="h-dvh p-3 md:px-5 md:py-3 gap-2 flex flex-col overflow-hidden"
-      >
-        <PageHeader
-          title="Database Schema Reference"
-          description="Tra cứu lược đồ cơ sở dữ liệu và sơ đồ quan hệ thực thể (ERD)."
-          actions={headerActions}
-        />
-        <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-          <DatabaseErdTab
-            tables={state.filteredTables}
-            allTables={allTables}
-            modules={dbSchema.modules}
-            selectedModule={state.selectedModule}
-            onModuleChange={actions.handleModuleChange}
-            selectedTableName={state.selectedTable?.name ?? null}
-            onSelectTable={actions.handleSelectTable}
-          />
-        </div>
-        {detailSheet}
-      </PageContainer>
+      <DatabaseDiagramView
+        headerActions={headerActions}
+        detailSheet={detailSheet}
+        filteredTables={state.filteredTables}
+        allTables={allTables}
+        modules={dbSchema.modules}
+        selectedModule={state.selectedModule}
+        onModuleChange={actions.handleModuleChange}
+        selectedTableName={state.selectedTable?.name ?? null}
+        onSelectTable={actions.handleSelectTable}
+      />
     )
   }
 

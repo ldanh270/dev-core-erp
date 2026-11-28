@@ -1,33 +1,25 @@
 import { PageContainer, PageHeader } from "@/components/common"
 import { RolePermissionsDrawer } from "@/components/features/security/RolePermissionsDrawer"
 import { RolePermissionsGrid } from "@/components/features/security/RolePermissionsGrid"
-import {
-  usePermissions,
-  useRolePermissions,
-  useRoles,
-} from "@/hooks/security/queries/use-security-query"
-import type { Role } from "@/types/security.types"
-import { useState } from "react"
+import { useRolePermissionsManagement } from "@/hooks/security/use-role-permissions-management"
 
 /**
  * RolePermissions page component.
  * Pure orchestrator managing role permissions configuration and drawer state.
  */
 export default function RolePermissions() {
-  const [selectedRole, setSelectedRole] = useState<Role | null>(null)
-
   const {
-    data: rolesData,
-    isLoading: isLoadingRoles,
-    isError: isErrorRoles,
-    refetch: refetchRoles,
-  } = useRoles()
-
-  const { data: allPermissions } = usePermissions({ limit: 100 })
-
-  const { data: rolePermissions, isLoading: isLoadingRolePerms } = useRolePermissions(
-    selectedRole?.id || "",
-  )
+    selectedRole,
+    roles,
+    isLoadingRoles,
+    isErrorRoles,
+    refetchRoles,
+    allPermissions,
+    rolePermissions,
+    isLoadingRolePerms,
+    handleOpenRoleDetail,
+    handleCloseDrawer,
+  } = useRolePermissionsManagement()
 
   return (
     <PageContainer variant="default">
@@ -37,24 +29,20 @@ export default function RolePermissions() {
       />
 
       <RolePermissionsGrid
-        roles={rolesData?.data}
+        roles={roles}
         isLoading={isLoadingRoles}
         isError={isErrorRoles}
         onRetry={() => {
           void refetchRoles()
         }}
-        onOpenRoleDetail={(role) => {
-          setSelectedRole(role)
-        }}
+        onOpenRoleDetail={handleOpenRoleDetail}
       />
 
       <RolePermissionsDrawer
         selectedRole={selectedRole}
-        onClose={() => {
-          setSelectedRole(null)
-        }}
-        rolePermissions={rolePermissions || []}
-        allPermissions={allPermissions?.data || []}
+        onClose={handleCloseDrawer}
+        rolePermissions={rolePermissions}
+        allPermissions={allPermissions}
         isLoadingRolePerms={isLoadingRolePerms}
       />
     </PageContainer>

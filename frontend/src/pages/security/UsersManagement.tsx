@@ -3,9 +3,10 @@ import {
   type UserListItem,
   useUsersManagementColumns,
 } from "@/components/features/security/use-users-management-columns"
+import { UsersManagementStatusLegend } from "@/components/features/security/UsersManagementStatusLegend"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useUsersManagementMaster } from "@/hooks/security/use-users-management-master"
-import { Lock, ShieldAlert, ShieldCheck, Users as UsersIcon } from "lucide-react"
+import { Lock, Users as UsersIcon } from "lucide-react"
 import { useMemo } from "react"
 
 /**
@@ -14,8 +15,9 @@ import { useMemo } from "react"
  */
 export default function UsersManagement() {
   const {
-    query,
     setQuery,
+    currentPage,
+    pageSize,
     activeTab,
     handleTabChange,
     search,
@@ -45,13 +47,13 @@ export default function UsersManagement() {
         {
           id: "all",
           label: "Tất cả người dùng",
-          count: allUsers?.meta.total || 0,
+          count: allUsers?.meta.total || SYSTEM_CONFIG.PAGINATION.EMPTY_COUNT,
           icon: UsersIcon,
         },
         {
           id: "locked",
           label: "Tài khoản bị khóa",
-          count: lockedUsers?.length || 0,
+          count: lockedUsers?.length || SYSTEM_CONFIG.PAGINATION.EMPTY_COUNT,
           icon: Lock,
         },
       ],
@@ -80,18 +82,7 @@ export default function UsersManagement() {
         },
         placeholder: "Tìm kiếm người dùng...",
       }}
-      toolbarActions={
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <ShieldCheck size={12} className="text-emerald-500" />
-            <span>Hoạt động</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <ShieldAlert size={12} className="text-rose-500" />
-            <span>Bị khóa</span>
-          </div>
-        </div>
-      }
+      toolbarActions={<UsersManagementStatusLegend />}
       emptyState={{
         icon: UsersIcon,
         title: "Không có người dùng nào",
@@ -100,16 +91,17 @@ export default function UsersManagement() {
       pagination={
         total > 0
           ? {
-              currentPage: query.page || 1,
+              currentPage,
               totalPages,
               totalItems: total,
-              itemsPerPage: query.limit || SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT,
+              itemsPerPage: pageSize,
               onPageChange: (p) => {
                 setQuery((prev) => ({ ...prev, page: p }))
               },
               onItemsPerPageChange: (limit) => {
-                setQuery((prev) => ({ ...prev, limit, page: 1 }))
+                setQuery((prev) => ({ ...prev, limit, page: SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE }))
               },
+              pageSizeOptions: SYSTEM_CONFIG.PAGINATION.PAGE_SIZE_OPTIONS as unknown as number[],
             }
           : undefined
       }

@@ -7,8 +7,8 @@ import { Check, Copy, Network } from "lucide-react"
 import type { DbSchemaData, TableDef } from "../database-reference.types"
 import { getModuleTheme } from "../database-reference.utils"
 import { useDatabaseTableSheet } from "../hooks/use-database-table-sheet"
-import { TableSheetColumns } from "./database-table-sheet-columns"
-import { TableSheetIndexes } from "./database-table-sheet-indexes"
+import { TableSheetColumns } from "./DatabaseTableSheetColumns"
+import { TableSheetIndexes } from "./DatabaseTableSheetIndexes"
 
 interface DatabaseTableSheetProps {
   table: TableDef | null
