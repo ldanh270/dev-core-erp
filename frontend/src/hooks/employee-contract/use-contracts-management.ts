@@ -5,7 +5,7 @@ import {
 } from "@/config/entities/employee-contract.config"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useContracts, useUpdateContract } from "@/hooks/employee-contract/use-contracts"
-import type { ContractModalMode } from "@/components/employee-contract/ContractModal"
+import type { ContractModalMode } from "@/components/features/employee-contract/ContractModal"
 import type { IContract } from "@/types/employee-contract.types"
 
 import { useCallback, useMemo, useState } from "react"

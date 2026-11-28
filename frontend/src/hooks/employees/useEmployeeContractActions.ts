@@ -1,5 +1,5 @@
 import { useConfirm } from "@/components/common"
-import type { ContractModalMode } from "@/components/employee-contract/ContractModal"
+import type { ContractModalMode } from "@/components/features/employee-contract/ContractModal"
 import { useUpdateContract } from "@/hooks/employee-contract/use-contracts"
 import type { IContract } from "@/types/employee-contract.types"
 import { useState } from "react"

@@ -2,18 +2,43 @@ import { useConfirm } from "@/components/common"
 import {
   EMPLOYEE_LIST_TAB_SCHEDULE_PART_TIME,
   EMPLOYEE_STATUS,
+  EMPLOYEE_TYPES,
+  getEmployeeTypeLabel,
+  getWorkScheduleTypeLabel,
 } from "@/config/entities/employee.config"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useUnlockAccount } from "@/hooks/security/queries/use-security-query"
 import { usePermission } from "@/hooks/use-permission"
 import type { Employee, EmployeeListQuery, EmployeeType } from "@/types/employee.types"
 
-import { useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 
 import { useEmployees, useUpdateEmployeeStatus } from "./queries/useEmployeeQuery"
+
+export type ActiveTab =
+  | "all"
+  | EmployeeType
+  | typeof EMPLOYEE_LIST_TAB_SCHEDULE_PART_TIME
+  | typeof EMPLOYEE_STATUS.TERMINATED
+  | "locked"
+
+export interface TabDefinition {
+  id: ActiveTab
+  label: string
+}
+
+export const TAB_DEFINITIONS: TabDefinition[] = [
+  { id: "all", label: "Tất cả" },
+  { id: EMPLOYEE_TYPES[0], label: getEmployeeTypeLabel(EMPLOYEE_TYPES[0]) },
+  { id: EMPLOYEE_LIST_TAB_SCHEDULE_PART_TIME, label: getWorkScheduleTypeLabel("part_time") },
+  { id: EMPLOYEE_TYPES[2], label: getEmployeeTypeLabel(EMPLOYEE_TYPES[2]) },
+  { id: EMPLOYEE_TYPES[3], label: getEmployeeTypeLabel(EMPLOYEE_TYPES[3]) },
+  { id: "locked", label: "Bị khóa" },
+  { id: EMPLOYEE_STATUS.TERMINATED, label: "Đã nghỉ việc" },
+]
 
 /**
  * Custom React hook that encapsulates state and methods for the Employee Master view.
@@ -193,11 +218,53 @@ export const useEmployeeMaster = () => {
     }
   }
 
+  const getTabCount = useCallback(
+    (tabId: ActiveTab) => {
+      const stats = data?.stats
+      if (!stats) return 0
+      switch (tabId) {
+        case "all":
+          return stats.total
+        case "full_time":
+          return stats.full_time
+        case EMPLOYEE_LIST_TAB_SCHEDULE_PART_TIME:
+          return stats.part_time
+        case "intern":
+          return stats.intern
+        case "contractor":
+          return stats.contractor
+        case "locked":
+          return stats.locked
+        case EMPLOYEE_STATUS.TERMINATED:
+          return stats.terminated
+        default:
+          return 0
+      }
+    },
+    [data?.stats],
+  )
+
+  const tabsConfig = useMemo(
+    () => ({
+      items: TAB_DEFINITIONS.map((tab) => ({
+        id: tab.id,
+        label: tab.label,
+        count: getTabCount(tab.id),
+      })),
+      activeTab,
+      onTabChange: (id: string) => {
+        handleTabChange(id as ActiveTab)
+      },
+    }),
+    [activeTab, getTabCount, handleTabChange],
+  )
+
   return {
     // State
     query,
     setQuery,
     activeTab,
+    tabsConfig,
     isCreateModalOpen,
     setIsCreateModalOpen,
     editEmployee,

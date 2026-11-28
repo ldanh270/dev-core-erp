@@ -1,5 +1,5 @@
 import { DataTablePage, useConfirm } from "@/components/common"
-import { ContractModal } from "@/components/employee-contract/ContractModal"
+import { ContractModal } from "@/components/features/employee-contract/ContractModal"
 import { useContractsColumns } from "@/components/features/employee-contract/use-contracts-columns"
 import { ROUTES } from "@/config/routes.config"
 import {

@@ -8,21 +8,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  CONTRACT_TYPES,
-  CONTRACT_TYPE_LABELS,
-  type ContractType,
-} from "@/config/entities/employee-contract.config"
+import type { ContractType } from "@/config/entities/employee-contract.config"
 import {
   useCreateContract,
   useRenewContract,
@@ -30,12 +18,12 @@ import {
   useUpdateContract,
 } from "@/hooks/employee-contract/use-contracts"
 import type { IContract } from "@/types/employee-contract.types"
-
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
+import { ContractStandardFormFields } from "./ContractStandardFormFields"
 
 export type ContractModalMode = "create" | "edit" | "renew" | "terminate"
 
-interface ContractModalProps {
+interface UseContractModalFormProps {
   isOpen: boolean
   onClose: () => void
   employeeId: string
@@ -43,7 +31,13 @@ interface ContractModalProps {
   contract?: IContract | null
 }
 
-export function ContractModal({ isOpen, onClose, employeeId, mode, contract }: ContractModalProps) {
+function useContractModalForm({
+  isOpen,
+  onClose,
+  employeeId,
+  mode,
+  contract,
+}: UseContractModalFormProps) {
   const createMutation = useCreateContract()
   const updateMutation = useUpdateContract()
   const terminateMutation = useTerminateContract()
@@ -55,7 +49,6 @@ export function ContractModal({ isOpen, onClose, employeeId, mode, contract }: C
     terminateMutation.isPending ||
     renewMutation.isPending
 
-  // Form states
   const [contractType, setContractType] = useState<ContractType>("definite")
   const [contractNumber, setContractNumber] = useState("")
   const [title, setTitle] = useState("")
@@ -68,7 +61,6 @@ export function ContractModal({ isOpen, onClose, employeeId, mode, contract }: C
   const [terminationReason, setTerminationReason] = useState("")
   const [terminationDate, setTerminationDate] = useState("")
 
-  // Reset or initialize form data when modal opens or contract changes
   useEffect(() => {
     if (!isOpen) return
 
@@ -181,32 +173,93 @@ export function ContractModal({ isOpen, onClose, employeeId, mode, contract }: C
     onClose()
   }
 
-  const getTitleText = () => {
-    switch (mode) {
-      case "create":
-        return "Tạo hợp đồng mới"
-      case "edit":
-        return "Chỉnh sửa hợp đồng"
-      case "renew":
-        return "Gia hạn hợp đồng"
-      case "terminate":
-        return "Chấm dứt hợp đồng"
-    }
+  const titleText =
+    mode === "create"
+      ? "Tạo hợp đồng mới"
+      : mode === "edit"
+        ? "Chỉnh sửa hợp đồng"
+        : mode === "renew"
+          ? "Gia hạn hợp đồng"
+          : "Chấm dứt hợp đồng"
+
+  return {
+    contractType,
+    setContractType,
+    contractNumber,
+    setContractNumber,
+    title,
+    setTitle,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    trialEndDate,
+    setTrialEndDate,
+    salary,
+    setSalary,
+    probationSalary,
+    setProbationSalary,
+    note,
+    setNote,
+    terminationReason,
+    setTerminationReason,
+    terminationDate,
+    setTerminationDate,
+    isPending,
+    titleText,
+    handleSubmit,
   }
+}
+
+export interface ContractModalProps {
+  isOpen: boolean
+  onClose: () => void
+  employeeId: string
+  mode: ContractModalMode
+  contract?: IContract | null
+}
+
+export function ContractModal({
+  isOpen,
+  onClose,
+  employeeId,
+  mode,
+  contract,
+}: ContractModalProps) {
+  const {
+    contractType,
+    setContractType,
+    contractNumber,
+    setContractNumber,
+    title,
+    setTitle,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    trialEndDate,
+    setTrialEndDate,
+    salary,
+    setSalary,
+    probationSalary,
+    setProbationSalary,
+    note,
+    setNote,
+    terminationReason,
+    setTerminationReason,
+    terminationDate,
+    setTerminationDate,
+    isPending,
+    titleText,
+    handleSubmit,
+  } = useContractModalForm({ isOpen, onClose, employeeId, mode, contract })
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        if (!open) {
-          onClose()
-        }
-      }}
-    >
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
       <DialogContent className="sm:max-w-[540px] rounded-xl bg-card border-border">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-foreground">
-            {getTitleText()}
+            {titleText}
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
             {mode === "terminate"
@@ -215,12 +268,7 @@ export function ContractModal({ isOpen, onClose, employeeId, mode, contract }: C
           </DialogDescription>
         </DialogHeader>
 
-        <form
-          onSubmit={(e) => {
-            void handleSubmit(e)
-          }}
-          className="space-y-4 py-2"
-        >
+        <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4 py-2">
           {mode === "terminate" ? (
             <div className="space-y-4">
               <div className="space-y-2">
@@ -255,180 +303,56 @@ export function ContractModal({ isOpen, onClose, employeeId, mode, contract }: C
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2 sm:col-span-1 space-y-2">
-                <Label htmlFor="contractType" className="text-xs font-medium">
-                  Loại hợp đồng <span className="text-destructive">*</span>
-                </Label>
-                <Select
-                  value={contractType}
-                  onValueChange={(val) => {
-                    setContractType(val as ContractType)
-                  }}
-                >
-                  <SelectTrigger className="rounded-full">
-                    <SelectValue placeholder="Chọn loại HĐ" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CONTRACT_TYPES.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {new Map(Object.entries(CONTRACT_TYPE_LABELS)).get(type) || type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="col-span-2 sm:col-span-1 space-y-2">
-                <Label htmlFor="contractNumber" className="text-xs font-medium">
-                  Số hợp đồng <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="contractNumber"
-                  value={contractNumber}
-                  onChange={(e) => {
-                    setContractNumber(e.target.value)
-                  }}
-                  placeholder="HD-XXXX"
-                  className="rounded-full"
-                  required
-                />
-              </div>
-
-              <div className="col-span-2 space-y-2">
-                <Label htmlFor="title" className="text-xs font-medium">
-                  Tiêu đề hợp đồng
-                </Label>
-                <Input
-                  id="title"
-                  value={title}
-                  onChange={(e) => {
-                    setTitle(e.target.value)
-                  }}
-                  placeholder="VD: Hợp đồng lao động chính thức"
-                  className="rounded-full"
-                />
-              </div>
-
-              <div className="col-span-2 sm:col-span-1 space-y-2">
-                <Label htmlFor="startDate" className="text-xs font-medium">
-                  Ngày bắt đầu <span className="text-destructive">*</span>
-                </Label>
-                <DatePicker
-                  id="startDate"
-                  value={startDate || null}
-                  onChange={(val) => {
-                    setStartDate(val || "")
-                  }}
-                  placeholder="Chọn ngày bắt đầu..."
-                />
-              </div>
-
-              <div className="col-span-2 sm:col-span-1 space-y-2">
-                <Label htmlFor="endDate" className="text-xs font-medium">
-                  Ngày kết thúc {contractType === "indefinite" ? "" : "(để trống nếu vô hạn)"}
-                </Label>
-                <DatePicker
-                  id="endDate"
-                  value={endDate || null}
-                  minDate={startDate}
-                  onChange={(val) => {
-                    setEndDate(val || "")
-                  }}
-                  placeholder="Chọn ngày kết thúc..."
-                />
-              </div>
-
-              {contractType === "trial" && (
-                <div className="col-span-2 sm:col-span-1 space-y-2">
-                  <Label htmlFor="trialEndDate" className="text-xs font-medium">
-                    Hết hạn thử việc
-                  </Label>
-                  <DatePicker
-                    id="trialEndDate"
-                    value={trialEndDate || null}
-                    onChange={(val) => {
-                      setTrialEndDate(val || "")
-                    }}
-                    placeholder="Chọn ngày kết thúc thử việc..."
-                  />
-                </div>
-              )}
-
-              <div className="col-span-2 sm:col-span-1 space-y-2">
-                <Label htmlFor="salary" className="text-xs font-medium">
-                  Mức lương chính (VND) <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="salary"
-                  type="number"
-                  value={salary}
-                  onChange={(e) => {
-                    setSalary(e.target.value)
-                  }}
-                  placeholder="0"
-                  className="rounded-full"
-                  required
-                />
-              </div>
-
-              {contractType === "trial" && (
-                <div className="col-span-2 sm:col-span-1 space-y-2">
-                  <Label htmlFor="probationSalary" className="text-xs font-medium">
-                    Lương thử việc (VND)
-                  </Label>
-                  <Input
-                    id="probationSalary"
-                    type="number"
-                    value={probationSalary}
-                    onChange={(e) => {
-                      setProbationSalary(e.target.value)
-                    }}
-                    placeholder="0"
-                    className="rounded-full"
-                  />
-                </div>
-              )}
-
-              <div className="col-span-2 space-y-2">
-                <Label htmlFor="note" className="text-xs font-medium">
-                  Ghi chú
-                </Label>
-                <Textarea
-                  id="note"
-                  placeholder="Ghi chú thêm về điều khoản..."
-                  value={note}
-                  onChange={(e) => {
-                    setNote(e.target.value)
-                  }}
-                  className="rounded-xl border-border resize-none"
-                  rows={2}
-                />
-              </div>
-            </div>
+            <ContractStandardFormFields
+              contractType={contractType}
+              setContractType={setContractType}
+              contractNumber={contractNumber}
+              setContractNumber={setContractNumber}
+              title={title}
+              setTitle={setTitle}
+              startDate={startDate}
+              setStartDate={setStartDate}
+              endDate={endDate}
+              setEndDate={setEndDate}
+              trialEndDate={trialEndDate}
+              setTrialEndDate={setTrialEndDate}
+              salary={salary}
+              setSalary={setSalary}
+              probationSalary={probationSalary}
+              setProbationSalary={setProbationSalary}
+              note={note}
+              setNote={setNote}
+            />
           )}
 
-          <DialogFooter className="pt-4 gap-2">
+          <DialogFooter className="pt-4 border-t border-border/40">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
-              className="rounded-full"
               disabled={isPending}
+              className="rounded-full"
             >
               Hủy
             </Button>
             <Button
               type="submit"
-              variant={mode === "terminate" ? "destructive" : "default"}
-              className="rounded-full"
               disabled={isPending}
+              className={`rounded-full ${
+                mode === "terminate"
+                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  : ""
+              }`}
             >
               {isPending
-                ? "Đang xử lý..."
+                ? "Đang lưu..."
                 : mode === "terminate"
                   ? "Xác nhận chấm dứt"
-                  : "Lưu hợp đồng"}
+                  : mode === "renew"
+                    ? "Gia hạn hợp đồng"
+                    : mode === "edit"
+                      ? "Cập nhật"
+                      : "Tạo hợp đồng"}
             </Button>
           </DialogFooter>
         </form>
