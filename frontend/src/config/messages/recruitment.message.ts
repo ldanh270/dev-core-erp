@@ -1,0 +1,63 @@
+/**
+ * Centralized user-facing recruitment copy and notification messages.
+ * Keeps toast alerts, confirmation prompts, and validation strings uniform.
+ */
+export const RECRUITMENT_MESSAGES = {
+  ERRORS: {
+    FILE_FORMAT_UNSUPPORTED: "Chỉ hỗ trợ file CSV, XLSX hoặc XLS",
+    FILE_SIZE_EXCEEDED: (sizeLabel: string) => `File vượt quá giới hạn ${sizeLabel}`,
+    NO_ROUND_SELECTED: "Chưa chọn vòng phỏng vấn",
+    OAUTH_NAME_REQUIRED: "Vui lòng nhập tên nhận diện cho tài khoản này",
+    GOOGLE_OAUTH_URL_INVALID: "Đường dẫn đăng nhập Google không hợp lệ",
+    GOOGLE_OAUTH_URL_MISSING: "Không lấy được đường dẫn đăng nhập Google",
+    GOOGLE_OAUTH_CONNECT_FAILED: "Lỗi khi kết nối dịch vụ Google OAuth",
+    OAUTH_NOT_SUPPORTED_FOR_CHANNEL: (channel: string) =>
+      `Kênh ${channel} hiện chưa hỗ trợ OAuth tự động`,
+    SAVE_FORM_CONFIG_FAILED: "Không thể lưu cấu hình Google Form",
+    CHANNEL_CONFIG_MISSING: "Kênh chưa được cấu hình hoặc chưa có đường dẫn",
+    MOVE_APPLICATION_FAILED: "Lỗi khi di chuyển",
+    CREATE_INTERVIEW_FAILED: "Lỗi khi tạo lịch phỏng vấn",
+    UPDATE_INTERVIEW_FAILED: "Lỗi khi cập nhật",
+    COMPLETE_INTERVIEW_FAILED: "Lỗi khi hoàn thành phỏng vấn",
+    CREATE_FEEDBACK_FAILED: "Lỗi khi tạo đánh giá",
+    UPDATE_FEEDBACK_FAILED: "Lỗi khi cập nhật đánh giá",
+    CREATE_OFFER_FAILED: "Lỗi khi tạo offer",
+    SEND_OFFER_FAILED: "Lỗi khi gửi offer",
+    RESPOND_OFFER_FAILED: "Lỗi khi phản hồi offer",
+    CREATE_BG_CHECK_FAILED: "Lỗi khi tạo kiểm tra",
+    START_BG_CHECK_FAILED: "Lỗi khi bắt đầu kiểm tra",
+    COMPLETE_BG_CHECK_FAILED: "Lỗi khi hoàn thành kiểm tra",
+    SAVE_OAUTH_CONFIG_FAILED: "Lỗi khi lưu cấu hình OAuth",
+    DELETE_OAUTH_CONFIG_FAILED: "Lỗi khi xóa cấu hình OAuth",
+  },
+  SUCCESS: {
+    NOTE_ADDED: "Đã thêm ghi chú",
+    STATUS_UPDATED: "Cập nhật trạng thái thành công",
+    ASSIGNEE_UPDATED: "Đã phân công người phụ trách",
+    INTERVIEW_CREATED: "Đã tạo lịch phỏng vấn thành công",
+    INTERVIEW_UPDATED: "Đã cập nhật thông tin vòng phỏng vấn thành công",
+    INTERVIEW_COMPLETED: "Đã hoàn thành phỏng vấn",
+    FEEDBACK_CREATED: "Đã tạo đánh giá",
+    FEEDBACK_UPDATED: "Đã cập nhật đánh giá",
+    OFFER_CREATED: "Đã tạo offer",
+    OFFER_SENT: "Đã gửi offer",
+    OFFER_RESPONDED: "Đã phản hồi offer",
+    BG_CHECK_CREATED: "Đã tạo kiểm tra background",
+    BG_CHECK_STARTED: "Đã bắt đầu kiểm tra background",
+    BG_CHECK_COMPLETED: "Đã hoàn thành kiểm tra background",
+    GOOGLE_FORM_SAVED: "Đã lưu cấu hình Google Form",
+    GOOGLE_FORM_PUBLISHED: "Đã tạo và public Google Form",
+    POSTING_RECORDED: "Đã ghi nhận bài đăng",
+    SYNC_APPLICATIONS_SUCCESS: (count: number) => `Đã đồng bộ ${count} lượt ứng tuyển`,
+    GOOGLE_OAUTH_CONNECTED: "Kết nối tài khoản Google thành công!",
+    OAUTH_CONFIG_SAVED: "Đã lưu cấu hình OAuth",
+    OAUTH_CONFIG_DELETED: "Đã xóa cấu hình OAuth",
+  },
+  CONFIRM: {
+    UNLINK_OAUTH_TITLE: "Hủy liên kết tài khoản",
+    UNLINK_OAUTH_DESC: (name: string) =>
+      `Bạn có chắc muốn hủy liên kết tài khoản "${name}"? Các biểu mẫu hay tác vụ đồng bộ liên quan có thể bị ảnh hưởng.`,
+    UNLINK_CONFIRM: "Hủy liên kết",
+    UNLINK_CANCEL: "Giữ lại",
+  },
+} as const

@@ -1,0 +1,313 @@
+import { AppPagination, DataTableToolbar, EmptyState, StatusPill } from "@/components/common"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { PAYROLL_STATUS, PAYROLL_STATUS_LABELS } from "@/config/entities/payroll.config"
+import { useApprovePayroll, useRejectPayroll } from "@/hooks/payroll/use-payrolls"
+import type { IPayroll } from "@/types/payroll.types"
+
+import { useState } from "react"
+
+import { CheckCircle2, Clock, MoreHorizontal, XCircle } from "lucide-react"
+
+import { PayrollDetailSheet } from "./PayrollDetailSheet"
+
+const getPayrollStatusVariant = (status: string): "info" | "success" | "danger" | "neutral" => {
+  switch (status) {
+    case PAYROLL_STATUS.APPROVED:
+      return "success"
+    case PAYROLL_STATUS.DRAFT:
+      return "info"
+    case PAYROLL_STATUS.REJECTED:
+      return "danger"
+    default:
+      return "neutral"
+  }
+}
+
+/** Custom hook managing search filter and status filtering for payroll history runs. */
+function usePayrollHistoryFilter(payrolls: IPayroll[]) {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
+
+  const filteredPayrolls = payrolls.filter((p) => {
+    const s = searchTerm.toLowerCase()
+    const periodStr = `${p.periodMonth}/${p.periodYear}`
+    const periodStrZero = `${String(p.periodMonth).padStart(2, "0")}/${p.periodYear}`
+    const statusStr = PAYROLL_STATUS_LABELS[p.status].toLowerCase()
+    return (
+      p.id.toLowerCase().includes(s) ||
+      periodStr.includes(s) ||
+      periodStrZero.includes(s) ||
+      statusStr.includes(s)
+    )
+  })
+
+  const paginatedPayrolls = filteredPayrolls.slice((page - 1) * limit, page * limit)
+  const totalPages = Math.ceil(filteredPayrolls.length / limit)
+
+  const handleSearchChange = (val: string) => {
+    setSearchTerm(val)
+    setPage(1)
+  }
+
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit)
+    setPage(1)
+  }
+
+  return {
+    searchTerm,
+    page,
+    limit,
+    filteredPayrolls,
+    paginatedPayrolls,
+    totalPages,
+    setPage,
+    handleSearchChange,
+    handleLimitChange,
+  }
+}
+
+interface PayrollHistoryTableProps {
+  payrolls: IPayroll[]
+  isLoading: boolean
+}
+
+/**
+ * Data table displaying past payroll execution cycles, employee counts, and approval statuses.
+ */
+export function PayrollHistoryTable({ payrolls, isLoading }: PayrollHistoryTableProps) {
+  const { mutate: approvePayroll } = useApprovePayroll()
+  const { mutate: rejectPayroll } = useRejectPayroll()
+  const [selectedPayrollId, setSelectedPayrollId] = useState<string | null>(null)
+
+  const {
+    searchTerm,
+    page,
+    limit,
+    filteredPayrolls,
+    paginatedPayrolls,
+    totalPages,
+    setPage,
+    handleSearchChange,
+    handleLimitChange,
+  } = usePayrollHistoryFilter(payrolls)
+
+  const handleApprove = (id: string) => {
+    approvePayroll(id)
+  }
+
+  const handleReject = (id: string) => {
+    const reason = window.prompt("Enter rejection reason:")
+    if (reason) {
+      rejectPayroll({ id, reason })
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-48 flex items-center justify-center border rounded-xl">
+        <p className="text-muted-foreground">Loading payroll history...</p>
+      </div>
+    )
+  }
+
+  if (payrolls.length === 0) {
+    return (
+      <div className="p-8">
+        <EmptyState
+          icon={Clock}
+          title="Chưa có bảng lương nào"
+          description="Chưa có chu kỳ tính lương nào được ghi nhận. Hãy bấm 'Generate Payroll' để bắt đầu."
+        />
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <DataTableToolbar
+        searchQuery={searchTerm}
+        onSearchChange={handleSearchChange}
+        searchPlaceholder="Tìm kiếm mã, tháng/năm, trạng thái..."
+      />
+      <div className="rounded-xl bg-card overflow-hidden">
+        <Table>
+          <TableHeader className="bg-muted/50">
+            <TableRow>
+              <TableHead className="h-10 min-w-12.5 px-4 py-3 font-medium text-xs text-muted-foreground uppercase text-center">
+                #
+              </TableHead>
+              <TableHead className="h-10 hidden sm:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                Payroll ID
+              </TableHead>
+              <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                Period
+              </TableHead>
+              <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                Total Amount
+              </TableHead>
+              <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                Status
+              </TableHead>
+              <TableHead className="h-10 hidden md:table-cell px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap">
+                Created At
+              </TableHead>
+              <TableHead className="h-10 px-4 py-3 font-medium text-xs text-muted-foreground uppercase whitespace-nowrap text-right">
+                Actions
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedPayrolls.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="h-[60px] p-8">
+                  <EmptyState
+                    icon={Clock}
+                    title="Không tìm thấy bảng lương"
+                    description="Không có chu kỳ tính lương nào phù hợp với điều kiện tìm kiếm."
+                  />
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginatedPayrolls.map((payroll, index) => (
+                <HistoryTableRow
+                  key={payroll.id}
+                  payroll={payroll}
+                  indexNumber={(page - 1) * limit + index + 1}
+                  onSelectPayroll={setSelectedPayrollId}
+                  onApprove={handleApprove}
+                  onReject={handleReject}
+                />
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {filteredPayrolls.length > 0 && (
+        <div className="bg-card rounded-xl border border-t-0 rounded-t-none">
+          <AppPagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            totalItems={filteredPayrolls.length}
+            itemsPerPage={limit}
+            onItemsPerPageChange={handleLimitChange}
+          />
+        </div>
+      )}
+
+      <PayrollDetailSheet
+        payrollId={selectedPayrollId}
+        onClose={() => {
+          setSelectedPayrollId(null)
+        }}
+      />
+    </>
+  )
+}
+
+/** Presenter table row rendering single payroll cycle run metadata and actions. */
+function HistoryTableRow({
+  payroll,
+  indexNumber,
+  onSelectPayroll,
+  onApprove,
+  onReject,
+}: {
+  payroll: IPayroll
+  indexNumber: number
+  onSelectPayroll: (id: string) => void
+  onApprove: (id: string) => void
+  onReject: (id: string) => void
+}) {
+  const isDraft = payroll.status === PAYROLL_STATUS.DRAFT
+
+  return (
+    <TableRow key={payroll.id}>
+      <TableCell className="h-[60px] px-4 py-3 text-center text-muted-foreground">
+        {indexNumber}
+      </TableCell>
+      <TableCell className="h-[60px] hidden sm:table-cell px-4 py-3">
+        <button
+          type="button"
+          onClick={() => {
+            onSelectPayroll(payroll.id)
+          }}
+          className="font-medium text-primary hover:underline text-left cursor-pointer"
+        >
+          PAY-{payroll.id.substring(payroll.id.length - 8).toUpperCase()}
+        </button>
+      </TableCell>
+      <TableCell className="h-[60px] px-4 py-3 font-medium">
+        {payroll.periodMonth} / {payroll.periodYear}
+      </TableCell>
+      <TableCell className="h-[60px] px-4 py-3">
+        {new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(payroll.totalAmount)}
+      </TableCell>
+      <TableCell className="h-[60px] px-4 py-3">
+        <StatusPill
+          label={PAYROLL_STATUS_LABELS[payroll.status]}
+          variant={getPayrollStatusVariant(payroll.status)}
+        />
+      </TableCell>
+      <TableCell className="h-[60px] hidden md:table-cell px-4 py-3 text-muted-foreground">
+        {new Intl.DateTimeFormat("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }).format(new Date(payroll.createdAt))}
+      </TableCell>
+      <TableCell className="h-[60px] px-4 py-3 text-right">
+        {isDraft ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0 rounded-full">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40 rounded-xl">
+              <DropdownMenuItem
+                onClick={() => {
+                  onApprove(payroll.id)
+                }}
+              >
+                <CheckCircle2 className="mr-2 h-4 w-4 text-emerald-600" />
+                <span>Approve</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  onReject(payroll.id)
+                }}
+              >
+                <XCircle className="mr-2 h-4 w-4 text-destructive" />
+                <span>Reject</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <span className="text-muted-foreground text-sm">-</span>
+        )}
+      </TableCell>
+    </TableRow>
+  )
+}

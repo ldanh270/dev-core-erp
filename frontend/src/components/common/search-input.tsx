@@ -54,7 +54,7 @@ export function SearchInput({
       prevSearchTermRef.current = controlledValue
       setSearchTerm(controlledValue)
     }
-  }, [controlledValue, isControlled])
+  }, [controlledValue, isControlled, searchTerm])
 
   // Debounced callback execution on term change
   useEffect(() => {

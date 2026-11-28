@@ -1,4 +1,7 @@
-/** User-facing attendance copy — mirror backend attendance.message.ts where applicable. */
+/**
+ * Centralized user-facing attendance copy and internationalization dictionary.
+ * Mirrors backend attendance message constants for consistent notifications.
+ */
 export const ATTENDANCE_MESSAGES = {
   ERRORS: {
     SCAN_FAILED: "Lỗi khi chấm công",
@@ -15,6 +18,24 @@ export const ATTENDANCE_MESSAGES = {
     UPDATE_SUCCESS: "Đã cập nhật ca làm việc",
     CREATE_ERROR: "Không thể tạo ca làm việc",
     UPDATE_ERROR: "Không thể cập nhật ca làm việc",
+  },
+  SHIFT_MANAGEMENT: {
+    DELETE_CONFIRM: "Xác nhận xoá ca làm việc này?",
+  },
+  HOLIDAYS: {
+    CREATE_SUCCESS: (count: number) => `Đã thêm ${count} ngày nghỉ`,
+    CREATE_ERROR: "Thêm ngày lễ thất bại",
+    UPDATE_SUCCESS: "Đã cập nhật ngày lễ",
+    DELETE_SUCCESS: "Đã xóa ngày lễ",
+    SCOPE_POSITION: (name: string) => `Chức danh: ${name}`,
+    SCOPE_EMPLOYEES: (count: number) => `Nhóm ${count} nhân viên`,
+  },
+  WEEKLY_SCHEDULES: {
+    DELETE_CONFIRM: "Xác nhận xoá template này?",
+    DELETE_SUCCESS: "Đã xoá template",
+    CONFIG_INVALID_DAY: "Ngày kích hoạt không hợp lệ",
+    CONFIG_SAVE_SUCCESS: "Đã lưu cấu hình tự động sinh lịch tuần",
+    CONFIG_SAVE_ERROR: "Không thể lưu cấu hình lịch tuần",
   },
   SCANNER: {
     TITLE: "Máy Chấm Công Ảo",

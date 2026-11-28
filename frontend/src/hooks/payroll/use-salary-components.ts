@@ -5,6 +5,9 @@ import type { ISalaryComponent } from "@/types/payroll.types"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
+/**
+ * Query and mutation hooks for salary components CRUD operations.
+ */
 export function useSalaryComponents() {
   return useQuery({
     queryKey: PAYROLL_QUERY_KEYS.SALARY_COMPONENTS,
@@ -15,6 +18,7 @@ export function useSalaryComponents() {
   })
 }
 
+/** Mutation hook to register a new salary component. */
 export function useCreateSalaryComponent() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -28,6 +32,7 @@ export function useCreateSalaryComponent() {
   })
 }
 
+/** Mutation hook to update salary component definitions. */
 export function useUpdateSalaryComponent() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -41,6 +46,7 @@ export function useUpdateSalaryComponent() {
   })
 }
 
+/** Mutation hook to remove a salary component. */
 export function useDeleteSalaryComponent() {
   const queryClient = useQueryClient()
   return useMutation({

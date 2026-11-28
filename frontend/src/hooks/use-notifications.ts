@@ -134,11 +134,12 @@ export function useNotifications() {
 
   useEffect(() => {
     isMountedRef.current = true
+    const latestFetch = latestFetchRef
     void fetchNotifications()
 
     return () => {
       isMountedRef.current = false
-      latestFetchRef.current++
+      latestFetch.current++
     }
   }, [fetchNotifications])
 

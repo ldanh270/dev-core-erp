@@ -4,11 +4,21 @@ export const SYSTEM_CONFIG = {
     LOCATION_CACHE: "userLocation",
   },
   PAGINATION: {
+    DEFAULT_PAGE: 1,
+    EMPTY_COUNT: 0,
     DEFAULT_LIMIT: 50,
     SMALL_LIMIT: 10,
+    MEDIUM_LIMIT: 20,
+    LARGE_LIMIT: 50,
+    MODAL_LIMIT: 50,
     MAX_VISIBLE_PAGES: 5,
+    PAGE_SIZE_OPTIONS: [10, 20, 50, 100],
     /** Bulk fetch for admin dropdowns and schedule grids. */
     BULK_LIMIT: 1000,
+  },
+  SEARCH: {
+    DEBOUNCE_MS: 400,
+    FAST_DEBOUNCE_MS: 250,
   },
   UPLOAD: {
     MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB

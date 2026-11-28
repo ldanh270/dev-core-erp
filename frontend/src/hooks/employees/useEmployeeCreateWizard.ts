@@ -17,67 +17,31 @@ import { useState } from "react"
 
 import { toast } from "sonner"
 
+import {
+  createEducationItem,
+  createExperienceItem,
+  createFamilyMemberItem,
+  getInitialWizardFormData,
+} from "./employee-wizard-initial-state"
+
+/**
+ * Manages the multi-step employee creation wizard workflow.
+ * Handles tab navigation guards, validation checks, confirmation modals, and final payload submission.
+ *
+ * @returns State and event handlers for the employee creation wizard
+ */
 export function useEmployeeCreateWizard() {
   const [activeTab, setActiveTab] = useState<WizardTab>("bio")
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false)
 
   const [defaultEmployeeCode] = useState(
     () => `Outfiz${10000 + (window.crypto.getRandomValues(new Uint32Array(1))[0] % 90000)}`,
   )
 
-  const [formData, setFormData] = useState<IEmployeeWizardFormData>({
-    // Tab 1: Sơ yếu lý lịch
-    fullName: "",
-    gender: "male",
-    dateOfBirth: "",
-    placeOfBirth: "",
-    nationality: "Việt Nam",
-    ethnicity: "Kinh",
-    religion: "",
-    nationalId: "",
-    idIssueDate: "",
-    idIssuePlace: "",
-    permanentAddress: "",
-    province: "",
-    district: "",
-    maritalStatus: "single",
-    idFrontUrl: "",
-    idBackUrl: "",
-
-    phone: "",
-    email: "",
-    currentAddress: "",
-    currentProvince: "",
-    currentDistrict: "",
-
-    educations: [],
-    experiences: [],
-
-    // Tab 2: Công việc
-    employeeCode: defaultEmployeeCode,
-    workLocation: "",
-    department: "",
-    positionId: "",
-    startDate: new Date().toISOString().slice(0, 10),
-    workScheduleType: "full_time",
-    managerId: "",
-
-    username: defaultEmployeeCode,
-    password: "Password@123",
-    role: "EMPLOYEE",
-    autoGenUsername: true,
-    autoGenPassword: true,
-
-    // Tab 3: Thành viên gia đình
-    familyCode: "",
-    headFullName: "",
-    headPhone: "",
-    headNationalId: "",
-    householdAddress: "",
-    householdProvince: "",
-    householdDistrict: "",
-    familyMembers: [],
-  })
+  const [formData, setFormData] = useState<IEmployeeWizardFormData>(() =>
+    getInitialWizardFormData(defaultEmployeeCode),
+  )
 
   const createEmployeeMutation = useCreateEmployee()
 
@@ -98,104 +62,65 @@ export function useEmployeeCreateWizard() {
   }
 
   // Education helpers
-  const addEducation = () => {
-    const newItem: IEducationItem = {
-      id: String(Date.now()),
-      fromMonthYear: "",
-      toMonthYear: "",
-      degree: "",
-      trainingType: "",
-      major: "",
-      school: "",
-    }
-    setFormData((prev) => ({ ...prev, educations: [...prev.educations, newItem] }))
-  }
+  const addEducation = () =>
+    setFormData((prev) => ({ ...prev, educations: [...prev.educations, createEducationItem()] }))
 
-  const updateEducation = (id: string, field: keyof IEducationItem, value: string) => {
+  const updateEducation = (id: string, field: keyof IEducationItem, value: string) =>
     setFormData((prev) => ({
       ...prev,
       educations: prev.educations.map((item) =>
         item.id === id ? { ...item, [field]: value } : item,
       ),
     }))
-  }
 
-  const removeEducation = (id: string) => {
+  const removeEducation = (id: string) =>
     setFormData((prev) => ({
       ...prev,
       educations: prev.educations.filter((item) => item.id !== id),
     }))
-  }
 
   // Experience helpers
-  const addExperience = () => {
-    const newItem: IExperienceItem = {
-      id: String(Date.now()),
-      fromMonthYear: "",
-      toMonthYear: "",
-      company: "",
-      position: "",
-      description: "",
-    }
-    setFormData((prev) => ({ ...prev, experiences: [...prev.experiences, newItem] }))
-  }
+  const addExperience = () =>
+    setFormData((prev) => ({ ...prev, experiences: [...prev.experiences, createExperienceItem()] }))
 
-  const updateExperience = (id: string, field: keyof IExperienceItem, value: string) => {
+  const updateExperience = (id: string, field: keyof IExperienceItem, value: string) =>
     setFormData((prev) => ({
       ...prev,
       experiences: prev.experiences.map((item) =>
         item.id === id ? { ...item, [field]: value } : item,
       ),
     }))
-  }
 
-  const removeExperience = (id: string) => {
+  const removeExperience = (id: string) =>
     setFormData((prev) => ({
       ...prev,
       experiences: prev.experiences.filter((item) => item.id !== id),
     }))
-  }
 
   // Family Member helpers
-  const addFamilyMember = () => {
-    const newItem: IFamilyMemberItem = {
-      id: String(Date.now()),
-      nationalId: "",
-      gender: "male",
-      dateOfBirth: "",
-      nationality: "Việt Nam",
-      ethnicity: "Kinh",
-      relationship: "",
-      birthAddress: "",
-      isDependent: false,
-    }
+  const addFamilyMember = () =>
     setFormData((prev) => ({
       ...prev,
-      familyMembers: [...prev.familyMembers, newItem],
+      familyMembers: [...prev.familyMembers, createFamilyMemberItem()],
     }))
-  }
 
   const updateFamilyMember = (
     id: string,
     field: keyof IFamilyMemberItem,
     value: string | boolean,
-  ) => {
+  ) =>
     setFormData((prev) => ({
       ...prev,
       familyMembers: prev.familyMembers.map((item) =>
         item.id === id ? { ...item, [field]: value } : item,
       ),
     }))
-  }
 
-  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false)
-
-  const removeFamilyMember = (id: string) => {
+  const removeFamilyMember = (id: string) =>
     setFormData((prev) => ({
       ...prev,
       familyMembers: prev.familyMembers.filter((item) => item.id !== id),
     }))
-  }
 
   const validateTab = (tab: WizardTab): boolean => {
     if (tab === "bio") {
@@ -225,23 +150,14 @@ export function useEmployeeCreateWizard() {
 
   const moveToTab = (nextTab: WizardTab) => {
     const getTabOrder = (tab: WizardTab): number => {
-      switch (tab) {
-        case "bio":
-          return 0
-        case "job":
-          return 1
-        case "family":
-          return 2
-      }
+      if (tab === "bio") return 0
+      if (tab === "job") return 1
+      return 2
     }
-    const nextOrder = getTabOrder(nextTab)
-    const activeOrder = getTabOrder(activeTab)
-
-    if (nextOrder > activeOrder) {
+    if (getTabOrder(nextTab) > getTabOrder(activeTab)) {
       setHasAttemptedSubmit(true)
       if (!validateTab(activeTab)) return
     }
-
     setActiveTab(nextTab)
     setHasAttemptedSubmit(false)
   }
@@ -251,7 +167,6 @@ export function useEmployeeCreateWizard() {
       setIsConfirmModalOpen(true)
       return
     }
-
     moveToTab(activeTab === "bio" ? "job" : "family")
   }
 

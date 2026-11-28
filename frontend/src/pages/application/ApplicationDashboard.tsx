@@ -3,120 +3,47 @@
 import { ApplicationDetail } from "@/components/features/application/ApplicationDetail"
 import { ApplicationList } from "@/components/features/application/ApplicationList"
 import { ApplicationModals } from "@/components/features/application/ApplicationModals"
+import { ApplicationSubHeader } from "@/components/features/application/ApplicationSubHeader"
 import { LeavesSummaryTab } from "@/components/features/application/LeavesSummaryTab"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ROUTES } from "@/config/routes.config"
-import { useAllApplications } from "@/hooks/application/useAllApplications"
-import { useManageApplications } from "@/hooks/application/useManageApplications"
-import { useMyApplications } from "@/hooks/application/useMyApplications"
-import {
-  type IApplication,
-  type IApplicationListItem,
-  applicationApi,
-} from "@/lib/api/application.api"
-
-import { startTransition, useEffect, useState } from "react"
+import { useApplicationDashboard } from "@/hooks/application/use-application-dashboard"
 
 import { Plus } from "lucide-react"
-import { useLocation, useSearchParams } from "react-router-dom"
-import { toast } from "sonner"
 
-/** Coordinates route-scoped application lists, leaves view, and the lazy detail view. */
+/**
+ * Coordinates route-scoped application lists, leaves view, and the lazy detail view.
+ * Thin declarative composition shell powered by useApplicationDashboard presenter hook.
+ */
 export default function ApplicationDashboard() {
-  const [view, setView] = useState<"list" | "detail">("list")
-  const [selectedApp, setSelectedApp] = useState<IApplication | null>(null)
-  const [isDetailLoading, setIsDetailLoading] = useState(false)
-  const [mineSubTab, setMineSubTab] = useState<"list" | "leaves">("list")
-  const [showSubmitModal, setShowSubmitModal] = useState(false)
-  const [rejectTarget, setRejectTarget] = useState<IApplication | null>(null)
-  const [swapConfirmTarget, setSwapConfirmTarget] = useState<IApplication | null>(null)
+  const {
+    view,
+    selectedApp,
+    isDetailLoading,
+    mineSubTab,
+    setMineSubTab,
+    showSubmitModal,
+    setShowSubmitModal,
+    rejectTarget,
+    setRejectTarget,
+    swapConfirmTarget,
+    setSwapConfirmTarget,
+    activeTab,
+    activeAppHook,
+    myApps,
+    manageApps,
+    allApps,
+    handleRejectConfirm,
+    handleSwapRejectConfirm,
+    handleRowClick,
+    handleBackToList,
+  } = useApplicationDashboard()
 
-  const [searchParams] = useSearchParams()
-  const location = useLocation()
-
-  let activeTab: "mine" | "manage" | "all" = "mine"
-  if (location.pathname.startsWith(ROUTES.APPLICATION.MANAGE)) activeTab = "manage"
-  else if (location.pathname.startsWith(ROUTES.APPLICATION.ALL)) activeTab = "all"
-
-  const activeType = searchParams.get("type") || "all"
-
-  const myApps = useMyApplications(activeTab === "mine")
-  const manageApps = useManageApplications(activeTab === "manage")
-  const allApps = useAllApplications(activeTab === "all")
-
-  const { setTypeFilter: setMyTypeFilter } = myApps
-  const { setTypeFilter: setManageTypeFilter } = manageApps
-  const { setTypeFilter: setAllTypeFilter } = allApps
-
-  useEffect(() => {
-    startTransition(() => {
-      setView("list")
-      setSelectedApp(null)
-    })
-    setMyTypeFilter(activeType)
-    setManageTypeFilter(activeType)
-    setAllTypeFilter(activeType)
-  }, [activeTab, activeType, setManageTypeFilter, setMyTypeFilter, setAllTypeFilter])
-
-  const handleRejectConfirm = async (reason: string) => {
-    if (!rejectTarget) return
-    await manageApps.handleReject(rejectTarget.id, reason)
-    setRejectTarget(null)
-    if (view === "detail" && selectedApp?.id === rejectTarget.id) {
-      setView("list")
-    }
-  }
-
-  const handleSwapRejectConfirm = async (reason: string) => {
-    if (!swapConfirmTarget) return
-    await manageApps.handleSwapReject(swapConfirmTarget.id, reason)
-    setSwapConfirmTarget(null)
-    if (view === "detail" && selectedApp?.id === swapConfirmTarget.id) {
-      setView("list")
-    }
-  }
-
-  const handleRowClick = async (app: IApplicationListItem) => {
-    setView("detail")
-    setIsDetailLoading(true)
-    try {
-      const detail = await applicationApi.getById(app.id)
-      setSelectedApp(detail)
-    } catch (error) {
-      const apiError = error as { response?: { data?: { error?: { message?: string } } } }
-      toast.error(apiError.response?.data?.error?.message ?? "Lỗi khi tải chi tiết đơn")
-      setView("list")
-    } finally {
-      setIsDetailLoading(false)
-    }
-  }
-
-  const subHeader =
-    activeTab === "mine" ? (
-      <div className="border-b border-border px-1 shrink-0">
-        <Tabs
-          value={mineSubTab}
-          onValueChange={(val) => {
-            setMineSubTab(val as "list" | "leaves")
-          }}
-        >
-          <TabsList variant="line" className="h-10 gap-6 bg-transparent p-0">
-            <TabsTrigger
-              value="list"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary px-1 py-2 font-medium text-sm transition-colors shadow-none"
-            >
-              Danh sách đơn
-            </TabsTrigger>
-            <TabsTrigger
-              value="leaves"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary px-1 py-2 font-medium text-sm transition-colors shadow-none"
-            >
-              Tổng phép
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-    ) : undefined
+  const subHeader = (
+    <ApplicationSubHeader
+      activeTab={activeTab}
+      mineSubTab={mineSubTab}
+      onSubTabChange={setMineSubTab}
+    />
+  )
 
   const modals = (
     <ApplicationModals
@@ -155,18 +82,15 @@ export default function ApplicationDashboard() {
           application={selectedApp}
           isLoading={isDetailLoading}
           mode={activeTab}
-          onBack={() => {
-            setView("list")
-            setSelectedApp(null)
-          }}
+          onBack={handleBackToList}
           onApprove={async (app) => {
             await manageApps.handleApprove(app.id)
-            setView("list")
+            handleBackToList()
           }}
           onReject={setRejectTarget}
           onSwapConfirm={async (app) => {
             await manageApps.handleSwapConfirm(app.id)
-            setView("list")
+            handleBackToList()
           }}
           onSwapReject={setSwapConfirmTarget}
         />
@@ -212,7 +136,7 @@ export default function ApplicationDashboard() {
       onRowClick={(app) => {
         void handleRowClick(app)
       }}
-      hookState={activeTab === "mine" ? myApps : activeTab === "manage" ? manageApps : allApps}
+      hookState={activeAppHook}
       extraContent={modals}
     />
   )

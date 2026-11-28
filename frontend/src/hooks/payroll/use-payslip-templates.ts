@@ -5,6 +5,9 @@ import type { IPayslipTemplate } from "@/types/payroll.types"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
+/**
+ * Query and mutation hooks for payslip templates CRUD operations.
+ */
 export function usePayslipTemplates() {
   return useQuery({
     queryKey: PAYROLL_QUERY_KEYS.PAYSLIP_TEMPLATES,
@@ -24,6 +27,7 @@ export interface ICreatePayslipTemplatePayload {
   }>
 }
 
+/** Mutation hook to create a new payslip template definition. */
 export function useCreatePayslipTemplate() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -37,6 +41,7 @@ export function useCreatePayslipTemplate() {
   })
 }
 
+/** Mutation hook to update an existing payslip template. */
 export function useUpdatePayslipTemplate() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -53,6 +58,7 @@ export function useUpdatePayslipTemplate() {
   })
 }
 
+/** Mutation hook to delete an unassigned payslip template. */
 export function useDeletePayslipTemplate() {
   const queryClient = useQueryClient()
   return useMutation({

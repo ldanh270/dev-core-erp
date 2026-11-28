@@ -20,7 +20,7 @@ export function useUsersManagementMaster() {
   const debouncedSearch = useDebounce(search, 400)
 
   const [query, setQuery] = useState<EmployeeListQuery>({
-    page: 1,
+    page: SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE,
     limit: SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT,
   })
 
@@ -81,13 +81,13 @@ export function useUsersManagementMaster() {
   const handleSearch = useCallback((valueOrEvent: React.ChangeEvent<HTMLInputElement> | string) => {
     const val = typeof valueOrEvent === "string" ? valueOrEvent : valueOrEvent.target.value
     setSearch(val)
-    setQuery((prev) => ({ ...prev, page: 1 }))
+    setQuery((prev) => ({ ...prev, page: SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE }))
   }, [])
 
   // Reset pagination on tab switches
   const handleTabChange = useCallback((tab: IUsersManagementTab) => {
     setActiveTab(tab)
-    setQuery((prev) => ({ ...prev, page: 1 }))
+    setQuery((prev) => ({ ...prev, page: SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE }))
   }, [])
 
   // Unified loading & error states
@@ -102,18 +102,24 @@ export function useUsersManagementMaster() {
   // Pagination metrics
   const total =
     activeTab === USERS_MANAGEMENT_TABS.ALL
-      ? (allUsers?.meta.total ?? 0)
+      ? (allUsers?.meta.total ?? SYSTEM_CONFIG.PAGINATION.EMPTY_COUNT)
       : filteredLockedUsers.length
   const totalPages =
     activeTab === USERS_MANAGEMENT_TABS.ALL
-      ? (allUsers?.meta.totalPages ?? 0)
+      ? (allUsers?.meta.totalPages ?? SYSTEM_CONFIG.PAGINATION.EMPTY_COUNT)
       : Math.ceil(
           filteredLockedUsers.length / (query.limit || SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT),
         )
 
   const limit = query.limit || SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT
-  const pageStart = ((query.page || 1) - 1) * limit + (displayData?.length ? 1 : 0)
-  const pageEnd = ((query.page || 1) - 1) * limit + (displayData?.length || 0)
+  const pageStart =
+    ((query.page || SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE) - 1) * limit +
+    (displayData?.length ? 1 : 0)
+  const pageEnd =
+    ((query.page || SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE) - 1) * limit + (displayData?.length || 0)
+
+  const currentPage = query.page || SYSTEM_CONFIG.PAGINATION.DEFAULT_PAGE
+  const pageSize = limit
 
   const visiblePages = useMemo(() => {
     return Array.from(
@@ -125,6 +131,8 @@ export function useUsersManagementMaster() {
   return {
     query,
     setQuery,
+    currentPage,
+    pageSize,
     activeTab,
     handleTabChange,
     search,

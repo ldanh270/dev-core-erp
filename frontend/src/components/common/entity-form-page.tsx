@@ -16,6 +16,12 @@ interface EntityFormPageProps {
   onSubmit?: () => void
   submitLabel?: string
   cancelLabel?: string
+  secondaryAction?: {
+    label: string
+    onClick: () => void
+    disabled?: boolean
+  }
+  extraActions?: ReactNode
   className?: string
 }
 
@@ -36,6 +42,8 @@ export function EntityFormPage({
   onSubmit,
   submitLabel = "Lưu",
   cancelLabel = "Huỷ bỏ",
+  secondaryAction,
+  extraActions,
   className,
 }: EntityFormPageProps) {
   return (
@@ -82,11 +90,24 @@ export function EntityFormPage({
               key="cancel-btn"
               type="button"
               variant="outline"
-              className="rounded-full rounded-full font-semibold border-border hover:bg-muted text-foreground shadow-xs px-8"
+              className="rounded-full font-semibold border-border hover:bg-muted text-foreground shadow-xs px-8"
               onClick={onBack}
             >
               {cancelLabel}
             </Button>
+            {secondaryAction && (
+              <Button
+                key="secondary-action-btn"
+                type="button"
+                variant="outline"
+                className="rounded-full font-semibold border-border hover:bg-muted text-foreground shadow-xs px-8"
+                onClick={secondaryAction.onClick}
+                disabled={secondaryAction.disabled || isPending}
+              >
+                {secondaryAction.label}
+              </Button>
+            )}
+            {extraActions}
             <Button
               key="save-btn"
               type={formId ? "submit" : "button"}

@@ -5,12 +5,18 @@ import { cn } from "@/lib/utils"
 
 import { FileText, Loader2 } from "lucide-react"
 
+/**
+ * Props for ActivityLogDetailDrawer component.
+ */
 interface ActivityLogDetailDrawerProps {
   logId: string | null
   onClose: () => void
   scope?: "all" | "me"
 }
 
+/**
+ * Drawer component presenting full JSON changes and metadata for a specific activity log.
+ */
 export function ActivityLogDetailDrawer({
   logId,
   onClose,

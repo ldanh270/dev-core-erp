@@ -5,6 +5,9 @@ import type { IPayslip, IPayslipFeedbackPayload } from "@/types/payroll.types"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
+/**
+ * Query hook fetching paginated personal payslip records for the authenticated user.
+ */
 export function useMyPayslips() {
   return useQuery({
     queryKey: PAYROLL_QUERY_KEYS.MY_PAYSLIPS,
@@ -15,6 +18,7 @@ export function useMyPayslips() {
   })
 }
 
+/** Mutation hook submitting employee inquiries or feedback regarding payslip lines. */
 export function useSubmitPayslipFeedback() {
   const queryClient = useQueryClient()
   return useMutation({

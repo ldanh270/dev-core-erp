@@ -1,22 +1,17 @@
 import { EntityFormPage } from "@/components/common"
 import { BioTab } from "@/components/features/employees/wizard/BioTab"
+import { EmployeeCreateConfirmDialog } from "@/components/features/employees/wizard/EmployeeCreateConfirmDialog"
+import { EmployeeWizardNav } from "@/components/features/employees/wizard/EmployeeWizardNav"
 import { FamilyTab } from "@/components/features/employees/wizard/FamilyTab"
 import { JobTab } from "@/components/features/employees/wizard/JobTab"
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { ROUTES } from "@/config/routes.config"
 import { useEmployeeCreateWizard } from "@/hooks/employees/useEmployeeCreateWizard"
 import { routerNavigate } from "@/lib/router-navigator"
 
-import { HelpCircle } from "lucide-react"
-
+/**
+ * Full-page multi-step wizard orchestrator for employee profile onboarding.
+ * Thin declarative shell connecting useEmployeeCreateWizard with EntityFormPage.
+ */
 export default function EmployeeCreatePage() {
   const {
     activeTab,
@@ -56,48 +51,8 @@ export default function EmployeeCreatePage() {
       cancelLabel="Huỷ bỏ"
     >
       <div className="space-y-6">
-        {/* Top Tab Bar Navigation */}
-        <div className="border border-border rounded-full bg-card overflow-hidden p-1 flex items-center gap-1 shadow-none">
-          <button
-            type="button"
-            onClick={() => {
-              moveToTab("bio")
-            }}
-            className={`flex-1 py-2 px-5 text-sm font-medium rounded-full transition-all text-center ${
-              activeTab === "bio"
-                ? "bg-primary text-primary-foreground shadow-none font-semibold"
-                : "text-muted-foreground hover:bg-muted/50"
-            }`}
-          >
-            Sơ yếu lý lịch
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              moveToTab("job")
-            }}
-            className={`flex-1 py-2 px-5 text-sm font-medium rounded-full transition-all text-center ${
-              activeTab === "job"
-                ? "bg-primary text-primary-foreground shadow-none font-semibold"
-                : "text-muted-foreground hover:bg-muted/50"
-            }`}
-          >
-            Công việc
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              moveToTab("family")
-            }}
-            className={`flex-1 py-2 px-5 text-sm font-medium rounded-full transition-all text-center ${
-              activeTab === "family"
-                ? "bg-primary text-primary-foreground shadow-none font-semibold"
-                : "text-muted-foreground hover:bg-muted/50"
-            }`}
-          >
-            Thành viên gia đình
-          </button>
-        </div>
+        {/* Top Tab Bar Navigation - Pure prop delegation */}
+        <EmployeeWizardNav activeTab={activeTab} onTabChange={moveToTab} />
 
         {/* Tab Contents */}
         {activeTab === "bio" && (
@@ -133,41 +88,12 @@ export default function EmployeeCreatePage() {
         )}
       </div>
 
-      {/* Confirmation Modal */}
-      <Dialog open={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
-        <DialogContent className="sm:max-w-[420px] rounded-xl text-center">
-          <DialogHeader className="items-center">
-            <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2">
-              <HelpCircle size={28} />
-            </div>
-            <DialogTitle className="text-center font-bold text-lg">Xác nhận</DialogTitle>
-            <DialogDescription className="text-center text-sm text-muted-foreground pt-1">
-              Xác nhận tạo mới nhân sự
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex sm:justify-center gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setIsConfirmModalOpen(false)
-              }}
-              className="rounded-full min-w-24"
-              disabled={isSubmitting}
-            >
-              Đóng
-            </Button>
-            <Button
-              type="button"
-              onClick={handleFinalSubmit}
-              className="rounded-full min-w-24 bg-primary text-primary-foreground"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Đang xử lý..." : "Đồng ý"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <EmployeeCreateConfirmDialog
+        open={isConfirmModalOpen}
+        onOpenChange={setIsConfirmModalOpen}
+        isSubmitting={isSubmitting}
+        onConfirm={handleFinalSubmit}
+      />
     </EntityFormPage>
   )
 }

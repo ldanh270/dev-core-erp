@@ -1,5 +1,4 @@
-import { AppDrawer } from "@/components/common"
-import { DatePicker } from "@/components/common"
+import { AppDrawer, DatePicker } from "@/components/common"
 import { EmployeeWeeklyScheduleSection } from "@/components/features/employees/employee-weekly-schedule-section"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,15 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  EMPLOYEE_STATUSES,
-  EMPLOYEE_STATUS_LABELS,
-  EMPLOYMENT_CATEGORY_TYPES,
-  WORK_SCHEDULE_TYPES,
-  getEmployeeTypeLabel,
-  getRoleLabel,
-  getWorkScheduleTypeLabel,
-} from "@/config/entities/employee.config"
+import { getRoleLabel } from "@/config/entities/employee.config"
+import type { EmployeeEditFormValues } from "@/hooks/employees/employee-edit-form.schema"
 import { useEmployeeWeeklyScheduleSection } from "@/hooks/employees/use-employee-weekly-schedule-section"
 import { useEmployeeEditModal } from "@/hooks/employees/useEmployeeEditModal"
 import {
@@ -28,17 +20,16 @@ import {
   useUpdateEmployeeRoles,
 } from "@/hooks/security/queries/use-security-query"
 import { usePositions } from "@/hooks/use-position-query"
-import type {
-  Employee,
-  EmployeeStatus,
-  EmployeeType,
-  WorkScheduleType,
-} from "@/types/employee.types"
+import type { Employee } from "@/types/employee.types"
+import type { Role } from "@/types/security.types"
 import { isPartTimeWorkSchedule } from "@/utils/employee/is-part-time-work-schedule.util"
 
 import { useState } from "react"
 
+import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
 import { toast } from "sonner"
+
+import { EmployeeJobFieldsSection } from "./EmployeeJobFieldsSection"
 
 interface Props {
   isOpen: boolean
@@ -114,332 +105,29 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
 
         <div className="p-10 flex-1 overflow-y-auto">
           <form id="edit-employee-form" onSubmit={onSubmit} className="space-y-8">
-            <section>
-              <h3 className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                Tài khoản & Phân quyền
-              </h3>
-              <div className="border border-border rounded-xl p-4 bg-card space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="username" className="text-[12px] text-muted-foreground">
-                      Tên đăng nhập
-                    </Label>
-                    <Input
-                      id="username"
-                      {...register("username")}
-                      className={`bg-background ${errors.username ? "border-destructive" : ""}`}
-                    />
-                    {errors.username && (
-                      <p className="text-xs text-destructive">{errors.username.message}</p>
-                    )}
-                  </div>
+            <EditAccountSection
+              register={register}
+              errors={errors}
+              selectedRoleIds={selectedRoleIds}
+              employeeRoles={employeeRoles}
+              allRoles={allRoles}
+              onRoleSelectionChange={handleRoleSelectionChange}
+            />
 
-                  <div className="space-y-1.5">
-                    <Label htmlFor="email" className="text-[12px] text-muted-foreground">
-                      Email
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      {...register("email")}
-                      className={`bg-background ${errors.email ? "border-destructive" : ""}`}
-                    />
-                    {errors.email && (
-                      <p className="text-xs text-destructive">{errors.email.message}</p>
-                    )}
-                  </div>
-                </div>
+            <EditBasicInfoSection
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="password" className="text-[12px] text-muted-foreground">
-                      Mật khẩu mới (Tùy chọn)
-                    </Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="Để trống nếu không đổi"
-                      {...register("password")}
-                      className={`bg-background ${errors.password ? "border-destructive" : ""}`}
-                    />
-                    {errors.password && (
-                      <p className="text-xs text-destructive">{errors.password.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="role-select" className="text-[12px] text-muted-foreground">
-                      Phân quyền
-                    </Label>
-                    <Select
-                      key={roleSeedKey}
-                      value={selectedRoleIds[0] || (employeeRoles?.[0]?.id ?? "none")}
-                      onValueChange={(val) => {
-                        handleRoleSelectionChange(val === "none" ? [] : [val])
-                      }}
-                    >
-                      <SelectTrigger id="role-select" className="h-10 bg-background">
-                        <SelectValue placeholder="-- Chọn phân quyền --" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">-- Chọn phân quyền --</SelectItem>
-                        {allRoles?.data?.map((r) => (
-                          <SelectItem key={r.id} value={r.id}>
-                            {getRoleLabel(r.name)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section>
-              <h3 className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                Thông tin cơ bản
-              </h3>
-              <div className="border border-border rounded-xl p-4 bg-card space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="fullName" className="text-[12px] text-muted-foreground">
-                    Họ và tên
-                  </Label>
-                  <Input
-                    id="fullName"
-                    {...register("fullName")}
-                    className={`bg-background ${errors.fullName ? "border-destructive" : ""}`}
-                  />
-                  {errors.fullName && (
-                    <p className="text-xs text-destructive">{errors.fullName.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="phone" className="text-[12px] text-muted-foreground">
-                    Số điện thoại
-                  </Label>
-                  <Input
-                    id="phone"
-                    {...register("phone")}
-                    className={`bg-background ${errors.phone ? "border-destructive" : ""}`}
-                  />
-                  {errors.phone && (
-                    <p className="text-xs text-destructive">{errors.phone.message}</p>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="dateOfBirth" className="text-[12px] text-muted-foreground">
-                      Ngày sinh
-                    </Label>
-                    <DatePicker
-                      id="dateOfBirth"
-                      value={watch("dateOfBirth") || null}
-                      onChange={(val) => {
-                        setValue("dateOfBirth", val || "", {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        })
-                      }}
-                      placeholder="Chọn ngày sinh..."
-                    />
-                    {errors.dateOfBirth && (
-                      <p className="text-xs text-destructive">{errors.dateOfBirth.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="nationalId" className="text-[12px] text-muted-foreground">
-                      CCCD / CMND
-                    </Label>
-                    <Input
-                      id="nationalId"
-                      {...register("nationalId")}
-                      className={`bg-background ${errors.nationalId ? "border-destructive" : ""}`}
-                    />
-                    {errors.nationalId && (
-                      <p className="text-xs text-destructive">{errors.nationalId.message}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="address" className="text-[12px] text-muted-foreground">
-                    Địa chỉ
-                  </Label>
-                  <Input
-                    id="address"
-                    {...register("address")}
-                    className={`bg-background ${errors.address ? "border-destructive" : ""}`}
-                  />
-                  {errors.address && (
-                    <p className="text-xs text-destructive">{errors.address.message}</p>
-                  )}
-                </div>
-              </div>
-            </section>
-
-            <section>
-              <h3 className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                Công việc & Hợp đồng
-              </h3>
-              <div className="border border-border rounded-xl p-4 bg-card space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="positionId" className="text-[12px] text-muted-foreground">
-                      Chức danh (Vị trí)
-                    </Label>
-                    <Select
-                      value={watch("positionId") || "none"}
-                      onValueChange={(val) => {
-                        setValue("positionId", val === "none" ? "" : val, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        })
-                      }}
-                    >
-                      <SelectTrigger
-                        id="positionId"
-                        className={`h-10 bg-background ${errors.positionId ? "border-destructive" : ""}`}
-                      >
-                        <SelectValue placeholder="-- Chọn chức danh --" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">-- Chọn chức danh --</SelectItem>
-                        {positions.map((pos: { id: string; name: string }) => (
-                          <SelectItem key={pos.id} value={pos.id}>
-                            {pos.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.positionId && (
-                      <p className="text-xs text-destructive">{errors.positionId.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="employeeType" className="text-[12px] text-muted-foreground">
-                      Loại nhân sự
-                    </Label>
-                    <Select
-                      value={watch("employeeType") || EMPLOYMENT_CATEGORY_TYPES[0]}
-                      onValueChange={(val) => {
-                        setValue("employeeType", val as EmployeeType, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        })
-                      }}
-                    >
-                      <SelectTrigger id="employeeType" className="h-10 bg-background">
-                        <SelectValue placeholder="Chọn loại nhân sự..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {EMPLOYMENT_CATEGORY_TYPES.map((typeKey) => (
-                          <SelectItem key={typeKey} value={typeKey}>
-                            {getEmployeeTypeLabel(typeKey)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="status" className="text-[12px] text-muted-foreground">
-                      Trạng thái
-                    </Label>
-                    <Select
-                      value={watch("status") || EMPLOYEE_STATUSES[0]}
-                      onValueChange={(val) => {
-                        setValue("status", val as EmployeeStatus, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        })
-                      }}
-                    >
-                      <SelectTrigger id="status" className="h-10 bg-background">
-                        <SelectValue placeholder="Chọn trạng thái..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {EMPLOYEE_STATUSES.map((statusKey) => (
-                          <SelectItem key={statusKey} value={statusKey}>
-                            {EMPLOYEE_STATUS_LABELS[statusKey]}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="workScheduleType" className="text-[12px] text-muted-foreground">
-                      Hình thức làm việc
-                    </Label>
-                    <Select
-                      value={watch("workScheduleType") || WORK_SCHEDULE_TYPES[0]}
-                      onValueChange={(val) => {
-                        setValue("workScheduleType", val as WorkScheduleType, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        })
-                      }}
-                    >
-                      <SelectTrigger id="workScheduleType" className="h-10 bg-background">
-                        <SelectValue placeholder="Chọn hình thức làm việc..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {WORK_SCHEDULE_TYPES.map((typeKey) => (
-                          <SelectItem key={typeKey} value={typeKey}>
-                            {getWorkScheduleTypeLabel(typeKey)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="startDate" className="text-[12px] text-muted-foreground">
-                      Ngày bắt đầu
-                    </Label>
-                    <DatePicker
-                      id="startDate"
-                      value={watch("startDate") || null}
-                      onChange={(val) => {
-                        setValue("startDate", val || "", {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        })
-                      }}
-                      placeholder="Chọn ngày bắt đầu..."
-                    />
-                    {errors.startDate && (
-                      <p className="text-xs text-destructive">{errors.startDate.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="endDate" className="text-[12px] text-muted-foreground">
-                      Ngày kết thúc
-                    </Label>
-                    <DatePicker
-                      id="endDate"
-                      value={watch("endDate") || null}
-                      onChange={(val) => {
-                        setValue("endDate", val || "", { shouldValidate: true, shouldDirty: true })
-                      }}
-                      placeholder="Chọn ngày kết thúc..."
-                    />
-                    {errors.endDate && (
-                      <p className="text-xs text-destructive">{errors.endDate.message}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </section>
+            <EmployeeJobFieldsSection
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+              positions={positions}
+              isEdit
+            />
 
             <EmployeeWeeklyScheduleSection
               section={weeklySchedule}
@@ -461,5 +149,178 @@ export function EmployeeEditDrawer({ isOpen, onClose, employee }: Props) {
         </div>
       </div>
     </AppDrawer>
+  )
+}
+
+function EditAccountSection({
+  register,
+  errors,
+  selectedRoleIds,
+  employeeRoles,
+  allRoles,
+  onRoleSelectionChange,
+}: {
+  register: UseFormRegister<EmployeeEditFormValues>
+  errors: FieldErrors<EmployeeEditFormValues>
+  selectedRoleIds: string[]
+  employeeRoles?: Array<{ id: string; name: string }>
+  allRoles?: { data: Role[] }
+  onRoleSelectionChange: (roleIds: string[]) => void
+}) {
+  return (
+    <section>
+      <h3 className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+        Tài khoản & Phân quyền
+      </h3>
+      <div className="border border-border rounded-xl p-4 bg-card space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="username" className="text-[12px] text-muted-foreground">
+              Tên đăng nhập
+            </Label>
+            <Input
+              id="username"
+              {...register("username")}
+              className={`bg-background ${errors.username ? "border-destructive" : ""}`}
+            />
+            {errors.username && (
+              <p className="text-xs text-destructive">{errors.username.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="text-[12px] text-muted-foreground">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              {...register("email")}
+              className={`bg-background ${errors.email ? "border-destructive" : ""}`}
+            />
+            {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-[12px] text-muted-foreground">Vai trò & Quyền hạn</Label>
+          <Select
+            value={selectedRoleIds[0] || (employeeRoles?.[0]?.id ?? "none")}
+            onValueChange={(val) => {
+              if (val === "none") {
+                onRoleSelectionChange([])
+              } else {
+                onRoleSelectionChange([val])
+              }
+            }}
+          >
+            <SelectTrigger className="bg-background">
+              <SelectValue placeholder="Chọn vai trò..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">-- Không gán vai trò --</SelectItem>
+              {allRoles?.data.map((role) => (
+                <SelectItem key={role.id} value={role.id}>
+                  {getRoleLabel(role.name)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function EditBasicInfoSection({
+  register,
+  errors,
+  watch,
+  setValue,
+}: {
+  register: UseFormRegister<EmployeeEditFormValues>
+  errors: FieldErrors<EmployeeEditFormValues>
+  watch: UseFormWatch<EmployeeEditFormValues>
+  setValue: UseFormSetValue<EmployeeEditFormValues>
+}) {
+  return (
+    <section>
+      <h3 className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+        Thông tin cơ bản
+      </h3>
+      <div className="border border-border rounded-xl p-4 bg-card space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="fullName" className="text-[12px] text-muted-foreground">
+            Họ và tên
+          </Label>
+          <Input
+            id="fullName"
+            {...register("fullName")}
+            className={`bg-background ${errors.fullName ? "border-destructive" : ""}`}
+          />
+          {errors.fullName && <p className="text-xs text-destructive">{errors.fullName.message}</p>}
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="phone" className="text-[12px] text-muted-foreground">
+              Số điện thoại
+            </Label>
+            <Input
+              id="phone"
+              {...register("phone")}
+              className={`bg-background ${errors.phone ? "border-destructive" : ""}`}
+            />
+            {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="nationalId" className="text-[12px] text-muted-foreground">
+              CCCD / CMND
+            </Label>
+            <Input
+              id="nationalId"
+              {...register("nationalId")}
+              className={`bg-background ${errors.nationalId ? "border-destructive" : ""}`}
+            />
+            {errors.nationalId && (
+              <p className="text-xs text-destructive">{errors.nationalId.message}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="dateOfBirth" className="text-[12px] text-muted-foreground">
+            Ngày sinh
+          </Label>
+          <DatePicker
+            id="dateOfBirth"
+            value={watch("dateOfBirth") || null}
+            onChange={(val) => {
+              setValue("dateOfBirth", val || "", {
+                shouldValidate: true,
+                shouldDirty: true,
+              })
+            }}
+            placeholder="Chọn ngày sinh..."
+          />
+          {errors.dateOfBirth && (
+            <p className="text-xs text-destructive">{errors.dateOfBirth.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="address" className="text-[12px] text-muted-foreground">
+            Địa chỉ thường trú
+          </Label>
+          <Input
+            id="address"
+            {...register("address")}
+            className={`bg-background ${errors.address ? "border-destructive" : ""}`}
+          />
+          {errors.address && <p className="text-xs text-destructive">{errors.address.message}</p>}
+        </div>
+      </div>
+    </section>
   )
 }

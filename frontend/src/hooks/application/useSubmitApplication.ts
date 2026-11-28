@@ -1,8 +1,11 @@
+import { APPLICATION_MESSAGES } from "@/config/messages/application.message"
 import { type ISubmitApplicationDTO, applicationApi } from "@/lib/api/application.api"
 
 import { useState } from "react"
 
 import { toast } from "sonner"
+
+const { ERRORS, SUCCESS } = APPLICATION_MESSAGES
 
 interface UseSubmitApplicationReturn {
   isSubmitting: boolean
@@ -10,6 +13,9 @@ interface UseSubmitApplicationReturn {
   submitBulkApplications: (forms: ISubmitApplicationDTO[]) => Promise<boolean>
 }
 
+/**
+ * Handles single and bulk application submission mutations and network error alerts.
+ */
 export function useSubmitApplication(): UseSubmitApplicationReturn {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -17,10 +23,9 @@ export function useSubmitApplication(): UseSubmitApplicationReturn {
     setIsSubmitting(true)
     try {
       await applicationApi.submit(dto)
-      toast.success("Đơn đã được gửi thành công!")
+      toast.success(SUCCESS.SUBMIT_SINGLE)
       return true
     } catch (error: unknown) {
-      // Log full error to console for debugging
       console.error("[submitApplication] error:", error)
 
       const axiosErr = error as {
@@ -33,26 +38,23 @@ export function useSubmitApplication(): UseSubmitApplicationReturn {
       }
 
       if (axiosErr.response) {
-        // Got a response from server — show specific message
-        // Auth middleware uses { status, message } shape
-        // Controllers use { data, error: { message } } shape
-        const status = axiosErr.response.status
+        const status = axiosErr.response.status ?? 500
         const msg =
-          axiosErr.response.data?.error?.message ?? // controller errors
-          axiosErr.response.data?.message ?? // auth middleware errors
-          `Lỗi server (${status})`
+          axiosErr.response.data?.error?.message ??
+          axiosErr.response.data?.message ??
+          ERRORS.SERVER_ERROR_STATUS(status)
 
         if (status === 401) {
-          toast.error(`Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.`)
+          toast.error(ERRORS.SESSION_EXPIRED)
         } else {
           toast.error(msg)
         }
       } else if (axiosErr.code === "ERR_NETWORK" || axiosErr.message?.includes("Network Error")) {
-        toast.error("Không thể kết nối server. Vui lòng kiểm tra backend đang chạy.")
+        toast.error(ERRORS.SERVER_CONNECTION_FAILED)
       } else if (axiosErr.code === "ERR_CANCELED") {
         // silently ignore aborted requests
       } else {
-        toast.error(axiosErr.message ?? "Lỗi không xác định khi gửi đơn")
+        toast.error(axiosErr.message ?? ERRORS.SUBMIT_FAILED)
       }
 
       return false
@@ -65,7 +67,7 @@ export function useSubmitApplication(): UseSubmitApplicationReturn {
     setIsSubmitting(true)
     try {
       await applicationApi.submitBulk(forms)
-      toast.success(`Đã gửi thành công ${forms.length} đơn!`)
+      toast.success(SUCCESS.SUBMIT_BULK(forms.length))
       return true
     } catch (error: unknown) {
       console.error("[submitBulkApplications] error:", error)
@@ -80,21 +82,21 @@ export function useSubmitApplication(): UseSubmitApplicationReturn {
       }
 
       if (axiosErr.response) {
-        const status = axiosErr.response.status
+        const status = axiosErr.response.status ?? 500
         const msg =
           axiosErr.response.data?.error?.message ??
           axiosErr.response.data?.message ??
-          `Lỗi server (${status})`
+          ERRORS.SERVER_ERROR_STATUS(status)
 
         if (status === 401) {
-          toast.error(`Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.`)
+          toast.error(ERRORS.SESSION_EXPIRED)
         } else {
           toast.error(msg)
         }
       } else if (axiosErr.code === "ERR_NETWORK" || axiosErr.message?.includes("Network Error")) {
-        toast.error("Không thể kết nối server. Vui lòng kiểm tra backend đang chạy.")
+        toast.error(ERRORS.SERVER_CONNECTION_FAILED)
       } else {
-        toast.error(axiosErr.message ?? "Lỗi không xác định khi gửi nhiều đơn")
+        toast.error(axiosErr.message ?? ERRORS.BULK_SUBMIT_FAILED)
       }
 
       return false

@@ -5,18 +5,21 @@ import type { IPayrollSettings } from "@/types/payroll.types"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
+/**
+ * Query hook fetching organizational payroll cycle configuration and date boundaries.
+ */
 export function usePayrollSettings() {
   return useQuery({
     queryKey: PAYROLL_QUERY_KEYS.SETTINGS,
     queryFn: async () => {
       const response = await apiClient.get(API_ENDPOINTS.PAYROLL.SETTINGS)
       const data = response.data?.data || response.data
-      console.log("FETCHED SETTINGS FROM API:", data)
       return data as IPayrollSettings
     },
   })
 }
 
+/** Mutation hook updating recurring payroll cycle schedule and cutoff dates. */
 export function useUpdatePayrollSettings() {
   const queryClient = useQueryClient()
   return useMutation({

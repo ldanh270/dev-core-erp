@@ -14,3 +14,15 @@ export const createPayslipTemplateSchema = z.object({
 })
 
 export type CreatePayslipTemplateFormData = z.infer<typeof createPayslipTemplateSchema>
+
+/**
+ * Validation schema for configuring an employee's salary and assigned payslip template.
+ */
+export const salaryConfigFormSchema = z.object({
+  templateId: z.string().min(1, "Vui lòng chọn mẫu phiếu lương"),
+  baseSalary: z.number().min(0, "Lương cơ bản không được âm"),
+  effectiveFrom: z.string().min(1, "Vui lòng nhập ngày áp dụng"),
+  note: z.string().optional(),
+})
+
+export type SalaryConfigFormValues = z.infer<typeof salaryConfigFormSchema>

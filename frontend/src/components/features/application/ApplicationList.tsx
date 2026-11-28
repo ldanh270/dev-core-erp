@@ -36,87 +36,8 @@ const STATUS_MAP = new Map<string, { label: string; variant: StatusVariant }>([
 
 const APPLICATION_TYPE_MAP = new Map<string, string>(Object.entries(APPLICATION_TYPE_LABELS))
 
-export interface ApplicationListProps {
-  mode: "mine" | "manage" | "all"
-  title: string
-  description?: string
-  primaryAction?: {
-    label: string
-    icon?: LucideIcon
-    onClick: () => void
-  }
-  subHeader?: ReactNode
-  extraContent?: ReactNode
-  onRowClick: (app: IApplicationListItem) => void
-  hookState:
-    | ReturnType<typeof useMyApplications>
-    | ReturnType<typeof useManageApplications>
-    | ReturnType<typeof useAllApplications>
-}
-
-/**
- * Enterprise ApplicationList component powered by DataTablePage master primitive.
- * Locks viewport height to guarantee sticky headers and persistent pinned pagination.
- */
-export function ApplicationList({
-  mode,
-  title,
-  description,
-  primaryAction,
-  subHeader,
-  extraContent,
-  onRowClick,
-  hookState,
-}: ApplicationListProps) {
-  const currentHooks = hookState
-  const {
-    applications,
-    isLoading,
-    isRefreshing,
-    statusFilter,
-    setStatusFilter,
-    typeFilter,
-    setTypeFilter,
-    keyword,
-    setKeyword,
-    page,
-    setPage,
-    pageSize,
-    setPageSize,
-    totalPages,
-    total,
-    stats,
-  } = currentHooks as ReturnType<typeof useMyApplications> &
-    ReturnType<typeof useManageApplications> &
-    ReturnType<typeof useAllApplications>
-
-  const [isTransitionLoading, setIsTransitionLoading] = useState(true)
-  const showLoading = isLoading || isRefreshing || isTransitionLoading
-
-  const beginTransition = () => {
-    setIsTransitionLoading(true)
-  }
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsTransitionLoading(false)
-    }, 150)
-    return () => {
-      clearTimeout(timer)
-    }
-  }, [applications, statusFilter, typeFilter, keyword, page, pageSize])
-
-  const statusTabs = useMemo(
-    () => [
-      { id: "all", label: "Tất cả", count: stats.total },
-      { id: "pending", label: "Chờ duyệt", count: stats.pending },
-      { id: "approved", label: "Đã duyệt", count: stats.approved },
-      { id: "rejected", label: "Không duyệt", count: stats.rejected },
-    ],
-    [stats],
-  )
-
-  const columns: DataTableColumn<IApplicationListItem>[] = useMemo(() => {
+function useApplicationColumns(mode: "mine" | "manage" | "all") {
+  return useMemo(() => {
     const cols: DataTableColumn<IApplicationListItem>[] = [
       {
         id: "id",
@@ -230,18 +151,23 @@ export function ApplicationList({
 
     return cols
   }, [mode])
+}
 
-  const filterControls = (
+interface ApplicationFilterControlsProps {
+  typeFilter: string
+  onTypeFilterChange: (value: string) => void
+  onReset: () => void
+}
+
+function ApplicationFilterControls({
+  typeFilter,
+  onTypeFilterChange,
+  onReset,
+}: ApplicationFilterControlsProps) {
+  return (
     <div className="flex items-center gap-3">
       <div className="min-w-[180px]">
-        <Select
-          value={typeFilter}
-          onValueChange={(value) => {
-            beginTransition()
-            setTypeFilter(value)
-            setPage(1)
-          }}
-        >
+        <Select value={typeFilter} onValueChange={onTypeFilterChange}>
           <SelectTrigger
             aria-label="Lọc theo loại đơn"
             className="bg-background border-border shadow-none rounded-full h-10 text-sm font-medium"
@@ -262,12 +188,7 @@ export function ApplicationList({
       <Button
         type="button"
         variant="outline"
-        onClick={() => {
-          beginTransition()
-          setKeyword("")
-          setTypeFilter("all")
-          setPage(1)
-        }}
+        onClick={onReset}
         className="h-10 gap-1.5 rounded-full text-sm font-medium"
       >
         <RotateCcw className="size-4" />
@@ -275,6 +196,101 @@ export function ApplicationList({
       </Button>
     </div>
   )
+}
+
+export interface ApplicationListProps {
+  mode: "mine" | "manage" | "all"
+  title: string
+  description?: string
+  primaryAction?: {
+    label: string
+    icon?: LucideIcon
+    onClick: () => void
+  }
+  subHeader?: ReactNode
+  extraContent?: ReactNode
+  onRowClick: (app: IApplicationListItem) => void
+  hookState:
+    | ReturnType<typeof useMyApplications>
+    | ReturnType<typeof useManageApplications>
+    | ReturnType<typeof useAllApplications>
+}
+
+/**
+ * Enterprise ApplicationList component powered by DataTablePage master primitive.
+ * Locks viewport height to guarantee sticky headers and persistent pinned pagination.
+ */
+export function ApplicationList({
+  mode,
+  title,
+  description,
+  primaryAction,
+  subHeader,
+  extraContent,
+  onRowClick,
+  hookState,
+}: ApplicationListProps) {
+  const {
+    applications,
+    isLoading,
+    isRefreshing,
+    statusFilter,
+    setStatusFilter,
+    typeFilter,
+    setTypeFilter,
+    keyword,
+    setKeyword,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    totalPages,
+    total,
+    stats,
+  } = hookState as ReturnType<typeof useMyApplications> &
+    ReturnType<typeof useManageApplications> &
+    ReturnType<typeof useAllApplications>
+
+  const [isTransitionLoading, setIsTransitionLoading] = useState(true)
+  const showLoading = isLoading || isRefreshing || isTransitionLoading
+
+  const beginTransition = () => {
+    setIsTransitionLoading(true)
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsTransitionLoading(false)
+    }, 150)
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [applications, statusFilter, typeFilter, keyword, page, pageSize])
+
+  const statusTabs = useMemo(
+    () => [
+      { id: "all", label: "Tất cả", count: stats.total },
+      { id: "pending", label: "Chờ duyệt", count: stats.pending },
+      { id: "approved", label: "Đã duyệt", count: stats.approved },
+      { id: "rejected", label: "Không duyệt", count: stats.rejected },
+    ],
+    [stats],
+  )
+
+  const columns = useApplicationColumns(mode)
+
+  const handleResetFilters = () => {
+    beginTransition()
+    setKeyword("")
+    setTypeFilter("all")
+    setPage(1)
+  }
+
+  const handleTypeFilterChange = (value: string) => {
+    beginTransition()
+    setTypeFilter(value)
+    setPage(1)
+  }
 
   return (
     <DataTablePage<IApplicationListItem>
@@ -314,13 +330,19 @@ export function ApplicationList({
             }
           : undefined
       }
-      filters={mode !== "manage" ? filterControls : undefined}
+      filters={
+        mode !== "manage" ? (
+          <ApplicationFilterControls
+            typeFilter={typeFilter}
+            onTypeFilterChange={handleTypeFilterChange}
+            onReset={handleResetFilters}
+          />
+        ) : undefined
+      }
       columns={columns}
       data={applications}
       isLoading={showLoading}
-      onRowClick={(app) => {
-        onRowClick(app)
-      }}
+      onRowClick={onRowClick}
       emptyState={{
         title: "Không tìm thấy đơn phù hợp",
         description: "Không có đơn từ nào phù hợp với bộ lọc hoặc từ khóa tìm kiếm hiện tại.",

@@ -5,6 +5,9 @@ import apiClient from "@/lib/api-client"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
+/**
+ * Query and mutation hooks for salary variable definitions and values.
+ */
 export interface ISalaryVariable {
   id: string
   code: string
@@ -29,6 +32,7 @@ export interface IUpdateSalaryVariableDTO extends Partial<ICreateSalaryVariableD
 
 const ENDPOINT = "/salary-variables"
 
+/** Query hook fetching registered salary computation variables. */
 export function useSalaryVariables(params?: { isActive?: boolean }) {
   return useQuery({
     queryKey: [...PAYROLL_QUERY_KEYS.SALARY_VARIABLES, params],
@@ -41,6 +45,7 @@ export function useSalaryVariables(params?: { isActive?: boolean }) {
   })
 }
 
+/** Query hook fetching single salary variable details by ID. */
 export function useSalaryVariable(id: string) {
   return useQuery({
     queryKey: [...PAYROLL_QUERY_KEYS.SALARY_VARIABLES, id],
@@ -52,6 +57,7 @@ export function useSalaryVariable(id: string) {
   })
 }
 
+/** Mutation hook to create a new salary formula variable. */
 export function useCreateSalaryVariable() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -72,6 +78,7 @@ export function useCreateSalaryVariable() {
   })
 }
 
+/** Mutation hook to update an existing salary formula variable. */
 export function useUpdateSalaryVariable() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -92,6 +99,7 @@ export function useUpdateSalaryVariable() {
   })
 }
 
+/** Mutation hook to delete a custom salary formula variable. */
 export function useDeleteSalaryVariable() {
   const queryClient = useQueryClient()
   return useMutation({

@@ -16,7 +16,7 @@ import {
 import { usePermission } from "@/hooks/use-permission"
 import type { BackgroundCheck } from "@/types/recruitment.types"
 
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import { format, parseISO } from "date-fns"
 import { vi } from "date-fns/locale"
@@ -59,10 +59,10 @@ export default function BackgroundChecksPage() {
   const [selectedBgc, setSelectedBgc] = useState<BackgroundCheck | null>(null)
   const [viewBgcOpen, setViewBgcOpen] = useState(false)
 
-  const handleViewDetails = (bgc: BackgroundCheck) => {
+  const handleViewDetails = useCallback((bgc: BackgroundCheck) => {
     setSelectedBgc(bgc)
     setViewBgcOpen(true)
-  }
+  }, [])
 
   const { data, isLoading } = useBackgroundChecks({
     status: activeTab !== "all" ? activeTab : undefined,
@@ -98,19 +98,25 @@ export default function BackgroundChecksPage() {
   const canStart = hasPermission("recruitment.start_bgc")
   const canComplete = hasPermission("recruitment.complete_bgc")
 
-  const handleStart = (id: string) => {
-    startBgc.mutate(id)
-  }
+  const handleStart = useCallback(
+    (id: string) => {
+      startBgc.mutate(id)
+    },
+    [startBgc],
+  )
 
-  const handleComplete = (id: string, passed: boolean) => {
-    completeBgc.mutate({
-      id,
-      data: {
-        passed,
-        failReason: passed ? undefined : "Không đạt kiểm tra background",
-      },
-    })
-  }
+  const handleComplete = useCallback(
+    (id: string, passed: boolean) => {
+      completeBgc.mutate({
+        id,
+        data: {
+          passed,
+          failReason: passed ? undefined : "Không đạt kiểm tra background",
+        },
+      })
+    },
+    [completeBgc],
+  )
 
   const columns: DataTableColumn<BackgroundCheck>[] = useMemo(
     () => [
@@ -304,7 +310,7 @@ export default function BackgroundChecksPage() {
         ),
       },
     ],
-    [canStart, canComplete, startBgc, completeBgc],
+    [canStart, canComplete, handleStart, handleComplete, handleViewDetails],
   )
 
   const tabsConfig = useMemo(

@@ -5,6 +5,9 @@ import type { IEmployeeSalaryConfig, IPayslipTemplate } from "@/types/payroll.ty
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
+/**
+ * Custom hook managing employee salary configuration form state and mutation submission.
+ */
 export function useActiveSalaryConfig(employeeId: string) {
   return useQuery({
     queryKey: [...PAYROLL_QUERY_KEYS.EMPLOYEE_SALARY_CONFIG, "active", employeeId],
@@ -18,6 +21,7 @@ export function useActiveSalaryConfig(employeeId: string) {
   })
 }
 
+/** Query hook fetching historical salary configuration records for an employee. */
 export function useSalaryConfigHistory(employeeId: string) {
   return useQuery({
     queryKey: [...PAYROLL_QUERY_KEYS.EMPLOYEE_SALARY_CONFIG, "history", employeeId],
@@ -31,6 +35,7 @@ export function useSalaryConfigHistory(employeeId: string) {
   })
 }
 
+/** Mutation hook to update or assign salary configuration to an employee. */
 export function useAssignSalaryConfig() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -62,6 +67,7 @@ export function useAssignSalaryConfig() {
   })
 }
 
+/** Mutation hook to assign a payslip template to multiple employees in bulk. */
 export function useBulkAssignSalaryTemplate() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -85,6 +91,7 @@ export function useBulkAssignSalaryTemplate() {
   })
 }
 
+/** Query hook fetching available payslip templates for assignment. */
 export function usePayslipTemplates() {
   return useQuery({
     queryKey: ["payslip-templates"],

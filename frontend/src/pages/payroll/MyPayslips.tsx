@@ -1,262 +1,42 @@
-import { type DataTableColumn, DataTablePage, StatusPill } from "@/components/common"
-import { PayslipDetailPage } from "@/components/features/payroll/payslip-detail-page"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  PAYROLL_DETAIL_SEARCH_PARAM,
-  PAYROLL_STATUS,
-  PAYROLL_STATUS_LABELS,
-  PAYSLIP_RECEIPT_STATUS,
-  PAYSLIP_RECEIPT_STATUS_LABELS,
-} from "@/config/entities/payroll.config"
-import { getTableColWidthPx } from "@/config/table-columns.config"
-import { TYPOGRAPHY } from "@/config/typography.config"
-import { useMyPayslips } from "@/hooks/payroll/use-my-payslips"
-import { cn, formatCurrency } from "@/lib/utils"
+import { DataTablePage } from "@/components/common"
+import { PayslipDetailPage } from "@/components/features/payroll/PayslipDetailPage"
+import { useMyPayslipsColumns } from "@/components/features/payroll/use-my-payslips-columns"
+import { SYSTEM_CONFIG } from "@/config/system.config"
+import { useMyPayslipsManagement } from "@/hooks/payroll/use-my-payslips-management"
 import type { IPayslip } from "@/types/payroll.types"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
-
-import { CalendarDays, ChevronRight, Inbox } from "lucide-react"
-import { useSearchParams } from "react-router-dom"
-
-const getPayrollStatusVariant = (status?: string): "info" | "success" | "danger" | "neutral" => {
-  switch (status) {
-    case PAYROLL_STATUS.APPROVED:
-    case PAYROLL_STATUS.PAID:
-      return "success"
-    case PAYROLL_STATUS.PENDING_APPROVAL:
-      return "info"
-    case PAYROLL_STATUS.REJECTED:
-      return "danger"
-    default:
-      return "neutral"
-  }
-}
-
-const getReceiptStatusVariant = (receiptStatus?: string): "success" | "neutral" => {
-  return receiptStatus === PAYSLIP_RECEIPT_STATUS.RECEIVED ? "success" : "neutral"
-}
+import { Inbox } from "lucide-react"
 
 /**
  * Displays the employee’s payslips and opens the one referenced by a notification.
  * @returns {import("react").ReactElement} The payroll screen.
  */
 export default function MyPayslips() {
-  const { data: payslips, isLoading, refetch } = useMyPayslips()
-  const [searchParams, setSearchParams] = useSearchParams()
-  /**
-   * Identifies the payroll period requested by the notification link.
-   * @type {string | null}
-   */
-  const linkedPayrollId = searchParams.get(PAYROLL_DETAIL_SEARCH_PARAM)
-  /**
-   * Finds the linked payslip in the signed-in employee’s own results.
-   * @type {IPayslip | undefined}
-   */
-  const linkedPayslip = payslips?.find(({ payrollId }) => payrollId === linkedPayrollId)
+  const {
+    view,
+    selectedPayslip,
+    searchTerm,
+    page,
+    limit,
+    isLoading,
+    paginatedPayslips,
+    totalItems,
+    totalPages,
+    handleCloseDetail,
+    handleSelectPayslip,
+    handleSearch,
+    handlePageChange,
+    handleLimitChange,
+  } = useMyPayslipsManagement()
 
-  // A notification can link to a payslip created while this page was already open.
-  useEffect(() => {
-    if (linkedPayrollId && !linkedPayslip) {
-      void refetch()
-    }
-  }, [linkedPayrollId, linkedPayslip, refetch])
+  const columns = useMyPayslipsColumns({
+    page,
+    limit,
+    onSelectPayslip: handleSelectPayslip,
+  })
 
-  const [selectedPayslip, setSelectedPayslip] = useState<IPayslip | null>(null)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10)
-
-  /**
-   * Returns to the payslip list and removes the notification link parameter.
-   * @returns {void}
-   */
-  const handleCloseForm = () => {
-    setSelectedPayslip(null)
-    if (linkedPayrollId) {
-      const nextParams = new URLSearchParams(searchParams)
-      nextParams.delete(PAYROLL_DETAIL_SEARCH_PARAM)
-      setSearchParams(nextParams, { replace: true })
-    }
-  }
-
-  const handleSearch = useCallback((val: string) => {
-    setSearchTerm(val)
-    setPage(1)
-  }, [])
-
-  const filteredPayslips = useMemo(() => {
-    if (!payslips) return []
-    const s = searchTerm.toLowerCase().trim()
-    if (!s) return payslips
-    return payslips.filter((p) => {
-      const periodStr = `${p.periodMonth}/${p.periodYear}`
-      const periodStrZero = `${String(p.periodMonth).padStart(2, "0")}/${p.periodYear}`
-      const statusStr = p.status ? (PAYROLL_STATUS_LABELS[p.status] ?? "").toLowerCase() : ""
-      return periodStr.includes(s) || periodStrZero.includes(s) || statusStr.includes(s)
-    })
-  }, [payslips, searchTerm])
-
-  const paginatedPayslips = useMemo(() => {
-    return filteredPayslips.slice((page - 1) * limit, page * limit)
-  }, [filteredPayslips, page, limit])
-
-  const totalPages = Math.ceil(filteredPayslips.length / limit) || 1
-
-  const columns: DataTableColumn<IPayslip>[] = useMemo(
-    () => [
-      {
-        id: "index",
-        header: "#",
-        width: getTableColWidthPx("INDEX"),
-        minWidth: "60px",
-        align: "center",
-        sticky: true,
-        cell: (_, index) => (
-          <span className={TYPOGRAPHY.CELL_CODE}>{(page - 1) * limit + index + 1}</span>
-        ),
-      },
-      {
-        id: "period",
-        header: "Kỳ lương",
-        width: getTableColWidthPx("TITLE"),
-        minWidth: "220px",
-        sticky: true,
-        cell: (payslip) => (
-          <button
-            type="button"
-            className="flex items-center gap-3 cursor-pointer group text-left focus:outline-none"
-            onClick={() => {
-              setSelectedPayslip(payslip)
-            }}
-          >
-            <div className="size-8 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-              <CalendarDays className="size-4" />
-            </div>
-            <div className="min-w-0">
-              <div
-                className={cn(
-                  TYPOGRAPHY.CELL_PRIMARY,
-                  "font-semibold text-foreground group-hover:text-primary transition-colors",
-                )}
-              >
-                Tháng {payslip.periodMonth}/{payslip.periodYear}
-              </div>
-              <div
-                className={cn(TYPOGRAPHY.CELL_SECONDARY, "flex items-center gap-2 mt-0.5 text-xs")}
-              >
-                <span>Kỳ lương định kỳ</span>
-                {payslip.isPreview ? (
-                  <Badge
-                    variant="secondary"
-                    className="rounded-full text-[10px] px-2 py-0 shadow-none font-normal"
-                  >
-                    Xem trước
-                  </Badge>
-                ) : null}
-              </div>
-            </div>
-          </button>
-        ),
-      },
-      {
-        id: "workingDays",
-        header: "Ngày công",
-        width: getTableColWidthPx("CODE"),
-        minWidth: "100px",
-        align: "center",
-        hideBelow: "md",
-        cell: (payslip) => (
-          <span className={TYPOGRAPHY.CELL_SECONDARY}>
-            <span className="font-semibold text-foreground">{payslip.workingDays}</span> ngày
-          </span>
-        ),
-      },
-      {
-        id: "overtimeMinutes",
-        header: "Tăng ca",
-        width: getTableColWidthPx("CODE"),
-        minWidth: "100px",
-        align: "center",
-        hideBelow: "md",
-        cell: (payslip) => (
-          <span className={TYPOGRAPHY.CELL_SECONDARY}>
-            <span className="font-semibold text-foreground">{payslip.overtimeMinutes}</span> phút
-          </span>
-        ),
-      },
-      {
-        id: "status",
-        header: "Duyệt lương",
-        width: getTableColWidthPx("STATUS"),
-        minWidth: "140px",
-        cell: (payslip) => (
-          <StatusPill
-            label={payslip.status ? PAYROLL_STATUS_LABELS[payslip.status] : "Không rõ"}
-            variant={getPayrollStatusVariant(payslip.status)}
-          />
-        ),
-      },
-      {
-        id: "receiptStatus",
-        header: "Nhận lương",
-        width: getTableColWidthPx("STATUS"),
-        minWidth: "140px",
-        cell: (payslip) => (
-          <StatusPill
-            label={
-              payslip.receiptStatus
-                ? PAYSLIP_RECEIPT_STATUS_LABELS[payslip.receiptStatus]
-                : "Chưa nhận"
-            }
-            variant={getReceiptStatusVariant(payslip.receiptStatus)}
-          />
-        ),
-      },
-      {
-        id: "netSalary",
-        header: "Thực lãnh",
-        width: getTableColWidthPx("CURRENCY"),
-        minWidth: "140px",
-        align: "right",
-        cell: (payslip) => (
-          <span className={cn(TYPOGRAPHY.CELL_PRIMARY, "font-bold text-primary text-sm")}>
-            {formatCurrency(payslip.netSalary)}
-          </span>
-        ),
-      },
-      {
-        id: "action",
-        header: "",
-        width: getTableColWidthPx("INDEX"),
-        minWidth: "60px",
-        align: "center",
-        cell: (payslip) => (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8 rounded-full text-muted-foreground hover:text-foreground"
-            onClick={() => {
-              setSelectedPayslip(payslip)
-            }}
-            aria-label="Xem chi tiết phiếu lương"
-          >
-            <ChevronRight className="size-4" />
-          </Button>
-        ),
-      },
-    ],
-    [page, limit],
-  )
-
-  /**
-   * Uses the notification target before falling back to a row selected in the list.
-   * @type {IPayslip | null}
-   */
-  const detailPayslip = linkedPayslip ?? selectedPayslip
-  if (detailPayslip) {
-    return <PayslipDetailPage payslip={detailPayslip} onClose={handleCloseForm} />
+  if (view !== "list") {
+    return <PayslipDetailPage payslip={selectedPayslip} onClose={handleCloseDetail} />
   }
 
   return (
@@ -270,7 +50,7 @@ export default function MyPayslips() {
       keyExtractor={(payslip) => payslip.id}
       search={{
         value: searchTerm,
-        debounceMs: 400,
+        debounceMs: SYSTEM_CONFIG.SEARCH.DEBOUNCE_MS,
         onSearch: handleSearch,
         placeholder: "Tìm kiếm theo tháng/năm, trạng thái...",
       }}
@@ -284,14 +64,11 @@ export default function MyPayslips() {
       pagination={{
         currentPage: page,
         totalPages,
-        totalItems: filteredPayslips.length,
+        totalItems,
         itemsPerPage: limit,
-        onPageChange: setPage,
-        onItemsPerPageChange: (newLimit: number) => {
-          setLimit(newLimit)
-          setPage(1)
-        },
-        pageSizeOptions: [10, 20, 50],
+        onPageChange: handlePageChange,
+        onItemsPerPageChange: handleLimitChange,
+        pageSizeOptions: SYSTEM_CONFIG.PAGINATION.PAGE_SIZE_OPTIONS as unknown as number[],
       }}
     />
   )

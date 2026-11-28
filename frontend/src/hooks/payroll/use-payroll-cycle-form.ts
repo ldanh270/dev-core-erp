@@ -7,6 +7,9 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 
+/**
+ * Custom hook managing payroll cycle form values, validation, and update mutations.
+ */
 export const settingsSchema = z
   .object({
     triggerDay: z.number().min(1).max(28, PAYROLL_MESSAGES.VALIDATION.TRIGGER_DAY_RANGE),
@@ -24,6 +27,7 @@ export const settingsSchema = z
 
 export type SettingsFormValues = z.infer<typeof settingsSchema>
 
+/** Custom hook managing payroll cycle form values, validation, and update mutations. */
 export function usePayrollCycleForm({
   initialData,
   onSuccess,

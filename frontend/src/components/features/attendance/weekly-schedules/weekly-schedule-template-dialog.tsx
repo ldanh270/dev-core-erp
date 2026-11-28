@@ -29,23 +29,15 @@ import { type FormEvent, useState } from "react"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
-interface WeeklyScheduleTemplateDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  editing: IWeeklyScheduleTemplate | null
-}
-
-interface WeeklyScheduleTemplateFormProps {
-  editing: IWeeklyScheduleTemplate | null
-  activeShifts: IWorkingShift[]
-  onOpenChange: (open: boolean) => void
-}
-
 function WeeklyScheduleTemplateForm({
   editing,
   activeShifts,
   onOpenChange,
-}: WeeklyScheduleTemplateFormProps) {
+}: {
+  editing: IWeeklyScheduleTemplate | null
+  activeShifts: IWorkingShift[]
+  onOpenChange: (open: boolean) => void
+}) {
   const createMutation = useCreateWeeklyScheduleTemplate()
   const updateMutation = useUpdateWeeklyScheduleTemplate()
   const [name, setName] = useState(() => editing?.name ?? "")
@@ -194,6 +186,12 @@ function WeeklyScheduleTemplateForm({
       </DialogFooter>
     </form>
   )
+}
+
+interface WeeklyScheduleTemplateDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  editing: IWeeklyScheduleTemplate | null
 }
 
 export function WeeklyScheduleTemplateDialog({

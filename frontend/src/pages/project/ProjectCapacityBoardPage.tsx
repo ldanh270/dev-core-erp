@@ -1,10 +1,10 @@
-/**
- * Project-level Capacity Copilot board page.
- * Kept outside Project Task pages so staffing forecast does not modify task assignment AI.
- */
-import { PageContainer, PageHeader } from "@/components/common"
-import { ProjectCapacityBoard } from "@/pages/project/components/project-capacity-board"
+﻿import { PageContainer, PageHeader } from "@/components/common"
+import { ProjectCapacityBoard } from "@/components/features/project/ProjectCapacityBoard"
 
+/**
+ * Project-level Capacity Copilot board page orchestrator.
+ * Displays weekly capacity forecasting to assist staffing coordination.
+ */
 export default function ProjectCapacityBoardPage() {
   return (
     <PageContainer variant="table">

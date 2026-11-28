@@ -1,4 +1,4 @@
-import { PayrollDetailSheet } from "@/components/payroll/PayrollDetailSheet"
+import { PayrollDetailSheet } from "@/components/features/payroll/PayrollDetailSheet"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -28,6 +28,9 @@ interface Props {
   employee: { id: string; fullName: string; position?: string } | null
 }
 
+/**
+ * Modal dialog displaying the historical list of generated payslips for a specific employee.
+ */
 export default function EmployeePayslipHistoryDialog({ open, onOpenChange, employee }: Props) {
   const { data: payslips, isLoading } = useEmployeePayslipsHistory(
     open ? employee?.id || null : null,

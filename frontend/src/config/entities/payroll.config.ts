@@ -79,6 +79,14 @@ export const FORMULA_VALIDATION_STATUS = {
 export type FormulaValidationStatus =
   (typeof FORMULA_VALIDATION_STATUS)[keyof typeof FORMULA_VALIDATION_STATUS]
 
+export const FORM_VIEW_MODE = {
+  LIST: "list",
+  CREATE: "create",
+  EDIT: "edit",
+  VIEW: "view",
+} as const
+export type FormViewMode = (typeof FORM_VIEW_MODE)[keyof typeof FORM_VIEW_MODE]
+
 export const PAYROLL_SETTINGS_FIELDS = [
   "triggerDay",
   "triggerHour",
