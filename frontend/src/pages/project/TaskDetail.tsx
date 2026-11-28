@@ -1,6 +1,5 @@
-import { PageContainer } from "@/components/common"
+import { DetailNotFound, PageContainer } from "@/components/common"
 import { TaskDetailContentLayout } from "@/components/features/project/TaskDetailContentLayout"
-import { TaskDetailErrorState } from "@/components/features/project/TaskDetailErrorState"
 import { TaskDetailHeader } from "@/components/features/project/task-detail/TaskDetailHeader"
 import { TaskDetailModals } from "@/components/features/project/task-detail/TaskDetailModals"
 import { TaskDetailSkeleton } from "@/components/features/project/TaskDetailSkeleton"
@@ -83,7 +82,13 @@ export default function TaskDetail() {
   }
 
   if (!task) {
-    return <TaskDetailErrorState onBack={() => navigate(-1)} />
+    return (
+      <DetailNotFound
+        title="Không tìm thấy công việc"
+        description="Công việc không tồn tại hoặc đã bị xóa."
+        onBack={() => navigate(-1)}
+      />
+    )
   }
 
   const canDeleteTask = isAdminOrGM || isLeader || isCreator

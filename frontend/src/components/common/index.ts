@@ -36,6 +36,7 @@ export { DatePicker, type DatePickerProps } from "./date-picker"
 export { DateRangePicker, type DateRangePickerProps } from "./date-range-picker"
 export { formatDisplayDate, parseDate, formatDateToIso } from "./date-picker.utils"
 export { TimePicker, type TimePickerProps } from "./time-picker"
+export { DetailNotFound, type DetailNotFoundProps } from "./detail-not-found"
 export {
   BoardContainer,
   BoardColumn,
