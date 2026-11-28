@@ -19,12 +19,21 @@ import {
 } from "@/config/entities/employee.config"
 import type { EmployeeStatus, WorkScheduleType } from "@/types/employee.types"
 
-import type { FieldErrors, UseFormSetValue, UseFormWatch } from "react-hook-form"
+import type { FieldErrors, FieldValues, Path, UseFormSetValue, UseFormWatch } from "react-hook-form"
 
-interface EmployeeJobFieldsSectionProps {
-  errors: FieldErrors<Record<string, unknown>>
-  watch: UseFormWatch<Record<string, unknown>>
-  setValue: UseFormSetValue<Record<string, unknown>>
+export interface EmployeeJobFieldsValues {
+  positionId?: string
+  employeeType?: IEmploymentCategoryType | string
+  status?: EmployeeStatus | string
+  workScheduleType?: WorkScheduleType | string
+  startDate?: string
+  endDate?: string
+}
+
+interface EmployeeJobFieldsSectionProps<TFieldValues extends FieldValues & EmployeeJobFieldsValues = EmployeeJobFieldsValues> {
+  errors: FieldErrors<TFieldValues>
+  watch: UseFormWatch<TFieldValues>
+  setValue: UseFormSetValue<TFieldValues>
   positions: Array<{ id: string; name: string }>
   isEdit?: boolean
 }
@@ -33,13 +42,13 @@ interface EmployeeJobFieldsSectionProps {
  * Reusable Job & Contract form section for Employee Creation and Editing.
  * Consolidates position, employee type, status, work schedule, and date pickers.
  */
-export function EmployeeJobFieldsSection({
+export function EmployeeJobFieldsSection<TFieldValues extends FieldValues & EmployeeJobFieldsValues>({
   errors,
   watch,
   setValue,
   positions,
   isEdit = false,
-}: EmployeeJobFieldsSectionProps) {
+}: EmployeeJobFieldsSectionProps<TFieldValues>) {
   return (
     <section className={isEdit ? "" : "grid grid-cols-12 gap-8"}>
       {!isEdit ? (
@@ -70,9 +79,9 @@ export function EmployeeJobFieldsSection({
               Chức danh (Vị trí)
             </Label>
             <Select
-              value={watch("positionId") || "none"}
+              value={watch("positionId" as Path<TFieldValues>) as string || "none"}
               onValueChange={(val) => {
-                setValue("positionId", val === "none" ? "" : val, {
+                setValue("positionId" as Path<TFieldValues>, (val === "none" ? "" : val) as any, {
                   shouldValidate: true,
                   shouldDirty: true,
                 })
@@ -103,9 +112,9 @@ export function EmployeeJobFieldsSection({
               Loại nhân sự
             </Label>
             <Select
-              value={watch("employeeType") || EMPLOYMENT_CATEGORY_TYPES[0]}
+              value={(watch("employeeType" as Path<TFieldValues>) as string) || EMPLOYMENT_CATEGORY_TYPES[0]}
               onValueChange={(val) => {
-                setValue("employeeType", val as IEmploymentCategoryType, {
+                setValue("employeeType" as Path<TFieldValues>, val as any, {
                   shouldValidate: true,
                   shouldDirty: true,
                 })
@@ -131,9 +140,9 @@ export function EmployeeJobFieldsSection({
               Trạng thái{isEdit ? "" : " ban đầu"}
             </Label>
             <Select
-              value={watch("status") || EMPLOYEE_STATUSES[0]}
+              value={(watch("status" as Path<TFieldValues>) as string) || EMPLOYEE_STATUSES[0]}
               onValueChange={(val) => {
-                setValue("status", val as EmployeeStatus, {
+                setValue("status" as Path<TFieldValues>, val as any, {
                   shouldValidate: true,
                   shouldDirty: true,
                 })
@@ -160,9 +169,9 @@ export function EmployeeJobFieldsSection({
               Hình thức làm việc
             </Label>
             <Select
-              value={watch("workScheduleType") || WORK_SCHEDULE_TYPES[0]}
+              value={(watch("workScheduleType" as Path<TFieldValues>) as string) || WORK_SCHEDULE_TYPES[0]}
               onValueChange={(val) => {
-                setValue("workScheduleType", val as WorkScheduleType, {
+                setValue("workScheduleType" as Path<TFieldValues>, val as any, {
                   shouldValidate: true,
                   shouldDirty: true,
                 })
@@ -191,9 +200,9 @@ export function EmployeeJobFieldsSection({
             </Label>
             <DatePicker
               id="startDate"
-              value={watch("startDate") || null}
+              value={(watch("startDate" as Path<TFieldValues>) as string) || null}
               onChange={(val) => {
-                setValue("startDate", val || "", { shouldValidate: true, shouldDirty: true })
+                setValue("startDate" as Path<TFieldValues>, (val || "") as any, { shouldValidate: true, shouldDirty: true })
               }}
               placeholder="Chọn ngày bắt đầu..."
             />
@@ -209,9 +218,9 @@ export function EmployeeJobFieldsSection({
               </Label>
               <DatePicker
                 id="endDate"
-                value={watch("endDate") || null}
+                value={(watch("endDate" as Path<TFieldValues>) as string) || null}
                 onChange={(val) => {
-                  setValue("endDate", val || "", { shouldValidate: true, shouldDirty: true })
+                  setValue("endDate" as Path<TFieldValues>, (val || "") as any, { shouldValidate: true, shouldDirty: true })
                 }}
                 placeholder="Chọn ngày kết thúc..."
               />

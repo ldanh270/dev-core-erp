@@ -16,7 +16,7 @@ import {
 import { usePermission } from "@/hooks/use-permission"
 import type { BackgroundCheck } from "@/types/recruitment.types"
 
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import { format, parseISO } from "date-fns"
 import { vi } from "date-fns/locale"
