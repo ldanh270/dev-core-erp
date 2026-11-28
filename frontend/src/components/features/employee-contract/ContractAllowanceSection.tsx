@@ -99,7 +99,7 @@ export function ContractAllowanceSection({
               {allowanceRows.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center py-6 text-xs text-muted-foreground">
-                    Chưa có khoản phụ cấp nào được thêm. Bấm "+ Thêm dòng" để thêm mới.
+                    Chưa có khoản phụ cấp nào được thêm. Bấm &quot;+ Thêm dòng&quot; để thêm mới.
                   </TableCell>
                 </TableRow>
               ) : (

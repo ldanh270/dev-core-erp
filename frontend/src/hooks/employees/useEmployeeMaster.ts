@@ -129,19 +129,22 @@ export const useEmployeeMaster = () => {
     setSearchParams(params)
   }
 
-  const handleTabChange = (
-    tab:
-      | "all"
-      | EmployeeType
-      | typeof EMPLOYEE_LIST_TAB_SCHEDULE_PART_TIME
-      | typeof EMPLOYEE_STATUS.TERMINATED
-      | "locked",
-  ) => {
-    const params = new URLSearchParams(searchParams)
-    params.set("tab", tab)
-    params.set("page", "1")
-    setSearchParams(params)
-  }
+  const handleTabChange = useCallback(
+    (
+      tab:
+        | "all"
+        | EmployeeType
+        | typeof EMPLOYEE_LIST_TAB_SCHEDULE_PART_TIME
+        | typeof EMPLOYEE_STATUS.TERMINATED
+        | "locked",
+    ) => {
+      const params = new URLSearchParams(searchParams)
+      params.set("tab", tab)
+      params.set("page", "1")
+      setSearchParams(params)
+    },
+    [searchParams, setSearchParams],
+  )
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value

@@ -14,7 +14,6 @@ export function usePayrollSettings() {
     queryFn: async () => {
       const response = await apiClient.get(API_ENDPOINTS.PAYROLL.SETTINGS)
       const data = response.data?.data || response.data
-      console.log("FETCHED SETTINGS FROM API:", data)
       return data as IPayrollSettings
     },
   })

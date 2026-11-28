@@ -37,9 +37,7 @@ const DEFAULT_FIELDS: RecruitmentFormField[] = [
   { key: "cv_url", label: "Đường dẫn CV", type: "short_text", required: false },
 ]
 
-/**
- * eslint-disable-next-line security/detect-unsafe-regex
- */
+// eslint-disable-next-line security/detect-unsafe-regex
 const FIELD_KEY_PATTERN = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/
 
 /**

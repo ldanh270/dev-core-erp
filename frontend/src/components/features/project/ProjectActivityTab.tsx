@@ -56,7 +56,7 @@ export function ProjectActivityTab({ activitiesList, isLoading }: ProjectActivit
                 </div>
                 {act.comment && (
                   <div className="text-xs bg-muted/30 p-2.5 rounded-xl border border-border/40 max-w-[500px] text-muted-foreground italic">
-                    "{act.comment}"
+                    &quot;{act.comment}&quot;
                   </div>
                 )}
                 <div className="text-[10px] text-muted-foreground">
