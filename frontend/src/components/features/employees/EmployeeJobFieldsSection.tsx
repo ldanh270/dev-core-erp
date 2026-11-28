@@ -19,7 +19,14 @@ import {
 } from "@/config/entities/employee.config"
 import type { EmployeeStatus, WorkScheduleType } from "@/types/employee.types"
 
-import type { FieldErrors, FieldValues, Path, PathValue, UseFormSetValue, UseFormWatch } from "react-hook-form"
+import type {
+  FieldErrors,
+  FieldValues,
+  Path,
+  PathValue,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form"
 
 export interface EmployeeJobFieldsValues {
   positionId?: string
@@ -30,7 +37,9 @@ export interface EmployeeJobFieldsValues {
   endDate?: string
 }
 
-interface EmployeeJobFieldsSectionProps<TFieldValues extends FieldValues & EmployeeJobFieldsValues = EmployeeJobFieldsValues> {
+interface EmployeeJobFieldsSectionProps<
+  TFieldValues extends FieldValues & EmployeeJobFieldsValues = EmployeeJobFieldsValues,
+> {
   errors: FieldErrors<TFieldValues>
   watch: UseFormWatch<TFieldValues>
   setValue: UseFormSetValue<TFieldValues>
@@ -42,7 +51,9 @@ interface EmployeeJobFieldsSectionProps<TFieldValues extends FieldValues & Emplo
  * Reusable Job & Contract form section for Employee Creation and Editing.
  * Consolidates position, employee type, status, work schedule, and date pickers.
  */
-export function EmployeeJobFieldsSection<TFieldValues extends FieldValues & EmployeeJobFieldsValues>({
+export function EmployeeJobFieldsSection<
+  TFieldValues extends FieldValues & EmployeeJobFieldsValues,
+>({
   errors,
   watch,
   setValue,
