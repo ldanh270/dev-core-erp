@@ -8,11 +8,17 @@ import type { InterviewRound } from "@/types/recruitment.types"
 
 import { ArrowRight, Calendar } from "lucide-react"
 
-interface UpcomingInterviewsCardProps {
+/**
+ * Props for UpcomingInterviewsCard component.
+ */
+export interface UpcomingInterviewsCardProps {
   interviews?: InterviewRound[]
   isLoading: boolean
 }
 
+/**
+ * Presenter card displaying schedule of upcoming interview rounds for the next 7 days.
+ */
 export function UpcomingInterviewsCard({
   interviews,
   isLoading,

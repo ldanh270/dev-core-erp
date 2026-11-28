@@ -1,13 +1,12 @@
 import { DashboardLayout } from "@/components/common"
-import { CandidatePipelineCard } from "@/components/features/recruitment/dashboard/CandidatePipelineCard"
+import { RecruitmentChartsSection } from "@/components/features/recruitment/dashboard/RecruitmentChartsSection"
 import { RecruitmentQuickLinks } from "@/components/features/recruitment/dashboard/RecruitmentQuickLinks"
 import { RecruitmentStatsGrid } from "@/components/features/recruitment/dashboard/RecruitmentStatsGrid"
-import { UpcomingInterviewsCard } from "@/components/features/recruitment/dashboard/UpcomingInterviewsCard"
 import { useRecruitmentDashboard } from "@/hooks/recruitment/use-recruitment-dashboard"
 
 /**
- * Standardized Recruitment Dashboard.
- * Decoupled thin composition shell powered by DashboardLayout and useRecruitmentDashboard presenter hook.
+ * Tier 2 Page Orchestrator for the Recruitment Dashboard.
+ * Declaratively composes high-level metrics, upcoming interview schedules, pipeline charts, and quick shortcuts.
  */
 export default function RecruitmentDashboard() {
   const {
@@ -35,13 +34,12 @@ export default function RecruitmentDashboard() {
         />
       }
       chartsSection={
-        <div className="grid gap-4 lg:grid-cols-2">
-          <UpcomingInterviewsCard
-            interviews={upcomingInterviews}
-            isLoading={isLoadingInterviews}
-          />
-          <CandidatePipelineCard appStats={appStats} totalApps={totalApps} />
-        </div>
+        <RecruitmentChartsSection
+          upcomingInterviews={upcomingInterviews}
+          isLoadingInterviews={isLoadingInterviews}
+          appStats={appStats}
+          totalApps={totalApps}
+        />
       }
     >
       <RecruitmentQuickLinks pendingReqCount={reqStats?.pending ?? 0} />

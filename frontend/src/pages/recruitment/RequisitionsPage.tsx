@@ -1,8 +1,8 @@
 import { DataTablePage } from "@/components/common"
 import { CreateRequisitionDialog } from "@/components/features/recruitment/CreateRequisitionDialog"
-import { RequisitionDetailsDrawer } from "@/components/features/recruitment/requisition-details-drawer"
-import { getRequisitionsColumns } from "@/components/features/recruitment/requisitions-columns"
+import { RequisitionDetailsDrawer } from "@/components/features/recruitment/RequisitionDetailsDrawer"
 import { RequisitionsPriorityFilter } from "@/components/features/recruitment/RequisitionsPriorityFilter"
+import { useRequisitionsColumns } from "@/components/features/recruitment/use-requisitions-columns"
 import { useRequisitionsManagement } from "@/hooks/recruitment/use-requisitions-management"
 import type { JobRequisition } from "@/types/recruitment.types"
 import { FileSearch, Plus } from "lucide-react"
@@ -44,7 +44,7 @@ export default function RequisitionsPage() {
 
   const columns = useMemo(
     () =>
-      getRequisitionsColumns({
+      useRequisitionsColumns({
         hasPermission,
         employeeId,
         onViewDetails: handleViewDetails,

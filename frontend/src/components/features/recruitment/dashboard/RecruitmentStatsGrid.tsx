@@ -5,7 +5,10 @@ import { routerNavigate } from "@/lib/router-navigator"
 
 import { Briefcase, CheckCircle, FileText, Users } from "lucide-react"
 
-interface RecruitmentStatsGridProps {
+/**
+ * Props for RecruitmentStatsGrid component.
+ */
+export interface RecruitmentStatsGridProps {
   isLoading: boolean
   reqStats?: { total?: number; pending?: number }
   appStats?: { total?: number; active?: number }
@@ -13,6 +16,9 @@ interface RecruitmentStatsGridProps {
   bgcStats?: { total?: number; inProgress?: number }
 }
 
+/**
+ * Presenter grid displaying key high-level recruitment metric counters.
+ */
 export function RecruitmentStatsGrid({
   isLoading,
   reqStats,

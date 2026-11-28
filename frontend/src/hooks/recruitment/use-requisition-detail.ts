@@ -1,3 +1,7 @@
+import {
+  REQUISITION_STATUS_LABELS,
+  REQUISITION_STATUS_VARIANTS,
+} from "@/config/entities/recruitment.config"
 import { usePermission } from "@/hooks/use-permission"
 import { jobPostingApi, requisitionApi } from "@/lib/api/recruitment.api"
 import type { JobPosting } from "@/types/recruitment.types"
@@ -137,10 +141,31 @@ export function useRequisitionDetail() {
   const canManageIntake = hasPermission("recruitment.intake.manage")
   const canCreate = hasPermission("recruitment.create")
 
+  const invalidateWorkspace = useCallback(() => {
+    void queryClient.invalidateQueries({
+      queryKey: ["recruitment", "requisition-workspace", id],
+    })
+  }, [id, queryClient])
+
+  const requisition = workspace?.requisition
+  const requisitionStatusLabel = requisition
+    ? REQUISITION_STATUS_LABELS[requisition.status] || requisition.status
+    : ""
+  const requisitionStatusVariant = requisition
+    ? REQUISITION_STATUS_VARIANTS[requisition.status] || "neutral"
+    : "neutral"
+  const requisitionSubtitle = requisition
+    ? `${requisition.code} · ${requisition.department || "Chưa có phòng ban"} · ${requisition.position?.name ?? requisition.positionLevel}`
+    : ""
+
   return {
     id,
     activeTab,
     workspace,
+    requisition,
+    requisitionStatusLabel,
+    requisitionStatusVariant,
+    requisitionSubtitle,
     postings,
     applications,
     stages,
@@ -164,5 +189,6 @@ export function useRequisitionDetail() {
     canManagePosting,
     canManageIntake,
     canCreate,
+    invalidateWorkspace,
   }
 }

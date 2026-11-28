@@ -1,30 +1,30 @@
-import { DetailPageLayout } from "@/components/common/detail-page-layout"
-import { StatusPill } from "@/components/common/status-pill"
+import { DetailNotFound, DetailPageLayout, StatusPill } from "@/components/common"
 import { RecruitmentWorkspaceSkeleton } from "@/components/features/recruitment/recruitment-workspace-skeleton"
+import { RequisitionCreatePostingButton } from "@/components/features/recruitment/requisition-detail/RequisitionCreatePostingButton"
 import { RequisitionDetailDialogs } from "@/components/features/recruitment/requisition-detail/RequisitionDetailDialogs"
 import { RequisitionDetailTabsContent } from "@/components/features/recruitment/requisition-detail/RequisitionDetailTabsContent"
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
 import {
   REQUISITION_DETAIL_TABS,
   useRequisitionDetail,
 } from "@/hooks/recruitment/use-requisition-detail"
 import { extractErrorMessage } from "@/utils/error-helper"
-
-import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "react-router-dom"
 
 /**
  * Tier 2 Page Orchestrator for Requisition Details.
- * Composes requisition overview, candidates, kanban, interviews, offers, and dialogs.
+ * Pure composition shell connecting useRequisitionDetail with detail tabs, actions, and dialogs.
  */
 export default function RequisitionDetailPage() {
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
+
   const {
     id,
     activeTab,
     workspace,
+    requisition,
+    requisitionStatusLabel,
+    requisitionStatusVariant,
+    requisitionSubtitle,
     postings,
     applications,
     activities,
@@ -47,31 +47,21 @@ export default function RequisitionDetailPage() {
     canManagePosting,
     canManageIntake,
     canCreate,
+    invalidateWorkspace,
   } = useRequisitionDetail()
 
-  if (isLoading) return <RecruitmentWorkspaceSkeleton />
-
-  if (error || !workspace) {
-    return (
-      <div className="container space-y-3 p-8">
-        <p className="font-semibold text-destructive">Không tải được yêu cầu tuyển dụng.</p>
-        <p className="text-sm text-muted-foreground">
-          {error ? extractErrorMessage(error) : "Dữ liệu workspace trống."}
-        </p>
-      </div>
-    )
+  if (isLoading) {
+    return <RecruitmentWorkspaceSkeleton />
   }
 
-  const { requisition } = workspace
-  const requisitionStatusLabel =
-    requisition.status === "approved" ? "Đã duyệt" : requisition.status
-  const requisitionStatusVariant = requisition.status === "approved" ? "success" : "neutral"
-  const requisitionSubtitle = `${requisition.code} · ${requisition.department || "Chưa có phòng ban"} · ${requisition.position?.name ?? requisition.positionLevel}`
-
-  const invalidateWorkspace = () => {
-    void queryClient.invalidateQueries({
-      queryKey: ["recruitment", "requisition-workspace", id],
-    })
+  if (error || !workspace || !requisition) {
+    return (
+      <DetailNotFound
+        title="Không tải được yêu cầu tuyển dụng"
+        description={error ? extractErrorMessage(error) : "Dữ liệu workspace trống hoặc đã bị xóa."}
+        onBack={() => navigate(-1)}
+      />
+    )
   }
 
   return (
@@ -81,16 +71,14 @@ export default function RequisitionDetailPage() {
         subtitle={requisitionSubtitle}
         backHref="/recruitment/requisitions"
         backLabel="Yêu cầu tuyển dụng"
-        statusBadge={<StatusPill label={requisitionStatusLabel} variant={requisitionStatusVariant} />}
+        statusBadge={
+          <StatusPill label={requisitionStatusLabel} variant={requisitionStatusVariant} />
+        }
         actions={
-          <Button
-            className="rounded-full"
+          <RequisitionCreatePostingButton
+            canManagePosting={canManagePosting}
             onClick={() => setIsPostingOpen(true)}
-            disabled={!canManagePosting}
-          >
-            <Plus className="mr-2 size-4" />
-            Tạo bài đăng
-          </Button>
+          />
         }
         tabs={{
           items: REQUISITION_DETAIL_TABS.map((t) => ({ id: t.id, label: t.label })),

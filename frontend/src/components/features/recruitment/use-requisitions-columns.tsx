@@ -5,6 +5,7 @@ import {
   REQUISITION_PRIORITY,
   REQUISITION_PRIORITY_LABELS,
   REQUISITION_STATUS_LABELS,
+  REQUISITION_STATUS_VARIANTS,
 } from "@/config/entities/recruitment.config"
 import { getTableColWidthPx } from "@/config/table-columns.config"
 import { TYPOGRAPHY } from "@/config/typography.config"
@@ -19,15 +20,6 @@ const priorityVariantMap: Record<string, "destructive" | "secondary" | "outline"
   [REQUISITION_PRIORITY.HIGH]: "secondary",
   [REQUISITION_PRIORITY.MEDIUM]: "outline",
   [REQUISITION_PRIORITY.LOW]: "outline",
-}
-
-const statusVariantMap: Record<string, "success" | "warning" | "danger" | "info" | "neutral"> = {
-  draft: "neutral",
-  pending_approval: "warning",
-  approved: "success",
-  rejected: "danger",
-  closed: "neutral",
-  filled: "info",
 }
 
 function formatCurrencyRange(requisition: JobRequisition) {
@@ -60,9 +52,9 @@ export interface RequisitionsColumnsOptions {
 }
 
 /**
- * Factory function defining data table column schema for job requisitions.
+ * Hook / Factory function defining data table column schema for job requisitions.
  */
-export function getRequisitionsColumns({
+export function useRequisitionsColumns({
   hasPermission,
   employeeId,
   onViewDetails,
@@ -172,7 +164,7 @@ export function getRequisitionsColumns({
         cell: (requisition) => (
           <StatusPill
             label={REQUISITION_STATUS_LABELS[requisition.status]}
-            variant={statusVariantMap[requisition.status]}
+            variant={REQUISITION_STATUS_VARIANTS[requisition.status] || "neutral"}
           />
         ),
       },

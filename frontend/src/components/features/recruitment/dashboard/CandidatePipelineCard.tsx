@@ -5,7 +5,10 @@ import { routerNavigate } from "@/lib/router-navigator"
 
 import { ArrowRight, Users } from "lucide-react"
 
-interface CandidatePipelineCardProps {
+/**
+ * Props for CandidatePipelineCard component.
+ */
+export interface CandidatePipelineCardProps {
   appStats?: {
     byStatus?: {
       applied?: number
@@ -17,6 +20,9 @@ interface CandidatePipelineCardProps {
   totalApps: number
 }
 
+/**
+ * Presenter card displaying candidate pipeline progress and status distribution.
+ */
 export function CandidatePipelineCard({
   appStats,
   totalApps,

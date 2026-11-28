@@ -5,10 +5,16 @@ import { cn } from "@/lib/utils"
 
 import { CheckCircle, FileText, TrendingUp, Users } from "lucide-react"
 
-interface RecruitmentQuickLinksProps {
+/**
+ * Props for RecruitmentQuickLinks component.
+ */
+export interface RecruitmentQuickLinksProps {
   pendingReqCount?: number
 }
 
+/**
+ * Presenter grid displaying navigation shortcuts and actionable recruitment items.
+ */
 export function RecruitmentQuickLinks({ pendingReqCount = 0 }: RecruitmentQuickLinksProps) {
   return (
     <div>

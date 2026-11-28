@@ -272,6 +272,18 @@ export const REQUISITION_STATUS_LABELS: Record<string, string> = {
   [REQUISITION_STATUS.FILLED]: "Đã tuyển đủ",
 }
 
+export const REQUISITION_STATUS_VARIANTS: Record<
+  string,
+  "success" | "warning" | "danger" | "info" | "neutral"
+> = {
+  [REQUISITION_STATUS.DRAFT]: "neutral",
+  [REQUISITION_STATUS.PENDING_APPROVAL]: "warning",
+  [REQUISITION_STATUS.APPROVED]: "success",
+  [REQUISITION_STATUS.REJECTED]: "danger",
+  [REQUISITION_STATUS.CLOSED]: "neutral",
+  [REQUISITION_STATUS.FILLED]: "info",
+}
+
 export const REQUISITION_PRIORITY_LABELS: Record<string, string> = {
   [REQUISITION_PRIORITY.LOW]: "Thấp",
   [REQUISITION_PRIORITY.MEDIUM]: "Trung bình",
