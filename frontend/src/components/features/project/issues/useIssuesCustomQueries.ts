@@ -153,7 +153,9 @@ export function useIssuesCustomQueries({
             setSearchParams(newParams)
             setAppliedUrlQueryId(null)
           }
-        } catch {}
+        } catch {
+          // Ignored parsing or URL manipulation errors
+        }
       }
     }
   }, [

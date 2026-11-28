@@ -14,7 +14,7 @@ import type { GeneratedTaskSuggestion } from "@/lib/api/task-estimate-ai.api"
 import { taskApi } from "@/lib/api/task.api"
 import type { TaskPriority, TaskTracker } from "@/types/task.types"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import { useQueryClient } from "@tanstack/react-query"
 import { AlertTriangle, Brain, Loader2, Plus, Sparkles } from "lucide-react"
@@ -132,14 +132,7 @@ export function ProjectTaskGeneratorModal({
   const [suggestions, setSuggestions] = useState<EditableSuggestion[]>([])
   const queryClient = useQueryClient()
 
-  useEffect(() => {
-    if (isOpen && projectId) {
-      void fetchSuggestions()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, projectId])
-
-  const fetchSuggestions = async () => {
+  const fetchSuggestions = useCallback(async () => {
     setLoading(true)
     try {
       const data = await taskEstimateAiApi.generateTasks(projectId)
@@ -157,7 +150,13 @@ export function ProjectTaskGeneratorModal({
     } finally {
       setLoading(false)
     }
-  }
+  }, [projectId, onOpenChange])
+
+  useEffect(() => {
+    if (isOpen && projectId) {
+      void fetchSuggestions()
+    }
+  }, [isOpen, projectId, fetchSuggestions])
 
   const handleToggleCheck = (index: number) => {
     setSuggestions((prev) =>

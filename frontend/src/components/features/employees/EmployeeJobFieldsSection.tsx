@@ -22,9 +22,9 @@ import type { EmployeeStatus, WorkScheduleType } from "@/types/employee.types"
 import type { FieldErrors, UseFormSetValue, UseFormWatch } from "react-hook-form"
 
 interface EmployeeJobFieldsSectionProps {
-  errors: FieldErrors<any>
-  watch: UseFormWatch<any>
-  setValue: UseFormSetValue<any>
+  errors: FieldErrors<Record<string, unknown>>
+  watch: UseFormWatch<Record<string, unknown>>
+  setValue: UseFormSetValue<Record<string, unknown>>
   positions: Array<{ id: string; name: string }>
   isEdit?: boolean
 }

@@ -54,7 +54,7 @@ export interface RequisitionsColumnsOptions {
 /**
  * Hook / Factory function defining data table column schema for job requisitions.
  */
-export function useRequisitionsColumns({
+export function getRequisitionsColumns({
   hasPermission,
   employeeId,
   onViewDetails,
