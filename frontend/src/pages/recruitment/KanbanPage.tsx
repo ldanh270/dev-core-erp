@@ -1,9 +1,12 @@
 import { BoardPageLayout } from "@/components/common"
+import { KanbanAddColumnButton } from "@/components/features/recruitment/KanbanAddColumnButton"
 import { KanbanBoardSkeleton } from "@/components/features/recruitment/KanbanBoardSkeleton"
 import { KanbanContent } from "@/components/features/recruitment/KanbanContent"
-import { Button } from "@/components/ui/button"
+import {
+  KanbanEmptySelectionState,
+  KanbanErrorState,
+} from "@/components/features/recruitment/KanbanStates"
 import { useKanbanManagement } from "@/hooks/recruitment/use-kanban-management"
-import { Plus } from "lucide-react"
 
 /**
  * Props for {@link KanbanPage} component.
@@ -19,7 +22,7 @@ export interface KanbanPageProps {
 
 /**
  * Tier 2 Page Orchestrator for recruitment Kanban boards.
- * Switches between requisition and posting boards, delegating UI rendering to KanbanContent.
+ * Pure declarative wiring shell connecting useKanbanManagement with Tier 3 presenters.
  */
 export default function KanbanPage({
   postingId: givenPostingId,
@@ -35,42 +38,25 @@ export default function KanbanPage({
   } = useKanbanManagement({ givenPostingId, requisitionId })
 
   if (!hasTarget) {
-    return (
-      <p className="p-6 text-sm text-muted-foreground">
-        Chọn một yêu cầu tuyển dụng để xem Kanban.
-      </p>
-    )
+    return <KanbanEmptySelectionState />
   }
 
-  if (board.isLoadingStatuses || board.isLoadingTasks) return <KanbanBoardSkeleton />
+  if (board.isLoadingStatuses || board.isLoadingTasks) {
+    return <KanbanBoardSkeleton />
+  }
 
   if (board.isError) {
-    return (
-      <div className="container space-y-3 p-8" role="alert">
-        <p className="font-semibold text-destructive">Không tải được bảng Kanban.</p>
-        <p className="text-sm text-muted-foreground">Kiểm tra kết nối rồi thử lại.</p>
-        <Button
-          variant="outline"
-          className="rounded-full"
-          onClick={() => {
-            void board.refetch()
-          }}
-        >
-          Thử lại
-        </Button>
-      </div>
-    )
+    return <KanbanErrorState onRetry={() => void board.refetch()} />
   }
 
   if (embedded) {
     return (
-      <div className="space-y-6">
-        <KanbanContent
-          board={board}
-          selectedApplicationId={selectedApplicationId}
-          setSelectedApplicationId={setSelectedApplicationId}
-        />
-      </div>
+      <KanbanContent
+        board={board}
+        selectedApplicationId={selectedApplicationId}
+        setSelectedApplicationId={setSelectedApplicationId}
+        embedded
+      />
     )
   }
 
@@ -80,13 +66,7 @@ export default function KanbanPage({
       description="Kéo thả để cập nhật tiến độ ứng viên theo từng giai đoạn tuyển dụng"
       actions={
         board.canManageStages ? (
-          <Button
-            onClick={handleOpenAddColumn}
-            className="rounded-full px-4 text-xs font-bold shadow-sm cursor-pointer"
-          >
-            <Plus className="mr-1 size-3.5" />
-            Thêm cột trạng thái
-          </Button>
+          <KanbanAddColumnButton onClick={handleOpenAddColumn} />
         ) : undefined
       }
     >

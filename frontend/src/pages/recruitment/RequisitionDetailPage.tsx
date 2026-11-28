@@ -14,6 +14,10 @@ import { extractErrorMessage } from "@/utils/error-helper"
 import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "react-router-dom"
 
+/**
+ * Tier 2 Page Orchestrator for Requisition Details.
+ * Composes requisition overview, candidates, kanban, interviews, offers, and dialogs.
+ */
 export default function RequisitionDetailPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()

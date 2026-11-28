@@ -11,8 +11,8 @@ import { useMemo } from "react"
 import { Plus, Share2 } from "lucide-react"
 
 /**
- * Standardized Job Postings Page.
- * Thin declarative composition shell powered by DataTablePage, useJobPostingsManagement, and getJobPostingsColumns.
+ * Tier 2 Page Orchestrator for Job Postings.
+ * Thin declarative composition shell connecting useJobPostingsManagement, DataTablePage, and CreateJobPostingDialog.
  */
 export default function JobPostingsPage() {
   const {

@@ -36,6 +36,9 @@ import type { UseFormReturn } from "react-hook-form"
 const EMPLOYEE_TYPE_MAP = new Map(Object.entries(EMPLOYEE_TYPE_LABELS))
 const PRIORITY_LABEL_MAP = new Map(Object.entries(REQUISITION_PRIORITY_LABELS))
 
+/**
+ * Presentational wrapper rendering an accessible form field label, error text, and children.
+ */
 function RequisitionFieldWrapper({
   label,
   required,
@@ -285,6 +288,10 @@ export interface CreateRequisitionDialogProps {
   requisition?: JobRequisition | null
 }
 
+/**
+ * Modal dialog for drafting or editing job requisitions, configuring target dates,
+ * headcount, approver selection, and dynamic candidate form schemas.
+ */
 export function CreateRequisitionDialog({
   open,
   onOpenChange,

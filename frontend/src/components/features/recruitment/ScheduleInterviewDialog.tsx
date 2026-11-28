@@ -60,15 +60,27 @@ const TIME_OPTIONS = [
   "18:00",
 ]
 
+/**
+ * Props for {@link ScheduleInterviewTimingFields} component.
+ */
 interface ScheduleInterviewTimingFieldsProps {
+  /** Interview format mode (video call, in-person, phone). */
   format: string
+  /** Callback fired when interview format changes. */
   setFormat: (val: string) => void
+  /** Total estimated duration in minutes. */
   durationMinutes: string
+  /** Callback fired when duration selection changes. */
   setDurationMinutes: (val: string) => void
+  /** ISO datetime string of scheduled interview slot. */
   scheduledAt: string
+  /** Callback fired when scheduled datetime changes. */
   setScheduledAt: (val: string) => void
 }
 
+/**
+ * Presenter sub-component rendering format, duration, and date-time selection controls.
+ */
 function ScheduleInterviewTimingFields({
   format,
   setFormat,
@@ -79,7 +91,6 @@ function ScheduleInterviewTimingFields({
 }: ScheduleInterviewTimingFieldsProps) {
   return (
     <div className="grid grid-cols-3 gap-3">
-      {/* Col 1: Format */}
       <div className="space-y-1.5">
         <Label className="text-xs font-bold text-foreground flex items-center gap-1">
           <Video className="size-3 text-blue-500" />
@@ -121,7 +132,6 @@ function ScheduleInterviewTimingFields({
         </Select>
       </div>
 
-      {/* Col 2: Duration */}
       <div className="space-y-1.5">
         <Label className="text-xs font-bold text-foreground flex items-center gap-1">
           <Clock className="size-3 text-amber-500" />
@@ -151,7 +161,6 @@ function ScheduleInterviewTimingFields({
         </Select>
       </div>
 
-      {/* Col 3: Scheduled DateTime (Popover) */}
       <div className="space-y-1.5">
         <Label className="text-xs font-bold text-foreground flex items-center gap-1">
           <CalendarClock className="size-3 text-emerald-500" />
@@ -222,6 +231,9 @@ function ScheduleInterviewTimingFields({
   )
 }
 
+/**
+ * Custom hook encapsulating state and mutation management for scheduling interview modal.
+ */
 function useScheduleInterviewForm({
   applications,
   open,
@@ -312,10 +324,17 @@ function useScheduleInterviewForm({
   }
 }
 
+/**
+ * Props for {@link ScheduleInterviewDialog} component.
+ */
 export interface ScheduleInterviewDialogProps {
+  /** Candidate applications available for interview scheduling. */
   applications: KanbanApplication[]
+  /** Controlled open state of dialog modal. */
   open: boolean
+  /** Callback fired when dialog open state transitions. */
   onOpenChange: (open: boolean) => void
+  /** Callback fired after interview round is successfully scheduled. */
   onCreated: () => void
 }
 

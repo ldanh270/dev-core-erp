@@ -10,6 +10,9 @@ import type { JobPosting } from "@/types/recruitment.types"
 
 import { ExternalLink, Eye, FileSpreadsheet, RefreshCw } from "lucide-react"
 
+/**
+ * Pure UI presenter rendering connector health pills for third-party recruitment channels.
+ */
 export function ConnectorStatus({ posting }: { posting: JobPosting }) {
   const isGoogleForm = posting.channel === "google_form"
   if (!isGoogleForm) return <span className="text-sm text-muted-foreground">—</span>
@@ -22,6 +25,9 @@ export function ConnectorStatus({ posting }: { posting: JobPosting }) {
   return <StatusPill label="Chưa cấu hình" variant="warning" />
 }
 
+/**
+ * Presentational action buttons in table rows for publishing, syncing, and opening job postings.
+ */
 export function PostingActions({
   posting,
   onOpenWorkspace,

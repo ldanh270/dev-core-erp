@@ -14,6 +14,10 @@ interface JobPostingApplicantsTabProps {
   onAddCandidate: () => void
 }
 
+/**
+ * Pure UI presentational tab listing applicants assigned to a specific job posting,
+ * with search filtering, stage pills, and manual candidate addition trigger.
+ */
 export function JobPostingApplicantsTab({
   candidates,
   searchQuery,

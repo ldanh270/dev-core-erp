@@ -22,6 +22,9 @@ interface CreateCandidateDialogProps {
   onOpenChange: (open: boolean) => void
 }
 
+/**
+ * Modal dialog for manually creating a candidate application directly under a specific job posting.
+ */
 export function CreateCandidateDialog({
   postingId,
   open,

@@ -16,6 +16,10 @@ interface RequisitionPostingsTabProps {
   onOpen: (id: string) => void
 }
 
+/**
+ * Pure UI presentational tab displaying postings created under a requisition,
+ * with channel indicators, publish/archive actions, and external sync buttons.
+ */
 export function RequisitionPostingsTab({
   postings,
   onPublish,

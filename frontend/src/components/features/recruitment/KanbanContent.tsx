@@ -1,8 +1,8 @@
 import { KanbanBoardArea } from "@/components/features/recruitment/KanbanBoardArea"
 import { KanbanDialogs } from "@/components/features/recruitment/KanbanDialogs"
 import { groupApplicationsByStage } from "@/components/features/recruitment/kanban-utils"
-import type { usePostingKanban } from "@/pages/recruitment/hooks/use-posting-kanban"
-import type { useRequisitionKanban } from "@/pages/recruitment/hooks/use-requisition-kanban"
+import type { usePostingKanban } from "@/hooks/recruitment/use-posting-kanban"
+import type { useRequisitionKanban } from "@/hooks/recruitment/use-requisition-kanban"
 
 import { useMemo } from "react"
 
@@ -10,10 +10,18 @@ export type KanbanBoardHandle =
   | ReturnType<typeof usePostingKanban>
   | ReturnType<typeof useRequisitionKanban>
 
-interface KanbanContentProps {
+/**
+ * Props for {@link KanbanContent} component.
+ */
+export interface KanbanContentProps {
+  /** Unified board controller handle from usePostingKanban or useRequisitionKanban. */
   board: KanbanBoardHandle
+  /** Currently selected candidate application ID for detail drawer view. */
   selectedApplicationId: string | null
+  /** Callback fired when candidate application selection transitions. */
   setSelectedApplicationId: (id: string | null) => void
+  /** Whether the board is rendered embedded inside another page tab. */
+  embedded?: boolean
 }
 
 /**
@@ -24,6 +32,7 @@ export function KanbanContent({
   board,
   selectedApplicationId,
   setSelectedApplicationId,
+  embedded = false,
 }: KanbanContentProps) {
   const {
     canManageStages,
@@ -74,7 +83,7 @@ export function KanbanContent({
     [statuses, tasks],
   )
 
-  return (
+  const content = (
     <>
       <KanbanBoardArea
         statuses={statuses}
@@ -151,4 +160,10 @@ export function KanbanContent({
       />
     </>
   )
+
+  if (embedded) {
+    return <div className="space-y-6">{content}</div>
+  }
+
+  return content
 }

@@ -8,6 +8,10 @@ interface RequisitionBackgroundChecksTabProps {
   applications: KanbanApplication[]
 }
 
+/**
+ * Pure presentational tab listing background check verifications
+ * across candidate offers within a requisition.
+ */
 export function RequisitionBackgroundChecksTab({
   applications,
 }: RequisitionBackgroundChecksTabProps) {

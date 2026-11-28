@@ -1,16 +1,10 @@
-import { PageContainer } from "@/components/common"
+import { DetailNotFound, PageContainer } from "@/components/common"
+import { ApplicationDetailBody } from "@/components/features/recruitment/application-detail/ApplicationDetailBody"
 import { ApplicationDetailDialogs } from "@/components/features/recruitment/application-detail/ApplicationDetailDialogs"
 import { ApplicationDetailHeader } from "@/components/features/recruitment/application-detail/ApplicationDetailHeader"
-import {
-  ApplicationDetailSkeleton,
-  ApplicationNotFound,
-} from "@/components/features/recruitment/application-detail/ApplicationDetailStates"
-import { ApplicationDetailTabs } from "@/components/features/recruitment/application-detail/ApplicationDetailTabs"
+import { ApplicationDetailSkeleton } from "@/components/features/recruitment/application-detail/ApplicationDetailStates"
 import { ApplicationPipelineStepper } from "@/components/features/recruitment/application-detail/ApplicationPipelineStepper"
-import { ApplicationSidebarPanel } from "@/components/features/recruitment/application-detail/ApplicationSidebarPanel"
 import { useApplicationDetail } from "@/hooks/recruitment/use-application-detail"
-
-import { useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "react-router-dom"
 
 /**
@@ -19,10 +13,8 @@ import { useNavigate } from "react-router-dom"
  */
 export default function ApplicationDetailPage() {
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
 
   const {
-    applicationId,
     application,
     isLoading,
     interviews,
@@ -42,7 +34,6 @@ export default function ApplicationDetailPage() {
     setIsEditModalOpen,
     noteText,
     setNoteText,
-    // Schedule form state
     roundTitle,
     setRoundTitle,
     roundFormat,
@@ -53,7 +44,6 @@ export default function ApplicationDetailPage() {
     setRoundDuration,
     roundInterviewerId,
     setRoundInterviewerId,
-    // Edit round form state
     editTitle,
     setEditTitle,
     editFormat,
@@ -64,8 +54,8 @@ export default function ApplicationDetailPage() {
     setEditScheduledAt,
     editInterviewerId,
     setEditInterviewerId,
-    // Handlers & mutations
     handleOpenEditRound,
+    handleOfferCreated,
     addNoteMutation,
     updateStatusMutation,
     assignRecruiterMutation,
@@ -78,7 +68,13 @@ export default function ApplicationDetailPage() {
   }
 
   if (!application) {
-    return <ApplicationNotFound onBack={() => navigate(-1)} />
+    return (
+      <DetailNotFound
+        title="Không tìm thấy ứng viên"
+        description="Hồ sơ ứng tuyển không tồn tại hoặc đã bị xóa."
+        onBack={() => navigate(-1)}
+      />
+    )
   }
 
   return (
@@ -96,49 +92,34 @@ export default function ApplicationDetailPage() {
         interviews={interviews}
       />
 
-      <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-12 space-y-6 lg:col-span-8">
-          <ApplicationDetailTabs
-            application={application}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            interviews={interviews}
-            isLoadingInterviews={isLoadingInterviews}
-            notes={notes}
-            isLoadingNotes={isLoadingNotes}
-            employees={employees}
-            canManage={canManage}
-            noteText={noteText}
-            setNoteText={setNoteText}
-            onScheduleInterview={() => setIsScheduleModalOpen(true)}
-            onEditRound={handleOpenEditRound}
-            onCreateOffer={() => setIsOfferDialogOpen(true)}
-            onAddNote={(text) => addNoteMutation.mutate(text)}
-            isAddingNote={addNoteMutation.isPending}
-          />
-        </div>
-
-        <div className="col-span-12 space-y-6 lg:col-span-4">
-          <ApplicationSidebarPanel
-            application={application}
-            employees={employees}
-            onStatusChange={(status) => updateStatusMutation.mutate(status)}
-            isStatusUpdating={updateStatusMutation.isPending}
-            onAssignRecruiter={(empId) => assignRecruiterMutation.mutate(empId)}
-            isAssignUpdating={assignRecruiterMutation.isPending}
-          />
-        </div>
-      </div>
+      <ApplicationDetailBody
+        application={application}
+        employees={employees}
+        canManage={canManage}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        interviews={interviews}
+        isLoadingInterviews={isLoadingInterviews}
+        notes={notes}
+        isLoadingNotes={isLoadingNotes}
+        noteText={noteText}
+        setNoteText={setNoteText}
+        onScheduleInterview={() => setIsScheduleModalOpen(true)}
+        onEditRound={handleOpenEditRound}
+        onCreateOffer={() => setIsOfferDialogOpen(true)}
+        onAddNote={(text) => addNoteMutation.mutate(text)}
+        isAddingNote={addNoteMutation.isPending}
+        onStatusChange={(status) => updateStatusMutation.mutate(status)}
+        isStatusUpdating={updateStatusMutation.isPending}
+        onAssignRecruiter={(empId) => assignRecruiterMutation.mutate(empId)}
+        isAssignUpdating={assignRecruiterMutation.isPending}
+      />
 
       <ApplicationDetailDialogs
         application={application}
         isOfferDialogOpen={isOfferDialogOpen}
         setIsOfferDialogOpen={setIsOfferDialogOpen}
-        onOfferCreated={() => {
-          void queryClient.invalidateQueries({
-            queryKey: ["recruitment", "application", applicationId],
-          })
-        }}
+        onOfferCreated={handleOfferCreated}
         isScheduleModalOpen={isScheduleModalOpen}
         setIsScheduleModalOpen={setIsScheduleModalOpen}
         roundTitle={roundTitle}

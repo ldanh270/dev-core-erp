@@ -18,10 +18,16 @@ interface JobPostingActivityTabProps {
   isArchiving: boolean
 }
 
+/**
+ * Formats underscore-delimited activity event names into title case.
+ */
 function formatActivity(type: string): string {
   return type.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
+/**
+ * Extracts descriptive text from JSON activity metadata.
+ */
 function getMetadataMessage(metadata: Record<string, unknown> | null | undefined): string {
   if (!metadata || typeof metadata !== "object") return ""
   if (typeof metadata.message === "string") return metadata.message
@@ -30,11 +36,18 @@ function getMetadataMessage(metadata: Record<string, unknown> | null | undefined
   return ""
 }
 
+/**
+ * Extracts candidate email identifier from response payload dictionaries.
+ */
 function getResponseEmail(data: Record<string, string> | null): string {
   if (!data) return "Không có email"
   return data.email || data.email_address || "Không có email"
 }
 
+/**
+ * Pure UI presentational tab presenting activity logs, sync audit trails,
+ * invalid external form submissions, and archive actions for a job posting.
+ */
 export function JobPostingActivityTab({
   activities,
   invalidResponses,

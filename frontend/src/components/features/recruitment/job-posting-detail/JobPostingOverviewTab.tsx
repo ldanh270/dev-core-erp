@@ -22,6 +22,10 @@ interface JobPostingOverviewTabProps {
   candidates: RecruitmentApplication[]
 }
 
+/**
+ * Pure UI presentational tab summarizing job posting statistics,
+ * sync dates, channel metadata, and pipeline stage counts.
+ */
 export function JobPostingOverviewTab({
   posting,
   overview,
@@ -83,6 +87,9 @@ export function JobPostingOverviewTab({
   )
 }
 
+/**
+ * Presentational metric tile displaying an icon badge alongside key statistics.
+ */
 function MetricCard({
   icon,
   label,

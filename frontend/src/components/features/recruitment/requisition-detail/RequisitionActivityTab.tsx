@@ -12,6 +12,9 @@ interface RequisitionActivityTabProps {
   activities: ActivityItem[]
 }
 
+/**
+ * Parses dynamic JSON activity metadata safely into a human-readable log string.
+ */
 function getMetadataMessage(metadata: Record<string, unknown> | null | undefined): string {
   if (!metadata || typeof metadata !== "object") return ""
   if (typeof metadata.message === "string") return metadata.message
@@ -20,6 +23,10 @@ function getMetadataMessage(metadata: Record<string, unknown> | null | undefined
   return ""
 }
 
+/**
+ * Pure UI presentational tab rendering audit trail and lifecycle logs
+ * for a specific job requisition across candidate moves, rounds, and postings.
+ */
 export function RequisitionActivityTab({ activities }: RequisitionActivityTabProps) {
   return (
     <PageCard>

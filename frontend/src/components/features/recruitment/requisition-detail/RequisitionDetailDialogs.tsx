@@ -14,6 +14,10 @@ interface RequisitionDetailDialogsProps {
   setSelectedAppId: (id: string | null) => void
 }
 
+/**
+ * Encapsulates modal dialogs and slide-over panels for requisition detail views,
+ * including posting creation, posting details, and candidate application review.
+ */
 export function RequisitionDetailDialogs({
   isPostingOpen,
   onPostingOpenChange,

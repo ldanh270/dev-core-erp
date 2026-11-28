@@ -48,6 +48,10 @@ interface RequisitionDetailTabsContentProps {
   activities: RequisitionActivityItem[]
 }
 
+/**
+ * Presentational routing switch rendering the active requisition tab
+ * (Overview, Postings, Candidates, Kanban, Interviews, Offers, Background Checks, Activity).
+ */
 export function RequisitionDetailTabsContent({
   activeTab,
   requisition,

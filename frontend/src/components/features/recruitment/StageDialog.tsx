@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { POSTING_STAGE_COLORS } from "@/pages/recruitment/hooks/use-posting-kanban"
+import { POSTING_STAGE_COLORS } from "@/hooks/recruitment/use-posting-kanban"
 
 import type { FormEventHandler } from "react"
 import { Check, Sparkles } from "lucide-react"

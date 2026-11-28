@@ -29,6 +29,9 @@ interface DonutSegment {
   accumulatedOffset: number
 }
 
+/**
+ * Computes SVG circular offset segments for the pipeline distribution chart.
+ */
 function calculateDonutSegments(
   stageCounts: StageWithCount[],
   totalAppsCount: number,
@@ -50,6 +53,9 @@ function calculateDonutSegments(
   return segments
 }
 
+/**
+ * Pure presentational card showing percentage completion towards headcount target.
+ */
 function RequisitionHiringProgressCard({
   headcount,
   hiredCount,
@@ -314,6 +320,10 @@ interface RequisitionOverviewTabProps {
   stageCounts: StageWithCount[]
 }
 
+/**
+ * Pure UI presentational tab presenting comprehensive hiring metrics,
+ * SVG pipeline distribution donut chart, stage breakdowns, and requisition metadata.
+ */
 export function RequisitionOverviewTab({
   requisition,
   applications,

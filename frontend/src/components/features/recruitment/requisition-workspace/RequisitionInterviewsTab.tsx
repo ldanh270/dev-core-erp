@@ -22,6 +22,10 @@ const formatDateTime = (value: string) =>
     timeStyle: "short",
   })
 
+/**
+ * Pure UI presentational tab presenting aggregated interview schedules
+ * for all candidates under the current job requisition.
+ */
 export function RequisitionInterviewsTab({
   applications,
   canSchedule,

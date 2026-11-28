@@ -19,6 +19,9 @@ interface RejectRequisitionDialogProps {
   onConfirm: (reason: string) => void
 }
 
+/**
+ * Confirmation dialog capturing the mandatory justification text when rejecting a job requisition.
+ */
 export function RejectRequisitionDialog({
   requisitionCode,
   open,

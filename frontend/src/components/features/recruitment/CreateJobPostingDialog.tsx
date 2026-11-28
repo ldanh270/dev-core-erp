@@ -35,9 +35,14 @@ const DEFAULT_FIELDS: RecruitmentFormField[] = [
   { key: "cv_url", label: "Đường dẫn CV", type: "short_text", required: false },
 ]
 
-// eslint-disable-next-line security/detect-unsafe-regex
+/**
+ * eslint-disable-next-line security/detect-unsafe-regex
+ */
 const FIELD_KEY_PATTERN = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/
 
+/**
+ * Validates dynamic recruitment form fields for label presence, format, and uniqueness.
+ */
 function getFieldError(fields: RecruitmentFormField[]): string | null {
   if (fields.some((field) => !field.label.trim())) return "Mỗi field cần có nhãn hiển thị."
   if (fields.some((field) => !FIELD_KEY_PATTERN.test(field.key) || field.key.length > 50)) {
@@ -48,6 +53,9 @@ function getFieldError(fields: RecruitmentFormField[]): string | null {
   return null
 }
 
+/**
+ * Presentational warning and helper banner alerting the user when OAuth credentials are required.
+ */
 function JobPostingOAuthNotice({
   isLoadingOAuthAccounts,
   channel,
@@ -151,6 +159,10 @@ export interface CreateJobPostingDialogProps {
   initialRequisitionId?: string
 }
 
+/**
+ * Modal dialog orchestrating the creation of a job posting linked to an approved requisition,
+ * selecting channels (Google Form/LinkedIn/Facebook), and binding OAuth credentials.
+ */
 export function CreateJobPostingDialog({
   open,
   onOpenChange,

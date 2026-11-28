@@ -2,18 +2,10 @@ import { DataTablePage } from "@/components/common"
 import { CreateRequisitionDialog } from "@/components/features/recruitment/CreateRequisitionDialog"
 import { RequisitionDetailsDrawer } from "@/components/features/recruitment/requisition-details-drawer"
 import { getRequisitionsColumns } from "@/components/features/recruitment/requisitions-columns"
-import { Button } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { REQUISITION_PRIORITY } from "@/config/entities/recruitment.config"
+import { RequisitionsPriorityFilter } from "@/components/features/recruitment/RequisitionsPriorityFilter"
 import { useRequisitionsManagement } from "@/hooks/recruitment/use-requisitions-management"
 import type { JobRequisition } from "@/types/recruitment.types"
-import { FileSearch, Filter, Plus, RotateCcw } from "lucide-react"
+import { FileSearch, Plus } from "lucide-react"
 import { useMemo } from "react"
 
 /**
@@ -78,40 +70,21 @@ export default function RequisitionsPage() {
           placeholder: "Tìm theo mã, vị trí, phòng ban, người duyệt...",
         }}
         filters={
-          <div className="flex items-center gap-2">
-            <Filter className="h-3.5 w-3.5 text-muted-foreground hidden sm:block" />
-            <Select value={priorityFilter} onValueChange={handlePriorityChange}>
-              <SelectTrigger className="w-[150px] text-sm font-semibold bg-background rounded-full">
-                <SelectValue placeholder="Độ ưu tiên" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tất cả ưu tiên</SelectItem>
-                <SelectItem value={REQUISITION_PRIORITY.URGENT}>Khẩn cấp</SelectItem>
-                <SelectItem value={REQUISITION_PRIORITY.HIGH}>Cao</SelectItem>
-                <SelectItem value={REQUISITION_PRIORITY.MEDIUM}>Trung bình</SelectItem>
-                <SelectItem value={REQUISITION_PRIORITY.LOW}>Thấp</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                onClick={handleResetFilters}
-                className="h-10 px-4 text-sm font-semibold gap-1.5 rounded-full text-muted-foreground hover:text-foreground"
-              >
-                <RotateCcw className="h-4 w-4" />
-                Xóa lọc
-              </Button>
-            )}
-          </div>
+          <RequisitionsPriorityFilter
+            priorityFilter={priorityFilter}
+            hasActiveFilters={hasActiveFilters}
+            onPriorityChange={handlePriorityChange}
+            onResetFilters={handleResetFilters}
+          />
         }
         primaryAction={
-          hasPermission("recruitment.create") ? (
-            <Button onClick={handleOpenCreate} className="rounded-full font-semibold">
-              <Plus className="mr-2 h-4 w-4" />
-              Tạo yêu cầu mới
-            </Button>
-          ) : undefined
+          hasPermission("recruitment.create")
+            ? {
+                label: "Tạo yêu cầu mới",
+                icon: Plus,
+                onClick: handleOpenCreate,
+              }
+            : undefined
         }
         emptyState={{
           icon: FileSearch,

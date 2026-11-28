@@ -189,6 +189,12 @@ export function useApplicationDetail() {
     setIsEditModalOpen(true)
   }, [])
 
+  const handleOfferCreated = useCallback(() => {
+    void queryClient.invalidateQueries({
+      queryKey: ["recruitment", "application", applicationId],
+    })
+  }, [queryClient, applicationId])
+
   return {
     applicationId,
     application,
@@ -235,6 +241,7 @@ export function useApplicationDetail() {
     setEditInterviewerId,
     // Handlers & mutations
     handleOpenEditRound,
+    handleOfferCreated,
     addNoteMutation,
     updateStatusMutation,
     assignRecruiterMutation,

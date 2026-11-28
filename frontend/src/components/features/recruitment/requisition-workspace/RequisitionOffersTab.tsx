@@ -19,6 +19,10 @@ interface RequisitionOffersTabProps {
 const formatMoney = (value: number | string, currency: string) =>
   `${Number(value).toLocaleString("vi-VN")} ${currency}`
 
+/**
+ * Pure UI presentational tab presenting candidate offers, compensation details,
+ * and offer lifecycle status for the requisition.
+ */
 export function RequisitionOffersTab({
   applications,
   canCreate,

@@ -11,22 +11,41 @@ import type { RecruitmentPipelineStage } from "@/types/recruitment.types"
 import { CalendarClock } from "lucide-react"
 import { InterviewRoundFields } from "./InterviewRoundFields"
 
+/**
+ * Props for {@link ScheduleInterviewDialog} component.
+ */
 export interface ScheduleInterviewDialogProps {
+  /** Controls open visibility of the modal dialog. */
   open: boolean
+  /** Callback fired when dialog open state transitions. */
   onOpenChange: (open: boolean) => void
+  /** Title or stage name for the interview round. */
   roundTitle: string
+  /** Callback to update interview round title. */
   setRoundTitle: (v: string) => void
+  /** Interview format (video call, in-person, phone). */
   roundFormat: string
+  /** Callback to update interview format. */
   setRoundFormat: (v: string) => void
+  /** Total estimated duration in minutes. */
   roundDuration: string
+  /** Callback to update interview duration. */
   setRoundDuration: (v: string) => void
+  /** Scheduled date-time string in ISO or local representation. */
   roundScheduledAt: string
+  /** Callback to update scheduled date-time. */
   setRoundScheduledAt: (v: string) => void
+  /** Unique ID of the interviewer employee. */
   roundInterviewerId: string
+  /** Callback to update selected interviewer employee ID. */
   setRoundInterviewerId: (v: string) => void
+  /** Recruitment pipeline stages to populate stage options. */
   dynamicStages: RecruitmentPipelineStage[]
+  /** Active employees list to populate interviewer options. */
   employees: Employee[]
+  /** Submission handler to trigger creation mutation. */
   onSubmit: () => void
+  /** Indicates whether the interview creation mutation is pending. */
   isPending: boolean
 }
 

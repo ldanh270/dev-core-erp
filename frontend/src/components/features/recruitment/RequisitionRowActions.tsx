@@ -20,6 +20,10 @@ export interface RequisitionRowActionsProps {
   onEdit: (req: JobRequisition) => void
 }
 
+/**
+ * Presentational action buttons in requisition data table rows for reviewing details,
+ * drafting JD, submitting for approval, approving, rejecting, and editing.
+ */
 export function RequisitionRowActions({
   requisition,
   canCreateJd,

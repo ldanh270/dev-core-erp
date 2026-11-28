@@ -10,7 +10,7 @@ import type {
   RecruitmentApplication,
 } from "@/types/recruitment.types"
 
-interface ApplicationDetailTabsProps {
+export interface ApplicationDetailTabsProps {
   application: RecruitmentApplication
   activeTab: string
   setActiveTab: (tab: string) => void

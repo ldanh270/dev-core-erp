@@ -4,6 +4,10 @@ interface WorkspaceHeaderProps {
   count: number
 }
 
+/**
+ * Reusable header component for requisition workspace tabs displaying
+ * the tab title, contextual description, and total item counter.
+ */
 export function WorkspaceHeader({ title, description, count }: WorkspaceHeaderProps) {
   return (
     <div className="mb-4 flex items-center justify-between gap-3">
@@ -21,6 +25,9 @@ interface EmptyRowProps {
   message: string
 }
 
+/**
+ * Presentational placeholder row rendered inside workspace tables when datasets are empty.
+ */
 export function EmptyRow({ visible, message }: EmptyRowProps) {
   if (!visible) return null
 

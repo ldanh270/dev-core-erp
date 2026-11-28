@@ -14,6 +14,10 @@ interface RequisitionCandidatesTabProps {
   onSelectCandidate: (id: string) => void
 }
 
+/**
+ * Pure UI presentational tab presenting candidates linked to a job requisition
+ * with search debouncing, candidate profile badges, and stage indicator pills.
+ */
 export function RequisitionCandidatesTab({
   applications,
   postings,

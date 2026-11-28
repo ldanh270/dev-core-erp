@@ -8,13 +8,13 @@ import type {
   RecruitmentPipelineStage,
 } from "@/types/recruitment.types"
 
-interface ApplicationDetailDialogsProps {
+export interface ApplicationDetailDialogsProps {
   application: RecruitmentApplication
-  // Offer Dialog
+  /** Offer creation dialog state and callbacks */
   isOfferDialogOpen: boolean
   setIsOfferDialogOpen: (open: boolean) => void
   onOfferCreated: () => void
-  // Schedule Dialog
+  /** Interview round scheduling dialog state and form controls */
   isScheduleModalOpen: boolean
   setIsScheduleModalOpen: (open: boolean) => void
   roundTitle: string
@@ -31,7 +31,7 @@ interface ApplicationDetailDialogsProps {
   employees: Employee[]
   onCreateInterview: () => void
   isCreatingInterview: boolean
-  // Edit Round Dialog
+  /** Interview round editing dialog state and form controls */
   isEditModalOpen: boolean
   setIsEditModalOpen: (open: boolean) => void
   editTitle: string
