@@ -96,7 +96,9 @@ export function KanbanColumn({
     >
       <div
         draggable={canManageStages}
-        onDragStart={(event) => onColumnDragStart(event, stage.id)}
+        onDragStart={(event) => {
+          onColumnDragStart(event, stage.id)
+        }}
         onDragEnd={onColumnDragEnd}
         className={`flex items-center justify-between border-b border-border/50 p-3.5 ${
           canManageStages
@@ -126,7 +128,9 @@ export function KanbanColumn({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="rounded-xl border-border bg-popover">
               <DropdownMenuItem
-                onClick={() => onEditColumn(stage)}
+                onClick={() => {
+                  onEditColumn(stage)
+                }}
                 className="cursor-pointer rounded-lg text-xs font-semibold"
               >
                 Cấu hình cột
@@ -171,17 +175,27 @@ export function KanbanColumn({
                 stages={statuses}
                 canManageStages={canManageStages}
                 isMoving={isMoving}
-                onMove={(statusId) => onMoveApplication(application.id, statusId)}
+                onMove={(statusId) => {
+                  onMoveApplication(application.id, statusId)
+                }}
                 isDragging={draggingTaskId === application.id}
                 draggable={canManageStages}
-                onDragStart={(event) => onCardDragStart(event, application)}
+                onDragStart={(event) => {
+                  onCardDragStart(event, application)
+                }}
                 onDragEnd={onCardDragEnd}
-                onDragOver={(event) => onCardDragOver(event, application.id)}
-                onDragLeave={() => setDragOverInfo(null)}
+                onDragOver={(event) => {
+                  onCardDragOver(event, application.id)
+                }}
+                onDragLeave={() => {
+                  setDragOverInfo(null)
+                }}
                 onDrop={(event) => {
                   onCardDrop(event, application)
                 }}
-                onClick={() => onApplicationClick(application.id)}
+                onClick={() => {
+                  onApplicationClick(application.id)
+                }}
               />
               {dragOverInfo?.taskId === application.id && dragOverInfo.position === "bottom" && (
                 <DropIndicator className="mt-1" />

@@ -219,7 +219,7 @@ function EditAccountSection({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">-- Không gán vai trò --</SelectItem>
-              {allRoles?.data?.map((role) => (
+              {allRoles?.data.map((role) => (
                 <SelectItem key={role.id} value={role.id}>
                   {getRoleLabel(role.name)}
                 </SelectItem>

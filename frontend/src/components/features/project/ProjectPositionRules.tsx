@@ -198,7 +198,9 @@ function AssignMemberToRoleDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                onOpenChange(false)
+              }}
               className="rounded-full text-xs h-9"
               disabled={isSubmitting}
             >
@@ -269,7 +271,9 @@ function ProjectRoleRuleRow({
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => onOpenEdit(role)}
+              onClick={() => {
+                onOpenEdit(role)
+              }}
               className="size-7 rounded-full hover:bg-muted"
             >
               <Edit2 className="size-3 text-muted-foreground hover:text-foreground" />
@@ -358,7 +362,9 @@ function ProjectRoleRuleRow({
                 {!m.isTeamLeaderField && (
                   <button
                     type="button"
-                    onClick={() => onRemoveMember(m.employeeId, role)}
+                    onClick={() => {
+                      onRemoveMember(m.employeeId, role)
+                    }}
                     className="hover:text-destructive cursor-pointer rounded-full p-0.5"
                     title="Bỏ khỏi vai trò"
                   >

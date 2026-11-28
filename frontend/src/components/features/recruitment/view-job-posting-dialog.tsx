@@ -391,7 +391,9 @@ export function ViewJobPostingDialog({ open, onOpenChange, posting }: ViewJobPos
           <Button
             variant="outline"
             className="rounded-full border-border text-foreground hover:bg-muted"
-            onClick={() => onOpenChange(false)}
+            onClick={() => {
+              onOpenChange(false)
+            }}
           >
             Đóng
           </Button>

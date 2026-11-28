@@ -142,7 +142,9 @@ export function PayrollDetailSheet({ payrollId, onClose }: PayrollDetailSheetPro
             <div className="h-full overflow-y-auto">
               <PayslipDetailPage
                 payslip={selectedPayslip}
-                onClose={() => setSelectedPayslip(null)}
+                onClose={() => {
+                  setSelectedPayslip(null)
+                }}
               />
             </div>
           )}

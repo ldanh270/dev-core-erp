@@ -79,7 +79,9 @@ export function KanbanEditColumnDialog({
               <input
                 type="checkbox"
                 checked={columnIsCompleted}
-                onChange={(e) => setColumnIsCompleted(e.target.checked)}
+                onChange={(e) => {
+                  setColumnIsCompleted(e.target.checked)
+                }}
                 className="size-4 text-primary border-border rounded"
               />
               Đánh dấu là cột hoàn thành (isCompleted)
@@ -89,7 +91,9 @@ export function KanbanEditColumnDialog({
               <input
                 type="checkbox"
                 checked={columnIsDefault}
-                onChange={(e) => setColumnIsDefault(e.target.checked)}
+                onChange={(e) => {
+                  setColumnIsDefault(e.target.checked)
+                }}
                 disabled={selectedColumn?.isDefault}
                 className="size-4 text-primary border-border rounded disabled:opacity-40"
               />
@@ -101,7 +105,9 @@ export function KanbanEditColumnDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                onOpenChange(false)
+              }}
               className="h-9 text-xs rounded-full"
             >
               Hủy

@@ -106,7 +106,9 @@ export function TaskDetailSpentTimeCard({
                           size="icon-xs"
                           className="size-6 cursor-pointer rounded-full p-0 text-primary hover:bg-primary/10"
                           title={SPENT_TIME_UI.APPROVE_ACTION_TITLE}
-                          onClick={() => onApprove(st.id)}
+                          onClick={() => {
+                            onApprove(st.id)
+                          }}
                           aria-label="Phê duyệt nhật ký thời gian"
                         >
                           <Check className="size-3" />
@@ -134,7 +136,9 @@ export function TaskDetailSpentTimeCard({
                         variant="ghost"
                         size="icon-xs"
                         className="size-6 cursor-pointer rounded-full p-0 text-primary hover:bg-primary/10"
-                        onClick={() => onEdit(st)}
+                        onClick={() => {
+                          onEdit(st)
+                        }}
                         aria-label="Chỉnh sửa nhật ký thời gian"
                       >
                         <Edit className="size-3" />

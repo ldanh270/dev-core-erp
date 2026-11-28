@@ -92,7 +92,9 @@ export function ConnectOAuthModal({
             <Input
               placeholder="Ví dụ: Google HR Team, LinkedIn Tuyển dụng..."
               value={accountName}
-              onChange={(e) => onAccountNameChange(e.target.value)}
+              onChange={(e) => {
+                onAccountNameChange(e.target.value)
+              }}
               className="h-10 text-xs rounded-full"
             />
             <p className={TYPOGRAPHY.FORM_HELPER}>
@@ -104,7 +106,9 @@ export function ConnectOAuthModal({
         <DialogFooter className="gap-2 sm:gap-0">
           <Button
             variant="outline"
-            onClick={() => onOpenChange(false)}
+            onClick={() => {
+              onOpenChange(false)
+            }}
             disabled={isConnecting}
             className="rounded-full h-9 text-xs"
           >

@@ -97,7 +97,9 @@ function TrackerItemRow({
           <input
             type="text"
             value={editingTrackerName}
-            onChange={(e) => setEditingTrackerName(e.target.value)}
+            onChange={(e) => {
+              setEditingTrackerName(e.target.value)
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 onSaveRename()
@@ -382,7 +384,9 @@ export function ProjectTrackersDropdown({
                     setEditingTrackerId(tracker.id)
                     setEditingTrackerName(tracker.name)
                   }}
-                  onSaveRename={() => handleSaveRename(tracker.id)}
+                  onSaveRename={() => {
+                    handleSaveRename(tracker.id)
+                  }}
                   onCancelEdit={() => {
                     setEditingTrackerId("")
                   }}

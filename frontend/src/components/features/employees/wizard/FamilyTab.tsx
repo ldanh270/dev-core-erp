@@ -154,7 +154,9 @@ function HouseholdInfoSection({
             <Input
               placeholder="Chọn Xã/Phường"
               value={formData.householdDistrict}
-              onChange={(e) => updateField("householdDistrict", e.target.value)}
+              onChange={(e) => {
+                updateField("householdDistrict", e.target.value)
+              }}
               className="rounded-full"
             />
           </div>

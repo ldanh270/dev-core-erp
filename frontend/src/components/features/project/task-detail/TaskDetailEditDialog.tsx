@@ -280,7 +280,9 @@ export function TaskDetailEditDialog({
                 min="0"
                 max="100"
                 value={taskProgress}
-                onChange={(e) => setTaskProgress(Number(e.target.value))}
+                onChange={(e) => {
+                  setTaskProgress(Number(e.target.value))
+                }}
                 className="rounded-full border-border"
                 required
               />
@@ -296,7 +298,9 @@ export function TaskDetailEditDialog({
               <DatePicker
                 id="editStart"
                 value={taskStart || null}
-                onChange={(val) => setTaskStart(val || "")}
+                onChange={(val) => {
+                  setTaskStart(val || "")
+                }}
                 placeholder="Chọn ngày bắt đầu..."
               />
             </div>
@@ -325,7 +329,9 @@ export function TaskDetailEditDialog({
                 step="0.5"
                 min="0"
                 value={taskEstimate}
-                onChange={(e) => setTaskEstimate(e.target.value)}
+                onChange={(e) => {
+                  setTaskEstimate(e.target.value)
+                }}
                 className="rounded-full border-border"
               />
             </div>

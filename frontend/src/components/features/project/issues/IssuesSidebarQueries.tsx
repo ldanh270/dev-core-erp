@@ -118,7 +118,7 @@ export function IssuesSidebarQueries({
         </div>
 
         <div className="flex flex-col gap-2">
-          {savedQueries && savedQueries.length > 0 ? (
+          {savedQueries.length > 0 ? (
             savedQueries.map((q) => (
               <div key={q.id} className="flex items-center justify-between group">
                 <button

@@ -116,7 +116,9 @@ function BioPersonalInfoSection({
     <CollapsibleSection
       title="Thông tin cá nhân & Định danh"
       isOpen={openPersonal}
-      onToggle={() => setOpenPersonal(!openPersonal)}
+      onToggle={() => {
+        setOpenPersonal(!openPersonal)
+      }}
     >
       <div className="flex flex-col md:flex-row gap-6 items-start">
         <div className="flex flex-col items-center gap-2">
@@ -204,7 +206,9 @@ function BioPersonalInfoSection({
           <Input
             placeholder="Nhập CMND/CCCD/Hộ chiếu"
             value={formData.nationalId}
-            onChange={(e) => updateField("nationalId", e.target.value)}
+            onChange={(e) => {
+              updateField("nationalId", e.target.value)
+            }}
             className="rounded-full"
           />
         </div>
@@ -213,7 +217,9 @@ function BioPersonalInfoSection({
           <Label className="text-xs font-medium">Ngày cấp</Label>
           <DatePicker
             value={formData.idIssueDate || null}
-            onChange={(val) => updateField("idIssueDate", val || "")}
+            onChange={(val) => {
+              updateField("idIssueDate", val || "")
+            }}
             placeholder="Chọn ngày cấp..."
           />
         </div>
@@ -223,7 +229,9 @@ function BioPersonalInfoSection({
           <Input
             placeholder="Chọn nơi cấp"
             value={formData.idIssuePlace}
-            onChange={(e) => updateField("idIssuePlace", e.target.value)}
+            onChange={(e) => {
+              updateField("idIssuePlace", e.target.value)
+            }}
             className="rounded-full"
           />
         </div>
@@ -384,7 +392,9 @@ function BioContactSection({
             onChange={(e) => {
               updateField("email", e.target.value)
             }}
-            onBlur={() => handleBlur("email")}
+            onBlur={() => {
+              handleBlur("email")
+            }}
             className={cn(
               "rounded-full",
               (touchedFields.email || hasAttemptedSubmit) &&
@@ -462,7 +472,9 @@ function BioEducationSection({
               <Input
                 placeholder="Từ mm/yyyy"
                 value={item.fromMonthYear}
-                onChange={(e) => updateEducation(item.id, "fromMonthYear", e.target.value)}
+                onChange={(e) => {
+                  updateEducation(item.id, "fromMonthYear", e.target.value)
+                }}
                 className="rounded-full text-xs"
               />
             </div>
@@ -495,7 +507,9 @@ function BioEducationSection({
               <Input
                 placeholder="Nhập chuyên ngành"
                 value={item.major}
-                onChange={(e) => updateEducation(item.id, "major", e.target.value)}
+                onChange={(e) => {
+                  updateEducation(item.id, "major", e.target.value)
+                }}
                 className="rounded-full text-xs"
               />
             </div>

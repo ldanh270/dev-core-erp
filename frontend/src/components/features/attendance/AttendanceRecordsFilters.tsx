@@ -55,7 +55,9 @@ export function AttendanceRecordsFilters({
 
         <Select
           value={statusFilter}
-          onValueChange={(val) => onStatusFilterChange(val as IAttendanceStatus | "all")}
+          onValueChange={(val) => {
+            onStatusFilterChange(val as IAttendanceStatus | "all")
+          }}
         >
           <SelectTrigger className="h-9 w-36 rounded-full text-xs">
             <SelectValue placeholder="Trạng thái" />

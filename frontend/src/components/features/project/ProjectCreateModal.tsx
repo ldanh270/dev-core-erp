@@ -107,7 +107,9 @@ function CreateProjectFields({
           id="projDesc"
           placeholder="Nhập mô tả tóm tắt dự án..."
           value={newProjectDesc}
-          onChange={(e) => setNewProjectDesc(e.target.value)}
+          onChange={(e) => {
+            setNewProjectDesc(e.target.value)
+          }}
           className="min-h-[80px] rounded-xl border-border p-3 text-sm focus-visible:ring-1 focus-visible:ring-ring"
         />
       </div>
@@ -135,7 +137,9 @@ function CreateProjectFields({
             id="projEnd"
             value={newProjectEnd || null}
             minDate={newProjectStart}
-            onChange={(val) => setNewProjectEnd(val || "")}
+            onChange={(val) => {
+              setNewProjectEnd(val || "")
+            }}
             placeholder="Chọn ngày kết thúc..."
           />
         </div>

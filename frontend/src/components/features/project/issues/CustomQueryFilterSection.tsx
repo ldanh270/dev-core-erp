@@ -40,7 +40,9 @@ function CustomQueryFilterRow({
         <input
           type="checkbox"
           checked={enabled}
-          onChange={(e) => onEnabledChange(e.target.checked)}
+          onChange={(e) => {
+            onEnabledChange(e.target.checked)
+          }}
           className="rounded border-border size-3.5"
         />
         {label}
@@ -124,9 +126,13 @@ export function CustomQueryFilterSection({
         <CustomQueryFilterRow
           label="Trạng thái"
           enabled={newQueryFilters.status.enabled}
-          onEnabledChange={(checked) => updateFilter("status", "enabled", checked)}
+          onEnabledChange={(checked) => {
+            updateFilter("status", "enabled", checked)
+          }}
           value={newQueryFilters.status.value}
-          onValueChange={(val) => updateFilter("status", "value", val)}
+          onValueChange={(val) => {
+            updateFilter("status", "value", val)
+          }}
         >
           <SelectItem value="open">đang mở</SelectItem>
           <SelectItem value="all">tất cả</SelectItem>

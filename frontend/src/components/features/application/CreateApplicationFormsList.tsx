@@ -45,7 +45,13 @@ export function CreateApplicationFormsList({
           <CreateApplicationRecruitmentSection
             key={index}
             formIndex={index}
-            onRemove={forms.length > 1 ? () => onRemoveForm(index) : undefined}
+            onRemove={
+              forms.length > 1
+                ? () => {
+                    onRemoveForm(index)
+                  }
+                : undefined
+            }
             form={form}
             set={(k, v) => {
               onUpdateForm(index, k, v)
@@ -55,7 +61,13 @@ export function CreateApplicationFormsList({
           <CreateApplicationTimeSection
             key={index}
             formIndex={index}
-            onRemove={forms.length > 1 ? () => onRemoveForm(index) : undefined}
+            onRemove={
+              forms.length > 1
+                ? () => {
+                    onRemoveForm(index)
+                  }
+                : undefined
+            }
             type={type}
             form={form}
             set={(k, v) => {

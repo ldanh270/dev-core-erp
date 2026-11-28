@@ -95,7 +95,7 @@ export function GanttSidebarQueries({
           </button>
         </li>
 
-        {savedQueries && savedQueries.length > 0 && (
+        {savedQueries.length > 0 && (
           <>
             <li className="border-t border-border/10 my-2 pt-2 text-[10px] uppercase tracking-wider text-muted-foreground font-bold select-none">
               Truy vấn đã lưu

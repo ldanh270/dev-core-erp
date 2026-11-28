@@ -94,7 +94,9 @@ function JobInfoSection({
     <div className="bg-background border border-border rounded-xl overflow-hidden shadow-none">
       <button
         type="button"
-        onClick={() => setOpenJobInfo(!openJobInfo)}
+        onClick={() => {
+          setOpenJobInfo(!openJobInfo)
+        }}
         className="w-full px-6 py-4 flex items-center justify-between bg-muted/50 border-b border-border text-left font-semibold text-sm text-foreground"
       >
         <div className="flex items-center gap-2">
@@ -180,7 +182,9 @@ function JobInfoSection({
               }}
             >
               <SelectTrigger
-                onBlur={() => handleBlur("department")}
+                onBlur={() => {
+                  handleBlur("department")
+                }}
                 className={cn(
                   "rounded-full",
                   (touchedFields.department || hasAttemptedSubmit) &&
@@ -352,7 +356,12 @@ function JobAccountSection({
               <Label className="text-xs font-medium">
                 Nhóm quyền <span className="text-destructive">*</span>
               </Label>
-              <Select value={formData.role} onValueChange={(val) => updateField("role", val)}>
+              <Select
+                value={formData.role}
+                onValueChange={(val) => {
+                  updateField("role", val)
+                }}
+              >
                 <SelectTrigger className="rounded-full">
                   <SelectValue placeholder="Nhóm quyền" />
                 </SelectTrigger>
@@ -381,7 +390,9 @@ function JobAccountSection({
                 type="checkbox"
                 id="autoGenUsername"
                 checked={formData.autoGenUsername}
-                onChange={(e) => updateField("autoGenUsername", e.target.checked)}
+                onChange={(e) => {
+                  updateField("autoGenUsername", e.target.checked)
+                }}
                 className="h-4 w-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
               />
               <Label

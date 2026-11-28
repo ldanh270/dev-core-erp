@@ -102,7 +102,9 @@ function EmployeeTableActionsCell({
 
               {employee.status === EMPLOYEE_STATUS.TERMINATED && (
                 <DropdownMenuItem
-                  onClick={() => onReinstate(employee.id)}
+                  onClick={() => {
+                    onReinstate(employee.id)
+                  }}
                   className="cursor-pointer gap-2 text-emerald-600 focus:text-emerald-700 focus:bg-emerald-50 dark:text-emerald-400 dark:focus:text-emerald-300 dark:focus:bg-emerald-950/30"
                 >
                   <RotateCcw className="size-3.5" />

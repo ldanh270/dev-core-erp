@@ -254,7 +254,13 @@ export function DataTableGrid<T>({
                       }
                     : undefined
                 }
-                onContextMenu={onRowContextMenu ? (e) => onRowContextMenu(e, item, idx) : undefined}
+                onContextMenu={
+                  onRowContextMenu
+                    ? (e) => {
+                        onRowContextMenu(e, item, idx)
+                      }
+                    : undefined
+                }
                 tabIndex={onRowClick ? 0 : undefined}
                 onKeyDown={
                   onRowClick

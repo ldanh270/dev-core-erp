@@ -279,7 +279,9 @@ function useInterviewFeedbackForm({
     recommendation,
     setRecommendation,
     isPending: submitScorecardMutation.isPending,
-    handleSubmit: () => submitScorecardMutation.mutate(),
+    handleSubmit: () => {
+      submitScorecardMutation.mutate()
+    },
   }
 }
 

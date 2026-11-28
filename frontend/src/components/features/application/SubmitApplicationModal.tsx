@@ -104,7 +104,9 @@ function SubmitApplicationDateFields({
           </label>
           <DatePicker
             value={startDate || null}
-            onChange={(val) => onStartDateChange(val || "")}
+            onChange={(val) => {
+              onStartDateChange(val || "")
+            }}
             placeholder="Chọn ngày..."
             size="sm"
           />
@@ -192,7 +194,9 @@ function SubmitApplicationTypeSpecificFields({
             required
             placeholder="Nhập CUID ca làm việc..."
             value={form.employeeShiftId}
-            onChange={(e) => setFormField("employeeShiftId", e.target.value)}
+            onChange={(e) => {
+              setFormField("employeeShiftId", e.target.value)
+            }}
             className="font-mono bg-background"
           />
         </div>
@@ -292,7 +296,9 @@ function SubmitApplicationTypeSpecificFields({
           <Input
             placeholder="VD: Tại nhà, Quán cà phê..."
             value={form.location}
-            onChange={(e) => setFormField("location", e.target.value)}
+            onChange={(e) => {
+              setFormField("location", e.target.value)
+            }}
             className="bg-background"
           />
         </div>
@@ -455,7 +461,9 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
             <Button
               type="button"
               variant="outline"
-              onClick={() => setStep("type")}
+              onClick={() => {
+                setStep("type")
+              }}
               className="flex-1 rounded-full h-10 font-semibold"
             >
               Quay lại

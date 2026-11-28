@@ -124,7 +124,9 @@ export function ProjectKanbanColumn({
                     </DropdownMenuItem>
                     {!status.isDefault && statuses.length > 1 && (
                       <DropdownMenuItem
-                        onClick={() => onOpenDeleteColumn(status)}
+                        onClick={() => {
+                          onOpenDeleteColumn(status)
+                        }}
                         className="rounded-lg text-xs font-semibold text-destructive cursor-pointer"
                       >
                         Xóa cột
@@ -164,7 +166,9 @@ export function ProjectKanbanColumn({
           onDragStart={onDragStart}
           onDragEnd={onDragEnd}
           onDragOver={onCardDragOver}
-          onDragLeave={() => setDragOverInfo(null)}
+          onDragLeave={() => {
+            setDragOverInfo(null)
+          }}
           onDrop={onCardDrop}
         />
       ))}

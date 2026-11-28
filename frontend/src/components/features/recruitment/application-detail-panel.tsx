@@ -249,7 +249,7 @@ function ApplicationPanelOffersTab({
         )}
       </div>
 
-      {offers && offers.length > 0 ? (
+      {offers.length > 0 ? (
         <div className="space-y-3">
           {offers.map((offer) => (
             <div
@@ -437,7 +437,9 @@ export function ApplicationDetailPanel({
                   <ApplicationPanelOffersTab
                     offers={application.offers ?? []}
                     canManageInterviews={canManageInterviews}
-                    onOpenCreateOffer={() => setIsOfferDialogOpen(true)}
+                    onOpenCreateOffer={() => {
+                      setIsOfferDialogOpen(true)
+                    }}
                   />
                 </TabsContent>
 

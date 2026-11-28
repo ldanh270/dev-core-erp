@@ -79,7 +79,9 @@ export function KanbanCreateColumnDialog({
               <input
                 type="checkbox"
                 checked={columnIsCompleted}
-                onChange={(e) => setColumnIsCompleted(e.target.checked)}
+                onChange={(e) => {
+                  setColumnIsCompleted(e.target.checked)
+                }}
                 className="size-4 text-primary border-border rounded"
               />
               Đánh dấu là cột hoàn thành (isCompleted)
@@ -89,7 +91,9 @@ export function KanbanCreateColumnDialog({
               <input
                 type="checkbox"
                 checked={columnIsDefault}
-                onChange={(e) => setColumnIsDefault(e.target.checked)}
+                onChange={(e) => {
+                  setColumnIsDefault(e.target.checked)
+                }}
                 className="size-4 text-primary border-border rounded"
               />
               Trạng thái mặc định khi tạo issue (isDefault)
