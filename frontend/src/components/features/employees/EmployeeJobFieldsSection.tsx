@@ -19,7 +19,7 @@ import {
 } from "@/config/entities/employee.config"
 import type { EmployeeStatus, WorkScheduleType } from "@/types/employee.types"
 
-import type { FieldErrors, FieldValues, Path, UseFormSetValue, UseFormWatch } from "react-hook-form"
+import type { FieldErrors, FieldValues, Path, PathValue, UseFormSetValue, UseFormWatch } from "react-hook-form"
 
 export interface EmployeeJobFieldsValues {
   positionId?: string
@@ -79,12 +79,16 @@ export function EmployeeJobFieldsSection<TFieldValues extends FieldValues & Empl
               Chức danh (Vị trí)
             </Label>
             <Select
-              value={watch("positionId" as Path<TFieldValues>) as string || "none"}
+              value={(watch("positionId" as Path<TFieldValues>) as string) || "none"}
               onValueChange={(val) => {
-                setValue("positionId" as Path<TFieldValues>, (val === "none" ? "" : val) as any, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                })
+                setValue(
+                  "positionId" as Path<TFieldValues>,
+                  (val === "none" ? "" : val) as PathValue<TFieldValues, Path<TFieldValues>>,
+                  {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  },
+                )
               }}
             >
               <SelectTrigger
@@ -112,12 +116,19 @@ export function EmployeeJobFieldsSection<TFieldValues extends FieldValues & Empl
               Loại nhân sự
             </Label>
             <Select
-              value={(watch("employeeType" as Path<TFieldValues>) as string) || EMPLOYMENT_CATEGORY_TYPES[0]}
+              value={
+                (watch("employeeType" as Path<TFieldValues>) as string) ||
+                EMPLOYMENT_CATEGORY_TYPES[0]
+              }
               onValueChange={(val) => {
-                setValue("employeeType" as Path<TFieldValues>, val as any, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                })
+                setValue(
+                  "employeeType" as Path<TFieldValues>,
+                  val as PathValue<TFieldValues, Path<TFieldValues>>,
+                  {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  },
+                )
               }}
             >
               <SelectTrigger id="employeeType" className="h-10 bg-background">
@@ -142,10 +153,14 @@ export function EmployeeJobFieldsSection<TFieldValues extends FieldValues & Empl
             <Select
               value={(watch("status" as Path<TFieldValues>) as string) || EMPLOYEE_STATUSES[0]}
               onValueChange={(val) => {
-                setValue("status" as Path<TFieldValues>, val as any, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                })
+                setValue(
+                  "status" as Path<TFieldValues>,
+                  val as PathValue<TFieldValues, Path<TFieldValues>>,
+                  {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  },
+                )
               }}
             >
               <SelectTrigger id="status" className="h-10 bg-background">
@@ -169,12 +184,19 @@ export function EmployeeJobFieldsSection<TFieldValues extends FieldValues & Empl
               Hình thức làm việc
             </Label>
             <Select
-              value={(watch("workScheduleType" as Path<TFieldValues>) as string) || WORK_SCHEDULE_TYPES[0]}
+              value={
+                (watch("workScheduleType" as Path<TFieldValues>) as string) ||
+                WORK_SCHEDULE_TYPES[0]
+              }
               onValueChange={(val) => {
-                setValue("workScheduleType" as Path<TFieldValues>, val as any, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                })
+                setValue(
+                  "workScheduleType" as Path<TFieldValues>,
+                  val as PathValue<TFieldValues, Path<TFieldValues>>,
+                  {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  },
+                )
               }}
             >
               <SelectTrigger id="workScheduleType" className="h-10 bg-background">
@@ -202,7 +224,11 @@ export function EmployeeJobFieldsSection<TFieldValues extends FieldValues & Empl
               id="startDate"
               value={(watch("startDate" as Path<TFieldValues>) as string) || null}
               onChange={(val) => {
-                setValue("startDate" as Path<TFieldValues>, (val || "") as any, { shouldValidate: true, shouldDirty: true })
+                setValue(
+                  "startDate" as Path<TFieldValues>,
+                  (val || "") as PathValue<TFieldValues, Path<TFieldValues>>,
+                  { shouldValidate: true, shouldDirty: true },
+                )
               }}
               placeholder="Chọn ngày bắt đầu..."
             />
@@ -220,7 +246,11 @@ export function EmployeeJobFieldsSection<TFieldValues extends FieldValues & Empl
                 id="endDate"
                 value={(watch("endDate" as Path<TFieldValues>) as string) || null}
                 onChange={(val) => {
-                  setValue("endDate" as Path<TFieldValues>, (val || "") as any, { shouldValidate: true, shouldDirty: true })
+                  setValue(
+                    "endDate" as Path<TFieldValues>,
+                    (val || "") as PathValue<TFieldValues, Path<TFieldValues>>,
+                    { shouldValidate: true, shouldDirty: true },
+                  )
                 }}
                 placeholder="Chọn ngày kết thúc..."
               />
