@@ -1,9 +1,11 @@
+import { PAYROLL_DETAIL_SEARCH_PARAM } from "@/config/entities/payroll.config"
 import { SYSTEM_CONFIG } from "@/config/system.config"
 import { useApprovePayroll, usePayrolls, useRejectPayroll } from "@/hooks/payroll/use-payrolls"
 import type { IPayroll } from "@/types/payroll.types"
 import { exportPayrollsToCSV } from "@/utils/export.util"
 
 import { useCallback, useMemo, useState } from "react"
+import { useSearchParams } from "react-router"
 
 /**
  * Custom hook to encapsulate PayrollManagement state, filtering, pagination, and approval logic.
@@ -14,11 +16,24 @@ export function usePayrollManagement() {
   const { data: payrolls, isLoading } = usePayrolls(filters)
   const { mutate: approvePayroll } = useApprovePayroll()
   const { mutate: rejectPayroll } = useRejectPayroll()
+  const [searchParams, setSearchParams] = useSearchParams()
 
+  const linkedPayrollId = searchParams.get(PAYROLL_DETAIL_SEARCH_PARAM)
   const [selectedPayrollId, setSelectedPayrollId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState<number>(SYSTEM_CONFIG.PAGINATION.SMALL_LIMIT)
+
+  const activePayrollId = linkedPayrollId ?? selectedPayrollId
+
+  const handleCloseDetail = useCallback(() => {
+    setSelectedPayrollId(null)
+    if (linkedPayrollId) {
+      const nextParams = new URLSearchParams(searchParams)
+      nextParams.delete(PAYROLL_DETAIL_SEARCH_PARAM)
+      setSearchParams(nextParams, { replace: true })
+    }
+  }, [linkedPayrollId, searchParams, setSearchParams])
 
   const handleExport = useCallback(() => {
     if (payrolls && payrolls.length > 0) {
@@ -80,8 +95,9 @@ export function usePayrollManagement() {
     setCurrentPage: setPage,
     pageSize: limit,
     setPageSize: setLimit,
-    selectedPayrollId,
+    selectedPayrollId: activePayrollId,
     setSelectedPayrollId,
+    handleCloseDetail,
     handleExport,
     handleApprove,
     handleReject,

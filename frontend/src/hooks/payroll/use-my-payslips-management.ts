@@ -1,14 +1,31 @@
-import { PAYROLL_STATUS_LABELS } from "@/config/entities/payroll.config"
+import {
+  PAYROLL_DETAIL_SEARCH_PARAM,
+  PAYROLL_STATUS_LABELS,
+} from "@/config/entities/payroll.config"
 import { useMyPayslips } from "@/hooks/payroll/use-my-payslips"
 import type { IPayslip } from "@/types/payroll.types"
 
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "react-router"
 
 /**
  * Custom hook orchestrating employee personal payslip list, filters, and detail preview modal.
  */
 export function useMyPayslipsManagement() {
-  const { data: payslips, isLoading } = useMyPayslips()
+  const { data: payslips, isLoading, refetch } = useMyPayslips()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const linkedPayrollId = searchParams.get(PAYROLL_DETAIL_SEARCH_PARAM)
+  const linkedPayslip = useMemo(
+    () => payslips?.find(({ payrollId }) => payrollId === linkedPayrollId),
+    [payslips, linkedPayrollId],
+  )
+
+  useEffect(() => {
+    if (linkedPayrollId && !linkedPayslip) {
+      void refetch()
+    }
+  }, [linkedPayrollId, linkedPayslip, refetch])
 
   const [view, setView] = useState<"list" | "detail">("list")
   const [selectedPayslip, setSelectedPayslip] = useState<IPayslip | null>(null)
@@ -16,10 +33,18 @@ export function useMyPayslipsManagement() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
 
+  const activePayslip = linkedPayslip ?? selectedPayslip
+  const isDetailView = Boolean(linkedPayslip) || view === "detail"
+
   const handleCloseDetail = useCallback(() => {
     setView("list")
     setSelectedPayslip(null)
-  }, [])
+    if (linkedPayrollId) {
+      const nextParams = new URLSearchParams(searchParams)
+      nextParams.delete(PAYROLL_DETAIL_SEARCH_PARAM)
+      setSearchParams(nextParams, { replace: true })
+    }
+  }, [linkedPayrollId, searchParams, setSearchParams])
 
   const handleSelectPayslip = useCallback((payslip: IPayslip) => {
     setSelectedPayslip(payslip)
@@ -59,8 +84,8 @@ export function useMyPayslipsManagement() {
   const totalPages = Math.ceil(filteredPayslips.length / limit) || 1
 
   return {
-    view,
-    selectedPayslip,
+    view: isDetailView ? ("detail" as const) : ("list" as const),
+    selectedPayslip: activePayslip,
     searchTerm,
     page,
     limit,
