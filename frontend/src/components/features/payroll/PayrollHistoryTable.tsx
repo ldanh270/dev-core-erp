@@ -214,7 +214,9 @@ export function PayrollHistoryTable({ payrolls, isLoading }: PayrollHistoryTable
 
       <PayrollDetailSheet
         payrollId={selectedPayrollId}
-        onClose={() => setSelectedPayrollId(null)}
+        onClose={() => {
+          setSelectedPayrollId(null)
+        }}
       />
     </>
   )
@@ -244,7 +246,9 @@ function HistoryTableRow({
       <TableCell className="h-[60px] hidden sm:table-cell px-4 py-3">
         <button
           type="button"
-          onClick={() => onSelectPayroll(payroll.id)}
+          onClick={() => {
+            onSelectPayroll(payroll.id)
+          }}
           className="font-medium text-primary hover:underline text-left cursor-pointer"
         >
           PAY-{payroll.id.substring(payroll.id.length - 8).toUpperCase()}
@@ -282,11 +286,15 @@ function HistoryTableRow({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40 rounded-xl">
-              <DropdownMenuItem onClick={() => onApprove(payroll.id)}>
+              <DropdownMenuItem onClick={() => {
+                onApprove(payroll.id)
+              }}>
                 <CheckCircle2 className="mr-2 h-4 w-4 text-emerald-600" />
                 <span>Approve</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onReject(payroll.id)}>
+              <DropdownMenuItem onClick={() => {
+                onReject(payroll.id)
+              }}>
                 <XCircle className="mr-2 h-4 w-4 text-destructive" />
                 <span>Reject</span>
               </DropdownMenuItem>

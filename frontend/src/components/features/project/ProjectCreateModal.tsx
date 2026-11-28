@@ -91,7 +91,9 @@ function CreateProjectFields({
           id="projName"
           placeholder="Nhập tên dự án..."
           value={newProjectName}
-          onChange={(e) => setNewProjectName(e.target.value)}
+          onChange={(e) => {
+            setNewProjectName(e.target.value)
+          }}
           className="rounded-full bg-background border-border"
           required
         />
@@ -118,7 +120,9 @@ function CreateProjectFields({
           <DatePicker
             id="projStart"
             value={newProjectStart || null}
-            onChange={(val) => setNewProjectStart(val || "")}
+            onChange={(val) => {
+              setNewProjectStart(val || "")
+            }}
             placeholder="Chọn ngày bắt đầu..."
           />
         </div>
@@ -148,7 +152,9 @@ function CreateProjectFields({
           max={CAPACITY_COPILOT_RULES.DEAL_TARGET_PERCENT_MAX}
           placeholder={CAPACITY_COPILOT_RULES.DEAL_TARGET_PERCENT_PLACEHOLDER}
           value={newProjectDealTarget}
-          onChange={(e) => setNewProjectDealTarget(e.target.value)}
+          onChange={(e) => {
+            setNewProjectDealTarget(e.target.value)
+          }}
           className="rounded-full bg-background border-border"
         />
         <p className={TYPOGRAPHY.FORM_HELPER}>
@@ -221,7 +227,9 @@ function CreateProjectFields({
           id="projTech"
           placeholder="Ví dụ: React, Node.js, TypeScript (Ngăn cách bằng dấu phẩy)"
           value={newProjectTech}
-          onChange={(e) => setNewProjectTech(e.target.value)}
+          onChange={(e) => {
+            setNewProjectTech(e.target.value)
+          }}
           className="rounded-full bg-background border-border"
         />
       </div>

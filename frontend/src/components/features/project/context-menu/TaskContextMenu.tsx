@@ -55,7 +55,9 @@ export function TaskContextMenu({
       ref={menuRef}
       style={{ top: `${pos.top}px`, left: `${pos.left}px` }}
       className="fixed z-[9999] w-48 bg-card text-card-foreground border border-border/80 rounded-xl shadow-xl p-1.5 text-xs space-y-0.5 transition-all duration-75 select-none backdrop-blur-sm"
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation()
+      }}
     >
       {/* Submenu: Trạng thái */}
       <TaskContextMenuSubmenu

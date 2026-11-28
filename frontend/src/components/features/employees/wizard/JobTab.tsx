@@ -114,8 +114,12 @@ function JobInfoSection({
             <Input
               placeholder="Nhập mã nhân sự"
               value={formData.employeeCode}
-              onChange={(e) => updateField("employeeCode", e.target.value)}
-              onBlur={() => handleBlur("employeeCode")}
+              onChange={(e) => {
+                updateField("employeeCode", e.target.value)
+              }}
+              onBlur={() => {
+                handleBlur("employeeCode")
+              }}
               className={cn(
                 "rounded-full bg-muted/40 font-mono",
                 (touchedFields.employeeCode || hasAttemptedSubmit) &&
@@ -141,7 +145,9 @@ function JobInfoSection({
               }}
             >
               <SelectTrigger
-                onBlur={() => handleBlur("workLocation")}
+                onBlur={() => {
+                  handleBlur("workLocation")
+                }}
                 className={cn(
                   "rounded-full",
                   (touchedFields.workLocation || hasAttemptedSubmit) &&
@@ -203,8 +209,12 @@ function JobInfoSection({
             <Input
               placeholder="Vị trí / Chức danh"
               value={formData.positionId}
-              onChange={(e) => updateField("positionId", e.target.value)}
-              onBlur={() => handleBlur("positionId")}
+              onChange={(e) => {
+                updateField("positionId", e.target.value)
+              }}
+              onBlur={() => {
+                handleBlur("positionId")
+              }}
               className={cn(
                 "rounded-full",
                 (touchedFields.positionId || hasAttemptedSubmit) &&
@@ -241,7 +251,9 @@ function JobInfoSection({
             </Label>
             <Select
               value={formData.workScheduleType}
-              onValueChange={(val) => updateField("workScheduleType", val)}
+              onValueChange={(val) => {
+                updateField("workScheduleType", val)
+              }}
             >
               <SelectTrigger className="rounded-full">
                 <SelectValue placeholder="Hình thức làm việc" />
@@ -258,7 +270,9 @@ function JobInfoSection({
             <Input
               placeholder="Chọn nhân sự quản lý"
               value={formData.managerId}
-              onChange={(e) => updateField("managerId", e.target.value)}
+              onChange={(e) => {
+                updateField("managerId", e.target.value)
+              }}
               className="rounded-full"
             />
           </div>
@@ -286,7 +300,9 @@ function JobAccountSection({
     <div className="bg-background border border-border rounded-xl overflow-hidden shadow-none">
       <button
         type="button"
-        onClick={() => setOpenAccountInfo(!openAccountInfo)}
+        onClick={() => {
+          setOpenAccountInfo(!openAccountInfo)
+        }}
         className="w-full px-6 py-4 flex items-center justify-between bg-muted/50 border-b border-border text-left font-semibold text-sm text-foreground"
       >
         <div className="flex items-center gap-2">
@@ -307,7 +323,9 @@ function JobAccountSection({
               <Input
                 placeholder="Nhập tên đăng nhập"
                 value={formData.username}
-                onChange={(e) => updateField("username", e.target.value)}
+                onChange={(e) => {
+                  updateField("username", e.target.value)
+                }}
                 disabled={formData.autoGenUsername}
                 className="rounded-full bg-muted/30"
                 required
@@ -321,7 +339,9 @@ function JobAccountSection({
               <Input
                 type="password"
                 value={formData.password}
-                onChange={(e) => updateField("password", e.target.value)}
+                onChange={(e) => {
+                  updateField("password", e.target.value)
+                }}
                 disabled={formData.autoGenPassword}
                 className="rounded-full bg-muted/30"
                 required
@@ -377,7 +397,9 @@ function JobAccountSection({
                 type="checkbox"
                 id="autoGenPassword"
                 checked={formData.autoGenPassword}
-                onChange={(e) => updateField("autoGenPassword", e.target.checked)}
+                onChange={(e) => {
+                  updateField("autoGenPassword", e.target.checked)
+                }}
                 className="h-4 w-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
               />
               <Label

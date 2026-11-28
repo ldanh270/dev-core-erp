@@ -63,7 +63,9 @@ function EmployeeTableActionsCell({
               {isLocked && (
                 <>
                   <DropdownMenuItem
-                    onClick={() => onUnlock(employee.id)}
+                    onClick={() => {
+                      onUnlock(employee.id)
+                    }}
                     className="cursor-pointer gap-2 text-amber-600 focus:text-amber-700 focus:bg-amber-50 dark:text-amber-400 dark:focus:text-amber-300 dark:focus:bg-amber-950/30"
                   >
                     <Unlock className="size-3.5" />
@@ -76,7 +78,9 @@ function EmployeeTableActionsCell({
               {employee.status !== EMPLOYEE_STATUS.TERMINATED && (
                 <>
                   <DropdownMenuItem
-                    onClick={() => onEdit(employee)}
+                    onClick={() => {
+                      onEdit(employee)
+                    }}
                     className="cursor-pointer gap-2"
                   >
                     <Edit className="size-3.5 text-blue-500" />
@@ -85,7 +89,9 @@ function EmployeeTableActionsCell({
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     variant="destructive"
-                    onClick={() => onDelete(employee.id)}
+                    onClick={() => {
+                      onDelete(employee.id)
+                    }}
                     className="cursor-pointer gap-2"
                   >
                     <Trash2 className="size-3.5" />
@@ -146,7 +152,9 @@ export function useEmployeeListColumns({
             </div>
             <div className="min-w-0 flex-1 flex flex-col justify-center">
               <p
-                onClick={() => onView(employee.id)}
+                onClick={() => {
+                  onView(employee.id)
+                }}
                 className="font-medium text-sm leading-5 text-foreground hover:text-primary transition-colors cursor-pointer truncate"
                 title={employee.fullName}
               >

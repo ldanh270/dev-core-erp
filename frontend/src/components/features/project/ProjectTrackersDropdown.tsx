@@ -30,7 +30,9 @@ function TrackerCreateSection({
           type="text"
           placeholder="Thêm loại yêu cầu mới..."
           value={newTrackerName}
-          onChange={(e) => setNewTrackerName(e.target.value)}
+          onChange={(e) => {
+            setNewTrackerName(e.target.value)
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault()
@@ -106,7 +108,9 @@ function TrackerItemRow({
             onBlur={onSaveRename}
             className="h-6 text-xs border border-border rounded px-1.5 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary w-full"
             autoFocus
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation()
+            }}
           />
         ) : (
           <span className="text-xs font-semibold leading-tight line-clamp-1">{tracker.name}</span>
@@ -277,7 +281,14 @@ export function ProjectTrackersDropdown({
         Chỉ chọn các loại yêu cầu được phép tạo trong dự án này (để trống nếu cho phép tất cả).
       </p>
 
-      {isOpen && <div className="fixed inset-0 z-40" onClick={() => onOpenChange(false)} />}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => {
+            onOpenChange(false)
+          }}
+        />
+      )}
 
       <div className="relative w-full">
         <button
@@ -310,14 +321,18 @@ export function ProjectTrackersDropdown({
                 <div className="flex gap-1.5 mr-1 border-r border-border pr-2">
                   <button
                     type="button"
-                    onClick={() => setTempTrackers(trackers.map((t) => t.code))}
+                    onClick={() => {
+                      setTempTrackers(trackers.map((t) => t.code))
+                    }}
                     className="text-[9px] font-extrabold text-primary hover:underline cursor-pointer"
                   >
                     Tất cả
                   </button>
                   <button
                     type="button"
-                    onClick={() => setTempTrackers([])}
+                    onClick={() => {
+                      setTempTrackers([])
+                    }}
                     className="text-[9px] font-extrabold text-muted-foreground hover:text-destructive hover:underline cursor-pointer"
                   >
                     Xóa tất cả
@@ -336,7 +351,9 @@ export function ProjectTrackersDropdown({
                 </button>
                 <button
                   type="button"
-                  onClick={() => onOpenChange(false)}
+                  onClick={() => {
+                    onOpenChange(false)
+                  }}
                   className="size-5 rounded-full bg-muted hover:bg-muted-hover text-muted-foreground flex items-center justify-center cursor-pointer transition-colors"
                   title="Hủy"
                 >
@@ -354,20 +371,24 @@ export function ProjectTrackersDropdown({
                   isEditing={editingTrackerId === tracker.id}
                   editingTrackerName={editingTrackerName}
                   setEditingTrackerName={setEditingTrackerName}
-                  onToggle={() =>
+                  onToggle={() => {
                     setTempTrackers((prev) =>
                       prev.includes(tracker.code)
                         ? prev.filter((k) => k !== tracker.code)
                         : [...prev, tracker.code],
                     )
-                  }
+                  }}
                   onStartEdit={() => {
                     setEditingTrackerId(tracker.id)
                     setEditingTrackerName(tracker.name)
                   }}
                   onSaveRename={() => handleSaveRename(tracker.id)}
-                  onCancelEdit={() => setEditingTrackerId("")}
-                  onDelete={() => handleDeleteTracker(tracker.id, tracker.code)}
+                  onCancelEdit={() => {
+                    setEditingTrackerId("")
+                  }}
+                  onDelete={() => {
+                    handleDeleteTracker(tracker.id, tracker.code)
+                  }}
                 />
               ))}
             </div>

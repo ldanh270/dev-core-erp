@@ -47,7 +47,12 @@ export function PayslipDetailPage({ payslip, onClose }: PayslipDetailPageProps) 
   return (
     <EntityFormPage title="Chi tiết phiếu lương" isReadOnly={true} onBack={onClose}>
       <div className="space-y-6">
-        <PayslipOverviewCard payslip={payslip} onOpenFeedback={() => openFeedback()} />
+        <PayslipOverviewCard
+          payslip={payslip}
+          onOpenFeedback={() => {
+            openFeedback()
+          }}
+        />
 
         <PayslipAttendanceSummary
           workingDays={payslip.workingDays}
@@ -85,7 +90,9 @@ export function PayslipDetailPage({ payslip, onClose }: PayslipDetailPageProps) 
                 variant="outline"
                 size="sm"
                 className="rounded-full shrink-0"
-                onClick={() => openFeedback()}
+                onClick={() => {
+                  openFeedback()
+                }}
               >
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Báo sai lệch

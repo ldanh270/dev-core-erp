@@ -113,7 +113,9 @@ export function PayrollDetailSheet({ payrollId, onClose }: PayrollDetailSheetPro
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => exportPayrollToCsv(payroll)}
+                  onClick={() => {
+                    exportPayrollToCsv(payroll)
+                  }}
                   className="rounded-full shrink-0"
                 >
                   Export CSV
@@ -189,7 +191,9 @@ function DetailPayslipsTable({
             <TableRow
               key={ps.id}
               className="hover:bg-muted/50 cursor-pointer group transition-colors"
-              onClick={() => onSelectPayslip(ps)}
+              onClick={() => {
+                onSelectPayslip(ps)
+              }}
             >
               <TableCell className="px-4 py-3 text-center text-muted-foreground">
                 {index + 1}

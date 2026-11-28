@@ -42,7 +42,9 @@ export function EmployeeCreateConfirmDialog({
           <Button
             type="button"
             variant="outline"
-            onClick={() => onOpenChange(false)}
+            onClick={() => {
+              onOpenChange(false)
+            }}
             className="rounded-full min-w-24"
             disabled={isSubmitting}
           >

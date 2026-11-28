@@ -62,7 +62,9 @@ function HouseholdInfoSection({
     <div className="bg-background border border-border rounded-xl overflow-hidden shadow-none">
       <button
         type="button"
-        onClick={() => setOpenFamilyInfo(!openFamilyInfo)}
+        onClick={() => {
+          setOpenFamilyInfo(!openFamilyInfo)
+        }}
         className="w-full px-6 py-4 flex items-center justify-between bg-muted/50 border-b border-border text-left font-semibold text-sm text-foreground"
       >
         <div className="flex items-center gap-2">
@@ -80,7 +82,9 @@ function HouseholdInfoSection({
             <Input
               placeholder="Nhập mã"
               value={formData.familyCode}
-              onChange={(e) => updateField("familyCode", e.target.value)}
+              onChange={(e) => {
+                updateField("familyCode", e.target.value)
+              }}
               className="rounded-full"
             />
           </div>
@@ -90,7 +94,9 @@ function HouseholdInfoSection({
             <Input
               placeholder="Nhập tên"
               value={formData.headFullName}
-              onChange={(e) => updateField("headFullName", e.target.value)}
+              onChange={(e) => {
+                updateField("headFullName", e.target.value)
+              }}
               className="rounded-full"
             />
           </div>
@@ -100,7 +106,9 @@ function HouseholdInfoSection({
             <Input
               placeholder="Nhập số điện thoại"
               value={formData.headPhone}
-              onChange={(e) => updateField("headPhone", e.target.value)}
+              onChange={(e) => {
+                updateField("headPhone", e.target.value)
+              }}
               className="rounded-full"
             />
           </div>
@@ -110,7 +118,9 @@ function HouseholdInfoSection({
             <Input
               placeholder="Nhập số CCCD/CMND"
               value={formData.headNationalId}
-              onChange={(e) => updateField("headNationalId", e.target.value)}
+              onChange={(e) => {
+                updateField("headNationalId", e.target.value)
+              }}
               className="rounded-full"
             />
           </div>
@@ -120,7 +130,9 @@ function HouseholdInfoSection({
             <Input
               placeholder="Nhập địa chỉ hộ khẩu"
               value={formData.householdAddress}
-              onChange={(e) => updateField("householdAddress", e.target.value)}
+              onChange={(e) => {
+                updateField("householdAddress", e.target.value)
+              }}
               className="rounded-full"
             />
           </div>
@@ -130,7 +142,9 @@ function HouseholdInfoSection({
             <Input
               placeholder="Chọn Tỉnh/Thành phố"
               value={formData.householdProvince}
-              onChange={(e) => updateField("householdProvince", e.target.value)}
+              onChange={(e) => {
+                updateField("householdProvince", e.target.value)
+              }}
               className="rounded-full"
             />
           </div>
@@ -168,7 +182,9 @@ function FamilyMembersSection({
       <div className="px-6 py-4 flex items-center justify-between bg-muted/50 border-b border-border">
         <button
           type="button"
-          onClick={() => setOpenMembers(!openMembers)}
+          onClick={() => {
+            setOpenMembers(!openMembers)
+          }}
           className="flex items-center gap-2 font-semibold text-sm text-foreground"
         >
           <span className="text-muted-foreground">
@@ -242,7 +258,9 @@ function FamilyMemberCard({
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => removeFamilyMember(member.id)}
+          onClick={() => {
+            removeFamilyMember(member.id)
+          }}
           className="h-7 px-2 text-destructive hover:bg-destructive/10 gap-1 text-xs rounded-full"
         >
           <Trash2 size={13} /> Xóa
@@ -255,7 +273,9 @@ function FamilyMemberCard({
           <Input
             placeholder="Vd: Bố, Mẹ, Vợ..."
             value={member.relationship}
-            onChange={(e) => updateFamilyMember(member.id, "relationship", e.target.value)}
+            onChange={(e) => {
+              updateFamilyMember(member.id, "relationship", e.target.value)
+            }}
             className="rounded-full text-xs"
           />
         </div>
@@ -265,7 +285,9 @@ function FamilyMemberCard({
           <Input
             placeholder="Nhập số CCCD"
             value={member.nationalId}
-            onChange={(e) => updateFamilyMember(member.id, "nationalId", e.target.value)}
+            onChange={(e) => {
+              updateFamilyMember(member.id, "nationalId", e.target.value)
+            }}
             className="rounded-full text-xs"
           />
         </div>
@@ -274,7 +296,9 @@ function FamilyMemberCard({
           <Label className="text-[11px] font-medium text-muted-foreground">Giới tính</Label>
           <Select
             value={member.gender}
-            onValueChange={(val) => updateFamilyMember(member.id, "gender", val)}
+            onValueChange={(val) => {
+              updateFamilyMember(member.id, "gender", val)
+            }}
           >
             <SelectTrigger className="rounded-full text-xs">
               <SelectValue placeholder="Chọn giới tính" />
@@ -290,7 +314,9 @@ function FamilyMemberCard({
           <Label className="text-[11px] font-medium text-muted-foreground">Ngày sinh</Label>
           <DatePicker
             value={member.dateOfBirth || null}
-            onChange={(val) => updateFamilyMember(member.id, "dateOfBirth", val || "")}
+            onChange={(val) => {
+              updateFamilyMember(member.id, "dateOfBirth", val || "")
+            }}
             size="sm"
             placeholder="Chọn ngày sinh..."
           />
@@ -301,7 +327,9 @@ function FamilyMemberCard({
           <Input
             placeholder="Việt Nam"
             value={member.nationality}
-            onChange={(e) => updateFamilyMember(member.id, "nationality", e.target.value)}
+            onChange={(e) => {
+              updateFamilyMember(member.id, "nationality", e.target.value)
+            }}
             className="rounded-full text-xs"
           />
         </div>
@@ -311,7 +339,9 @@ function FamilyMemberCard({
           <Input
             placeholder="Kinh"
             value={member.ethnicity}
-            onChange={(e) => updateFamilyMember(member.id, "ethnicity", e.target.value)}
+            onChange={(e) => {
+              updateFamilyMember(member.id, "ethnicity", e.target.value)
+            }}
             className="rounded-full text-xs"
           />
         </div>
@@ -321,7 +351,9 @@ function FamilyMemberCard({
           <Input
             placeholder="Nhập địa chỉ khai sinh"
             value={member.birthAddress}
-            onChange={(e) => updateFamilyMember(member.id, "birthAddress", e.target.value)}
+            onChange={(e) => {
+              updateFamilyMember(member.id, "birthAddress", e.target.value)
+            }}
             className="rounded-full text-xs"
           />
         </div>
@@ -331,7 +363,9 @@ function FamilyMemberCard({
             type="checkbox"
             id={`dependent-${member.id}`}
             checked={member.isDependent}
-            onChange={(e) => updateFamilyMember(member.id, "isDependent", e.target.checked)}
+            onChange={(e) => {
+              updateFamilyMember(member.id, "isDependent", e.target.checked)
+            }}
             className="h-4 w-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
           />
           <Label htmlFor={`dependent-${member.id}`} className="text-xs cursor-pointer font-medium">

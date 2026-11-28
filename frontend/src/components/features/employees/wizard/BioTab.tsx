@@ -133,8 +133,12 @@ function BioPersonalInfoSection({
             <Input
               placeholder="Nhập họ và tên"
               value={formData.fullName}
-              onChange={(e) => updateField("fullName", e.target.value)}
-              onBlur={() => handleBlur("fullName")}
+              onChange={(e) => {
+                updateField("fullName", e.target.value)
+              }}
+              onBlur={() => {
+                handleBlur("fullName")
+              }}
               className={cn(
                 "rounded-full",
                 (touchedFields.fullName || hasAttemptedSubmit) &&
@@ -150,7 +154,12 @@ function BioPersonalInfoSection({
 
           <div className="space-y-1.5">
             <Label className="text-xs font-medium">Giới tính</Label>
-            <Select value={formData.gender} onValueChange={(val) => updateField("gender", val)}>
+            <Select
+              value={formData.gender}
+              onValueChange={(val) => {
+                updateField("gender", val)
+              }}
+            >
               <SelectTrigger className="rounded-full">
                 <SelectValue placeholder="Chọn giới tính" />
               </SelectTrigger>
@@ -166,7 +175,9 @@ function BioPersonalInfoSection({
             <Label className="text-xs font-medium">Ngày sinh</Label>
             <DatePicker
               value={formData.dateOfBirth || null}
-              onChange={(val) => updateField("dateOfBirth", val || "")}
+              onChange={(val) => {
+                updateField("dateOfBirth", val || "")
+              }}
               placeholder="Chọn ngày sinh..."
             />
           </div>
@@ -176,7 +187,9 @@ function BioPersonalInfoSection({
             <Input
               placeholder="Chọn nơi sinh"
               value={formData.placeOfBirth}
-              onChange={(e) => updateField("placeOfBirth", e.target.value)}
+              onChange={(e) => {
+                updateField("placeOfBirth", e.target.value)
+              }}
               className="rounded-full"
             />
           </div>
@@ -219,7 +232,9 @@ function BioPersonalInfoSection({
           <Label className="text-xs font-medium">Tình trạng hôn nhân</Label>
           <Select
             value={formData.maritalStatus}
-            onValueChange={(val) => updateField("maritalStatus", val)}
+            onValueChange={(val) => {
+              updateField("maritalStatus", val)
+            }}
           >
             <SelectTrigger className="rounded-full">
               <SelectValue placeholder="Chọn tình trạng" />
@@ -241,7 +256,9 @@ function BioPersonalInfoSection({
           <Input
             placeholder="Địa chỉ thường trú"
             value={formData.permanentAddress}
-            onChange={(e) => updateField("permanentAddress", e.target.value)}
+            onChange={(e) => {
+              updateField("permanentAddress", e.target.value)
+            }}
             className="rounded-full"
           />
         </div>
@@ -251,7 +268,9 @@ function BioPersonalInfoSection({
           <Input
             placeholder="Chọn Tỉnh/Thành phố"
             value={formData.province}
-            onChange={(e) => updateField("province", e.target.value)}
+            onChange={(e) => {
+              updateField("province", e.target.value)
+            }}
             className="rounded-full"
           />
         </div>
@@ -261,7 +280,9 @@ function BioPersonalInfoSection({
           <Input
             placeholder="Chọn Xã/Phường"
             value={formData.district}
-            onChange={(e) => updateField("district", e.target.value)}
+            onChange={(e) => {
+              updateField("district", e.target.value)
+            }}
             className="rounded-full"
           />
         </div>
@@ -321,7 +342,9 @@ function BioContactSection({
     <CollapsibleSection
       title="Thông tin liên hệ"
       isOpen={openContact}
-      onToggle={() => setOpenContact(!openContact)}
+      onToggle={() => {
+        setOpenContact(!openContact)
+      }}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1.5">
@@ -331,8 +354,12 @@ function BioContactSection({
           <Input
             placeholder="Nhập số điện thoại"
             value={formData.phone}
-            onChange={(e) => updateField("phone", e.target.value)}
-            onBlur={() => handleBlur("phone")}
+            onChange={(e) => {
+              updateField("phone", e.target.value)
+            }}
+            onBlur={() => {
+              handleBlur("phone")
+            }}
             className={cn(
               "rounded-full",
               (touchedFields.phone || hasAttemptedSubmit) &&
@@ -354,7 +381,9 @@ function BioContactSection({
             type="email"
             placeholder="Nhập email cá nhân"
             value={formData.email}
-            onChange={(e) => updateField("email", e.target.value)}
+            onChange={(e) => {
+              updateField("email", e.target.value)
+            }}
             onBlur={() => handleBlur("email")}
             className={cn(
               "rounded-full",
@@ -374,7 +403,9 @@ function BioContactSection({
           <Input
             placeholder="Địa chỉ tạm trú hiện tại"
             value={formData.currentAddress}
-            onChange={(e) => updateField("currentAddress", e.target.value)}
+            onChange={(e) => {
+              updateField("currentAddress", e.target.value)
+            }}
             className="rounded-full"
           />
         </div>
@@ -417,7 +448,9 @@ function BioEducationSection({
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => removeEducation(item.id)}
+              onClick={() => {
+                removeEducation(item.id)
+              }}
               className="h-7 px-2 text-destructive hover:bg-destructive/10 gap-1 text-xs rounded-full cursor-pointer"
             >
               <Trash2 size={13} /> Xóa
@@ -438,7 +471,9 @@ function BioEducationSection({
               <Input
                 placeholder="Đến mm/yyyy"
                 value={item.toMonthYear}
-                onChange={(e) => updateEducation(item.id, "toMonthYear", e.target.value)}
+                onChange={(e) => {
+                  updateEducation(item.id, "toMonthYear", e.target.value)
+                }}
                 className="rounded-full text-xs"
               />
             </div>
@@ -449,7 +484,9 @@ function BioEducationSection({
               <Input
                 placeholder="Nhập bằng cấp / trình độ"
                 value={item.degree}
-                onChange={(e) => updateEducation(item.id, "degree", e.target.value)}
+                onChange={(e) => {
+                  updateEducation(item.id, "degree", e.target.value)
+                }}
                 className="rounded-full text-xs"
               />
             </div>
@@ -469,7 +506,9 @@ function BioEducationSection({
               <Input
                 placeholder="Chính quy, tại chức..."
                 value={item.trainingType}
-                onChange={(e) => updateEducation(item.id, "trainingType", e.target.value)}
+                onChange={(e) => {
+                  updateEducation(item.id, "trainingType", e.target.value)
+                }}
                 className="rounded-full text-xs"
               />
             </div>
@@ -480,7 +519,9 @@ function BioEducationSection({
               <Input
                 placeholder="Nhập tên trường đào tạo"
                 value={item.school}
-                onChange={(e) => updateEducation(item.id, "school", e.target.value)}
+                onChange={(e) => {
+                  updateEducation(item.id, "school", e.target.value)
+                }}
                 className="rounded-full text-xs"
               />
             </div>
@@ -525,7 +566,9 @@ function BioExperienceSection({
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => removeExperience(item.id)}
+              onClick={() => {
+                removeExperience(item.id)
+              }}
               className="h-7 px-2 text-destructive hover:bg-destructive/10 gap-1 text-xs rounded-full cursor-pointer"
             >
               <Trash2 size={13} /> Xóa
@@ -537,7 +580,9 @@ function BioExperienceSection({
               <Input
                 placeholder="Từ mm/yyyy"
                 value={item.fromMonthYear}
-                onChange={(e) => updateExperience(item.id, "fromMonthYear", e.target.value)}
+                onChange={(e) => {
+                  updateExperience(item.id, "fromMonthYear", e.target.value)
+                }}
                 className="rounded-full text-xs"
               />
             </div>
@@ -546,7 +591,9 @@ function BioExperienceSection({
               <Input
                 placeholder="Đến mm/yyyy"
                 value={item.toMonthYear}
-                onChange={(e) => updateExperience(item.id, "toMonthYear", e.target.value)}
+                onChange={(e) => {
+                  updateExperience(item.id, "toMonthYear", e.target.value)
+                }}
                 className="rounded-full text-xs"
               />
             </div>
@@ -557,7 +604,9 @@ function BioExperienceSection({
               <Input
                 placeholder="Nhập tên nơi làm việc"
                 value={item.company}
-                onChange={(e) => updateExperience(item.id, "company", e.target.value)}
+                onChange={(e) => {
+                  updateExperience(item.id, "company", e.target.value)
+                }}
                 className="rounded-full text-xs"
               />
             </div>
@@ -568,7 +617,9 @@ function BioExperienceSection({
               <Input
                 placeholder="Nhập chức danh / vị trí"
                 value={item.position}
-                onChange={(e) => updateExperience(item.id, "position", e.target.value)}
+                onChange={(e) => {
+                  updateExperience(item.id, "position", e.target.value)
+                }}
                 className="rounded-full text-xs"
               />
             </div>
@@ -579,7 +630,9 @@ function BioExperienceSection({
               <Input
                 placeholder="Mô tả tóm tắt nhiệm vụ chính"
                 value={item.description}
-                onChange={(e) => updateExperience(item.id, "description", e.target.value)}
+                onChange={(e) => {
+                  updateExperience(item.id, "description", e.target.value)
+                }}
                 className="rounded-full text-xs"
               />
             </div>

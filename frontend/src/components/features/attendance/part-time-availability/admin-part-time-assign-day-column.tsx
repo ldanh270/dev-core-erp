@@ -65,8 +65,12 @@ export function AdminPartTimeAssignDayColumn({
         isBusyDay={isBusyDay}
         isScheduled={assignment.isScheduled}
         disabled={disabled}
-        onWorkDayClick={() => setScheduled(true)}
-        onOffDayClick={() => setScheduled(false)}
+        onWorkDayClick={() => {
+          setScheduled(true)
+        }}
+        onOffDayClick={() => {
+          setScheduled(false)
+        }}
       />
 
       {!isBusyDay && !assignment.isScheduled && (
@@ -97,7 +101,9 @@ export function AdminPartTimeAssignDayColumn({
                 onUpdateSlot={updateSlot}
                 onNotifyValidation={notifySlotValidation}
                 onRemoveSlot={removeSlot}
-                onSwitchToOff={() => setScheduled(false)}
+                onSwitchToOff={() => {
+                  setScheduled(false)
+                }}
               />
             ))}
           </div>

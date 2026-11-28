@@ -187,7 +187,9 @@ export function AddMemberModal({
               min="0"
               step="1000"
               value={hourlyRate}
-              onChange={(e) => setHourlyRate(e.target.value)}
+              onChange={(e) => {
+                setHourlyRate(e.target.value)
+              }}
               placeholder="VD: 50000"
               className="h-10 rounded-full"
             />

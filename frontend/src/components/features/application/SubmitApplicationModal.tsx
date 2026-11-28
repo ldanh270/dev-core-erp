@@ -115,7 +115,9 @@ function SubmitApplicationDateFields({
             <DatePicker
               value={endDate || null}
               minDate={startDate}
-              onChange={(val) => onEndDateChange(val || "")}
+              onChange={(val) => {
+                onEndDateChange(val || "")
+              }}
               placeholder="Chọn ngày kết thúc..."
               size="sm"
             />
@@ -144,7 +146,12 @@ function SubmitApplicationTypeSpecificFields({
         <>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-muted-foreground">Loại nghỉ phép *</label>
-            <Select value={form.leaveType} onValueChange={(val) => setFormField("leaveType", val)}>
+            <Select
+              value={form.leaveType}
+              onValueChange={(val) => {
+                setFormField("leaveType", val)
+              }}
+            >
               <SelectTrigger className="h-10 rounded-full bg-background">
                 <SelectValue placeholder="Chọn loại nghỉ phép..." />
               </SelectTrigger>
@@ -165,7 +172,9 @@ function SubmitApplicationTypeSpecificFields({
                   key={rt}
                   type="button"
                   variant={form.leaveRegimeType === rt ? "default" : "outline"}
-                  onClick={() => setFormField("leaveRegimeType", rt)}
+                  onClick={() => {
+                    setFormField("leaveRegimeType", rt)
+                  }}
                   className="rounded-full h-10 text-xs font-semibold"
                 >
                   {rt === REGIME_TYPE.PAID ? "Có lương" : "Không lương"}
@@ -209,7 +218,9 @@ function SubmitApplicationTypeSpecificFields({
                   key={String(v)}
                   type="button"
                   variant={form.isLate === v ? "default" : "outline"}
-                  onClick={() => setFormField("isLate", v)}
+                  onClick={() => {
+                    setFormField("isLate", v)
+                  }}
                   className="rounded-full h-10 text-xs font-semibold"
                 >
                   {v ? "Đi muộn" : "Về sớm"}
@@ -225,7 +236,9 @@ function SubmitApplicationTypeSpecificFields({
               min={1}
               max={480}
               value={form.durationMinutes}
-              onChange={(e) => setFormField("durationMinutes", Number(e.target.value))}
+              onChange={(e) => {
+                setFormField("durationMinutes", Number(e.target.value))
+              }}
               className="bg-background"
             />
           </div>
@@ -251,7 +264,9 @@ function SubmitApplicationTypeSpecificFields({
             <Input
               placeholder="CUID nhân viên..."
               value={form.swapWithEmployeeId}
-              onChange={(e) => setFormField("swapWithEmployeeId", e.target.value)}
+              onChange={(e) => {
+                setFormField("swapWithEmployeeId", e.target.value)
+              }}
               className="font-mono bg-background"
             />
           </div>
@@ -262,7 +277,9 @@ function SubmitApplicationTypeSpecificFields({
             <Input
               placeholder="CUID ca làm việc..."
               value={form.swapWithShiftId}
-              onChange={(e) => setFormField("swapWithShiftId", e.target.value)}
+              onChange={(e) => {
+                setFormField("swapWithShiftId", e.target.value)
+              }}
               className="font-mono bg-background"
             />
           </div>
@@ -307,7 +324,9 @@ function SubmitApplicationReasonFields({
           minLength={5}
           placeholder="Nhập lý do gửi đơn..."
           value={reason}
-          onChange={(e) => onReasonChange(e.target.value)}
+          onChange={(e) => {
+            onReasonChange(e.target.value)
+          }}
           className="rounded-xl border border-input bg-background resize-none"
         />
       </div>
@@ -317,7 +336,9 @@ function SubmitApplicationReasonFields({
         <Input
           placeholder="Thông tin bổ sung (nếu có)..."
           value={note}
-          onChange={(e) => onNoteChange(e.target.value)}
+          onChange={(e) => {
+            onNoteChange(e.target.value)
+          }}
           className="bg-background"
         />
       </div>
@@ -351,7 +372,9 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
       onClick={onClose}
     >
       <div
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation()
+        }}
         className={`bg-background w-full ${step === "type" ? "max-w-3xl" : "max-w-lg"} rounded-xl border border-border shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-all duration-300`}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
@@ -361,7 +384,9 @@ export function SubmitApplicationModal({ onClose, onSuccess, initialType }: Subm
                 type="button"
                 variant="ghost"
                 size="icon"
-                onClick={() => setStep("type")}
+                onClick={() => {
+                  setStep("type")
+                }}
                 className="h-8 w-8 rounded-full text-muted-foreground hover:bg-muted"
               >
                 <ArrowLeft size={16} />

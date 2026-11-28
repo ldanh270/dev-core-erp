@@ -30,7 +30,12 @@ export const ProjectDetailErrorState: React.FC<ProjectDetailErrorStateProps> = (
         title={title}
         description={description}
         action={
-          <Button onClick={() => navigate(backUrl)} className="rounded-full">
+          <Button
+            onClick={() => {
+              navigate(backUrl)
+            }}
+            className="rounded-full"
+          >
             {backLabel}
           </Button>
         }

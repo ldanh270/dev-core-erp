@@ -88,7 +88,9 @@ export function ProjectGridCards({
               <PageCard
                 key={proj.id}
                 className="hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 border border-border/85 flex flex-col justify-between p-4 min-h-[120px] space-y-3 hover:border-primary/50 cursor-pointer group"
-                onClick={() => onSelectProject(proj.id)}
+                onClick={() => {
+                  onSelectProject(proj.id)
+                }}
               >
                 <div className="space-y-1.5">
                   <div className="flex items-start justify-between gap-2">

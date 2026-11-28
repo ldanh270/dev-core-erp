@@ -48,7 +48,7 @@ export function TaskWatchersSelect({
           onClick={onSelectAllWatchers}
           className="text-[10px] font-bold text-primary hover:underline cursor-pointer"
         >
-          {members && selectedWatchers.length === members.length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+          {selectedWatchers.length === members.length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
         </button>
       </div>
 
@@ -57,7 +57,7 @@ export function TaskWatchersSelect({
           <span className="text-xs text-muted-foreground italic">
             Đang tải danh sách thành viên...
           </span>
-        ) : !members || members.length === 0 ? (
+        ) : members.length === 0 ? (
           <span className="text-xs text-muted-foreground italic">
             Không có thành viên nào trong dự án này
           </span>
@@ -73,7 +73,9 @@ export function TaskWatchersSelect({
                 <input
                   type="checkbox"
                   checked={isChecked}
-                  onChange={() => onToggleWatcher(m.employeeId)}
+                  onChange={() => {
+                    onToggleWatcher(m.employeeId)
+                  }}
                   className="size-3.5 rounded border-border text-primary focus:ring-primary"
                 />
                 <div

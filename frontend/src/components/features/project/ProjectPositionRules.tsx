@@ -73,7 +73,9 @@ function ProjectRoleFormDialog({
             <Input
               id="role_name"
               value={roleName}
-              onChange={(e) => onNameChange(e.target.value)}
+              onChange={(e) => {
+                onNameChange(e.target.value)
+              }}
               placeholder="Ví dụ: Designer"
               className="rounded-full h-10 text-sm"
               required
@@ -86,7 +88,9 @@ function ProjectRoleFormDialog({
             <Input
               id="role_code"
               value={roleCode}
-              onChange={(e) => setRoleCode(e.target.value)}
+              onChange={(e) => {
+                setRoleCode(e.target.value)
+              }}
               placeholder="Ví dụ: designer"
               className="rounded-full h-10 text-sm font-mono"
               disabled
@@ -98,7 +102,9 @@ function ProjectRoleFormDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                onOpenChange(false)
+              }}
               className="rounded-full text-xs h-9"
             >
               Hủy bỏ
@@ -273,7 +279,9 @@ function ProjectRoleRuleRow({
                 type="button"
                 variant="ghost"
                 size="icon"
-                onClick={() => onRoleDelete(role.id, role.code)}
+                onClick={() => {
+                  onRoleDelete(role.id, role.code)
+                }}
                 className="size-7 rounded-full hover:bg-red-500/10 hover:text-red-600"
               >
                 <Trash2 className="size-3 text-red-500" />
@@ -325,7 +333,9 @@ function ProjectRoleRuleRow({
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => onOpenAddMember(role)}
+              onClick={() => {
+                onOpenAddMember(role)
+              }}
               className="size-5 rounded-full hover:bg-muted text-primary cursor-pointer"
               title="Thêm/Chuyển nhân sự vào vai trò này"
             >

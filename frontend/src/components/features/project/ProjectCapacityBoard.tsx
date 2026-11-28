@@ -276,7 +276,9 @@ export function ProjectCapacityBoard() {
             type="button"
             variant="outline"
             className="rounded-full font-semibold"
-            onClick={() => setWeekStart(getWeekStartDateKey(previousWeekStart))}
+            onClick={() => {
+              setWeekStart(getWeekStartDateKey(previousWeekStart))
+            }}
           >
             Tuần trước
           </Button>
@@ -288,7 +290,9 @@ export function ProjectCapacityBoard() {
             type="button"
             variant="outline"
             className="rounded-full font-semibold"
-            onClick={() => setWeekStart(getWeekStartDateKey(nextWeekStart))}
+            onClick={() => {
+              setWeekStart(getWeekStartDateKey(nextWeekStart))
+            }}
           >
             Tuần sau
           </Button>

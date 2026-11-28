@@ -208,7 +208,9 @@ function TemplateSalaryComponentsTable({
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => remove(index)}
+                        onClick={() => {
+                          remove(index)
+                        }}
                         disabled={isReadOnly}
                       >
                         <Minus className="h-4 w-4" />
